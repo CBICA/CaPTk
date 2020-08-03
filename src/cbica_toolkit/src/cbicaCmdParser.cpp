@@ -1233,7 +1233,14 @@ namespace cbica
     int position;
     if (compareParameter(execParamToCheck, position))
     {
-      parameterValue = m_argv[position + 1]; // return value is a string
+      if (position < m_argc - 1)
+      {
+        parameterValue = m_argv[position + 1]; // return value is a string
+      }
+      else
+      {
+        parameterValue = "";
+      }
       return;
     }
     else

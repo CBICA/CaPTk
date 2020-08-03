@@ -80,24 +80,7 @@ public:
     m_imagesTable->setHorizontalHeaderItem(3, new QTableWidgetItem("Modality"));
     m_imagesTable->setHorizontalHeaderItem(4, new QTableWidgetItem("Overlay"));
 
-    for (int i = 0; i < m_imagesTable->model()->columnCount(); i++)
-    {
-      if (i == nameColID)
-      {
-        // m_imagesTable->horizontalHeader()->setResizeMode(i, QHeaderView::Stretch);
-        // NEW CHANGES
-        m_imagesTable->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
-      }
-      else
-      {
-        QString txt = m_imagesTable->model()->headerData(i, Qt::Horizontal).toString();
-        int colWidth = m_imagesTable->horizontalHeader()->fontMetrics().width(txt) + pixelPad;
-        // m_imagesTable->horizontalHeader()->setResizeMode(i, QHeaderView::Fixed);
-        m_imagesTable->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-        m_imagesTable->setColumnWidth(i, colWidth);
-      }
-    }
-
+	//! non-visualizing table, no-op now
     m_nonVisImagesTable = new QTableWidget();
     m_nonVisImagesTable->setColumnCount(3);
     m_nonVisImagesTable->setSelectionBehavior(QAbstractItemView::SelectRows);

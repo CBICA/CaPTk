@@ -2,17 +2,58 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
-- Light/Dark mode and font switcher
-- Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
-- New functions to deal with image "series" (extraction and joining)
-- Automated Docker builds
-- Generic bug fixes and improvements 
+- Fixes to Preprocessing 
+  - NIfTI to DICOM writing improvements
+  - Registration improvements (rigid and deformable added to CLI and GUI)
+  - Bias correction improvements
+- Added functionality in Utilities
+  - Label statistics (generic and BraTS-specific)
+  - Casting fixes
+  - BVEC reorientation 
+- Fixes to Feature Extraction
+- Fixes to a lot of brain-cancer applications:
+  - PCA calculation
+  - Perfusion derivatives fixes
+  - Diffusion derivatives 
+  - Survival fixes
+  - Recurrence fixes
+  - Pseudoprogression fixes
+- Generic GUI bug fixes and improvements 
+- Added apply mask functionaity from drawing panel
+- Headers added to csv features files for multiple applications
+- Fixed application font mismatch on GUI
+- Fixed mask opacity change functionaity from comparison mode
+- Documentation updates
+
+For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
 
 ## Known Issues
 
 https://github.com/CBICA/CaPTk/issues
 
 ## Older Versions
+
+### 1.7.6
+
+- New model and data for Pseudo-Progression Estimator
+- Generic bug fixes and improvements 
+- Documentation updates
+
+### 1.7.5
+
+- GUI improvements
+- Algorithmic fixes for Neuro applications
+- Better error handling added all around
+- Linux installation updates
+- Generic bug fixes and improvements 
+
+### 1.7.3
+
+- Light/Dark mode and font switcher
+- Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
+- New functions to deal with image "series" (extraction and joining)
+- Automated Docker builds
+- Generic bug fixes and improvements 
 
 ### 1.7.2
 
@@ -115,8 +156,14 @@ https://github.com/CBICA/CaPTk/issues
 
 Contact <a href="mailto:software@cbica.upenn.edu">software@cbica.upenn.edu</a> for questions, etc.
 
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="People.html"><b>Next (People)<b></a>
 \endhtmlonly
+
+--------------------------------------------------------------------
 
 */

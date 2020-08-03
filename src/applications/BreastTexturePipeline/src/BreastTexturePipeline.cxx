@@ -201,6 +201,10 @@ int main(int argc, char** argv)
 
   parser.getParameterValue("i", inputImageFile);
   parser.getParameterValue("o", outputDir);
+
+  parser.addApplicationDescription("This application uses LIBRA to extract the breast mask and then perform feature extraction");
+  parser.addExampleUsage("-i C:/test/Case1.dcm -o C:/outputDir -d 1", "This command takes the input mammogram and estimates breast density");
+
   cbica::createDir(outputDir);
   inputImageFile = cbica::normPath(inputImageFile);
   outputDir = cbica::normPath(outputDir);

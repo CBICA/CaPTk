@@ -40,6 +40,15 @@ The incorporated packages include but are not limited to:
   -# <a href="https://www.itk.org/">ITK</a>, Insight Software Consortium, <a href="https://itk.org/ITK/project/licenseversion1.html">Apache 2.0 License</a>
   -# <a href="http://www.vtk.org/">VTK</a>, Kitware, <a href="http://www.vtk.org/licensing/">BSD License</a>
   -# <a href="http://www.opencv.org/">OpenCV</a>, OpenCV, <a href="http://opencv.org/license.html"> 3-Clause BSD License</a>
- <div align="right"><a href="Publications.html"><b>Next (Related Publications)<b></a>
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+
+\htmlonly
+<div align="right"><a href="Publications.html"><b>Next (Related Publications)<b></a>
+\endhtmlonly
+
+--------------------------------------------------------------------
 
 */

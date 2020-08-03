@@ -2,7 +2,7 @@ PROJECT(CaPTk_Common)
 
 #SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY 
 #	${CaPTk_BINARY_DIR})
-  
+
 SET( ${PROJECT_NAME}_HDRS
   ${PROJECT_SOURCE_DIR}/inc/CaPTkClassifierUtils.h
   ${PROJECT_SOURCE_DIR}/inc/CaPTkDefines.h

@@ -294,9 +294,10 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
       if (event == vtkCommand::EndPickEvent)
       {
+        // this line was commented out to prevent adding the points twice
         if (!m_shapeBuffer.empty())
         {
-          this->SM->ActionAdded(m_shapeBuffer);
+          //this->SM->ActionAdded(m_shapeBuffer);
           m_shapeBuffer.clear();
         }
         if (!m_undoBuffer.empty())
@@ -433,7 +434,6 @@ void SlicerManagerCommand::Execute(vtkObject *caller, unsigned long event, void 
 
     if (event == vtkCommand::WindowLevelEvent && mStartSlicer >= 0 && this->SM->GetPreset() <= 1)
     {
-
       // Adjust the window level here
       int *size = isi->GetInteractor()->GetRenderWindow()->GetSize();
       double window = this->InitialWindow;
@@ -979,7 +979,7 @@ std::vector<PointVal> SlicerManagerCommand::drawSphere(PointVal startPt, vtkSmar
       auto undoPt = drawPoint(tempPoint, image);
       if (undoPt.isValid())
       {
-        undoBuffer.push_back(tempPoint);
+        undoBuffer.push_back(undoPt);
         if (x_max < tempPoint.x)
         {
           x_max = tempPoint.x;
@@ -1024,7 +1024,7 @@ std::vector<PointVal> SlicerManagerCommand::drawSphere(PointVal startPt, vtkSmar
           auto undoPt = drawPoint(tempPoint, image);
           if (undoPt.isValid())
           {
-            undoBuffer.push_back(tempPoint);
+            undoBuffer.push_back(undoPt);
           }
         }
       }
@@ -1304,5 +1304,4 @@ void SlicerManagerCommand::makeStroke(int VisibleInWindow, double x, double y)
 
   this->SM->mMask->Modified();
   this->SM->GetSlicer(VisibleInWindow)->Render();
-
 }

@@ -169,7 +169,13 @@ sudo dpkg -i Confetti-Linux.deb
 
 <b>Windows Users</b>: Build the <b>PACKAGE</b> project in Visual Studio; you will need <a href="http://nsis.sourceforge.net/Main_Page">NSIS</a> to package the project as an installer.
 
+--------------------------------------------------------------------
 
+--------------------------------------------------------------------
+
+\htmlonly
 <div align="right"><a href="Usage.html"><b>Next (Usage)<b></a>
+\endhtmlonly
 
+--------------------------------------------------------------------
 */

@@ -8,6 +8,15 @@ Please cite the following publications when you use Confetti in your research:
 Multinomial Probabilistic Fiber Representation for Connectivity Driven Clustering. 
 Information processing in medical imaging : proceedings of the . conference.
 2013;23:730-741.<b>
+
+--------------------------------------------------------------------
+
+--------------------------------------------------------------------
+
+\htmlonly
 <div align="right"><a href="Changelog.html"><b>Next (Changelog)<b></a>
+\endhtmlonly
+
+--------------------------------------------------------------------
 
 */

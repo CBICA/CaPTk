@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cmath>
+
 #include "ZScoreNormalizer.h"
+#include "cbicaStatistics.h"
 
 template< class TImageType >
 void ZScoreNormalizer< TImageType >::SetInputImage(typename TImageType::Pointer image)
@@ -257,8 +260,27 @@ template< class TImageType >
 std::map< std::string, double > ZScoreNormalizer< TImageType >::GetStatisticsForImage(const typename TImageType::Pointer m_inputImage, bool considerMask)
 {
   std::map< std::string, double > results;
-  std::vector< typename TImageType::PixelType > nonZeroPixels;
   // mean, stdDev, max
+
+  /// not using this piece of code because of differences in values
+  //auto statsCalculator = itk::StatisticsImageFilter< TImageType >::New();
+  //statsCalculator->SetInput(m_inputImage);
+  //try
+  //{
+  //  statsCalculator->Update();
+  //}
+  //catch (const std::exception&e)
+  //{
+  //  std::cerr << "Error caught during stats calculation: " << e.what() << "\n";
+  //  return results;
+  //}
+  //results["Max"] = statsCalculator->GetMaximum();
+  //results["Min"] = statsCalculator->GetMinimum();
+  //results["Std"] = sqrtf(statsCalculator->GetVariance());
+  //results["Mean"] = statsCalculator->GetMean();
+  /// not using this piece of code because of differences in values
+
+  std::vector< typename TImageType::PixelType > nonZeroPixels;
 
   TConstIteratorType  imageIterator(m_inputImage, m_inputImage->GetLargestPossibleRegion());
   imageIterator.GoToBegin();

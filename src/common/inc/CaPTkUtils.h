@@ -3,8 +3,21 @@
 #include <cmath>
 #include <string>
 #include <QMetaType>
+#include <QStringList>
+#include <QFile>
+#include <QIODevice>
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
+#include "cbicaLogging.h"
+#include "cbicaUtilities.h"
+
+// For getting the total amount of installed ram
+#ifdef _WIN32
+#include <windows.h>
+#else
+// For both linux + mac
+#include <unistd.h>
+#endif
 
 //! Structure to define a point value to check if it is defined in the image or not
 struct PointVal
@@ -95,12 +108,14 @@ struct NonNativeApp
 \brief Guess Image Type
 
 \param str String to guess
+\param bool If true, check that the file exists (only succeeds for full paths) and exit if failed. If false, don't check.
 \return deduced type
 */
-inline int guessImageType(const std::string &fileName)
+inline int guessImageType(const std::string &fileName, bool checkFileExists = true)
 {
+	std::string basename = cbica::getFilenameBase(fileName, checkFileExists); 
   int ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
-  std::string fileName_wrap = fileName;
+  std::string fileName_wrap = basename;
   std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
   if ((fileName_wrap.find("_t1ce") != std::string::npos) || (fileName_wrap.find("_t1-gad") != std::string::npos) ||
     (fileName_wrap.find("_t1-ce") != std::string::npos) || (fileName_wrap.find("_t1-gd") != std::string::npos) ||
@@ -137,22 +152,26 @@ inline int guessImageType(const std::string &fileName)
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_DTI;
   }
   else if ((fileName_wrap.find("_rad") != std::string::npos) || (fileName_wrap.find("rad_") != std::string::npos) ||
-    (fileName_wrap.find("radial_") != std::string::npos) || (fileName_wrap.find("_radial") != std::string::npos))
+    (fileName_wrap.find("radial_") != std::string::npos) || (fileName_wrap.find("_radial") != std::string::npos) ||
+    (fileName_wrap.find("radial.nii.gz") != std::string::npos) || (fileName_wrap.find("rad.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_RAD;
   }
   else if ((fileName_wrap.find("_ax") != std::string::npos) || (fileName_wrap.find("ax_") != std::string::npos) || 
-    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos))
+    (fileName_wrap.find("axial_") != std::string::npos) || (fileName_wrap.find("_axial") != std::string::npos) ||
+    (fileName_wrap.find("axial.nii.gz") != std::string::npos) || (fileName_wrap.find("ax.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_AX;
   }
   else if ((fileName_wrap.find("_fa") != std::string::npos) || (fileName_wrap.find("fa_") != std::string::npos) ||
-    (fileName_wrap.find("fractional_") != std::string::npos) || (fileName_wrap.find("_fractional") != std::string::npos))
+    (fileName_wrap.find("fractional_") != std::string::npos) || (fileName_wrap.find("_fractional") != std::string::npos) ||
+    (fileName_wrap.find("fractional.nii.gz") != std::string::npos) || (fileName_wrap.find("fa.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_FA;
   }
   else if ((fileName_wrap.find("_tr") != std::string::npos) || (fileName_wrap.find("tr_") != std::string::npos) ||
-    (fileName_wrap.find("trace_") != std::string::npos) || (fileName_wrap.find("_trace") != std::string::npos))
+    (fileName_wrap.find("trace_") != std::string::npos) || (fileName_wrap.find("_trace") != std::string::npos) ||
+    (fileName_wrap.find("trace.nii.gz") != std::string::npos) || (fileName_wrap.find("tr.nii.gz") != std::string::npos))
   {
     ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_TR;
   }
@@ -203,4 +222,186 @@ inline bool isExtensionSupported(const std::string inputExtension)
   {
     return false;
   }
+}
+
+/** \brief Find total available memory (based on StackOverflow 2513505, Travis Gockel answer) */
+inline unsigned long long getTotalInstalledMemory()
+{
+#ifdef _WIN32
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx(&status);
+  return status.ullTotalPhys;
+#else
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGE_SIZE);
+  return pages * page_size;
+#endif
+}
+
+/** \brief Check if the total size of the files is more than a 
+ * percentage of the available memory
+ * */
+inline bool isSizeOfLoadedFilesTooBig(QStringList files, std::string loggerFile = "", 
+                               float maxPercentage = 0.05)
+{
+  // Find total size of all files
+  unsigned long long imagesSize = 0;
+  for (QString& file : files)
+  {
+    QFile qFile(file);
+    if (qFile.open(QIODevice::ReadOnly)){
+        imagesSize += qFile.size();  //when file does open. This size is in bytes
+        qFile.close();
+    }
+  }
+
+  /**** Get total amount of ram ****/
+  unsigned long long availableMemory = getTotalInstalledMemory();
+
+  // Log values
+  if (loggerFile != "")
+  {
+    cbica::Logging(loggerFile, 
+      "Images size: " + std::to_string(imagesSize));
+    cbica::Logging(loggerFile, 
+      "Total RAM: " + std::to_string(availableMemory));
+  }
+
+  // Compare (maxPercentage is arbitrary, default=0.05 it allows images up to 400MB for a 8GB system)
+  if (imagesSize > maxPercentage*availableMemory)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+inline void WriteCSVFilesWithHorizontalAndVerticalHeaders(VariableSizeMatrixType inputdata, std::vector<std::string> horizontal_ids, std::vector<std::string> vertical_ids, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+
+  myfile << vertical_ids[0];
+  for (unsigned int col_index = 1; col_index < vertical_ids.size(); col_index++)
+    myfile << "," << vertical_ids[col_index];
+  myfile << "\n";
+  for (unsigned int row_index = 0; row_index < inputdata.Rows(); row_index++)
+  {
+     myfile << horizontal_ids[row_index];
+     for (unsigned int col_index = 0; col_index < inputdata.Cols(); col_index++)
+       myfile << "," << std::to_string(inputdata[row_index][col_index]);
+    myfile << "\n";
+  }
+  myfile.close();
+}
+
+
+inline void WriteCSVFilesWithHorizontalAndVerticalHeaders(VariableSizeMatrixType inputdata, std::vector<std::string> horizontal_ids, std::string vertical_ids[], std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  myfile << " ";
+  for(unsigned int col_index=0;col_index<vertical_ids->size();col_index++)
+      myfile << ","<<vertical_ids[col_index];
+  myfile << "\n";
+  for (unsigned int row_index = 0; row_index < inputdata.Rows(); row_index++)
+  {
+   myfile << horizontal_ids[row_index];
+    for (unsigned int col_index = 0; col_index < inputdata.Cols(); col_index++)
+       myfile << "," << std::to_string(inputdata[row_index][col_index]);
+    myfile << "\n";
+  }
+  myfile.close();
+}
+
+inline void WriteCSVFiles(VariableSizeMatrixType inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.Rows(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < inputdata.Cols(); index2++)
+    {
+      if (index2 == 0)
+        myfile << std::to_string(inputdata[index1][index2]);
+      else
+        myfile << "," << std::to_string(inputdata[index1][index2]);
+    }
+    myfile << "\n";
+  }
+  myfile.close();
+}
+inline void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+  {
+    for (unsigned int index2 = 0; index2 < inputdata[0].size(); index2++)
+    {
+      if (index2 == 0)
+        myfile << std::to_string(inputdata[index1][index2]);
+      else
+        myfile << "," << std::to_string(inputdata[index1][index2]);
+    }
+    myfile << "\n";
+  }
+  myfile.close();
+}
+
+inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath, bool vertical=false)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
+
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.Size() - 1)
+        myfile << "\n";
+    }
+  }
+  myfile.close();
+}
+inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    myfile << std::to_string(inputdata[index1]) << ",";
+
+  myfile << "\n";
+  myfile.close();
+}
+inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath,bool vertical=false)
+{
+  std::ofstream myfile;
+  myfile.open(filepath);
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
+
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.size() - 1)
+        myfile << "\n";
+    }
+  }
+  myfile.close();
 }

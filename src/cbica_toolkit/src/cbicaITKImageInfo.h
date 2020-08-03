@@ -100,6 +100,13 @@ namespace cbica
     std::vector<double> GetImageOrigins();
 
     /**
+    \brief Get the Direction cosines of the specified image
+
+    \return A vector of vectors of double which gets overwritten with information
+    */
+    std::vector< std::vector< double > > GetImageDirections();
+
+    /**
     \brief Get the type of pixel in the image as a string
 
     \return Pixel type as a std::string
@@ -137,9 +144,10 @@ namespace cbica
         
   protected:
     std::string m_fileName;
-    itk::SmartPointer<itk::ImageIOBase> m_itkImageIOBase;
+    itk::ImageIOBase::Pointer m_itkImageIOBase;
     std::vector<double> m_spacings;
     std::vector<double> m_origins;
+    std::vector< std::vector< double > > m_directions;
     std::vector<itk::SizeValueType> m_size;
     unsigned int m_dimensions;
     std::string m_pixelType_asString, m_IOComponentType_asString;

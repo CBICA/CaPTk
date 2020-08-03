@@ -3,21 +3,25 @@
 #include "cbicaCmdParser.h"
 #include "CaPTkEnums.h"
 
+#include "CaPTkGUIUtils.h"
+
 //------------------EGFRvIII Prediction on existing model-----------------------
-std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
+std::vector<std::map<CAPTK::ImageModalityType, std::string>> 
+LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname, 
+  int applicationtype)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-	std::sort(subjectNames.begin(), subjectNames.end());
+  std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
 	{
 		std::string subjectPath = directoryname + "/" + subjectNames[sid];
 
-		std::string t1ceFilePath = "";
-		std::string t1FilePath = "";
-		std::string t2FilePath = "";
+		std::string t1ceFilePath    = "";
+		std::string t1FilePath      = "";
+		std::string t2FilePath      = "";
 		std::string t2FlairFilePath = "";
 		std::string axFilePath = "";
 		std::string faFilePath = "";
@@ -120,9 +124,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 		if (cbica::fileExists(subjectPath + "/features.csv"))
 			featureFilePath = subjectPath + "/features.csv";
 			
-			if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
+		if (labelPath.empty() || t1FilePath.empty() || t2FilePath.empty() || t1ceFilePath.empty() || t2FlairFilePath.empty() || rcbvFilePath.empty() || axFilePath.empty() || faFilePath.empty() 
         || radFilePath.empty() || trFilePath.empty() || psrFilePath.empty() || phFilePath.empty())
 			continue;
+
+    if (applicationtype == CAPTK::MachineLearningApplicationSubtype::TRAINING && featureFilePath.empty())
+      continue;
 
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T1] = t1FilePath;
 		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_T2] = t2FilePath;
@@ -153,26 +160,34 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
 {
 	std::cout << "Module loaded: EGFRvIII Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
-	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
-	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() <<std::endl;
-	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
-	VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
-	std::cout << std::endl<<"EGFRvIII prediction:"<<std::endl;
-	for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
-	{
-		std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-    if(result[subjectID]>0)
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Mutation detected." << std::endl;
-    else
-      std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Mutation not detected." << std::endl;
-	}
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TESTING);
+  if (QualifiedSubjects.size() == 0)
+  {
+    std::cout << "No subject found with required input. Exiting...." << std::endl;
+    return EXIT_FAILURE;
+  }
+  else
+  {
+    std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
+    EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
+    VectorDouble result = objEGFRvIIIPredictor.EGFRvIIIPredictionOnExistingModel(modeldirectory, inputdirectory, QualifiedSubjects, outputdirectory);
+    for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
+    {
+      std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
+      if (result[subjectID] > 0)
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutant." << std::endl;
+      else
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
+    }
+  }
 	return EXIT_SUCCESS;
 }
+
 int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Prepare EGFRvIII Prediction Model." << std::endl;
 	std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory);
+  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectory(inputdirectory, CAPTK::MachineLearningApplicationSubtype::TRAINING);
 	EGFRvIIIIndexPredictor objEGFRvIIIPredictor;
 	std::cout << "Number of subjects with required input: " << QualifiedSubjects.size() << std::endl;
 	if (QualifiedSubjects.size() == 0)
@@ -181,18 +196,21 @@ int PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory,const std
 		objEGFRvIIIPredictor.PrepareNewEGFRvIIIPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
 	return EXIT_SUCCESS;
 }
+
 int main(int argc, char **argv)
 {
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "EGFRvIIIIndexPredictor");
 	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
 	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("EGFRvIIISVMIndex", "Model"));
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  //parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
-  parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir", "Trains a new model based on the samples in inputDir");
-  parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/model' ");
-  parser.addApplicationDescription("EGFRvIII Index Training and Prediction application");
+	//parser.exampleUsage("EGFRvIIIIndexPredictor -i <input dir> -t 0 -o <output dir>");
+  
+	// Training is disabled. Uncomment the below line if re-enabling. 
+	//parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir", "Trains a new model based on the samples in inputDir");
+	parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output", "Tests an existing model for inputs in 'C:/input' based on 'C:/model' ");
+	parser.addApplicationDescription("EGFRvIII Index Prediction application");
 
 	// parameters to get from the command line
 	cbica::Logging logger;
@@ -201,7 +219,7 @@ int main(int argc, char **argv)
 
 	int tempPosition;
 	std::string inputDirectoryName, modelDirectoryName, outputDirectoryName, toWrite;
-	int applicationType;
+	int applicationType = CAPTK::MachineLearningApplicationSubtype::TESTING;
 	if (parser.compareParameter("L", tempPosition))
 	{
 		loggerFile = argv[tempPosition + 1];
@@ -231,6 +249,12 @@ int main(int argc, char **argv)
 		std::cout << "Please specify a directory having model file."<<std::endl;
 		return EXIT_FAILURE;
 	}
+	// Explicitly disable training.
+	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
+	{
+		std::cout << "Training is not currently available for this application. " << std::endl;
+		return EXIT_FAILURE;
+	}
 	std::cout << "Input directory name:" << inputDirectoryName<<std::endl;
 	std::cout << "Output directory name:" << outputDirectoryName << std::endl;
 
@@ -248,16 +272,24 @@ int main(int argc, char **argv)
 			return EXIT_FAILURE;
 		}
 	}
-	if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
-	{
-		std::cout << "Model directory name:" << modelDirectoryName << std::endl;
-		if (!cbica::directoryExists(modelDirectoryName))
-		{
-			std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
-			return EXIT_FAILURE;
-		}
-		EGFRvIIIPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
-	}
+  if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
+  {
+    std::cout << "Model directory name:" << modelDirectoryName << std::endl;
+    if (!cbica::directoryExists(modelDirectoryName))
+    {
+      std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+      if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+      {
+        std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+        return EXIT_FAILURE;
+      }
+    }
+    EGFRvIIIPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
+  }
 	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
 		PrepareNewEGFRvIIIPredictionModel(inputDirectoryName, outputDirectoryName);
 	else

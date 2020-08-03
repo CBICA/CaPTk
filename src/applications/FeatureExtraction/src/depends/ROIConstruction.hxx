@@ -347,37 +347,38 @@ void ROIConstruction< TImage >::Update()
 
     totalMaskIterator.GoToBegin();
 
-    if (!m_roi.empty())
-    {
-      ROIComputation(latticeGrid, m_latticeRadius); // this is done in order not to repeat all of the lattice computation validity happening above
-    } // end of m_roi.empty() check
-    else
+    if (m_roi.empty())
     {
       // No ROIs have been specified, so calculated for ALL of them.
       // this loop populates m_roi and m_roiLabels so that when the Update() function is called again,
       // the "else" does not get triggered
-      while (!totalMaskIterator.IsAtEnd())
+
+      std::cout << "Either the selected ROI value or Label is empty, using whatever non-zero value(s) is/are present in the mask for computation.\n";
+      auto tempValuesInMask = cbica::GetUniqueValuesInImage< TImage >(m_mask, true);
+
+      // this next step is to ensure that when there are very small differences in the floating point values,
+      // the int cast takes care of it and we only want to keep the unique elements
+      auto tempROIs = m_roi;
+      for (size_t i = 0; i < tempValuesInMask.size(); i++)
       {
-        auto currentTotalMaskImageValue = totalMaskIterator.Get();
-        if (currentTotalMaskImageValue > 0)
+        tempROIs.push_back(static_cast<int>(tempValuesInMask[i]));
+      }
+      tempROIs.erase(
+        std::unique(tempROIs.begin(), tempROIs.end()), // only use the unique elements
+        tempROIs.end());
+
+      for (size_t i = 0; i < tempROIs.size(); i++)
+      {
+        if (tempROIs[i] != 0)
         {
-          if (m_roi.empty())
-          {
-            m_roi.push_back(currentTotalMaskImageValue);
-            m_roiLabels.push_back(std::to_string(currentTotalMaskImageValue));
-          }
-          // if the current mask value is not found in m_roi, add it
-          else if (std::find(m_roi.begin(), m_roi.end(), currentTotalMaskImageValue) == m_roi.end())
-          {
-            m_roi.push_back(currentTotalMaskImageValue);
-            m_roiLabels.push_back(std::to_string(currentTotalMaskImageValue));
-          }
-        } // end of currentTotalMaskImageValue check
-        ++totalMaskIterator;
-      } // end of totalMaskIterator while loop
-        // at this point, m_roi and m_roiLabels have been populated
-      ROIComputation(latticeGrid, m_latticeRadius);
+          m_roi.push_back(tempROIs[i]);
+          m_roiLabels.push_back(std::to_string(tempROIs[i]));
+        }
+      }
+      // at this point, m_roi and m_roiLabels have been populated
     } // end of m_roi.empty() check
+
+    ROIComputation(latticeGrid, m_latticeRadius);
 
     m_algorithmDone = true;
     auto t2 = std::chrono::high_resolution_clock::now();

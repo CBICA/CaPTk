@@ -63,13 +63,13 @@ public:
   \param farintensitities Intensities of far voxels
   */
   void FormulateTrainingData(const std::vector< VectorDouble > &nearintensitities, const std::vector< VectorDouble > &farintensitities);
-  void FormulateSurvivalTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures);
-  void FormulatePseudoprogressionTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures, VariableSizeMatrixType & EighteenModelFeatures);
+  void FormulatePseudoprogressionTrainingData(std::vector<double> inputLabels, VectorDouble & PseudoModelLabels, VectorDouble & RecurrenceModelLabels);
 
   void FormulateEGFRTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputSurvival, VariableSizeMatrixType & SixModelFeatures);
 
-  void FormulateMolecularTrainingData(const VariableSizeMatrixType &inputFeatures, std::vector<double> inputLabels, VariableSizeMatrixType & proneuralModelFeatures, VariableSizeMatrixType & neuralModelFeatures, VariableSizeMatrixType & messenchymalModelFeatures, VariableSizeMatrixType & classicalModelFeatures);
-
+  void FormulateMolecularTrainingData(VectorDouble inputLabels,
+    VectorDouble & proneuralModelLabels, VectorDouble & neuralModelLabels,
+    VectorDouble & messModelLabels, VectorDouble & classicalModelLabels);
   /**
   \brief Formulates the test data by using intensities of near and far regions, and adding corresponding label
   \param testdata Intensities of test voxels
@@ -83,6 +83,8 @@ public:
   \param farsamples Number of far samples
   */
   VariableSizeMatrixType ResampleTrainingData(const VariableSizeMatrixType &trainingdata, const unsigned int nearsamples, const unsigned int farsamples);
+
+  void FormulateSurvivalTrainingData(VectorDouble inputSurvival, VectorDouble & SixModelLabels, VectorDouble & EighteenModelLabels);
 
   VariableSizeMatrixType mTrainingData;
   VariableSizeMatrixType mTestData;

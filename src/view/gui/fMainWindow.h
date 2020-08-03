@@ -62,6 +62,8 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fFetalBrain.h"
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
+#include "fBiasCorrectionDialog.h"
+#include "fBraTSSegmentation.h"
 
 #include <atomic>
 
@@ -76,11 +78,15 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include <QScopedPointer>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "fBottomImageInfoTip.h"
+
+#include "yaml-cpp/node/node.h"
+
 class SlicerManager;
 class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
+class SystemInformationDisplayWidget;
 
 #define USE_PROCESSDIALOG
 
@@ -244,6 +250,7 @@ private:
   fFetalBrain fetalbrainpanel;
   fSBRTNoduleDialog nodulePanel;
   fSBRTAnalysisDialog analysisPanel;
+  fBiasCorrectionDialog biascorrectionPanel;
 
   fSkullStripper skullStrippingPanel;
   fPCADialog pcaPanel;
@@ -257,8 +264,11 @@ private:
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
+  fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  SystemInformationDisplayWidget *sysinfowidget;
+  
 
   fDrawingPanel *drawingPanel;
   fFeaturePanel *featurePanel;
@@ -275,17 +285,18 @@ private:
   QMenu* menuLoadFileDicom;
   QMenu* menuLoadFileNifti;
   QMenu* menuDownload;
-
   QMenu* menuApp;
   QMenu* menuPreprocessing;
   QMenu* menuDeepLearning;
   QMenu* menuHelp;
 
   QAction *help_discussion;
-  QAction *help_download;
+  QAction *helpMenu_download;
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+  QAction *help_systeminformation;
+
   //-------------actions-------------
 
   QAction *actionLoad_Recurrence_Images;
@@ -304,6 +315,7 @@ private:
   QAction *actionSave_Images;
   QAction *actionAbout;
   QAction *actionExit;
+  QAction *actionModelLibrary;
 
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
@@ -330,6 +342,8 @@ private:
   vtkSmartPointer< vtkGenericOpenGLRenderWindow> CoronalRenWin;
 
   QHBoxLayout* bottomLayout;
+    
+  YAML::Node m_downloadLinks; //! structure to save download links
 
   /**
   \struct ActionAndName
@@ -354,6 +368,9 @@ private:
   \return A vector of ActionAndName structs which ties a QAction to the corresponding name from inputList
   **/
   std::vector< ActionAndName > populateStringListInMenu(const std::vector< std::string > &vectorOfInputs, QMainWindow* inputFMainWindow, QMenu* menuToPopulate, std::string menuAppSubGroup, bool ExcludeGeodesic);
+
+  //! check if input files also include directories
+  bool hasDirectories(QStringList &lst, int &nDirs);
 
   // initialize vectors of Actions and Names so that the process can be automated and the QAction is tied to its corresponding Name
   std::vector< ActionAndName >
@@ -494,15 +511,6 @@ public:
   */
   ImageTypeFloat3D::Pointer RescaleImageIntensity(ImageTypeFloat3D::Pointer image);
 
-  /*
-  \brief Drag event initialization
-  */
-  void dragEnterEvent(QDragEnterEvent *event);
-
-  /*
-  \brief Drop Event parsing
-  */
-  void dropEvent(QDropEvent *event);
 
   /*
   \brief This function is used to load parameters from the command line
@@ -524,6 +532,10 @@ signals:
   void TissuePointsFocused(bool bFocused);
 
 public slots:
+
+	//! apply mask to loaded images
+	void OnApplyMask();
+
 	//!display Preferences dialog
 	void OnPreferencesMenuClicked();
 
@@ -535,6 +547,16 @@ public slots:
 
   //! slot on movement of slider in comparison mode
   void OnSliderMovedInComparisonMode(int);
+
+  /**
+  \brief Drag event initialization. Can accept events emitted from widgets.
+  */
+  void dragEnterEvent(QDragEnterEvent *event);
+
+  /**
+  \brief Drop Event parsing slot. Can accept events emitted from widgets.
+  */
+  void dropEvent(QDropEvent *event);
 
   /**
   \brief Updates draw mode when drawing panel changes
@@ -752,7 +774,7 @@ public slots:
   \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -764,7 +786,7 @@ public slots:
   \param inputfile The input DSC-MRI image
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
 
   /**
   \brief Call the Diffusion Measures application with the inputs
@@ -841,6 +863,11 @@ public slots:
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);
 
   /**
+  \brief Call BraTS Pipeline application
+  */
+  void CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir);
+
+  /**
   \brief Call Histogram Matching module of ITK
   */
   void CallLabelValuesChange(const std::string oldValues, const std::string newValues);
@@ -861,12 +888,27 @@ public slots:
   /**
   \brief Generate population atlas
   */
-  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputlabel, const std::string inputatlas, const std::string outputImageFile);
+  void CallGeneratePopualtionAtlas(const std::string inputdirectory, const std::string inputatlas, const std::string outputImageFile);
 
   /**
   \brief Generete SBRT Nodule
   */
   void CallSBRTNodule(const std::string seedImage, const int labelValue);
+
+  /** 
+  \brief Generate and load bias-corrected image
+  param correctionType string to determine bias correction method. Accepts n3 or n4 (case-insensitive)
+  param saveFileName where to save the output
+  param bias_splineOrder
+  param bias_otsuBins
+  param bias_maxIterations
+  param bias_fittingLevels 
+  param bias_filterNoise 
+  param bias_fwhm full width at half-maximum 
+  */
+  void CallBiasCorrection(const std::string correctionType, QString saveFileName,
+      int bias_splineOrder, int bias_otsuBins, int bias_maxIterations, int bias_fittingLevels,
+      float bias_filterNoise, float bias_fwhm);
 
   /**
   \brief Function that updates the co-ordinates (X and Y) of border
@@ -875,6 +917,7 @@ public slots:
   param endX ending X co-ordinate
   param endY ending Y co-ordinate
   */
+
   void UpdateBorderWidget(double startX, double startY, double endX, double endY);
 
   /**
@@ -919,8 +962,16 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  //! Open the github issue tracker
-  void help_BugTracker();
+
+  /**
+  \brief open model library webpage
+  */
+  void OpenModelLibrary();
+
+  /**
+ \brief system information menu click 
+ */
+  void OnSystemInformationMenuClicked();
 
   /**
   \brief Get contextual help 
@@ -1053,9 +1104,14 @@ public slots:
   void ChangeDrawingLabel(int drawingLabel); // multiLabel uncomment this function
 
   /**
-  \brief Changes the opacity in the drawing
+  \brief Changes the selected opacity to draw with, pulling directly from the opacity selected in the drawing panel
   */
-  void ChangeMaskOpacity(int newMaskOpacity); // multiLabel uncomment this function
+  void ChangeMaskOpacity(); // multiLabel uncomment this function
+
+  /**
+  \brief Changes the selected opacity to display by input of a number (float).
+  */
+  void ChangeMaskOpacity(float newOpacity);
 
   /**
   \brief Checks whether required images are present for the recurrence estimation application
@@ -1270,9 +1326,6 @@ public slots:
   */
   void UpdateLinkedNavigation(Slicer* refSlicer);
 
-  //! Dock/undock behaviour changed
-  void toolTabDockChanged(bool bUnDocked);
-
   //! Returns the active tab from the tab widget
   int getActiveTabId()
   {
@@ -1397,6 +1450,9 @@ public slots:
   //! Preprocessing for mammogram preprocessing
   void ImageMamogramPreprocess();
 
+  //! BraTS Pipeline
+  void ImageBraTSPipeline();
+
   //! Preprocessing for bias correction
   void ImageBiasCorrection();
 
@@ -1431,7 +1487,10 @@ public slots:
   void GeodesicTrainingFinishedWithErrorHandler(QString errorMessage);
 
   //! Performs the registration
-  void Registration(std::string fixedfilename, std::vector<std::string> inputFileNames, std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, bool registrationMode, std::string metrics, bool affineMode, std::string radii, std::string iterations);
+  void Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
+    std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames, 
+    std::string metrics, bool rigidMode, bool affineMode, bool deformMode, 
+    std::string radii, std::string iterations, std::string degreesOfFreedom);
 
   //confirm before exit
   void closeEvent(QCloseEvent * event);
@@ -1504,7 +1563,7 @@ public:
   Fetalbrain mfetalbrain;
 
   fHelpDialog* mHelpDlg;
-  fHelpTutorial mHelpTutorial;
+  fHelpTutorial* mHelpTutorial;
 
   std::string t1cePath;
   std::string m_imagetype_string;

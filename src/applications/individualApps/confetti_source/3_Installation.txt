@@ -20,6 +20,13 @@ On windows, the GUI is distributed as standalone package. On Linux, the python s
 	  "numpy >= 1.11.1",  "PyQt4 == 4.11.4",	  "VTK == 6.3.0"
 A setup.py provided to make the installation easier.
 
-<div align="right"><a href="Compilation.html"><b>Next (Compilation)<b></a>
+--------------------------------------------------------------------
 
+--------------------------------------------------------------------
+
+\htmlonly
+<div align="right"><a href="Compilation.html"><b>Next (Compilation)<b></a>
+\endhtmlonly
+
+--------------------------------------------------------------------
 */

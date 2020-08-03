@@ -2,13 +2,15 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 
+#include "CaPTkGUIUtils.h"
+
 //------------------Survival Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectory(const std::string directoryname)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
 	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
-	std::sort(subjectNames.begin(), subjectNames.end());
+  std::sort(subjectNames.begin(), subjectNames.end());
 
 	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
 	{
@@ -101,6 +103,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 			}
 		}
 
+
 		if (cbica::directoryExists(subjectPath + "/DTI"))
 		{
 			files = cbica::filesInDirectory(subjectPath + "/DTI",false);
@@ -149,9 +152,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 	}
 	return QualifiedSubjects;
 }
-int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
-	const std::string inputdirectory,
-	const std::string outputdirectory)
+int SurvivalPredictionOnExistingModel(const std::string modeldirectory,const std::string inputdirectory,const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Survival Prediction on Existing Model:" << std::endl;
 	std::vector<double> finalresult;
@@ -167,7 +168,7 @@ int SurvivalPredictionOnExistingModel(const std::string modeldirectory,
 	}
 	return EXIT_SUCCESS;
 }
-int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,
+int TrainNewSurvivalPredictionModel(const std::string inputdirectory,
 	const std::string outputdirectory)
 {
 	std::cout << "Module loaded: Prepare Survival Prediction Model." << std::endl;
@@ -182,7 +183,7 @@ int PrepareNewSurvivalPredictionModel(const std::string inputdirectory,
 	if (QualifiedSubjects.size() == 0)
 		std::cout << "No subject found with required input." << std::endl;
 	else
-		objSurvivalPredictor.PrepareNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
+		objSurvivalPredictor.TrainNewSurvivalPredictionModel(inputdirectory, QualifiedSubjects, outputdirectory);
 	return EXIT_SUCCESS;
 }
 int main(int argc, char **argv)
@@ -190,7 +191,7 @@ int main(int argc, char **argv)
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "SurvivalPredictor");
 	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
 	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+	parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("SurvivalPredictor", "Model"));
 	parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
 	parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("SurvivalPredictor -t 0 -i <input dir> -o <output dir>");
@@ -264,10 +265,18 @@ int main(int argc, char **argv)
 			std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
 			return EXIT_FAILURE;
 		}
+		if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+		{
+			if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+			{
+				std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+				return EXIT_FAILURE;
+			}
+		}
 		SurvivalPredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
 	}
 	else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-		PrepareNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
+		TrainNewSurvivalPredictionModel(inputDirectoryName, outputDirectoryName);
 	else
 	{
 		parser.echoVersion();

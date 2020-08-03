@@ -196,6 +196,7 @@ void FeatureExtraction< TImage >::CalculateLBP(const typename TImage::Pointer it
     lbpCalculator.SetRadius(m_Radius);
   }
   lbpCalculator.SetInputImage(itkImage);
+  lbpCalculator.SetInputMask(mask);
   lbpCalculator.SetNeighbors(m_neighborhood);
   lbpCalculator.SetLBPStyle(m_LBPStyle);
   if (m_debug)
@@ -275,6 +276,10 @@ void FeatureExtraction< TImage >::CalculateMorphologic(const typename TImage::Po
   {
     morphologicCalculator.EnableDebugMode();
   }
+  if (m_morphologicCalculateFeret)
+  {
+    morphologicCalculator.EnableCalculateFeretDiameter();
+  }
   morphologicCalculator.Update();
   auto temp = morphologicCalculator.GetOutput();
   if (temp.empty())
@@ -292,10 +297,6 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer itkImage,
   const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
-  //neighbouring grey level dependece based features (IBSI 3.11)
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
-  //offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
-
   NGLDMFeatures< TImage > ngldmCalculator;
   ngldmCalculator.SetInputImage(itkImage);
   ngldmCalculator.SetInputMask(maskImage);
@@ -315,7 +316,7 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
     ngldmCalculator.EnableDebugMode();
   }
   ngldmCalculator.SetDistanceMax(GetMaximumDistanceWithinTheDefinedROI(itkImage, maskImage));
-  ngldmCalculator.Update();
+  //ngldmCalculator.Update();
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM::calculator.GetRange() = " << ngldmCalculator.GetRange() << std::endl;
 
   auto temp = ngldmCalculator.GetOutput();
@@ -323,30 +324,6 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
   }
-  //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
-  //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
-  //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
-  //featurevec["HighGreyLevelCountEmphasis"] = ngldmCalculator.GetHighGreyLevelCountEmphasis();
-  //featurevec["LowDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceLowGreyLevelEmphasis();
-  //featurevec["LowDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceHighGreyLevelEmphasis();
-  //featurevec["HighDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceLowGreyLevelEmphasis();
-  //featurevec["HighDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceHighGreyLevelEmphasis();
-  //featurevec["GreyLevelNonUniformity"] = ngldmCalculator.GetGreyLevelNonUniformity();
-  //featurevec["GreyLevelNonUniformityNormalised"] = ngldmCalculator.GetGreyLevelNonUniformityNormalised();
-  //featurevec["DependenceCountNonUniformity"] = ngldmCalculator.GetDependenceCountNonUniformity();
-  //featurevec["DependenceCountNonUniformityNormalised"] = ngldmCalculator.GetDependenceCountNonUniformityNormalised();
-  //featurevec["DependenceCountPercentage"] = ngldmCalculator.GetDependenceCountPercentage();
-  //featurevec["GreyLevelVariance"] = ngldmCalculator.GetGreyLevelVariance();
-  //featurevec["DependenceCountVariance"] = ngldmCalculator.GetDependenceCountVariance();
-  //featurevec["DependenceCountEntropy"] = ngldmCalculator.GetDependenceCountEntropy();
-  //featurevec["DependenceCountEnergy"] = ngldmCalculator.GetDependenceCountEnergy();
-  //featurevec["MeanGreyLevelCount"] = ngldmCalculator.GetMeanGreyLevelCount();
-  //featurevec["MeanDependenceCount"] = ngldmCalculator.GetMeanDependenceCount();
-  //featurevec["ExpectedNeighbourhoodSize"] = ngldmCalculator.GetExpectedNeighbourhoodSize();
-  //featurevec["AverageNeighbourhoodSize"] = ngldmCalculator.GetAverageNeighbourhoodSize();
-  //featurevec["AverageIncompleteNeighbourhoodSize"] = ngldmCalculator.GetAverageIncompleteNeighbourhoodSize();
-  //featurevec["PercentageOfCompleteNeighbourhoods"] = ngldmCalculator.GetPercentageOfCompleteNeighbourhoods();
-  //featurevec["PercentageOfDependenceNeighbours"] = ngldmCalculator.GetPercentageOfDependenceNeighbours();
 }
 
 
@@ -376,7 +353,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   if (m_debug)
   {
     ngtdmCalculator.EnableDebugMode();
-    //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
   }
 
   auto temp = ngtdmCalculator.GetOutput();
@@ -384,240 +360,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
   }
-  ////auto temp = calculator.GetOutput();
-  //double double_Strength = ngtdmCalculator.GetStrength();
-  //double double_Complexity = ngtdmCalculator.GetComplexity();
-  //double double_Coarsness = ngtdmCalculator.GetCoarsness();
-  //double double_Contrast = ngtdmCalculator.GetContrast();
-  //double double_Busyness = ngtdmCalculator.GetBusyness();
-
-  //featurevec["Strength"] = ngtdmCalculator.GetStrength();
-  //featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
-  //featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
-  //featurevec["Constrast"] = ngtdmCalculator.GetContrast();
-  //featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
-  /* commenting out old codes calling NGLDM
-  typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
-  typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;
-  //typedef itk::MinimumMaximumImageCalculator< TImage > MinMaxComputerType;
-
-  using MatrixGenerator = itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceMatrixFilter< TImage >;
-  using FeatureCalculator = itk::Statistics::EnhancedHistogramToNeighbourhoodGreyLevelDifferenceFeaturesFilter< typename MatrixGenerator::HistogramType >;
-
-  typename MatrixGenerator::Pointer matrixFilter = MatrixGenerator::New();
-  typename FeatureCalculator::Pointer featureFilter = FeatureCalculator::New();
-  matrixFilter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  matrixFilter->SetNumberOfBinsPerAxis(m_Bins);
-  matrixFilter->SetInput(itkImage);
-  matrixFilter->SetMaskImage(maskImage);
-
-  //voxel count
-  //unsigned long numberOfVoxels = 0;
-  //itk::ImageRegionConstIterator<TImage> voxelCountIter(maskImage, maskImage->GetLargestPossibleRegion());
-  //while (!voxelCountIter.IsAtEnd())
-  //{
-   // if (voxelCountIter.Get() > 0)
-    //  ++numberOfVoxels;
-   // ++voxelCountIter;
-  //}
-
-  //add offsets except self voxel
-  typename OffsetVector::ConstIterator offsetIt;
-  std::vector <OffsetType> tVector;
-  for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++)
-  {
-
-    tVector.push_back(offsetIt.Value());
-  }
-  matrixFilter->AddOffsets(tVector);
-  matrixFilter->Update();
-
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-
-  //requestedFeatures->push_back(TextureFilterType::Coarseness);
-  //requestedFeatures->push_back(TextureFilterType::Contrast);
-  //requestedFeatures->push_back(TextureFilterType::Busyness);
-  //requestedFeatures->push_back(TextureFilterType::Complexity);
-  //requestedFeatures->push_back(TextureFilterType::Strength);
-  //requestedFeatures->push_back(20);
-
-  featureFilter->SetNumberOfVoxels(m_currentNonZeroImageValues.size());
-  featureFilter->SetInput(matrixFilter->GetOutput());
-  featureFilter->SetSiMatrix(matrixFilter->GetSiMatrix());
-  featureFilter->Update();
-
-  auto Coarseness = featureFilter->GetCoarseness();
-  auto Contrast = featureFilter->GetContrast();
-  auto Business = featureFilter->GetBusyness();
-  auto Complexity = featureFilter->GetComplexity();
-  auto Strength = featureFilter->GetStrength();
-  std::cout << "\n Coarseness = " << Coarseness << std::endl;
-  std::cout << "\n Contrast = " << Contrast << std::endl;
-  std::cout << "\n Business = " << Business << std::endl;
-  std::cout << "\n Complexity = " << Complexity << std::endl;
-  std::cout << "\n Strength = " << Strength << std::endl;
-  */
-
-  //typename MatrixGenerator::OffsetVectorPointer newOffset = MatrixGenerator::OffsetVector::New();
-  //auto oldOffsets = matrixFilter->GetOffsets();
-  //auto oldOffsetsIterator = oldOffsets->Begin();
-  //while (oldOffsetsIterator != oldOffsets->End())
-  //{
-  //  bool continueOuterLoop = false;
-  //  typename MatrixGenerator::OffsetType offset = oldOffsetsIterator->Value();
-  //  for (size_t i = 0; i < TImage::ImageDimension; ++i)
-  //  {
-  //    //if (/*params.m_Direction == i + 2 &&*/)
-  //    if (offset[i] != 0)
-  //    {
-  //      continueOuterLoop = true;
-  //    }
-  //  }
-  //  oldOffsetsIterator++;
-  //  if (continueOuterLoop)
-  //    newOffset->push_back(offset);
-  //}
-  //matrixFilter->SetOffsets(newOffset);
-  //matrixFilter->SetInput(itkImage);
-  //matrixFilter->SetMaskImage(maskImage);
-  //matrixFilter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  //matrixFilter->SetNumberOfBinsPerAxis(m_Bins);
-
-  //matrixFilter->Update();
-
-  //unsigned long numberOfVoxels = 0;
-  //TConstIteratorType voxelCountIter(maskImage, maskImage->GetLargestPossibleRegion());
-  //while (!voxelCountIter.IsAtEnd())
-  //{
-  //  if (voxelCountIter.Get() > 0)
-  //    ++numberOfVoxels;
-  //  ++voxelCountIter;
-  //}
-
-  //featureFilter->SetInput(matrixFilter->GetOutput());
-  //featureFilter->SetSiMatrix(matrixFilter->GetSiMatrix());
-  //featureFilter->SetNumberOfVoxels(numberOfVoxels);
-  //featureFilter->Update();
-
-  //typedef short NeighbourhoodGreyLevelDifferenceFeatureName;
-  //typedef itk::VectorContainer<unsigned char, NeighbourhoodGreyLevelDifferenceFeatureName> FeatureNameVector;
-  //typedef typename FeatureNameVector::Pointer      FeatureNameVectorPointer;
-  //FeatureNameVectorPointer requestedFeatures = FeatureNameVector::New();
-
-  //requestedFeatures->push_back(FeatureCalculator::Coarseness);
-  //requestedFeatures->push_back(FeatureCalculator::Contrast);
-  //requestedFeatures->push_back(FeatureCalculator::Busyness);
-  //requestedFeatures->push_back(FeatureCalculator::Complexity);
-  //requestedFeatures->push_back(FeatureCalculator::Strength);
-
-  //typedef typename FeatureCalculator::NeighbourhoodGreyLevelDifferenceFeatureName
-  //  InternalNeighbourhoodGreyLevelDifferenceFeatureName;
-
-  //int numFeatures = requestedFeatures->size();
-  //double *features = new double[numFeatures];
-
-  //itk::VectorContainer< unsigned char, double >::Pointer featureMeans, featureStd;
-
-  //int /*offsetNum, */featureNum;
-  //typename FeatureNameVector::ConstIterator fnameIt;
-  //for (fnameIt = requestedFeatures->Begin(), featureNum = 0;
-  //  fnameIt != requestedFeatures->End(); fnameIt++, featureNum++)
-  //{
-  //  InternalNeighbourhoodGreyLevelDifferenceFeatureName tn = (InternalNeighbourhoodGreyLevelDifferenceFeatureName)fnameIt.Value();
-  //  double xx = featureFilter->GetFeature(tn);
-
-  //  features[featureNum] = xx;
-  //  featureMeans->push_back(xx);
-  //}
-
-
-  // can't directly set this->m_RequestedFeatures since it is const!
-
-  //typename FilterType::Pointer filter = FilterType::New();
-
-  //typename FilterType::OffsetVectorPointer newOffset = FilterType::OffsetVector::New();
-  //auto oldOffsets = filter->GetOffsets();
-  //auto oldOffsetsIterator = oldOffsets->Begin();
-  //while (oldOffsetsIterator != oldOffsets->End())
-  //{
-  //  bool continueOuterLoop = false;
-  //  typename FilterType::OffsetType offset = oldOffsetsIterator->Value();
-  //  for (size_t i = 0; i < TImage::ImageDimension; ++i)
-  //  {
-  //    if (/*params.m_Direction == i + 2 &&*/ offset[i] != 0)
-  //    {
-  //      continueOuterLoop = true;
-  //    }
-  //  }
-  //  oldOffsetsIterator++;
-  //  if (continueOuterLoop)
-  //    newOffset->push_back(offset);
-  //}
-  //filter->SetOffsets(newOffset);
-
-
-  //// All features are required
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-  //requestedFeatures->push_back(TextureFilterType::Coarseness);
-  //requestedFeatures->push_back(TextureFilterType::Contrast);
-  //requestedFeatures->push_back(TextureFilterType::Busyness);
-  //requestedFeatures->push_back(TextureFilterType::Complexity);
-  //requestedFeatures->push_back(TextureFilterType::Strength);
-
-  //typename MinMaxComputerType::Pointer minMaxComputer = MinMaxComputerType::New();
-  //minMaxComputer->SetImage(itkImage);
-  //minMaxComputer->Compute();
-
-  //auto duplicator_image = itk::ImageDuplicator< TImage >::New();
-  //auto duplicator_mask = itk::ImageDuplicator< TImage >::New();
-  //duplicator_image->SetInputImage(itkImage);
-  //duplicator_image->Update();
-  //duplicator_mask->SetInputImage(maskImage);
-  //duplicator_mask->Update();
-
-  //auto testimage = duplicator_image->GetOutput();
-  //auto testmask = duplicator_mask->GetOutput();
-  //filter->SetInput(testimage);
-  //filter->SetMaskImage(testmask);
-  //filter->SetRequestedFeatures(requestedFeatures);
-  ////int rangeOfPixels = m_Range;
-  //filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  //filter->SetNumberOfBinsPerAxis(m_Bins);
-
-  ////filter->SetDistanceValueMinMax(0, m_Range);
-
-  //filter->Update();
-
-  //auto featureMeans = featureFilter->GetFeatureMeans();
-  //auto featureStd = featureFilter->GetFeatureStandardDeviations();
-
-  //std::ostringstream  ss;
-  ////ss << rangeOfPixels;
-  //std::string strRange = ss.str();
-  //for (std::size_t i = 0; i < featureMeans->size(); ++i)
-  //{
-  //  switch (i)
-  //  {
-  //  case TextureFilterType::Coarseness:
-  //    featurevec["Coarsness"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Contrast:
-  //    featurevec["NeighbourContrast"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Busyness:
-  //    featurevec["Busyness"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Complexity:
-  //    featurevec["Complexity"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Strength:
-  //    featurevec["Strength"] = featureMeans->ElementAt(i);
-  //    break;
-  //  default:
-  //    break;
-  //  }
-  //}
-
 }
 
 
@@ -649,166 +391,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   for (auto const& f : temp)
   {
     featurevec[f.first] = f.second;
-    //TBD - for debugging GLSZM features
-    //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
-    //TBD - for debugging GLSZM features
   }
-  //using FilterType = itk::Statistics::EnhancedScalarImageToSizeZoneFeaturesFilter< TImage >;
-  //typedef typename FilterType::SizeZoneFeaturesFilterType TextureFilterType;
-
-  //auto filter = FilterType::New();
-  //filter->SetInput(itkImage);
-  //filter->SetMaskImage(maskImage);
-  //filter->SetInsidePixelValue(1); //maskImage thrown into CalculateGLSZM filter should have already been converted to binary (0 for outside and 1 for inside) mask image, so set inside pixel value of maskImage to 1
-  //filter->SetNumberOfBinsPerAxis(m_Bins); //for quantization of grey levels
-  //filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider); //Set the min and max(inclusive) pixel value that will be used for feature calculations.Optional; for default value see above.
-  //// All features are required
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformityNormalized);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneNonuniformityNormalized);
-  //requestedFeatures->push_back(TextureFilterType::LowGreyLevelZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::HighGreyLevelZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneLowGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneHighGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneLowGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneHighGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::ZonePercentage);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneVariance);
-  //requestedFeatures->push_back(TextureFilterType::ZoneEntropy);
-
-  //filter->SetRequestedFeatures(requestedFeatures);
-  //filter->Update();
-  ///*int rangeOfPixels = m_Range;
-  //if (rangeOfPixels < 2)
-  //rangeOfPixels = 256;
-
-  //if (params.m_UseCtRange)
-  //{
-  //filter->SetPixelValueMinMax((TPixel)(-1024.5),(TPixel)(3096.5));
-  //filter->SetNumberOfBinsPerAxis(3096.5+1024.5);
-  //} else*/
-  ////{
-  ////  filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  ////  filter->SetNumberOfBinsPerAxis(m_Bins);
-  ////}
-
-  ////filter->SetDistanceValueMinMax(0, rangeOfPixels);
-
-  ////filter->Update();
-
-  //auto featureMeans = filter->GetFeatureMeans();
-  //auto featureStd = filter->GetFeatureStandardDeviations();
-
-  //std::cout << "\n" << std::endl;
-  //for (std::size_t i = 0; i < featureMeans->size(); ++i)
-  //{
-  //  switch (i)
-  //  {
-  //  case TextureFilterType::SmallZoneEmphasis:
-  //    featurevec["ZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneEmphasis:
-  //    featurevec["LZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelNonuniformity:
-  //    featurevec["GLN_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLN_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformity:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformity_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelNonuniformityNormalized:
-  //    featurevec["GLNNorm_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLNNorm_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformityNormalized:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformityNormalized_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneNonuniformity:
-  //    featurevec["ZSN_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZSN_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformity:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformity_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneNonuniformityNormalized:
-  //    featurevec["ZSNNorm_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZSNNorm_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformityNormalized:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformityNormalized_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LowGreyLevelZoneEmphasis:
-  //    featurevec["LGZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LGZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LowGreyLevelZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LowGreyLevelZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::HighGreyLevelZoneEmphasis:
-  //    featurevec["HGZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["HGZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|HighGreyLevelZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|HighGreyLevelZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SmallZoneLowGreyLevelEmphasis:
-  //    featurevec["SZLGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZLGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneLowGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneLowGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SmallZoneHighGreyLevelEmphasis:
-  //    featurevec["SZHGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZHGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneHighGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneHighGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneLowGreyLevelEmphasis:
-  //    featurevec["LZLGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZLGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneLowGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneLowGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneHighGreyLevelEmphasis:
-  //    featurevec["LZHGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZHGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneHighGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneHighGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::ZonePercentage:
-  //    featurevec["ZP_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZP_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|ZonePercentage:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|ZonePercentage_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelVariance:
-  //    featurevec["GLV_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLV_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelVariance:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelVariance_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneVariance:
-  //    featurevec["SZV_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZV_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneVariance:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneVariance_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::ZoneEntropy:
-  //    featurevec["ZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|ZoneEntropy:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|ZoneEntropy_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  default:
-  //    break;
-  //  }
-  //}
 }
 
 
@@ -985,96 +568,6 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   featurevec["MedianAbsoluteDeviation"] = histogramStatsCalculator.GetMedianAbsoluteDeviation();
   featurevec["CoefficientOfVariation"] = histogramStatsCalculator.GetCoefficientOfVariation();
   featurevec["QuartileCoefficientOfVariation"] = histogramStatsCalculator.GetQuartileCoefficientOfDispersion();
-  /// histogram calculation from ITK -- for texture feature pipeline ends
-
-  //for (size_t i = 0; i < histogram->GetSize()[0]; i++)
-  //{
-  //  featurevec["Bin_" + std::to_string(i) + "_Frequency"] = histogram->GetFrequency(i);
-  //  featurevec["Bin_" + std::to_string(i) + "_Max"] = histogram->GetBinMax(0, i);
-  //  featurevec["Bin_" + std::to_string(i) + "_Min"] = histogram->GetBinMin(0, i);
-  //}
-
-  //const float maxRescaleVal = 1000;
-  //typedef itk::RescaleIntensityImageFilter< TImage, TImage > RescaleFilterType;
-  //typename RescaleFilterType::Pointer rescaleFilter = RescaleFilterType::New();
-  //rescaleFilter->SetInput(image);
-  //rescaleFilter->SetOutputMinimum(0);
-  //rescaleFilter->SetOutputMaximum(maxRescaleVal);
-  //rescaleFilter->Update();
-
-  //std::vector<double> intensities;
-  //itk::ImageRegionConstIterator <TImage> imageIt(rescaleFilter->GetOutput(), rescaleFilter->GetOutput()->GetLargestPossibleRegion());
-  //itk::ImageRegionConstIterator <TImage> maskIt(mask, mask->GetLargestPossibleRegion());
-  //imageIt.GoToBegin();
-  //maskIt.GoToBegin();
-
-  //while (!imageIt.IsAtEnd())
-  //{
-  //  if (maskIt.Get() > 0)
-  //    intensities.push_back(std::round(imageIt.Get()));
-  //  ++imageIt;
-  //  ++maskIt;
-  //}
-
-  ////-------------------------------
-  //double interval = maxRescaleVal / m_Bins;
-  //double final_interval = (int)(interval * 100);
-  //final_interval = (double)final_interval / 100;
-
-
-  //std::vector<double> finalBins;
-  //std::vector<std::vector<double>> Ranges;
-  //double current_index = 0;
-  //for (int i = 0; i < m_Bins; i++)
-  //{
-  //  std::vector<double> onerange;
-  //  onerange.push_back(current_index);
-  //  current_index = current_index + final_interval;
-  //  onerange.push_back(current_index);
-  //  Ranges.push_back(onerange);
-
-  //  if (static_cast<int>(Ranges.size()) == m_Bins)
-  //    Ranges[Ranges.size() - 1][1] = maxRescaleVal;
-  //}
-  ////toadd the last one
-  //for (unsigned int j = 0; j < Ranges.size(); j++)
-  //{
-  //  std::vector<double> onerange = Ranges[j];
-  //  int counter = 0;
-  //  for (unsigned int i = 0; i < intensities.size(); i++)
-  //  {
-  //    if (onerange[0] == 0)
-  //    {
-  //      if (intensities[i] >= onerange[0] && intensities[i] <= onerange[1])
-  //        counter = counter + 1;
-  //    }
-  //    else
-  //    {
-  //      if (intensities[i] > onerange[0] && intensities[i] <= onerange[1])
-  //        counter = counter + 1;
-  //    }
-  //  }
-  //  finalBins.push_back(counter);
-  //}
-  //for (unsigned int j = 0; j < finalBins.size(); j++)
-  //{
-  //  finalBins[j] = (finalBins[j] * 100) / intensities.size();
-  //  featurevec["Bin_" + std::to_string(j)] = finalBins[j];
-  //  featurevec["BinEndIntensity_" + std::to_string(j)] = Ranges[j][1];
-  //}
-
-  //HistogramFeatures< TImage > histogramCalculator;
-  //histogramCalculator.SetInputImage(image);
-  //histogramCalculator.SetInputMask(mask);
-  //histogramCalculator.SetStartingIndex(m_currentLatticeStart);
-  //histogramCalculator.SetMinimum(min);
-  //histogramCalculator.SetMaximum(min);
-  //histogramCalculator.Update();
-  //auto temp = histogramCalculator.GetOutput();
-  //for (auto const &f : temp)
-  //{
-  //  featurevec[f.first] = f.second;
-  //}
 }
 
 
@@ -1206,7 +699,6 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   }
   else if (m_QuantizationExtent == "ROI")
   {
-
     statisticsCalculatorToUse = m_statistics_local;
   }
 
@@ -1230,7 +722,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   featurevec["NinetiethPercentile"] = statisticsCalculatorToUse.GetNthPercentileElement(90);
   featurevec["InterQuartileRange"] = statisticsCalculatorToUse.GetInterQuartileRange();
   featurevec["MeanAbsoluteDeviation"] = statisticsCalculatorToUse.GetMeanAbsoluteDeviation();
-  //featurevec["RobustMeanAbsoluteDeviation1090"] = statisticsCalculatorToUse.GetRobustMeanAbsoluteDeviation(10, 90);
+  //featurevec["RobustMeanAbsoluteDeviation1090"] = statisticsCalculatorToUse.GetRobustMeanAbsoluteDeviation(10, 90); // commented because of IBSI
   featurevec["MedianAbsoluteDeviation"] = statisticsCalculatorToUse.GetMedianAbsoluteDeviation();
   featurevec["CoefficientOfVariation"] = statisticsCalculatorToUse.GetCoefficientOfVariation();
   featurevec["QuartileCoefficientOfVariation"] = statisticsCalculatorToUse.GetQuartileCoefficientOfDispersion();
@@ -1249,17 +741,38 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetPatchedImage(const type
   extractor->SetExtractionRegion(region);
   extractor->Update();
 
-  //auto temp1 = extractor->GetOutput();
-
-  //auto roiExtractor = itk::RegionOfInterestImageFilter< TImage, TImage >::New();
-  //roiExtractor->SetRegionOfInterest(region);
-  //roiExtractor->SetInput(inputImage);
-  //roiExtractor->Update();
-
-  //auto temp2 = extractor->GetOutput();
-
   return extractor->GetOutput();
 }
+
+
+template< class TImage >
+int FeatureExtraction< TImage >::GetRadiusInImageCoordinates(float radiusInWorldCoordinates)
+{
+  auto spacing = m_Mask->GetSpacing();
+  int minRad = 0;
+  for (size_t d = 0; d < TImage::ImageDimension; d++)
+  {
+    auto temp = radiusInWorldCoordinates / spacing[d];
+    auto tempRad = minRad;
+    // this is a contingency in cases where the radius has been initialized to be less than the pixel spacing
+    // or if it has been initialized as a negative number
+    if (temp < 1)
+    {
+      tempRad = 1;
+    }
+    else
+    {
+      tempRad = std::round(temp);
+    }
+
+    // we shall keep minimum calculated radius
+    if (minRad < tempRad)
+    {
+      minRad = tempRad;
+    }
+  }
+  return minRad;
+ }
 
 template< class TImage >
 void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
@@ -1293,16 +806,85 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[Radius])
         {
-          if (currentValue.find(".") != std::string::npos) // this means that the distance is float
+          auto temp = cbica::stringSplit(currentValue, ":");
+          if (temp.size() == 1) // single value calculation
           {
-            m_Radius_float = std::atof(currentValue.c_str());
-            m_Radius = -1;
+            if (currentValue.find(".") != std::string::npos) // this means that the distance is float
+            {
+              m_Radius_range.push_back(
+                GetRadiusInImageCoordinates(
+                  std::atof(currentValue.c_str())));
+            }
+            else
+            {
+              m_Radius_range.clear();
+              m_Radius_range.push_back(std::atoi(currentValue.c_str()));
+            }
           }
           else
           {
-            m_Radius = std::atoi(currentValue.c_str());
-            m_Radius_float = -1;
-          }
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+
+            std::vector< int > tempRange;
+
+            // check for world coordinates in full set
+            bool worldRadDetected = false;
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              // sanity checks
+              if (temp[i].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the radius range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[i].find("-") != std::string::npos)
+              {
+                std::cerr << "Radius cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+
+              if (temp[i].find(".") != std::string::npos) // this means that the distance is float
+              {
+                worldRadDetected = true;
+                break;
+              }
+            }
+
+            // if a single value is detected in world coordinates, process the entire set the same way
+            for (size_t i = 0; i < temp.size(); i++)
+            {
+              if (worldRadDetected)
+              {
+                tempRange.push_back(
+                  GetRadiusInImageCoordinates(
+                    std::atof(temp[i].c_str())));
+              }
+              else
+              {
+                tempRange.push_back(std::atoi(temp[i].c_str()));
+              }
+            }
+
+            int min = tempRange[0],
+              max = tempRange[2],
+              range = tempRange[1];
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Radius_range.clear();
+            // populate the full range
+            for (int rad = min; rad <= max; rad += range)
+            {
+              m_Radius_range.push_back(rad);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Neighborhood])
         {
@@ -1310,7 +892,54 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         }
         else if (outer_key == ParamsString[Bins])
         {
-          m_Bins = std::atoi(currentValue.c_str());
+          auto temp = cbica::stringSplit(currentValue, ":");
+          if (temp.size() == 1) // single value calculation
+          {
+            m_Bins_range.clear();
+            m_Bins_range.push_back(std::atoi(currentValue.c_str()));
+          }
+          else
+          {
+            // sanity check
+            if (temp.size() != 3)
+            {
+              std::cerr << "Range needs to be in the format 'Min:Step:Max'.\n";
+              exit(EXIT_FAILURE);
+            }
+            for (size_t bin = 0; bin < temp.size(); bin++)
+            {
+              // sanity checks
+              if (temp[bin].empty())
+              {
+                std::cerr << "Cannot pass an empty argument to the bin range.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find("-") != std::string::npos)
+              {
+                std::cerr << "Bins cannot be negative.\n";
+                exit(EXIT_FAILURE);
+              }
+              else if (temp[bin].find(".") != std::string::npos)
+              {
+                std::cerr << "Bins need to be integer values.\n";
+                exit(EXIT_FAILURE);
+              }
+            }
+            int min = std::atoi(temp[0].c_str()),
+              max = std::atoi(temp[2].c_str()),
+              range = std::atoi(temp[1].c_str());
+
+            if (min > max) // fail-safe in case someone passes 'Max:Step:Min'
+            {
+              std::swap(min, max);
+            }
+            m_Bins_range.clear();
+            // populate the full range
+            for (int bin = min; bin <= max; bin += range)
+            {
+              m_Bins_range.push_back(bin);
+            }
+          } // else-loop end
         }
         else if (outer_key == ParamsString[Bins_Min])
         {
@@ -1435,9 +1064,31 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
         {
           m_resamplingInterpolator_Mask = currentValue;
         }
+        else if (outer_key == ParamsString[SliceComputation])
+        {
+          if (currentValue == "1")
+          {
+            m_SliceComputation = true;
+          }
+        }
+        else if (outer_key == ParamsString[NaNHandling])
+        {
+          if (currentValue == "0")
+          {
+            m_keepNaNs = false;
+          }
+        }
         else if (outer_key == ParamsString[LBPStyle])
         {
           m_LBPStyle = std::atoi(currentValue.c_str());
+        }
+        else if (outer_key == ParamsString[MorphologicFeret])
+        {
+          auto temp = std::atoi(currentValue.c_str());
+          if (temp == 1)
+          {
+            m_morphologicCalculateFeret = true;
+          }
         }
       }
     } // end of feature parameter map iterator 
@@ -1536,7 +1187,20 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
     for (size_t i = 0; i < roi.size(); i++)
     {
       m_roi.push_back(std::atoi(roi[i].c_str()));
-      m_roiLabels.push_back(roi_labels[i]);
+    }
+    if (roi.size() == roi_labels.size()) // use roi names, when defined
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi_labels[i]);
+      }
+    }
+    else // otherwise, populate with default string values
+    {
+      for (size_t i = 0; i < roi.size(); i++)
+      {
+        m_roiLabels.push_back(roi[i]);
+      }
     }
   }
   m_algorithmDone = false;
@@ -1628,10 +1292,14 @@ void FeatureExtraction< TImage >::SetRequestedFeatures(std::map< std::string, st
       temp[paramName] = currentFeature_ParamsAndVals;
     }
 
-    m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
-      temp, // parameters and respective values
-      currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
-      std::map < std::string, double >());
+    // error check for something weird happening on UI
+    if (!currentFeature.second.empty())
+    {
+      m_Features[currentFeature.first] = std::make_tuple(selectedFeatureFlagStruct->second, // whether the feature is to be extracted or not
+        temp, // parameters and respective values
+        currentFeature.first, currentFeature.first, // these are the modality and roi label names, which get overwritten with the correct values in the "Update" function
+        std::map < std::string, double >());
+    }
   }
   m_algorithmDone = false;
 }
@@ -1660,12 +1328,14 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
   for (auto const& f : featureList)
   {
     auto roiLabelFeatureFamilyFeature = modality + "_" + label + "_" + featureFamily + "_" + f.first;
+    bool nanDetected = false;
     if (std::isnan(f.second) || (f.second != f.second))
     {
       if (m_debug)
       {
         m_logger.Write("NAN DETECTED: " + m_patientID + "_" + roiLabelFeatureFamilyFeature);
       }
+      nanDetected = true;
       //std::cerr << "NAN DETECTED: " << m_patientID + "_" + roiLabelFeatureFamilyFeature + "_" + "CenterIdx_" + m_centerIndexString << "\n";
     }
     if ((std::isinf(f.second)))
@@ -1723,15 +1393,35 @@ void FeatureExtraction< TImage >::WriteFeatures(const std::string & modality, co
     }
     else
     {
-      if (m_outputVerticallyConcatenated)
+      // if NaN has been detec and the user has asked to keep them, write the feature
+      // or if the feature has non-NaN value
+      if ((nanDetected && m_keepNaNs) || !nanDetected)
       {
-        m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
-          "," + cbica::to_string_precision(f.second) + "," + parameters + "\n";
-      }
+        if (m_outputVerticallyConcatenated)
+        {
+          auto tempParams = parameters;
+          if ((featureFamily == "GLCM") || (featureFamily == "GLRLM"))
+          {
+            if ((f.first.find("Correlation") != std::string::npos) ||
+              (f.first.find("LongRunEmphasis") != std::string::npos) ||
+              (f.first.find("GreyLevelNonuniformity") != std::string::npos) ||
+              (f.first.find("RunLengthNonuniformity") != std::string::npos) ||
+              (f.first.find("LongRunLowGreyLevelEmphasis") != std::string::npos) ||
+              (f.first.find("LongRunHighGreyLevelEmphasis") != std::string::npos) ||
+              (f.first.find("TotalRuns") != std::string::npos) ||
+              (f.first.find("RunPercentage") != std::string::npos))
+            {
+              tempParams += ": IBSI non-compliant";
+            }
+          }
+          m_finalOutputToWrite += m_patientID + "," + modality + "," + label + "," + featureFamily + "," + f.first +
+            "," + cbica::to_string_precision(f.second) + "," + tempParams + "\n";
+        }
 
-      // for training file, populate these 2 member variables
-      m_trainingFile_featureNames += roiLabelFeatureFamilyFeature + ",";
-      m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
+        // for training file, populate these 2 member variables
+        m_trainingFile_featureNames += roiLabelFeatureFamilyFeature + ",";
+        m_trainingFile_features += cbica::to_string_precision(f.second) + ",";
+      }
     }
   }
 
@@ -1902,9 +1592,9 @@ void FeatureExtraction< TImage >::Update()
 
     if (!m_maskValidated)
     {
-      TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
-      if (m_roi.size() != 0)
+      if (!m_roi.empty())
       {
+        TConstIteratorType maskIt(m_Mask, m_Mask->GetBufferedRegion());
         for (size_t x = 0; x < m_roi.size(); x++)
         {
           maskIt.GoToBegin();
@@ -2011,10 +1701,13 @@ void FeatureExtraction< TImage >::Update()
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
           m_inputImages[i] = cbica::ResampleImage< TImage >(m_inputImages[i], m_resamplingResolution, m_resamplingInterpolator_Image);
-          if (m_debug)
+          if (m_debug || m_writeIntermediateFiles)
           {
-            std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
-            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/" + m_modality[i] +
+            if (m_debug)
+            {
+              std::cout << "[DEBUG] Writing resampled image(s) to the output directory.\n";
+            }
+            cbica::WriteImage< TImage >(m_inputImages[i], cbica::normPath(m_outputPath + "/image_" + m_modality[i] +
               "_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Image +
               "_" + m_initializedTimestamp + ".nii.gz"));
           }
@@ -2027,13 +1720,23 @@ void FeatureExtraction< TImage >::Update()
           roundingFilter->Update();
           m_Mask = roundingFilter->GetOutput();
         }
-        if (m_debug)
+        if (m_debug || m_writeIntermediateFiles)
         {
-          std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          if (m_debug)
+          {
+            std::cout << "[DEBUG] Writing resampled mask to the output directory.\n";
+          }
           cbica::WriteImage< TImage >(m_Mask, cbica::normPath(m_outputPath +
             "/mask_resampled_" + std::to_string(m_resamplingResolution) + "-" + m_resamplingInterpolator_Mask + 
             "_" + m_initializedTimestamp + ".nii.gz"));
         }
+      }
+
+      // sanity check for the generated ROIs and image to ensure they are in same physical space
+      if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+      {
+        std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
+        exit(EXIT_FAILURE);
       }
 
       if (m_debug)
@@ -2065,7 +1768,7 @@ void FeatureExtraction< TImage >::Update()
       auto inputImageSize = m_Mask->GetBufferedRegion().GetSize(); // size of the (down-sampled) feature map
       auto featureMapImageSpacing = m_Mask->GetSpacing(); // spacing of the (down-sampled) feature map
                                 //auto featureMapImageSize_world = cbica::GetDistances< TImage >(m_Mask); // size of the (down-sampled) feature map in world coordinates
-
+      
       if (m_LatticeComputation && m_writeFeatureMaps) // check if writing of feature maps has been requested or not
       {
         if (m_debug)
@@ -2118,13 +1821,13 @@ void FeatureExtraction< TImage >::Update()
       }
       else
       {
-        if (!m_patchFullImageComputation)
+        if (!m_patchFullImageComputation && (allROIs.size() > m_roi.size()))
         {
           j += m_roi.size();
         }
       }
 
-      cbica::ProgressBar progressBar(allROIs.size() + m_inputImages.size());
+      cbica::ProgressBar progressBar(allROIs.size() * m_inputImages.size());
       if (!m_debug)
       {
         std::cout << "Starting computation of selected features.\n";
@@ -2214,11 +1917,19 @@ void FeatureExtraction< TImage >::Update()
             }
 
             auto temp = m_Features.find(FeatureFamilyString[Intensity]);
+            SetFeatureParam("Intensity");
             std::get<2>(temp->second) = m_modality[i];
             std::get<3>(temp->second) = allROIs[j].label;
             CalculateIntensity(m_currentNonZeroImageValues, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-            WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[Intensity], std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+            std::string currentFeatureFamily = "Intensity";
+            if (!m_Bins_range.empty() && !m_Radius_range.empty())
+            {
+              currentFeatureFamily += "_Bins-" +
+                std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+            }
+
+            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second), "N.A.", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
             if (m_debug)
             {
@@ -2231,7 +1942,7 @@ void FeatureExtraction< TImage >::Update()
           std::vector< typename TImage::Pointer > currentMask_patch_axisImages;
           if (!writeFeatureMapsAndLattice) // if not lattice image, we do the slice computation
           {
-            if (TImage::ImageDimension == 3)
+            if ((TImage::ImageDimension == 3) && m_SliceComputation)
             {
               currentMask_patch_axisImages = GetSelectedSlice(currentMask_patch);
             }
@@ -2261,14 +1972,25 @@ void FeatureExtraction< TImage >::Update()
                 {
                   auto tempT1 = std::chrono::high_resolution_clock::now();
 
+                  std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" +
+                    std::to_string(m_Bins_range[0]);
+                  if (!m_Radius_range.empty())
+                  {
+                    currentFeatureFamily += "_Radius-" + std::to_string(m_Radius_range[0]);
+                  }
+
                   //auto local_map = std::get<1>(temp->second);
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
-                  CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                  for (size_t b = 0; b < m_Bins_range.size(); b++)
+                  {
+                    m_Bins = m_Bins_range[b];
+                    auto m_Bins_string = std::to_string(m_Bins);
+                    CalculateHistogram(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
 
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Bins=" + std::to_string(m_Bins), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-
+                    WriteFeatures(m_modality[i], allROIs[j].label, std::string(currentFeatureFamily) + "_Bins-" + m_Bins_string, std::get<4>(temp->second),
+                      "Bins=" + m_Bins_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                  }
                   if (m_debug)
                   {
                     auto tempT2 = std::chrono::high_resolution_clock::now();
@@ -2292,15 +2014,23 @@ void FeatureExtraction< TImage >::Update()
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
 
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
+
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch, currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      if (!writeFeatureMapsAndLattice)
+                      if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateMorphologic<TImage>(currentInputImage_patch, currentMask_patch_axisImages[0], currentMask_patch, std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2345,16 +2075,24 @@ void FeatureExtraction< TImage >::Update()
 
                     std::get<2>(temp->second) = "ALL";
                     std::get<3>(temp->second) = allROIs[j].label;
+                    
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]);
+
+                    if (!m_Bins_range.empty() && !m_Radius_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]) + "_Radius-" + std::to_string(m_Radius_range[0]);
+                    }
 
                     if (TImage::ImageDimension == 3)
                     {
                       CalculateVolumetric<TImage>(currentMask_patch, std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                         "Axis=3D;Dimension=3D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      if (!writeFeatureMapsAndLattice)
+                      if (!writeFeatureMapsAndLattice && m_SliceComputation)
                       {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //std::string currentFeatureFamily = FeatureFamilyString[f];
                         CalculateVolumetric<TImage>(currentMask_patch_axisImages[0], std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                           "Axis=X;Dimension=2D", m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2398,42 +2136,53 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                  //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
-
-                  if (TImage::ImageDimension == 3)
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
                   {
-                    std::string currentFeatureFamily = FeatureFamilyString[f];
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                      "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                    if (!writeFeatureMapsAndLattice)
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    }
-                  }
-                  else
-                  {
-                    CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                  }
+                          CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateGLCM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateGLCM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + m_Bins_string, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2456,42 +2205,53 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                  //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
-
-                  if (TImage::ImageDimension == 3)
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
                   {
-                    std::string currentFeatureFamily = FeatureFamilyString[f];
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                      "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                    if (!writeFeatureMapsAndLattice)
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    }
-                  }
-                  else
-                  {
-                    CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                  }
+                          CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateGLRLM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateGLRLM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2514,42 +2274,53 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                  //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
-
-                  if (TImage::ImageDimension == 3)
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
                   {
-                    std::string currentFeatureFamily = FeatureFamilyString[f];
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                      "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                    if (!writeFeatureMapsAndLattice)
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    }
-                  }
-                  else
-                  {
-                    CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                  }
+                          CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateGLSZM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateGLSZM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2573,42 +2344,54 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                  //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
-
-                  if (TImage::ImageDimension == 3)
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
                   {
-                    std::string currentFeatureFamily = FeatureFamilyString[f];
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                      "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                    if (!writeFeatureMapsAndLattice)
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                        "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                        "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                      CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
-                      WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                        "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                        ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    }
-                  }
-                  else
-                  {
-                    CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                      "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                  }
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2632,47 +2415,60 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                  //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
-
-                  if (TImage::ImageDimension == 3)
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
                   {
-                    std::string currentFeatureFamily = FeatureFamilyString[f];
-                    CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
-                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                      "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                    //if (!writeFeatureMapsAndLattice)
-                    //{
-                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets_2D, std::get<4>(temp->second));
-                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                      //   "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                      // 
-                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets_2D, std::get<4>(temp->second));
-                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                      //   "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                      // 
-                      // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets_2D, std::get<4>(temp->second));
-                      // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                      //   "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                      //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
-                    //}
-                  }
-                  else
-                  {
-                    if (m_debug)
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
                     {
-                      std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
-                    }
-                    
-                    // CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
-                    // WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    //   "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
-                    //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                  }
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+
+                      if (TImage::ImageDimension == 3)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        //CalculateNGLDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        //WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                        //  "Axis=3D;Dimension=3D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        //  ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        //if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        //{
+                          // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets_2D, std::get<4>(temp->second));
+                          // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                          //   "Axis=X;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                          //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                          // 
+                          // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets_2D, std::get<4>(temp->second));
+                          // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                          //   "Axis=Y;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                          //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                          // 
+                          // CalculateNGLDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets_2D, std::get<4>(temp->second));
+                          // WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                          //   "Axis=2;Dimension=2D;Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                          //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        //}
+                      }
+                      else
+                      {
+                        if (m_debug)
+                        {
+                          std::cout << "[DEBUG] NGLDM - Not yet implemented for non-3D" << std::endl;
+                        }
+
+                        // CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets, std::get<4>(temp->second));
+                        // WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
+                        //   "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + std::to_string(m_Bins) + ";Directions=" + std::to_string(m_Direction) +
+                        //   ";Radius=" + std::to_string(m_Radius) + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2733,11 +2529,17 @@ void FeatureExtraction< TImage >::Update()
                       std::get<2>(temp->second) = m_modality[i];
                       std::get<3>(temp->second) = allROIs[j].label;
 
-                      CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                      for (size_t r = 0; r < m_Radius_range.size(); r++)
+                      {
+                        m_Radius = m_Radius_range[r];
+                        auto m_Radius_string = std::to_string(m_Radius);
 
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                        "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
-                        ";Directions=" + std::to_string(m_Direction) + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+
+                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                          "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
+                          ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      } // end radius-loop
 
                       if (m_debug)
                       {
@@ -2800,11 +2602,17 @@ void FeatureExtraction< TImage >::Update()
                       std::get<2>(temp->second) = m_modality[i];
                       std::get<3>(temp->second) = allROIs[j].label;
 
-                      CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
+                      for (size_t r = 0; r < m_Radius_range.size(); r++)
+                      {
+                        m_Radius = m_Radius_range[r];
+                        auto m_Radius_string = std::to_string(m_Radius);
 
-                      WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                        "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + std::to_string(m_Radius),
-                        m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        CalculateEdgeEnhancement(currentInputImage_patch, std::get<4>(temp->second));
+
+                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                          "ETA=" + std::to_string(m_edgesETA) + ";Epsilon=" + std::to_string(m_edgesEpsilon) + ";Radius=" + m_Radius_string,
+                          m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      } // end radius-loop
 
                       if (m_debug)
                       {
@@ -2862,10 +2670,25 @@ void FeatureExtraction< TImage >::Update()
                   std::get<2>(temp->second) = m_modality[i];
                   std::get<3>(temp->second) = allROIs[j].label;
 
-                  CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
+                  {
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
 
-                  WriteFeatures(m_modality[i], allROIs[j].label, FeatureFamilyString[f], std::get<4>(temp->second),
-                    "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + std::to_string(m_Radius) + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                    std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Radius-" 
+                      + std::to_string(m_Radius_range[r]);
+
+                    if (!m_Bins_range.empty())
+                    {
+                      currentFeatureFamily += "_Bins-" +
+                        std::to_string(m_Bins_range[0]);
+                    }
+
+                    CalculateLBP(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+
+                    WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                      "Neighborhood=" + std::to_string(m_neighborhood) + ";Radius=" + m_Radius_string + ";Style=" + std::to_string(m_LBPStyle), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                  } // end radius-loop
 
                   if (m_debug)
                   {
@@ -2892,7 +2715,6 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
-        ++progressBar; // gets it to 100%
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
@@ -2917,30 +2739,21 @@ void FeatureExtraction< TImage >::Update()
         // write the above features into m_output
         if (m_outputVerticallyConcatenated)
         {
-          std::ofstream myfile;
-          myfile.open(m_outputFile, std::ofstream::out | std::ofstream::app);
+          currentPatientModalityROIFeatureFamilyFeature = cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
 
-          cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, "_", ",");
-
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Max" +
-            "," + currentMax + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Min" +
-            "," + currentMin + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Variance" +
-            "," + currentVar + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "StdDev" +
-            "," + currentStdDev + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Skewness" +
-            "," + currentSkew + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Kurtosis" +
-            "," + currentKurt + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Mean" +
-            "," + currentMean + "," + "\n";
-          myfile << currentPatientModalityROIFeatureFamilyFeature + "Median" +
-            "," + currentMedian + "," + "\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Max," + currentMax + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Min," + currentMin + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Variance," + currentVar + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "StdDev," + currentStdDev + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Skewness," + currentSkew + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Kurtosis," + currentKurt + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Mean," + currentMean + ",\n";
+          m_finalOutputToWrite += currentPatientModalityROIFeatureFamilyFeature + "Median," + currentMedian + ",\n";
         }
         else
         {
+          currentPatientModalityROIFeatureFamilyFeature = cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, m_patientID + "_", "");
+
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Max" + ",";
           m_trainingFile_features += currentMax + ",";
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Min" + ",";
@@ -2963,7 +2776,7 @@ void FeatureExtraction< TImage >::Update()
       // write the features for training
       if (m_outputVerticallyConcatenated)
       {
-        if (!cbica::isFile(m_outputFile)) // if file is not present, write the CSV headers 
+        if (!cbica::isFile(m_outputFile)) // if file is not present & no lattice features are extracted, write the CSV headers 
         {
           m_finalOutputToWrite = "SubjectID,Modality,ROILabel,FeatureFamily,Feature,Value,Parameters\n" + m_finalOutputToWrite;
         }
@@ -3046,6 +2859,6 @@ void FeatureExtraction< TImage >::Update()
 
       auto t2 = std::chrono::high_resolution_clock::now();
       std::cout << "Total computation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
-    }
-  }
-}
+    } // end imagesAreOkay check
+  } // end algorithmDone check
+} // end update function

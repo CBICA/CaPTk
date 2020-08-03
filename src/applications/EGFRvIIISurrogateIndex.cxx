@@ -1,5 +1,4 @@
 #include "EGFRvIIISurrogateIndex.h"
-//#include "CAPTk.h"
 #include "cbicaCmdParser.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKSafeImageIO.h"
@@ -7,9 +6,8 @@
 int main(int argc, char **argv)
 {
   auto parser = cbica::CmdParser(argc, argv, "EGFRvIIISurrogateIndex");
-  parser.addRequiredParameter("i", "image", cbica::Parameter::FILE, "NIfTI or DICOM", "Input Perfusion image on which computation is done");
-  parser.addRequiredParameter("m", "mask", cbica::Parameter::FILE, "NIfTI or DICOM", "Mask containing near (1) and far (2) labels");
-  //parser.exampleUsage("EGFRvIIISurrogateIndex -i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz");
+  parser.addRequiredParameter("i", "image", cbica::Parameter::FILE, "NIfTI", "Input Perfusion image on which computation is done");
+  parser.addRequiredParameter("m", "mask", cbica::Parameter::FILE, "NIfTI", "Mask containing near (1) and far (2) labels");
   parser.addExampleUsage("-i DSC-MRI_data.nii.gz -m Near_Far_masks.nii.gz",
     "Based on the near-far mask and input DSC MRI data, the PHI index is calculated");
   parser.addApplicationDescription("Peritumoral Heterogeneity Index calculator");
@@ -37,29 +35,30 @@ int main(int argc, char **argv)
   auto perfusionImage = cbica::ReadImage< ImageTypePerfusion >(inputFile);
   auto mask = cbica::ReadImage< ImageType >(drawingFile);
 
-  std::vector<ImageType::Pointer> Perfusion_Registered;
   std::vector<ImageType::IndexType> nearIndices, farIndices;
 
   itk::ImageRegionIteratorWithIndex< ImageType > maskIt(mask, mask->GetLargestPossibleRegion());
   for (maskIt.GoToBegin(); !maskIt.IsAtEnd(); ++maskIt)
   {
     if (maskIt.Get() == 1)
-    {
       nearIndices.push_back(maskIt.GetIndex());
-    }
     else if (maskIt.Get() == 2)
       farIndices.push_back(maskIt.GetIndex());
   }
-
+  if (nearIndices.size()==0)
+  {
+    std::cerr << "Mask file does not have near indices with label=1. \n";
+    return EXIT_FAILURE;
+  }
+  if (farIndices.size() == 0)
+  {
+    std::cerr << "Mask file does not have far indices with label=2. \n";
+    return EXIT_FAILURE;
+  }
   EGFRStatusPredictor egfrEstimator;
   auto extension = cbica::getFilenameExtension(inputFile);
   std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-  int imageType = CAPTK::ImageExtension::NIfTI; // default 
-  if (cbica::IsDicom(inputFile))
-  {
-    imageType = CAPTK::ImageExtension::DICOM;
-  }
-  auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, Perfusion_Registered, nearIndices, farIndices, imageType);
+  auto EGFRStatusParams = egfrEstimator.PredictEGFRStatus< ImageType, ImageTypePerfusion >(perfusionImage, nearIndices, farIndices);
 
   std::cout << "Printing results...\n\n";
   std::cout << "PHI Value = " << EGFRStatusParams[0] << "\n";

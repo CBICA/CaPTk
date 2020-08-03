@@ -21,5 +21,9 @@ RUN cd CaPTk/bin; \
 # cleanup
 RUN rm -rf CaPTk/bin/binaries_linux.zip
 
+# set up the docker for GUI
+ENV QT_X11_NO_MITSHM=1
+ENV QT_GRAPHICSSYSTEM="native"
+
 # define entry point
 ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]

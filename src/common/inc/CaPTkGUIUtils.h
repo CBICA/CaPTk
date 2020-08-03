@@ -9,6 +9,9 @@
 #include <QCoreApplication>
 #include "qdesktopservices.h"
 
+#include "yaml-cpp/node/node.h"
+#include "yaml-cpp/yaml.h"
+
 static QString IMAGES_EXTENSIONS = "Images (*.nii.gz *.nii *.dcm)";
 
 inline void fixComboBox(QComboBox *comboBoxToEdit)
@@ -102,7 +105,7 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
 {
   QFileDialog fileDialog;
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  QString directory = fileDialog.getExistingDirectory(parent, "Open Directory", inputPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString directory = fileDialog.getExistingDirectory(parent, "Open Directory", inputPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   if (!directory.isNull())
   {
@@ -136,7 +139,7 @@ inline QString getExistingFile(QWidget *parent, const QString inputPath, const Q
 {
   QFileDialog fileDialog;
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  QString filename = fileDialog.getOpenFileName(parent, "Select File", inputPath, extensions, 0, QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString filename = fileDialog.getOpenFileName(parent, "Select File", inputPath, extensions, 0, QFileDialog::DontResolveSymlinks);
 
   if (!filename.isNull())
   {
@@ -174,7 +177,7 @@ inline QString getSaveFile(QWidget *parent, const QString inputPath, const QStri
 {
   QFileDialog fileDialog(parent, "Save File", inputPath, extensions);
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  fileDialog.setOptions(QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  fileDialog.setOptions(QFileDialog::DontResolveSymlinks);
   fileDialog.selectFile(defaultFileName);
   fileDialog.setFileMode(QFileDialog::AnyFile);
   fileDialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -201,7 +204,6 @@ inline QString getSaveFile(QWidget *parent, const std::string inputPath, const s
 {
   return getSaveFile(parent, QString(inputPath.c_str()), QString(defaultFileName.c_str()), QString(extensions.c_str()));
 }
-
 
 /**
 \brief Get full path of the executable from the application name
@@ -265,7 +267,7 @@ inline std::string getApplicationPath(std::string appName)
   individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/" + appName + "/");
   if (appName.find("deepMedic") != std::string::npos)
   {
-    individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/deepmedic/");
+    individualAppDir = cbica::normPath(std::string(PROJECT_BINARY_DIR) + "/deepMedicInference/");
   }
   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
   {
@@ -313,4 +315,13 @@ inline std::string getCaPTkDataDir()
 inline bool openLink(const std::string &link)
 {
   return QDesktopServices::openUrl(QUrl(link.c_str()));
+}
+
+//! get download link
+inline std::string getAppropriateDownloadLink(const std::string &application, const std::string &type)
+{
+  YAML::Node m_downloadLinks;
+  m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  return m_downloadLinks["inputs"][application][type].as<std::string>();
 }

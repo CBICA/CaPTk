@@ -589,8 +589,22 @@ namespace cbica
   \brief Find all files inside a directory
 
   \param dirName The directory to do the search in
+  \param returnFullPath Return full path or not
   */
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath = true);
+
+  /**
+  \brief Find all files inside a directory
+
+  \param dirName The directory to do the search in
+  \param filePattern String pattern to look for in file
+  \param fileExtension String pattern to look for in file extension; for files with no extension, pass ""
+  \param recurse Do a recursive search or not
+  \param returnFullPath Return full path or not
+  */
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension, bool recurse = true,
+    bool returnFullPath = true);
 
   /**
   \brief Find all sub-directories inside a directory
@@ -786,8 +800,22 @@ namespace cbica
   \brief Ensuring files written using Windows don't mess stuff up
 
   Base implementation from https://www.digitalpeer.com/blog/simple-text-processing-with-cpp-dos2unix-example
+
+  \param inputFile The Input file that needs to be fixed
+  \param outputDir The location to put the output file
+  \return The full path the new file
   */
-  void dos2unix(const std::string inputFile);
+  std::string dos2unix(const std::string &inputFile, const std::string outputDir);
+
+  /**
+  \brief Ensuring files written using Windows don't mess stuff up
+
+  Base implementation from https://www.digitalpeer.com/blog/simple-text-processing-with-cpp-dos2unix-example
+
+  \param inputFile The Input file that needs to be fixed
+  \param outputFile The absolute path of output file
+  */
+  void dos2unixFile(const std::string &inputFile, const std::string outputFile);
 
   //==================================== Template stuff ==================================//
 

@@ -1,9 +1,10 @@
 var Technical_Reference =
 [
     [ "Feature Extraction", "tr_FeatureExtraction.html", [
-      [ "Defaults", "tr_FeatureExtraction.html#tr_fe_defaults", [
-        [ "Main Default Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_main", null ],
-        [ "Lattice Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_lattice", null ]
+      [ "Pre-Existing Parameter Configurations", "tr_FeatureExtraction.html#tr_fe_defaults", [
+        [ "Default 3D Image Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_main", null ],
+        [ "Default 2D Image Feature Extraction Parameters", "tr_FeatureExtraction.html#tr_fe_def_lattice", null ],
+        [ "Customizing Parameters", "tr_FeatureExtraction.html#tr_fe_customization", null ]
       ] ],
       [ "Batch Mode", "tr_FeatureExtraction.html#tr_fe_batch", null ],
       [ "Extracted Features", "tr_FeatureExtraction.html#tr_fe_math", null ]

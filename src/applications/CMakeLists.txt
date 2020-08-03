@@ -313,6 +313,61 @@ FOREACH(subdir ${SUBDIRECTORIES})
     #  INSTALL(DIRECTORY "${SUBDIRPATH}/saved_models" DESTINATION data/deepMedic)
     #ENDIF()
 
+    ### this should be removed and put in with application decoupling
+    ## this is a TEMPORARY work-around until https://github.com/CBICA/CaPTk/pull/1043 is merged
+    SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/deepMedicInference_${PLATFORM_STRING}.zip" )
+    SET( FILENAME_TO_EXTRACT "deepMedicInference_${PLATFORM_STRING}")
+    SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
+    
+    SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/deepMedicInference )
+    
+    IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
+    
+      IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+    
+        # do not re-download if the LFS fetch worked
+        IF(NOT EXISTS ${FILE_TO_EXTRACT})
+          # download exe from url
+          MESSAGE( STATUS "Downloading pre-compiled deepMedicInference" )
+          FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+          IF(NOT STATUS_CODE EQUAL 0)
+            MESSAGE(FATAL_ERROR "Failed to download Precompiled deepMedicInference. Status=${STATUS_CODE}")
+          ENDIF()
+        ENDIF()
+      ENDIF()
+    
+      FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
+    
+      MESSAGE( STATUS "Extracting pre-compiled deepMedicInference" )
+      IF( EXISTS "${FILE_TO_EXTRACT}" )
+    
+        EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
+          WORKING_DIRECTORY ${DOWNLOADED_APPS_DIR}
+          RESULT_VARIABLE RESULT_CODE
+        )
+    
+        IF(NOT RESULT_CODE EQUAL 0)
+          MESSAGE( WARNING "Extracting the pre-compiled deepMedicInference failed" )
+        ENDIF()
+    
+      ENDIF()
+    ENDIF()
+    
+    FILE(GLOB DMInferenceEXE "${DOWNLOADED_APPS_DIR}/*")
+    
+    IF(APPLE)
+    INSTALL(FILES ${DMInferenceEXE}
+      DESTINATION ${EXE_NAME}.app/Contents/Resources/bin
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+    ELSE()
+    INSTALL(FILES ${DMInferenceEXE}
+      DESTINATION bin
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+    ENDIF()
+    ### this should be removed and put in with application decoupling
+
     IF(WIN32)
       INSTALL(FILES ${SUBDIRPATH}/deepMedicRun.exe
         DESTINATION bin
@@ -384,6 +439,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       ENDIF()
       
       INSTALL(CODE "execute_process(COMMAND dos2unix ${SUBDIRPATH}/bin/libra)")
+      INSTALL(CODE "execute_process(COMMAND chmod 755 matlab_helper ${SUBDIRPATH}/MCR/v84/bin/glnxa64/matlab_helper)")
       INSTALL(FILES ${SUBDIRPATH}/bin/libra
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -395,7 +451,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
       INSTALL(DIRECTORY ${SUBDIRPATH}/MCR
         DESTINATION libexec
         # PATTERN "bin/glnxa64/matlab_helper" EXCLUDE
-        #USE_SOURCE_PERMISSIONS
+        USE_SOURCE_PERMISSIONS
       )
     ENDIF()
 
@@ -427,22 +483,35 @@ FOREACH(subdir ${SUBDIRECTORIES})
         #PATTERN "*.*"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
       )
-      #FILE(GLOB allFiles ${SUBDIRPATH}/lib/snap-3.6.0-rc1/*.*)
-      #INSTALL(FILES ${allFiles}
-      #  DESTINATION lib/snap-3.6.0-rc1
-        #FILES_MATCHING
-        #PATTERN "*.*"
-        #PATTERN ".svn" EXCLUDE
-      #  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      #)
-      INSTALL(DIRECTORY ${SUBDIRPATH}/lib/snap-3.8.0-beta
-        DESTINATION lib
-        # USE_SOURCE_PERMISSIONS
-        #FILES_MATCHING
-        #PATTERN "*.*"
-        #PATTERN ".svn" EXCLUDE
-        #PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      )
+      SUBDIRLIST(SUBDIRECTORIES ${SUBDIRPATH}/lib)
+      # MESSAGE("[DEBUG] ItkSnap subdirs:${SUBDIRECTORIES}")
+      FOREACH(itkSnapLib ${SUBDIRECTORIES})
+
+        SUBDIRLIST(SUBDIRECTORIES_SNAP ${SUBDIRPATH}/lib/${itkSnapLib})
+
+        # install all directories inside
+        FOREACH(itkSnapLib_subDirs ${SUBDIRECTORIES_SNAP})
+          INSTALL(DIRECTORY ${SUBDIRPATH}/lib/${itkSnapLib}/${itkSnapLib_subDirs}
+           DESTINATION lib/${itkSnapLib}
+           DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
+        
+        # find stand-alone files and install them separately
+        FILE( GLOB FILES_SNAP
+          LIST_DIRECTORIES FALSE
+          "${SUBDIRPATH}/lib/${itkSnapLib}/*"
+        )
+
+        FOREACH(itkSnapLib_files ${FILES_SNAP})
+          INSTALL(
+            FILES ${itkSnapLib_files}
+            DESTINATION lib/${itkSnapLib}
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+          )
+        ENDFOREACH()
+
+      ENDFOREACH()
     ENDIF()
 
   ENDIF()

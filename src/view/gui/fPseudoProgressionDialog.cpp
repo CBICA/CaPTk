@@ -115,17 +115,22 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
       ShowErrorMessage("Please specify the directory of SVM model.");
       return;
     }
-    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SVM_Model.xml") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SVM_Model.xml") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Mean.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Std.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SelectedFeatures.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_Others.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_Others.csv") && 
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
-      emit ExistingModelBasedPseudoprogressionEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+	if (cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SVM_Model.xml") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SVM_Model.xml") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Mean.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_ZScore_Std.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PSU_SelectedFeatures.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/REC_SelectedFeatures.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_Others.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_Others.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
+	{
+		confirmButton->setText("In Progress...");
+		confirmButton->repaint(); // Necessary to get the button to refresh appearance before the next statement. update() is not sufficient.
+		emit ExistingModelBasedPseudoprogressionEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+		confirmButton->setText("Confirm");
+	}
     else
     {
       ShowErrorMessage("The specified directory does not have model files.");
@@ -133,7 +138,12 @@ void fPseudoProgressionDialog::ConfirmButtonPressed()
     }
   }
   else
-    emit TrainNewPseudoModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+  {
+	  confirmButton->setText("In Progress...");
+	  confirmButton->repaint(); // Necessary to get the button to refresh appearance before the next statement.  update() is not sufficient.
+	  emit TrainNewPseudoModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString(), true, true, true, true);
+	  confirmButton->setText("Confirm");
+  } 
   this->close();
 }
 
@@ -264,15 +274,11 @@ void fPseudoProgressionDialog::CheckForDisclaimer()
   QCoreApplication::processEvents();
   if (box->exec() == QMessageBox::Ok)
   {
-    std::string path = captk_currentApplicationPath;
-    path = path.substr(0, path.length() - 3);
-    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PseudoProgressionEstimator_PretrainedModel.zip";
+    cbica::Logging(loggerFile, m_trainedModelLink);
 
-    cbica::Logging(loggerFile, link);
+    //ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(link))
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink(m_trainedModelLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;

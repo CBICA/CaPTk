@@ -22,12 +22,20 @@ fEGFRvIIIPredictor::fEGFRvIIIPredictor()
 
   disclaimerLabel->setText("You can find a pretrained model, based on a study at PENN, ");
   //rdExistingClassification->setEnabled(false);
-  //rdExistingClassification->setChecked(true);
-  rdCreateModel->setChecked(true);
-  NewModelRadioButtonChecked();
+  rdExistingClassification->setChecked(true); // force testing
+  rdExistingClassification->setVisible(false); // hide radio button
+
+  ExistingClassificationRadioButtonChecked();
   
-  //existingMaskDirectoryName->setEnabled(false);
-  //existingMasksButton->setEnabled(false);
+  // Explicitly disable training.
+  existingMaskDirectoryName->setEnabled(false);
+  existingMasksButton->setEnabled(false);
+  rdCreateModel->setEnabled(false);
+  existingMaskDirectoryName->setVisible(false);
+  existingMasksButton->setVisible(false);
+  rdCreateModel->setVisible(false);
+  trainingDirectoryLabel->setVisible(false);
+
 }
 fEGFRvIIIPredictor::~fEGFRvIIIPredictor()
 {
@@ -44,7 +52,7 @@ void fEGFRvIIIPredictor::ConfirmButtonPressed()
     svmModelFileName->setEnabled(true);
     testSubjectsDirectoryButton->setEnabled(true);
     testSubjectsDirectoryName->setEnabled(true);
- 
+
 	//--------------SVM model directory--------------------
     //if (svmModelFileName->text().isEmpty())
     //{
@@ -205,22 +213,19 @@ void fEGFRvIIIPredictor::CheckForDisclaimer()
 
   if (box->exec() == QMessageBox::Ok)
   {
-    std::string path = captk_currentApplicationPath;
-    path = path.substr(0, path.length() - 3);
-    std::string link = "ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIIIndexPredictor_PretrainedModel.zip";
-    cbica::Logging(loggerFile, link);
+    cbica::Logging(loggerFile, m_trainedModelLink);
 
     //ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
 
-    if /*(std::system((link).c_str()) != 0)*/ (!openLink(link))
+    if /*(std::system((link).c_str()) != 0)*/ (!openLink(m_trainedModelLink))
     {
       ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
       return;
     }
     else
     {
-      std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, this);
+      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+      //ShowMessage(dataMessage, this);
       return;
     }
   }

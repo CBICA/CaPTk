@@ -1,10 +1,8 @@
 /**
 \file  PerfusionDerivatives.cpp
-
 \brief The source file containing the PerfusionDerivatives class, used to calculate PSR, RCBV, and PH
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
-
 https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
