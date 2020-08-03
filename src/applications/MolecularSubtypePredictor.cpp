@@ -188,9 +188,8 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 
   WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, StringFeatureLabels, outputdirectory + "/RawFeatures.csv");
 
-  std::cout << std::endl << "Building model....." << std::endl;
   VariableSizeMatrixType scaledFeatureSet;
-  scaledFeatureSet.SetSize(qualifiedsubjects.size(), 161);
+  scaledFeatureSet.SetSize(qualifiedsubjects.size(), MOLECULAR_NO_OF_FEATURES);
   VariableLengthVectorType meanVector;
   VariableLengthVectorType stdVector;
   mFeatureScalingLocalPtr.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
@@ -200,62 +199,11 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
       if (std::isnan(scaledFeatureSet(i, j)))
         scaledFeatureSet(i, j) = 0;
 
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
-
-  //VariableSizeMatrixType ScaledFeatureSetAfterAddingAge;
-  //ScaledFeatureSetAfterAddingAge.SetSize(scaledFeatureSet.Rows(), scaledFeatureSet.Cols() + 1);
-  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
-  //{
-  //  ScaledFeatureSetAfterAddingAge(i, 0) = ages[i]; 
-  //  for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-  //  {
-  //    ScaledFeatureSetAfterAddingAge(i, j+1) = scaledFeatureSet(i, j);
-  //  }
-  //}
-  //
-  //  //readerMean->SetFileName("scaledfeatures.csv");
-  //  //readerMean->SetFieldDelimiterCharacter(',');
-  //  //readerMean->HasColumnHeadersOff();
-  //  //readerMean->HasRowHeadersOff();
-  //  //readerMean->Parse();
-  //  ////typedef vnl_matrix<double> MatrixType;
-  //  //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-  //
-  //  //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-  //  //  for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-  //  //    scaledFeatureSet(i, j) = dataMatrix(i, j);
-  //  //{
-  //  //  ages.push_back(dataMatrix(i, 0));
-  //  //  survival.push_back(dataMatrix(i, 1));
-  //  //}
-  //
-  ////-----------------------writing in files to compare results------------------------------
-  //typedef vnl_matrix<double> MatrixType;
-  //MatrixType data;
-  //  //data.set_size(105, 169);
-  //  //for (unsigned int i = 0; i < scaledFeatureSet.Rows(); i++)
-  //  //{
-  //  //  for (unsigned int j = 0; j < scaledFeatureSet.Cols(); j++)
-  //  //  {
-  //  //    data(i, j) = scaledFeatureSet(i, j);
-  //  //  }
-  //  //}
-  //  //typedef itk::CSVNumericObjectFileWriter<double, 105, 169> WriterTypeMatrix;
-  //  //WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  //  //writermatrix->SetFileName(outputdirectory + "/scaledfeatures.csv");
-  //  //writermatrix->SetInput(&data);
-  //  //writermatrix->Write();  
-  //  
-  VariableSizeMatrixType proneuralModelFeatures;
-  VariableSizeMatrixType neuralModelFeatures;
-  VariableSizeMatrixType classicalModelFeatures;
-  VariableSizeMatrixType messenchymalModelFeatures;
-  mFeatureExtractionLocalPtr.FormulateMolecularTrainingData(scaledFeatureSet, AllSurvival, proneuralModelFeatures, neuralModelFeatures, messenchymalModelFeatures, classicalModelFeatures);
-
   try
   {
-    WriteCSVFiles(meanVector, outputdirectory + "/Molecular_ZScore_Mean.csv");
-    WriteCSVFiles(stdVector, outputdirectory + "/Molecular_ZScore_Std.csv");
+    WriteCSVFilesWithHorizontalAndVerticalHeaders(scaledFeatureSet, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
+    WriteCSVFiles(meanVector, outputdirectory + "/Molecular_ZScore_Mean.csv",true);
+    WriteCSVFiles(stdVector, outputdirectory + "/Molecular_ZScore_Std.csv",true);
   }
   catch (const std::exception& e1)
   {
@@ -263,75 +211,116 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
 	  return false;
   }
 
-  //  //---------------------------------------------------------------------------
-  // VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(SixModelFeatures);
-  //  VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(EighteenModelFeatures);
-  //MatrixType data;
-  // data.set_size(30, 21);
-  // for (unsigned int i = 0; i < SixModelSelectedFeatures.Rows(); i++)
-  // {
-  //   for (unsigned int j = 0; j < SixModelSelectedFeatures.Cols(); j++)
-  //   {
-  //     data(i, j) = SixModelSelectedFeatures(i, j);
-  //   }
-  // }
-  // typedef itk::CSVNumericObjectFileWriter<double, 30,21> WriterTypeMatrix;
-  // WriterTypeMatrix::Pointer writermatrix = WriterTypeMatrix::New();
-  // writermatrix->SetFileName(outputdirectory + "/sixmodel.csv");
-  // writermatrix->SetInput(&data);
-  // writermatrix->Write();
+  VectorDouble proneuralModelLabels, neuralModelLabels, messModelLabels, classicalModelLabels;
+  mFeatureExtractionLocalPtr.FormulateMolecularTrainingData(AllSurvival, proneuralModelLabels, neuralModelLabels, messModelLabels, classicalModelLabels);
 
+  //select model features using routines of training module
+  TrainingModule mTrainingModule;
+  VectorDouble selectedfeatures_Proneural, selectedfeatures_Neural, selectedfeatures_Mess, selectedfeatures_Classical;
+  
+  VectorDouble EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, proneuralModelLabels);
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+    EffectSize[eSizeCounter] = std::abs(EffectSize[eSizeCounter]);
+  std::vector<size_t> indices = mTrainingModule.sort_indexes(EffectSize);
+  for (int index = 0; index < indices.size()*0.2; index++)
+    selectedfeatures_Proneural.push_back(indices[index]);
 
-  // for (unsigned int i = 0; i < EighteenModelSelectedFeatures.Rows(); i++)
-  // {
-  //   for (unsigned int j = 0; j < EighteenModelSelectedFeatures.Cols(); j++)
-  //   {
-  //     data(i, j) = EighteenModelSelectedFeatures(i, j);
-  //   }
-  // }
-  // typedef itk::CSVNumericObjectFileWriter<double, 30,21> WriterTypeMatrix2;
-  // WriterTypeMatrix2::Pointer writermatrix2 = WriterTypeMatrix2::New();
-  // writermatrix2->SetFileName(outputdirectory + "/eighteenmodel.csv");
-  // writermatrix2->SetInput(&data);
-  // writermatrix2->Write();
-  //
-  //   //--------------------------------------read whole new data for training---------------------------------
-  //VariableSizeMatrixType SixModelDataFromMatlab;
-  //VariableSizeMatrixType EighteenModelDataFromMatlab;
+  EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, neuralModelLabels);
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+    EffectSize[eSizeCounter] = std::abs(EffectSize[eSizeCounter]);
+  indices = mTrainingModule.sort_indexes(EffectSize);
+  for (int index = 0; index < indices.size()*0.2; index++)
+    selectedfeatures_Neural.push_back(indices[index]);
 
-  //readerMean->SetFileName("E:/CapTKApplications/Survival/newmatlabwork/SixModelData.csv");
-  //readerMean->SetFieldDelimiterCharacter(',');
-  //readerMean->HasColumnHeadersOff();
-  //readerMean->HasRowHeadersOff();
-  //readerMean->Parse();
-  ////typedef vnl_matrix<double> MatrixType;
-  //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-  //SixModelDataFromMatlab.SetSize(dataMatrix.rows(), dataMatrix.cols());
+  EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, messModelLabels);
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+    EffectSize[eSizeCounter] = std::abs(EffectSize[eSizeCounter]);
+  indices = mTrainingModule.sort_indexes(EffectSize);
+  for (int index = 0; index < indices.size()*0.2; index++)
+    selectedfeatures_Mess.push_back(indices[index]);
 
-  //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-  //{
-  //  for (int j = 0; j < dataMatrix.cols(); j++)
-  //    SixModelDataFromMatlab(i, j) = dataMatrix(i, j);
-  //}
+  EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, classicalModelLabels);
+  for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
+    EffectSize[eSizeCounter] = std::abs(EffectSize[eSizeCounter]);
+  indices = mTrainingModule.sort_indexes(EffectSize);
+  for (int index = 0; index < indices.size()*0.2; index++)
+    selectedfeatures_Classical.push_back(indices[index]);
 
-  //readerMean->SetFileName("E:/CapTKApplications/Survival/newmatlabwork/EighteenModelData.csv");
-  //readerMean->SetFieldDelimiterCharacter(',');
-  //readerMean->HasColumnHeadersOff();
-  //readerMean->HasRowHeadersOff();
-  //readerMean->Parse();
-  ////typedef vnl_matrix<double> MatrixType;
-  //dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-  //EighteenModelDataFromMatlab.SetSize(dataMatrix.rows(), dataMatrix.cols());
-  //for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-  //  for (int j = 0; j < dataMatrix.cols(); j++)
-  //    EighteenModelDataFromMatlab(i, j) = dataMatrix(i, j);
+  WriteCSVFiles(selectedfeatures_Proneural, outputdirectory + "/Molecular_SelectedFeatures_Proneural.csv", true);
+  WriteCSVFiles(selectedfeatures_Neural, outputdirectory + "/Molecular_SelectedFeatures_Neural.csv", true);
+  WriteCSVFiles(selectedfeatures_Mess, outputdirectory + "/Molecular_SelectedFeatures_Messenchymal.csv", true);  
+  WriteCSVFiles(selectedfeatures_Classical, outputdirectory + "/Molecular_SelectedFeatures_Classical.csv", true);
 
+  VariableSizeMatrixType ProneuralSelectedFeatures = SelectModelFeatures(scaledFeatureSet, selectedfeatures_Proneural);
+  VariableSizeMatrixType NeuralSelectedFeatures = SelectModelFeatures(scaledFeatureSet, selectedfeatures_Neural);
+  VariableSizeMatrixType MessSelectedFeatures = SelectModelFeatures(scaledFeatureSet, selectedfeatures_Mess);
+  VariableSizeMatrixType ClassicalSelectedFeatures = SelectModelFeatures(scaledFeatureSet, selectedfeatures_Classical);
+
+  //writing selected model features
+  std::vector<std::string> SelectedFeatureLabels_Proneural, SelectedFeatureLabels_Neural, SelectedFeatureLabels_Mess, SelectedFeatureLabels_Classical;
+  for (int index = 0; index < selectedfeatures_Proneural.size(); index++)
+  {
+    int currentindex = selectedfeatures_Proneural[index];
+    SelectedFeatureLabels_Proneural.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_Neural.size(); index++)
+  {
+    int currentindex = selectedfeatures_Neural[index];
+    SelectedFeatureLabels_Neural.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_Mess.size(); index++)
+  {
+    int currentindex = selectedfeatures_Mess[index];
+    SelectedFeatureLabels_Mess.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < selectedfeatures_Classical.size(); index++)
+  {
+    int currentindex = selectedfeatures_Classical[index];
+    SelectedFeatureLabels_Classical.push_back(FeatureLabels[currentindex]);
+  }
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ProneuralSelectedFeatures, patient_ids, SelectedFeatureLabels_Proneural, outputdirectory + "/SelectedFeatures_Proneural.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(NeuralSelectedFeatures, patient_ids, SelectedFeatureLabels_Neural, outputdirectory + "/SelectedFeatures_Neural.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(MessSelectedFeatures, patient_ids, SelectedFeatureLabels_Mess, outputdirectory + "/SelectedFeatures_Messenchymal.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ClassicalSelectedFeatures, patient_ids, SelectedFeatureLabels_Classical, outputdirectory + "/SelectedFeatures_Classical.csv");
+
+  //append labels to model features as the training function expects labels in the last column
+  VariableSizeMatrixType finaldatamatrix_Proneural, finaldatamatrix_Neural, finaldatamatrix_Mess, finaldatamatrix_Classical;
+  finaldatamatrix_Proneural.SetSize(ProneuralSelectedFeatures.Rows(), ProneuralSelectedFeatures.Cols() + 1);
+  finaldatamatrix_Neural.SetSize(NeuralSelectedFeatures.Rows(), NeuralSelectedFeatures.Cols() + 1);
+  finaldatamatrix_Mess.SetSize(MessSelectedFeatures.Rows(), MessSelectedFeatures.Cols() + 1);
+  finaldatamatrix_Classical.SetSize(ClassicalSelectedFeatures.Rows(), ClassicalSelectedFeatures.Cols() + 1);
+
+  for (unsigned int i = 0; i < finaldatamatrix_Proneural.Rows(); i++)
+  {
+    for (unsigned int j = 0; j < finaldatamatrix_Proneural.Cols() - 1; j++)
+      finaldatamatrix_Proneural(i, j) = ProneuralSelectedFeatures(i, j);
+    finaldatamatrix_Proneural(i, finaldatamatrix_Proneural.Cols() - 1) = proneuralModelLabels[i];
+  }
+  for (unsigned int i = 0; i < finaldatamatrix_Neural.Rows(); i++)
+  {
+    for (unsigned int j = 0; j < finaldatamatrix_Neural.Cols() - 1; j++)
+      finaldatamatrix_Neural(i, j) = NeuralSelectedFeatures(i, j);
+    finaldatamatrix_Neural(i, finaldatamatrix_Neural.Cols() - 1) = neuralModelLabels[i];
+  }
+  for (unsigned int i = 0; i < finaldatamatrix_Mess.Rows(); i++)
+  {
+    for (unsigned int j = 0; j < finaldatamatrix_Mess.Cols() - 1; j++)
+      finaldatamatrix_Mess(i, j) = MessSelectedFeatures(i, j);
+    finaldatamatrix_Mess(i, finaldatamatrix_Mess.Cols() - 1) = messModelLabels[i];
+  }
+  for (unsigned int i = 0; i < finaldatamatrix_Classical.Rows(); i++)
+  {
+    for (unsigned int j = 0; j < finaldatamatrix_Classical.Cols() - 1; j++)
+      finaldatamatrix_Classical(i, j) = ClassicalSelectedFeatures(i, j);
+    finaldatamatrix_Classical(i, finaldatamatrix_Classical.Cols() - 1) = classicalModelLabels[i];
+  }
+  std::cout << std::endl << "Building model....." << std::endl;
   try
   {
-    trainOpenCVSVM(neuralModelFeatures, outputdirectory + "/" + mNeuralTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
-    trainOpenCVSVM(proneuralModelFeatures, outputdirectory + "/" + mProneuralTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
-    trainOpenCVSVM(classicalModelFeatures, outputdirectory + "/" + mClassicalTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
-    trainOpenCVSVM(messenchymalModelFeatures, outputdirectory + "/" + mMessenchymalTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+    trainOpenCVSVM(finaldatamatrix_Proneural, outputdirectory + "/" + mNeuralTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+    trainOpenCVSVM(finaldatamatrix_Neural, outputdirectory + "/" + mProneuralTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+    trainOpenCVSVM(finaldatamatrix_Mess, outputdirectory + "/" + mClassicalTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
+    trainOpenCVSVM(finaldatamatrix_Classical, outputdirectory + "/" + mMessenchymalTrainedFile, false, CAPTK::ApplicationCallingSVM::Survival);
   }
   catch (const std::exception& e1)
   {
@@ -476,7 +465,75 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 	  logger.WriteError("Error in reading the file: " + modeldirectory + "/Molecular_ZScore_Std.csv. Error code : " + std::string(e1.what()));
 	  return results;
   }
-
+  VariableLengthVectorType features_Proneural, features_Neural, features_Mess, features_Classical;
+  try
+  {
+    reader->SetFileName(modeldirectory + "/Molecular_SelectedFeatures_Proneural.csv");
+    reader->SetFieldDelimiterCharacter(',');
+    reader->HasColumnHeadersOff();
+    reader->HasRowHeadersOff();
+    reader->Parse();
+    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    features_Proneural.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      features_Proneural[i] = dataMatrix(i, 0);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading the file: " + modeldirectory + "/Molecular_SelectedFeatures_Proneural.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
+  try
+  {
+    reader->SetFileName(modeldirectory + "/Molecular_SelectedFeatures_Neural.csv");
+    reader->SetFieldDelimiterCharacter(',');
+    reader->HasColumnHeadersOff();
+    reader->HasRowHeadersOff();
+    reader->Parse();
+    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    features_Neural.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      features_Neural[i] = dataMatrix(i, 0);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading the file: " + modeldirectory + "/Molecular_SelectedFeatures_Neural.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
+  try
+  {
+    reader->SetFileName(modeldirectory + "/Molecular_SelectedFeatures_Messenchymal.csv");
+    reader->SetFieldDelimiterCharacter(',');
+    reader->HasColumnHeadersOff();
+    reader->HasRowHeadersOff();
+    reader->Parse();
+    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    features_Mess.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      features_Mess[i] = dataMatrix(i, 0);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading the file: " + modeldirectory + "/Molecular_SelectedFeatures_Messenchymal.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
+  try
+  {
+    reader->SetFileName(modeldirectory + "/Molecular_SelectedFeatures_Classical.csv");
+    reader->SetFieldDelimiterCharacter(',');
+    reader->HasColumnHeadersOff();
+    reader->HasRowHeadersOff();
+    reader->Parse();
+    dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+    features_Classical.SetSize(dataMatrix.size());
+    for (unsigned int i = 0; i < dataMatrix.size(); i++)
+      features_Classical[i] = dataMatrix(i, 0);
+  }
+  catch (const std::exception& e1)
+  {
+    logger.WriteError("Error in reading the file: " + modeldirectory + "/Molecular_SelectedFeatures_Classical.csv. Error code : " + std::string(e1.what()));
+    return results;
+  }
   //----------------------------------------------------
   VariableSizeMatrixType FeaturesOfAllSubjects;
   FeaturesOfAllSubjects.SetSize(qualifiedsubjects.size(), MOLECULAR_NO_OF_FEATURES);
@@ -561,18 +618,37 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 
   WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
-  //VariableSizeMatrixType ScaledFeatureSetAfterAddingLabel;
-  //ScaledFeatureSetAfterAddingLabel.SetSize(ScaledTestingData.Rows(), ScaledTestingData.Cols() + 1);
-  //for (unsigned int i = 0; i < ScaledTestingData.Rows(); i++)
-  //{
-  //  unsigned int j = 0;
-  //  for (j = 0; j < ScaledTestingData.Cols(); j++)
-  //    ScaledFeatureSetAfterAddingLabel(i, j) = ScaledTestingData(i, j);
-  //  ScaledFeatureSetAfterAddingLabel(i, j) = 0;
-  //}
+  VariableSizeMatrixType ProneuralSelectedFeatures = SelectModelFeatures(ScaledTestingData, features_Proneural);
+  VariableSizeMatrixType NeuralSelectedFeatures = SelectModelFeatures(ScaledTestingData, features_Neural);
+  VariableSizeMatrixType MessSelectedFeatures = SelectModelFeatures(ScaledTestingData, features_Mess);
+  VariableSizeMatrixType ClassicalSelectedFeatures = SelectModelFeatures(ScaledTestingData, features_Classical);
 
-  //VariableSizeMatrixType SixModelSelectedFeatures = SelectSixMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
-  //VariableSizeMatrixType EighteenModelSelectedFeatures = SelectEighteenMonthsModelFeatures(ScaledFeatureSetAfterAddingLabel);
+  //writing selected model features
+  std::vector<std::string> SelectedFeatureLabels_Proneural, SelectedFeatureLabels_Neural, SelectedFeatureLabels_Mess, SelectedFeatureLabels_Classical;
+  for (int index = 0; index < features_Proneural.Size(); index++)
+  {
+    int currentindex = features_Proneural[index];
+    SelectedFeatureLabels_Proneural.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < features_Neural.Size(); index++)
+  {
+    int currentindex = features_Neural[index];
+    SelectedFeatureLabels_Neural.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < features_Mess.Size(); index++)
+  {
+    int currentindex = features_Mess[index];
+    SelectedFeatureLabels_Mess.push_back(FeatureLabels[currentindex]);
+  }
+  for (int index = 0; index < features_Classical.Size(); index++)
+  {
+    int currentindex = features_Classical[index];
+    SelectedFeatureLabels_Classical.push_back(FeatureLabels[currentindex]);
+  }
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ProneuralSelectedFeatures, patient_ids, SelectedFeatureLabels_Proneural, outputdirectory + "/SelectedFeatures_Proneural.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(NeuralSelectedFeatures, patient_ids, SelectedFeatureLabels_Neural, outputdirectory + "/SelectedFeatures_Neural.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(MessSelectedFeatures, patient_ids, SelectedFeatureLabels_Mess, outputdirectory + "/SelectedFeatures_Messenchymal.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ClassicalSelectedFeatures, patient_ids, SelectedFeatureLabels_Classical, outputdirectory + "/SelectedFeatures_Classical.csv");
 
   try
   {
@@ -582,14 +658,10 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 
    if (cbica::fileExists(modeldirectory + "/" + mProneuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mNeuralTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mMessenchymalTrainedFile) == true && cbica::fileExists(modeldirectory + "/" + mClassicalTrainedFile) == true)
    {
-      VectorDouble result_proneural;
-      VectorDouble result_neural;
-      VectorDouble result_classical;
-      VectorDouble result_messenchymal;
-      result_proneural = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mProneuralTrainedFile);
-      result_neural = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mNeuralTrainedFile);
-      result_messenchymal = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mMessenchymalTrainedFile);
-      result_classical = testOpenCVSVM(ScaledTestingData, modeldirectory + "/" + mClassicalTrainedFile);
+      VectorDouble result_proneural    = testOpenCVSVM(ProneuralSelectedFeatures, modeldirectory + "/" + mProneuralTrainedFile);
+      VectorDouble result_neural       = testOpenCVSVM(NeuralSelectedFeatures, modeldirectory + "/" + mNeuralTrainedFile);
+      VectorDouble result_messenchymal = testOpenCVSVM(MessSelectedFeatures, modeldirectory + "/" + mMessenchymalTrainedFile);
+      VectorDouble result_classical    = testOpenCVSVM(ClassicalSelectedFeatures, modeldirectory + "/" + mClassicalTrainedFile);
 
       results = CombineEstimates(result_proneural, result_neural, result_messenchymal, result_classical);
       for (size_t i = 0; i < results.size(); i++)
@@ -621,42 +693,35 @@ VectorDouble MolecularSubtypePredictor::MolecularSubtypePredictionOnExistingMode
 
 }
 
-VariableSizeMatrixType MolecularSubtypePredictor::SelectSixMonthsModelFeatures(const VariableSizeMatrixType &SixModelFeatures)
+
+VariableSizeMatrixType MolecularSubtypePredictor::SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures)
 {
-  int selectedFeatures[20] = { 1, 5, 9, 10, 20, 23, 24, 37, 38, 43, 44, 48, 49, 50, 51, 56, 57, 61, 62, 63 };
-  for (unsigned int i = 0; i <20; i++)
-    selectedFeatures[i] = selectedFeatures[i] - 1;
-  VariableSizeMatrixType SixModelSelectedFeatures;
-  SixModelSelectedFeatures.SetSize(SixModelFeatures.Rows(), 21);
+  VariableSizeMatrixType ModelSelectedFeatures;
+  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features 
+  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.Size());
   int counter = 0;
-  for (unsigned int i = 0; i < 20; i++)
+  //copy selected features
+  for (unsigned int i = 0; i < selectedFeatures.Size(); i++)
   {
-    for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-      SixModelSelectedFeatures(j, counter) = SixModelFeatures(j, selectedFeatures[i]);
+    for (unsigned int j = 0; j < ModelFeatures.Rows(); j++)
+      ModelSelectedFeatures(j, counter) = ModelFeatures(j, selectedFeatures[i]);
     counter++;
   }
-  for (unsigned int j = 0; j < SixModelFeatures.Rows(); j++)
-    SixModelSelectedFeatures(j, 20) = SixModelFeatures(j, 161);
-
-  return SixModelSelectedFeatures;
+  return ModelSelectedFeatures;
 }
 
-VariableSizeMatrixType MolecularSubtypePredictor::SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures)
+VariableSizeMatrixType MolecularSubtypePredictor::SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VectorDouble &selectedFeatures)
 {
-  int selectedFeatures[20] = { 1, 5, 10, 15, 24, 27, 37, 38, 50, 51, 53, 62, 63, 64, 67, 70, 71, 85, 158, 159 };
-  for (unsigned int i = 0; i<20; i++)
-    selectedFeatures[i] = selectedFeatures[i] - 1;
-
-  VariableSizeMatrixType EighteenModelSelectedFeatures;
-  EighteenModelSelectedFeatures.SetSize(EighteenModelFeatures.Rows(), 21);
+  VariableSizeMatrixType ModelSelectedFeatures;
+  //make a feature matrix to store selected features. rows= rows of input features, columns=number of selected features 
+  ModelSelectedFeatures.SetSize(ModelFeatures.Rows(), selectedFeatures.size());
   int counter = 0;
-  for (unsigned int i = 0; i < 20; i++)
+  //copy selected features
+  for (unsigned int i = 0; i < selectedFeatures.size(); i++)
   {
-    for (unsigned int j = 0; j < EighteenModelFeatures.Rows(); j++)
-      EighteenModelSelectedFeatures(j, counter) = EighteenModelFeatures(j, selectedFeatures[i]);
+    for (unsigned int j = 0; j < ModelFeatures.Rows(); j++)
+      ModelSelectedFeatures(j, counter) = ModelFeatures(j, selectedFeatures[i]);
     counter++;
   }
-  for (unsigned int j = 0; j < EighteenModelFeatures.Rows(); j++)
-    EighteenModelSelectedFeatures(j, 20) = EighteenModelFeatures(j, 161);
-  return EighteenModelSelectedFeatures;
+  return ModelSelectedFeatures;
 }

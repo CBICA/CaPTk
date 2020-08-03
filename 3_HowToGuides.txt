@@ -421,7 +421,7 @@ Multi-institutional Performance Evaluation of Deep Learning Methods and Robust M
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
   
-  -# Batch processing is also available (for more details, please see the relevant <a href="tr_FeatureExtraction.html#tr_fe_batch">technical reference</a> page):
+  -# Batch processing is also available (for more details, please see the relevant <a href="ht_FeatureExtraction.html">technical reference</a> page):
 \verbatim
 ${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
 \endverbatim
@@ -466,6 +466,7 @@ Contains the following applications:
 - \subpage BreastCancer_texture "Breast Cancer: Texture Feature Extraction"
 - \subpage LungCancer_SBRT "Lung Cancer: Radiomics Analysis of Lung Cancer (SBRT Lung)"
 - \subpage Glioblastoma_Directionality "Miscellaneous: Directionality Estimator"
+- \subpage Perfusion_Alignment "Miscellaneous: Perfusion Alignment"
 - \subpage Diffusion_Derivatives "Miscellaneous: Diffusion Derivatives"
 - \subpage Perfusion_Derivatives "Miscellaneous: Perfusion Derivatives"
 - \subpage PCA_Extraction "Miscellaneous: PCA Volume Extraction"
@@ -1221,6 +1222,31 @@ ${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/ma
 \endverbatim
 
 --------
+*/
+
+/**
+\page Perfusion_Alignment Miscellaneous: Perfusion Alignment
+
+This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
+
+<b> REQUIREMENTS:</b>
+	-# A single DSC-MRI scan. 
+	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
+	-# A single T1 post-contrast MRI scan.
+	-# The Echo Time corresponding to the given DSC-MRI scan.
+	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
+	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+
+<b> USAGE:</b>
+	-# Launch the application from "Applications" -> "Perfusion Alignment".
+	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
+	-# Press "Confirm" button.
+	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
+  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+\verbatim
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
+\endverbatim
+
 */
 
 /**

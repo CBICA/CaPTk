@@ -6,7 +6,6 @@ Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of in
 Generic,ResamplingInterpolator_Mask,mm,Nearest:NearestLabel:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
 Generic,SliceComputation,Int,(0:1),0,Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
 Generic,NaN-Handling,String,Keep:Remove,Keep,Specify how to handle features with NaN values 'Remove' removes the feature from output - keep in mind this might cause issues with output file in multi-subject (i.e. Training/Batch) mode
-Generic,WholeImageBinning,Int,(0:1),1,Controls whether the entire image binning happens or just the defined region
 Intensity,,,,,
 Morphologic,Range,Int,(0:25),0,0:largest connected component in ROI; N: all connected components larger than (N*10^-6) of total image size are taken into account
 Morphologic,Feret,Int,(0:1),0,Whether or not to calculate the Feret Diameter (substantially increases computation time)

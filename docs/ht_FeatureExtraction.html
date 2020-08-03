@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Alpha3</span>
+   &#160;<span id="projectnumber">1.8.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -84,7 +84,7 @@ $(document).ready(function(){initNavTree('ht_FeatureExtraction.html',''); initRe
 </pre></li>
 </ul>
 <ol type="1">
-<li>Batch processing is also available (for more details, please see the relevant <a href="tr_FeatureExtraction.html#tr_fe_batch">technical reference</a> page): <pre class="fragment">${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
+<li>Batch processing is also available (for more details, please see the relevant <a href="ht_FeatureExtraction.html">technical reference</a> page): <pre class="fragment">${CaPTk_InstallDir}/bin/FeatureExtraction.exe -b /usr/path/batch.csv -p /usr/path/features.csv -o /usr/path/output.csv
 </pre></li>
 <li>As intermediate results of the "Custom_lattice", the user also has the option to save feature maps, i.e., images that represent the spatial distribution of the corresponding feature measurements as sampled by the lattice over the ROI, using the following CLI format: <pre class="fragment">${CaPTk_InstallDir}/bin/FeatureExtraction.exe -n AAC0_timestamp -i /usr/path/T1.nii.gz,/usr/path/T2.nii.gz -t T1,T2 -m /user/path/mask.nii.gz -r 2,4,5 -l ED,EN,NE -p /usr/path/features.csv -o /usr/path/output.csv -f 1
 </pre></li>
