@@ -380,7 +380,8 @@ namespace cbica
   inline bool ImageSanityCheck(
     const typename TImageType::Pointer image1, 
     const typename TImageType::Pointer image2,
-    const float nifti2dicomTolerance = 0.0)
+    const float nifti2dicomTolerance = 0.0,
+    const float nifti2dicomOriginTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -440,6 +441,21 @@ namespace cbica
       }
       if (origin_1[d] != origin_2[d])
       {
+        auto percentageDifference = std::abs(origin_1[d] - origin_2[d]) * 100 / std::abs(origin_1[d]);
+        if (percentageDifference > nifti2dicomOriginTolerance)
+        {
+          std::cerr << "Origin mismatch > " << percentageDifference <<
+            percentageDifference << "%' in axis '" << d << "'.\n";
+
+          std::cout << "Origin for input 1:\n" << origin_1 << "\n" <<
+            "Origin for input 2:\n" << origin_2 << "\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring origin difference of '" <<
+            percentageDifference << "%' in axis '" << d << "'.\n";
+        }
         std::cerr << "Origin mismatch at dimension '" << d << "'\n";
         return false;
       }
