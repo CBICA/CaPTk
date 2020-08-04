@@ -753,7 +753,7 @@ namespace cbica
   template <typename ComputedImageType = ImageTypeFloat3D>
   void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, 
     typename ComputedImageType::Pointer imageToWrite, 
-    const std::string &outputDir, const float nifti2dicomTolerance = 0.0, 
+    const std::string &outputDir, const float nifti2dicomTolerance = 0.0, const float nifti2dicomOriginTolerance = 0.0,
     const std::string& outputPrefix = "image")
   {
     if (cbica::isDir(dicomImageReferenceDir))
@@ -767,7 +767,7 @@ namespace cbica
       caster->SetInput(imageToWrite);
       caster->Update();
       auto imageToWrite_casted = caster->GetOutput();
-      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted, nifti2dicomTolerance))
+      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted, nifti2dicomTolerance, nifti2dicomOriginTolerance))
       {
         std::cerr << "The reference DICOM image and image to write are not consistent.\n";
         return;
