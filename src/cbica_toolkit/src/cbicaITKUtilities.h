@@ -456,8 +456,6 @@ namespace cbica
           std::cout << "Ignoring origin difference of '" <<
             percentageDifference << "%' in axis '" << d << "'.\n";
         }
-        std::cerr << "Origin mismatch at dimension '" << d << "'\n";
-        return false;
       }
       if (spacing_1[d] != spacing_2[d])
       {
