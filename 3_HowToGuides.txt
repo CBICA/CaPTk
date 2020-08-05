@@ -1278,7 +1278,7 @@ ${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTI
 */
 
 /**
-\page PCA_Extraction Miscellaneous: PCA Volume Extraction
+\page PCA_Extraction Miscellaneous: Perfusion PCA Volume Extraction
 
 This application extracts the principal components from DSC-MRI scans as mentioned in [1].
 
@@ -1288,7 +1288,7 @@ This application extracts the principal components from DSC-MRI scans as mention
 
 <b> USAGE:</b>
 	-# Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.
-  -# Launch the application from "Applications" -> "PCA Volume Extraction".
+  -# Launch the application from "Applications" -> "Perfusion PCA".
   -# Specify the number of principal components required and the output directory.
 	-# Press the "Confirm" button.
 	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
