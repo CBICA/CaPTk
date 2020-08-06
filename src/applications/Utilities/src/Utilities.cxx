@@ -73,7 +73,7 @@ int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
-float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
 int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
@@ -454,7 +454,7 @@ int algorithmsRunner()
     {
       prevOutput = true;
     }
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance);
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance);
     if (!prevOutput)
     {
       if (cbica::exists(outputImageFile))
@@ -463,7 +463,9 @@ int algorithmsRunner()
       }
       else
       {
-        std::cerr << "Direction tolerance: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "Tolerance values:\n";
+        std::cerr << "  Direction: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "     Origin: " << nifti2dicomOriginTolerance << "%\n";
         std::cerr << "Couldn't write DICOM series.\n";
         return EXIT_FAILURE;
       }
@@ -1160,6 +1162,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
+  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
@@ -1258,6 +1261,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("ndD"))
     {
       parser.getParameterValue("ndD", nifti2dicomTolerance);
+    }
+    if (parser.isPresent("ndO"))
+    {
+      parser.getParameterValue("ndO", nifti2dicomOriginTolerance);
     }
   }
   else if (parser.isPresent("ds"))
