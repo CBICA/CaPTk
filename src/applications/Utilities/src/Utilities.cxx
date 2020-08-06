@@ -893,6 +893,12 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
+    if (!cbica::ImageSanityCheck< DefaultImageType >(inputImage, referenceImage))
+    {
+      std::cerr << "Images are not aligned, please ensure both images have the same origin, spacing and direction cosines before trying to extract similarity measures (use '-inf' for image information).\n";
+      return EXIT_FAILURE;
+    }
+
     if (!inputMaskFile.empty())
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
