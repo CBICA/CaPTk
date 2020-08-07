@@ -4,30 +4,54 @@ import sys
 import ctypes
 from  ctypes import CFUNCTYPE, c_int,c_char,c_char_p
 import numpy
+# Update 7/2/2020: Modified ConfettiCore.py to accommodate nuitka packaging. 
 class ConfettiApi():
     def __init__(self):
         try:
-          self.libraryName =self.getCoreModulePath()
-          self.CoreModule = ctypes.cdll.LoadLibrary(self.libraryName)
-          self.listner= None
-          self.txtCallback_ref = None
-        except:
+            self.libraryName = os.path.normpath(self.getCoreModulePath())
+            self.CoreModule = ctypes.cdll.LoadLibrary(self.libraryName)
+            print "Successfully loaded the ConfettiCore binary."
+            self.listner= None
+            self.txtCallback_ref = None
+        except Exception as e:
             self.CoreModule= None
-            print("Failed to load ConfettiCore binary")
+            print("Failed to load ConfettiCore binary. Exception: ")
+            print(e)
     def getCoreModulePath(self):
         if os.name is 'nt':
             libraryName = "ConfettiCore.dll"
         else:
             libraryName = "libConfettiCore.so"
-        if getattr(sys, 'frozen', False):
+        if (getattr(sys, 'frozen', False)):
             application_path = os.path.dirname(sys.executable)
         elif __file__:
-            application_path = os.path.dirname(__file__)
-        baseDir=os.path.join(application_path, '..' )
+            print "Using __file__"
+            if os.name is 'nt':
+                application_path = self.attemptWindowsLongPathFix(os.path.dirname(__file__))
+            else:
+                application_path = os.path.dirname(__file__)
+        baseDir=os.path.join(application_path, '..' ) # use to search directory above dist
+		# match if dll found in either this or one-higher directory
+        for root, dirs, files in os.walk(application_path):
+            for file in files:
+                if libraryName in file:
+                    return (os.path.join(root, file))
         for root, dirs, files in os.walk(baseDir):
             for file in files:
                 if libraryName in file:
-                     return (os.path.join(root, file))
+                    return (os.path.join(root, file))
+
+    def attemptWindowsLongPathFix(self, in_path):
+        # Do not call this on non-Windows platforms.
+        try:
+            path = unicode(in_path)
+        except Exception as e:
+            print(e) 
+        GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
+        buffer = ctypes.create_unicode_buffer(GetLongPathName(path, 0, 0))
+        GetLongPathName(path, buffer, len(buffer))
+        print buffer.value
+        return buffer.value
 
     def registerCppCallback(self):
         if self.CoreModule is None:

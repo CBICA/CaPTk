@@ -15,7 +15,9 @@ MESSAGE( STATUS "Adding OpenCV-${OPENCV_VERSION} ...")
 ExternalProject_Add( 
   OpenCV
   DEPENDS Eigen VTK
-  URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+  # URL https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+  GIT_REPOSITORY https://github.com/opencv/opencv.git #  url from where to download
+  GIT_TAG ${OPENCV_VERSION}
   #GIT_REPOSITORY ${git_protocol}://github.com/opencv/opencv.git
   #GIT_TAG 3.4.1
   SOURCE_DIR OpenCV-source

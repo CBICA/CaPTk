@@ -12,9 +12,37 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 # STRING(TIMESTAMP TODAY "%Y%m%d")
 
 SET( PROJECT_VERSION_MAJOR 1 )
-SET( PROJECT_VERSION_MINOR 7 )
-SET( PROJECT_VERSION_PATCH 3.nonRelease.20190906 )
-SET( PROJECT_VERSION_TWEAK )
+SET( PROJECT_VERSION_MINOR 8 )
+SET( PROJECT_VERSION_PATCH 0.nonRelease )
+SET( PROJECT_VERSION_TWEAK ) 
+
+# check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
+# if it is found, add timestamp and git hash of commit to the version
+STRING(FIND ${PROJECT_VERSION_PATCH} "nonRelease" NONRELEASE_FOUND)
+IF( ${NONRELEASE_FOUND} GREATER 0 )
+  # get the timestamp
+  STRING(TIMESTAMP TODAY "%Y%m%d")
+
+  # get git hash
+  IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+    FIND_PACKAGE(Git)
+    IF(GIT_FOUND)
+      EXECUTE_PROCESS(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE "GIT_HASH"
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+      #MESSAGE( STATUS "Git version: ${GIT_HASH}" )
+    ELSE(GIT_FOUND)
+      SET(GIT_HASH 0)
+    ENDIF(GIT_FOUND)
+  ENDIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+  
+  SET( PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH}.${TODAY}.${GIT_HASH}" )
+  #MESSAGE( STATUS "PROJECT_VERSION_PATCH: ${PROJECT_VERSION_PATCH}")
+
+ENDIF()
 
 # Configure CCache if available
 FIND_PROGRAM(CCACHE_FOUND ccache)
@@ -45,6 +73,11 @@ INCLUDE( CaPTk_macros )
 
 OPTION( CAPTK_SUPERBUILD_FORCE "Force CaPTk Superbuild regardless of whether dependencies are found or not" OFF )
 
+# claire option is not present for Windows, unfortunately
+IF( UNIX )
+  SET( BUILD_CLAIRE OFF CACHE BOOL "Do you want to build CLAIRE (this changes the Superbuild)?" )
+ENDIF()
+
 SET( QT_VERSION_ACTUAL "5.12.1" )
 if(UNIX)
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -58,7 +91,7 @@ if(UNIX)
 endif()
 
 SET( QT_VERSION ${QT_VERSION_ACTUAL} CACHE STRING "Superbuild Qt version to build CaPTk against" FORCE )
-SET( OPENCV_VERSION "3.4.5" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
+SET( OPENCV_VERSION "3.4.7" CACHE STRING "Superbuild OpenCV version to build CaPTk against" FORCE )
 
 SET(CAPTK_BUILD_DIR "${PROJECT_BINARY_DIR}" CACHE STRING "CaPTk build directory" FORCE )
 ADD_DEFINITIONS(-DCAPTK_BUILD_DIR="${PROJECT_BINARY_DIR}")
@@ -108,7 +141,11 @@ ELSE()
   ENDIF()
 ENDIF()
 
+# MESSAGE()
+
 SET( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" CACHE STRING "The project version" FORCE )
+
+MESSAGE( AUTHOR_WARNING "Building CaPTk version ${PROJECT_VERSION}")
 
 IF (APPLE)
   SET (EXE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
@@ -144,6 +181,7 @@ ADD_DEFINITIONS(-DLICENSE="${LICENSE_FILE}")
 ADD_DEFINITIONS(-DPROJECT_README="${README_FILE}")
 ADD_DEFINITIONS(-DREADME="${README_FILE}")
 ADD_DEFINITIONS(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}/")
+ADD_DEFINITIONS(-DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}/")
 ADD_DEFINITIONS(-DPROJECT_VARIANT="${${PROJECT_NAME}_Variant}")
 
 ### Building the documentation
@@ -155,6 +193,7 @@ MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION_ONLY)
 IF( BUILD_DOCUMENTATION_ONLY )
   SET( BUILD_DOCUMENTATION ON )
+  SET( CAPTK_UPDATE_DOCS ON ) #in this case, the HTML files are updated all the time 
 ENDIF()
 IF( BUILD_DOCUMENTATION )
   ADD_SUBDIRECTORY( docs_sources )
@@ -201,7 +240,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   MARK_AS_ADVANCED(CAPTK_PACKAGE_PROJECT)
   MARK_AS_ADVANCED(CAPTK_BUILD_OPTION)
   MARK_AS_ADVANCED(CAPTK_DISABLE_CWL)
-  
+
   SET( CMAKE_COLOR_MAKEFILE ON )
   # option to compile only the viewer
   SET( CAPTK_BUILD_CONSOLE_ONLY OFF CACHE BOOL "Do you want only the interactive capabilities of ${PROJECT_NAME}? Enabling this will remove all algorithms from compilation." )
@@ -220,25 +259,10 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   SET( THIRDPARTY_LIB_PATH ${PROJECT_SOURCE_DIR}/src/thirdparty )
   INCLUDE_DIRECTORIES( ${THIRDPARTY_LIB_PATH} )
 
-  # macro to find all sub-directories
-  MACRO(SUBDIRLIST result curdir)
-    FILE(GLOB children
-      RELATIVE ${curdir} ${curdir}/*
-      PATTERN "svn" EXCLUDE
-    )
-    SET(dirlist "")
-    FOREACH(child ${children})
-      IF(IS_DIRECTORY ${curdir}/${child})
-        LIST(APPEND dirlist ${child})
-      ENDIF()
-    ENDFOREACH()
-    SET(${result} ${dirlist})
-  ENDMACRO()
-
   ### third party library processing
   # find and include all third party libraries
   SUBDIRLIST(SUBDIRECTORIES ${THIRDPARTY_LIB_PATH})
-  
+
   FIND_PACKAGE( ITK REQUIRED )
   #FIND_PACKAGE( ITK REQUIRED )
   INCLUDE("${ITK_USE_FILE}")
@@ -675,16 +699,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
-    FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
-    FOREACH(docFiles ${ALL_DOC_FILES_BASE})
-      IF (APPLE)
+	IF (APPLE) 
+	  # TODO: Figure out how to set properties on files only present after configuration
+	  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
+      FOREACH(docFiles ${ALL_DOC_FILES_BASE})
         SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-      ELSE()
-        INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-      ENDIF()
-    ENDFOREACH()
-    #INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html DESTINATION share/doc )
+      ENDFOREACH()  
+	ELSE() # Windows or Linux
+      # Need to install the directory to pick up files that are not present at configure time (for CI/Azure)
+      INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html/ DESTINATION share/doc )
+	ENDIF()
   #ENDIF()
 
   # ensure all licenses are in the package
@@ -749,11 +774,15 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB sri24_FILES "${DATA_DIR}/sri24/*.*")
     SET_SOURCE_FILES_PROPERTIES(${sri24_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/sri24)
 
-    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES})
+    FILE(GLOB DOWNLOAD_LINKS "${DATA_DIR}/links.yaml")
+    SET_SOURCE_FILES_PROPERTIES(${DOWNLOAD_LINKS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data)
+
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${FLAIR_FILE} ${FLAIR_TESTTUMOR_FILE} ${survival_FILES} ${egfrv3_FILES} ${sri24_FILES} ${DOWNLOAD_LINKS})
 
   ELSE ()
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk.nii.gz" DESTINATION data)
     INSTALL(FILES "${DATA_DIR}/AAAC0_flair_pp_shrunk_testTumor.nii.gz" DESTINATION data)
+    INSTALL(FILES "${DATA_DIR}/links.yaml" DESTINATION data)
     INSTALL(DIRECTORY "${DATA_DIR}/survival" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/egfrv3" DESTINATION data PATTERN ".svn" EXCLUDE)
     INSTALL(DIRECTORY "${DATA_DIR}/molecular" DESTINATION data PATTERN ".svn" EXCLUDE)
@@ -765,14 +794,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE DEEPMEDIC_CONFIGFILES "${DATA_DIR}/deepMedic/configFiles/*")
     FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR "${DATA_DIR}/deepMedic/saved_models/brainTumorSegmentation/*")
     FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_SKULL "${DATA_DIR}/deepMedic/saved_models/skullStripping/*")
+    FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_SKULL_MA "${DATA_DIR}/deepMedic/saved_models/skullStripping_modalityAgnostic/*")
     
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_CONFIGFILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/configFiles )
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/brainTumorSegmentation )
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_SKULL} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/skullStripping )
+    SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_SKULL_MA} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/skullStripping_modalityAgnostic )
     
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_CONFIGFILES})
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR})
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_SKULL})
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_SKULL_MA})
     
   ELSE()
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/configFiles" DESTINATION data/deepMedic)
@@ -1036,8 +1068,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       SET(CPACK_GENERATOR DragNDrop )
       SET(CPACK_DMG_FORMAT "UDBZ")
       SET(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-       SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
-
+      SET(CPACK_BUNDLE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}")
       SET(CPACK_SYSTEM_NAME "OSX")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}")
       # SET(CPACK_STRIP_FILES "${EXE_NAME}.app/Contents/MacOS/${EXE_NAME}")
@@ -1094,13 +1125,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
         GET_FILENAME_COMPONENT( EXEC_IN_BIN ${EXEC} NAME_WE )
 
-        # GET_TARGET_PROPERTY(TARGET_TYPE ${EXEC_IN_BIN} TYPE)
         IF (NOT EXEC_IN_BIN STREQUAL "BreastTexturePipeline")
           # MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
           changeLibOmpDylib(${EXE_NAME} ${EXEC_IN_BIN})
         ENDIF ()
         
       ENDFOREACH()
+
+      changeLibOmpDylib(${EXE_NAME} "greedy")
 
     ENDIF()
 
@@ -1142,14 +1174,22 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
   # Execute a post install step. Make sure this is the last install command ran!
   IF( CMAKE_HOST_UNIX )
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND ln -sf CaPTk captk WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)")
-  ENDIF()
+    # INSTALL(CODE "EXECUTE_PROCESS(COMMAND chmod 755 matlab_helper WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/libexec/MCR/v84/bin/glnxa64/)")
 
-  IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
-    INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
-    INSTALL(FILES src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
-      DESTINATION libexec/MCR/v84/bin/glnxa64/
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
+    # IF(EXISTS ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/applications/individualApps/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ELSEIF(EXISTS ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper)
+    #   INSTALL(CODE "MESSAGE(\"Trying to install matlab_helper with correct permissions.\")")
+    #   INSTALL(FILES ${PROJECT_BINARY_DIR}/externalApps/binaries_linux/libra/MCR/v84/bin/glnxa64/matlab_helper
+    #     DESTINATION libexec/MCR/v84/bin/glnxa64/
+    #     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    #   )
+    # ENDIF()
+
   ENDIF()
 
 ENDIF( NOT BUILD_DOCUMENTATION_ONLY )

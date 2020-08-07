@@ -195,7 +195,7 @@ SvmSuite::SvmDescription SvmSuite::convertModelToSvmDescription(std::string mode
 	return svm_desc;
 }
 
-void SvmSuite::generateConfig(std::vector< SvmSuite::SvmDescription > &svm_descriptions, std::string outputFilePath)
+void SvmSuite::generateConfig(std::vector< SvmSuite::SvmDescription > &svm_descriptions, std::string outputFilePath, bool m_save_models)
 {
 	YAML::Node node;
 
@@ -204,12 +204,14 @@ void SvmSuite::generateConfig(std::vector< SvmSuite::SvmDescription > &svm_descr
 		node[YAML_ROOT_NODE].push_back(toAdd);
 	}
 
-	std::ofstream out(outputFilePath);
-	out << "---\n" << node << "\n...";
-	out.close();
+	if (m_save_models) {
+		std::ofstream out(outputFilePath);
+		out << "---\n" << node << "\n...";
+		out.close();
+	}
 }
 
-void SvmSuite::generateConfig(SvmSuite::SvmDescription &svm_description, std::string outputFilePath)
+void SvmSuite::generateConfig(SvmSuite::SvmDescription &svm_description, std::string outputFilePath, bool m_save_models)
 {
 	std::vector< SvmSuite::SvmDescription > svm_descriptions;
 	svm_descriptions.push_back(svm_description);
@@ -217,7 +219,7 @@ void SvmSuite::generateConfig(SvmSuite::SvmDescription &svm_description, std::st
 	generateConfig(svm_descriptions, outputFilePath);
 }
 
-void SvmSuite::generateConfig(cv::Ptr<cv::ml::SVM> model, int neighborhood_radius, double importance, std::string outputFilePath)
+void SvmSuite::generateConfig(cv::Ptr<cv::ml::SVM> model, int neighborhood_radius, double importance, std::string outputFilePath, bool m_save_models)
 {
 	std::vector< SvmSuite::SvmDescription > svm_descriptions;
 	svm_descriptions.push_back(convertModelToSvmDescription(model, neighborhood_radius, importance));
@@ -226,7 +228,7 @@ void SvmSuite::generateConfig(cv::Ptr<cv::ml::SVM> model, int neighborhood_radiu
 }
 
 void SvmSuite::generateConfig(std::vector< cv::Ptr<cv::ml::SVM> > multiple_models, std::vector< int > neighborhood_radii,
-	std::vector< double > importance_values, std::string outputFilePath)
+	std::vector< double > importance_values, std::string outputFilePath, bool m_save_models)
 {
 	std::vector< SvmSuite::SvmDescription > svm_descriptions;
 
@@ -241,7 +243,7 @@ void SvmSuite::generateConfig(std::vector< cv::Ptr<cv::ml::SVM> > multiple_model
 }
 
 void SvmSuite::generateConfig(std::vector< std::string > multiple_models_paths, std::vector< int > neighborhood_radii,
-	std::vector< double > importance_values, std::string outputFilePath)
+	std::vector< double > importance_values, std::string outputFilePath, bool m_save_models)
 {
 	std::vector< SvmSuite::SvmDescription > svm_descriptions;
 

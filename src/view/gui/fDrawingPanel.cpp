@@ -15,7 +15,15 @@
 
 fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
 {
+    //initialize default opacity
+  m_currentOpacity = 10; // set default to the tenth spinbox selection (1.0 mask opacity)
   setupUi(this);
+
+  //make button height same as the drawing buttons
+  changeNewValues->setFixedHeight(shapesRectangleButton->height());
+  changeOldValues->setFixedHeight(shapesRectangleButton->height());
+  changeButton->setFixedHeight(shapesRectangleButton->height());
+  applyMaskButton->setFixedHeight(shapesRectangleButton->height());
 
   connect(clearSelectedLabelButton, SIGNAL(clicked()), this, SLOT(clearSelectedLabelButtonFunctionality()));
   connect(clearAllLabelButton, SIGNAL(clicked()), this, SLOT(clearAllLabelButtonFunctionality()));
@@ -33,6 +41,7 @@ fDrawingPanel::fDrawingPanel(QWidget * parent) : QWidget(parent)
   connect(shapesSphereButton, SIGNAL(clicked()), this, SLOT(shapesSphereButtonFunctionality()));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
   connect(changeButton, SIGNAL(clicked()), this, SLOT(ChangeLabelValuesClicked()));
+  connect(applyMaskButton, SIGNAL(clicked()), this, SLOT(OnApplyMaskButtonClicked()));
 }
 
 void fDrawingPanel::helpClicked()
@@ -123,4 +132,9 @@ void fDrawingPanel::FillButtonFunctionality()
 {
   enableShapeButton(shapeFillButton);
   emit shapesButtonClicked(SHAPE_MODE_FILL);
+}
+
+void fDrawingPanel::OnApplyMaskButtonClicked()
+{
+	emit ApplyMask();
 }

@@ -11,6 +11,15 @@
 #include "itkThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkJoinSeriesImageFilter.h"
+#include "itkExtractImageFilter.h"
+#include "itkLabelOverlapMeasuresImageFilter.h"
+#include "itkHausdorffDistanceImageFilter.h"
+#include "itkCSVArray2DFileReader.h"
+#include "itkCSVNumericObjectFileWriter.h"
+#include "itkInvertIntensityImageFilter.h"
+
+#include "vtkAnatomicalOrientation.h"
 
 #include "cbicaDCMQIWrapper.h"
 
@@ -38,20 +47,214 @@ enum AvailableAlgorithms
   ThresholdAboveAndBelow,
   ThresholdOtsu,
   ThresholdBinary,
-  ConvertFormat
+  ConvertFormat,
+  Image2World,
+  World2Image,
+  ImageStack2Join,
+  JoinedImage2Stack,
+  LabelSimilarity,
+  LabelSimilarityBraTS,
+  Hausdorff
+};
+
+//! properties that can be collected
+enum AllInfo
+{
+  Spacing, Size, Origin
 };
 
 int requestedAlgorithm = 0;
 
-std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator, dicomSegJSON, orientationDesired;
+std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR", dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
 std::string dicomFolderPath;
+std::string inputBvecFile;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
-std::string changeOldValues, changeNewValues;
+std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
+int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
+
+std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
+
+using MatrixType = vnl_matrix<double>;
+
+//! collects image information defined in AllInfo and writes to file 
+void CollectImageInfo(std::vector< int > requestedInfoVector)
+{  
+  std::string outputToWrite, propertyToWrite;
+  // set up required folders
+  std::vector< std::string > subDirsInInput = { inputImageFile };
+  if (collectInfoRecurse)
+  {
+    subDirsInInput = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+  }
+
+  std::vector< int > imageDimensions;
+
+  // loop through all requested directories
+  for (size_t i = 0; i < subDirsInInput.size(); i++)
+  {
+    auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+    // loop through all files
+    for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+    {
+      auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+      if ((!collectInfoFile.empty() && (allFilesInCurrentDir[j].find(collectInfoFile) != std::string::npos)) ||
+        collectInfoFile.empty())
+      {
+        if (((collectInfoFileExt == "noExt") && currentExt.empty()) ||
+          (collectInfoFileExt == currentExt))
+        {
+          auto imageInfo = cbica::ImageInfo(allFilesInCurrentDir[j]);
+
+          imageDimensions.push_back(imageInfo.GetImageDimensions());
+
+          outputToWrite += allFilesInCurrentDir[j];
+
+          for (size_t p = 0; p < requestedInfoVector.size(); p++)
+          {
+            switch (p)
+            {
+            case Spacing:
+            {
+              auto temp = imageInfo.GetImageSpacings();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            case Size:
+            {
+              auto temp = imageInfo.GetImageSize();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            case Origin:
+            {
+              auto temp = imageInfo.GetImageOrigins();
+              std::string temp_string = std::to_string(temp[0]);
+              for (size_t d = 1; d < temp.size(); d++)
+              {
+                temp_string += "," + std::to_string(temp[d]);
+              }
+              outputToWrite += "," + temp_string;
+              break;
+            }
+            default:
+              break;
+            } // end switch-case
+          } // end requestedInfoVector for-loop     
+          outputToWrite += "\n";
+        } // end extension check
+      } // end file-pattern check
+    } // end files-loop
+  } // end dirs-loop
+
+  auto maxDimension = std::max_element(imageDimensions.begin(), imageDimensions.end());
+
+  for (size_t p = 0; p < requestedInfoVector.size(); p++)
+  {
+    for (size_t d = 0; d < *maxDimension; d++)
+    {
+      switch (p)
+      {
+      case Spacing:
+      {
+        propertyToWrite += ",Spacing_" + std::to_string(d);
+        break;
+      }
+      case Size:
+      {
+        propertyToWrite += ",Size_" + std::to_string(d);
+        break;
+      }
+      case Origin:
+      {
+        propertyToWrite += ",Origin_" + std::to_string(d);
+        break;
+      }
+      default:
+        break;
+      } // end switch-case
+    } // end dimension for-loop
+  } // end requestedInfoVector for-loop
+
+  propertyToWrite.erase(propertyToWrite.begin());
+
+  if (!outputToWrite.empty())
+  {
+    std::ofstream myfile(outputImageFile);
+    if (myfile.is_open())
+    {
+      myfile << "File," << propertyToWrite << "\n" << outputToWrite;
+      myfile.close();
+    }
+    else
+    {
+      std::cerr << "Unable to open file '" << outputImageFile << "' to write.\n";
+    }
+  }
+}
+
+MatrixType ReadBvecFile(std::string filename)
+{
+    using CSVFileReaderType = itk::CSVArray2DFileReader<double>;
+    //read bvec file
+    CSVFileReaderType::Pointer csvreader = CSVFileReaderType::New();
+
+    itk::SizeValueType rows;
+    itk::SizeValueType cols;
+    try
+    {
+        csvreader->SetFileName(filename);
+        csvreader->SetFieldDelimiterCharacter(' ');
+        csvreader->HasColumnHeadersOff();
+        csvreader->HasRowHeadersOff();
+        csvreader->Parse();
+        csvreader->GetDataDimension(rows, cols);
+    }
+    catch (const std::exception& e1)
+    {
+        std::cout << "Cannot find the specified bvec file. Error code : " + std::string(e1.what());
+    }
+    MatrixType dataMatrix(rows, cols); // give data matrix a definite size
+    dataMatrix = csvreader->GetArray2DDataObject()->GetMatrix();
+    return dataMatrix;
+}
+
+bool WriteBvecFile(MatrixType matrix, std::string filename)
+{
+    using WriterType = itk::CSVNumericObjectFileWriter<double>;
+    WriterType::Pointer writer = WriterType::New();
+
+    try {
+        writer->SetInput(&matrix);
+        writer->SetFileName(filename);
+        writer->SetFieldDelimiterCharacter(' ');
+        writer->Update();
+    }
+    catch (...) {
+        std::cout << "File writing failed. Check permissions, etc." << std::endl;
+        return false;
+    }
+
+    return true;
+
+}
+
 
 template< class TImageType >
 int algorithmsRunner()
@@ -62,19 +265,49 @@ int algorithmsRunner()
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resizing by a factor of " << resize << "% completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == Resample)
+  else if (requestedAlgorithm == Resample)
   {
-    auto outputImage = cbica::ResampleImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resamplingResolution, resamplingInterpolator);
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    itk::Vector< double, TImageType::ImageDimension > outputSpacing = inputImage->GetSpacing();
+    if (!resamplingReference.empty())
+    {
+      auto imageInfo_1 = cbica::ImageInfo(inputImageFile);
+      auto imageInfo_2 = cbica::ImageInfo(resamplingReference);
+      if (imageInfo_1.GetImageDimensions() != imageInfo_2.GetImageDimensions())
+      {
+        std::cerr << "The resampling reference image needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      outputSpacing = cbica::ReadImage< TImageType >(resamplingReference)->GetSpacing();
+    }
+    else
+    {
+      auto resolution_split = cbica::stringSplit(resamplingResolution_full, ",");
+      if (resolution_split.size() == 1)
+      {
+        std::cout << "Isotropic resultion of '" << resolution_split[0] << "' has been selected.\n";
+        for (size_t d = 1; d < TImageType::ImageDimension; d++)
+        {
+          resolution_split.push_back(resolution_split[0]);
+        }
+      }
+      if (resolution_split.size() != TImageType::ImageDimension)
+      {
+        std::cerr << "The resampling resolution needs to be the same dimension as the input image.\n";
+        return EXIT_FAILURE;
+      }
+      for (size_t d = 0; d < TImageType::ImageDimension; d++)
+      {
+        outputSpacing[d] = std::atof(resolution_split[d].c_str());
+      }
+    }
+    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
-    std::cout << "Resampled image to isotropic resolution of '" << resamplingResolution << "' using interpolator '" << resamplingInterpolator << "'.\n";
-    return EXIT_SUCCESS;
+    std::cout << "Resampled image to a resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
   }
-
-  if (requestedAlgorithm == UniqueValues)
+  else if (requestedAlgorithm == UniqueValues)
   {
     bool sort = true;
     if (uniqueValsSort == 0)
@@ -91,10 +324,8 @@ int algorithmsRunner()
         std::cout << cbica::to_string_precision(uniqueValues[i]) << "\n";
       }
     }
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == CreateMask)
+  else if (requestedAlgorithm == CreateMask)
   {
     auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -106,10 +337,8 @@ int algorithmsRunner()
 
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
     std::cout << "Create Mask completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == DicomLoadTesting)
+  else if (requestedAlgorithm == DicomLoadTesting)
   {
     auto readDicomImage = cbica::ReadImage< TImageType >(dicomFolderPath);
     if (!readDicomImage)
@@ -169,8 +398,7 @@ int algorithmsRunner()
     return differenceFailed;
     //return EXIT_FAILURE;
   }
-
-  if (requestedAlgorithm == Dicom2Nifti)
+  else if (requestedAlgorithm == Dicom2Nifti)
   {
     auto readDicomImage = cbica::ReadImage< TImageType >(inputImageFile);
     if (!readDicomImage)
@@ -214,18 +442,36 @@ int algorithmsRunner()
         std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
         std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
       }
-
-      return EXIT_SUCCESS;
     }
   }
-
-  if (requestedAlgorithm == Nifti2Dicom)
+  else if (requestedAlgorithm == Nifti2Dicom)
   {
+    std::cout << "!!! WARNING: " <<
+      "Trying to write DICOM from NIfTI is dependent on the fact that the reference DICOM and NIfTI are in the same physical space and describe the same organ type.\n";
     auto referenceDicom = targetImageFile;
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    bool prevOutput = false;
+    if (cbica::isDir(outputImageFile))
+    {
+      prevOutput = true;
+    }
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance);
+    if (!prevOutput)
+    {
+      if (cbica::exists(outputImageFile))
+      {
+        std::cout << "Finished writing the DICOM series.\n";
+      }
+      else
+      {
+        std::cerr << "Tolerance values:\n";
+        std::cerr << "  Direction: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "     Origin: " << nifti2dicomOriginTolerance << "%\n";
+        std::cerr << "Couldn't write DICOM series.\n";
+        return EXIT_FAILURE;
+      }
+    }
   }
-
-  if (requestedAlgorithm == Nifti2DicomSeg)
+  else if (requestedAlgorithm == Nifti2DicomSeg)
   {
     if (TImageType::ImageDimension != 3)
     {
@@ -247,10 +493,8 @@ int algorithmsRunner()
       std::cerr << "The supplied reference DICOM directory, '" << targetImageFile << "' was not detected as a directory. Please try again.\n";
     }
     cbica::ConvertNiftiToDicomSeg(inputImageFile, actualDicomReferenceDir, dicomSegJSON, outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ChangeValue)
+  else if (requestedAlgorithm == ChangeValue)
   {
     auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
 
@@ -264,9 +508,9 @@ int algorithmsRunner()
     {
       return EXIT_FAILURE;
     }
-  }
 
-  if (requestedAlgorithm == Casting)
+  }
+  else if (requestedAlgorithm == Casting)
   {
     if (targetImageFile == "uchar")
     {
@@ -277,6 +521,18 @@ int algorithmsRunner()
     else if (targetImageFile == "char")
     {
       using DefaultPixelType = char;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
+    else if (targetImageFile == "ushort")
+    {
+      using DefaultPixelType = unsigned short;
+      using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
+      cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
+    }
+    else if (targetImageFile == "short")
+    {
+      using DefaultPixelType = short;
       using CurrentImageType = itk::Image< DefaultPixelType, TImageType::ImageDimension >;
       cbica::WriteImage< CurrentImageType >(cbica::ReadImage< CurrentImageType >(inputImageFile), outputImageFile);
     }
@@ -335,10 +591,8 @@ int algorithmsRunner()
     }
 
     std::cout << "Casting completed.\n";
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == TestComparison)
+  else if (requestedAlgorithm == TestComparison)
   {
     auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
     auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
@@ -371,10 +625,8 @@ int algorithmsRunner()
       std::cerr << "Images are in different spaces (size/origin/spacing mismatch).\n";
       return EXIT_FAILURE;
     }
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == BoundingBox)
+  else if (requestedAlgorithm == BoundingBox)
   {
     if (!cbica::ImageSanityCheck(inputImageFile, targetImageFile))
     {
@@ -500,10 +752,8 @@ int algorithmsRunner()
     }
 
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdAbove)
+  else if (requestedAlgorithm == ThresholdAbove)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -511,10 +761,8 @@ int algorithmsRunner()
     thresholder->ThresholdAbove(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdBelow)
+  else if (requestedAlgorithm == ThresholdBelow)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -522,10 +770,8 @@ int algorithmsRunner()
     thresholder->ThresholdBelow(thresholdBelow);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdAboveAndBelow)
+  else if (requestedAlgorithm == ThresholdAboveAndBelow)
   {
     auto thresholder = itk::ThresholdImageFilter< TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -533,10 +779,8 @@ int algorithmsRunner()
     thresholder->ThresholdOutside(thresholdBelow, thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdBinary)
+  else if (requestedAlgorithm == ThresholdBinary)
   {
     auto thresholder = itk::BinaryThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -546,10 +790,8 @@ int algorithmsRunner()
     thresholder->SetUpperThreshold(thresholdAbove);
     thresholder->Update();
     cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
   }
-
-  if (requestedAlgorithm == ThresholdOtsu)
+  else if (requestedAlgorithm == ThresholdOtsu)
   {
     auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
@@ -561,16 +803,335 @@ int algorithmsRunner()
     thresholder->SetInsideValue(thresholdInsideValue);
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
-    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
-    return EXIT_SUCCESS;
-  }
 
-  if (requestedAlgorithm == ConvertFormat)
+    auto invertIntensityFilter = itk::InvertIntensityImageFilter< TImageType >::New();
+    invertIntensityFilter->SetInput(thresholder->GetOutput());
+    cbica::WriteImage< TImageType >(invertIntensityFilter->GetOutput(), outputImageFile);
+  }
+  else if (requestedAlgorithm == ConvertFormat)
   {
     cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+  }
+  else if (requestedAlgorithm == Image2World)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atoi(coordinate_split[d].c_str());
+    }
+    typename TImageType::PointType output;
+    inputImage->TransformIndexToPhysicalPoint(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+  }
+  else if (requestedAlgorithm == World2Image)
+  {
+    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    auto coordinate_split = cbica::stringSplit(coordinateToTransform, ",");
+    if (coordinate_split.size() != TImageType::ImageDimension)
+    {
+      std::cerr << "Please provide the coordinate to transform in the same format as the input image (i.e., N coordinates for a ND image).\n";
+      return EXIT_FAILURE;
+    }
+    typename TImageType::IndexType output;
+    typename TImageType::PointType indexToConvert;
+    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    {
+      indexToConvert[d] = std::atof(coordinate_split[d].c_str());
+    }
+    inputImage->TransformPhysicalPointToIndex(indexToConvert, output);
+    std::cout << indexToConvert << " ==> " << output << "\n";
+  }
+  else if (requestedAlgorithm == LabelSimilarity)
+  {
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
+
+    if (!inputMaskFile.empty())
+    {
+      if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
+      {
+        auto maskImage = cbica::ReadImage< DefaultImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
+        masker_1->SetInput(inputImage);
+        masker_1->SetMaskImage(maskImage);
+        masker_1->Update();
+        inputImage = masker_1->GetOutput();
+
+        auto masker_2 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
+        masker_2->SetInput(referenceImage);
+        masker_2->SetMaskImage(maskImage);
+        masker_2->Update();
+        referenceImage = masker_2->GetOutput();
+      }
+      else
+      {
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n";
+      }
+    }
+
+    auto stats = cbica::GetLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    std::cout << "Metric,Value\n";
+    for (const auto &stat : stats)
+    {
+      std::cout << stat.first << "," << stat.second << "\n";
+    }
+
     return EXIT_SUCCESS;
   }
+  else if (requestedAlgorithm == LabelSimilarityBraTS)
+  {
+    // this filter only works on unsigned int type
+    using DefaultImageType = itk::Image< unsigned int, TImageType::ImageDimension >;
+    auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
+    auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
+    if (!cbica::ImageSanityCheck< DefaultImageType >(inputImage, referenceImage))
+    {
+      std::cerr << "Images are not aligned, please ensure both images have the same origin, spacing and direction cosines before trying to extract similarity measures (use '-inf' for image information).\n";
+      return EXIT_FAILURE;
+    }
+
+    if (!inputMaskFile.empty())
+    {
+      if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
+      {
+        auto maskImage = cbica::ReadImage< DefaultImageType >(inputMaskFile);
+        auto masker_1 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
+        masker_1->SetInput(inputImage);
+        masker_1->SetMaskImage(maskImage);
+        masker_1->Update();
+        inputImage = masker_1->GetOutput();
+
+        auto masker_2 = itk::MaskImageFilter< DefaultImageType, DefaultImageType >::New();
+        masker_2->SetInput(referenceImage);
+        masker_2->SetMaskImage(maskImage);
+        masker_2->Update();
+        referenceImage = masker_2->GetOutput();
+      }
+      else
+      {
+        std::cerr << "Mask is not defined in the same physical space as input image and therefore has been discarded from computation.\n";
+      }
+    }
+
+    auto stats = cbica::GetBraTSLabelStatistics< DefaultImageType >(inputImage, referenceImage);
+
+    std::string headers = "Labels", labelsMetricsAndValues;
+    bool metricsDone = false;
+
+    auto temp = stats.size();
+    if (!outputImageFile.empty())
+    {
+      for (const auto &label : stats)
+      {
+        bool labelPicked = false;
+        for (const auto &metric : label.second)
+        {
+          if (!metricsDone)
+          {
+            headers += "," + metric.first;
+          }
+          if (!labelPicked)
+          {
+            labelsMetricsAndValues += label.first;
+            labelPicked = true;
+          }
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "NaN";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "INF";
+          }
+          else
+          {
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
+          }
+          labelsMetricsAndValues += "," + metric_second;
+        }
+        labelsMetricsAndValues += "\n";
+        if (!metricsDone)
+        {
+          headers += "\n";
+          metricsDone = true;
+        }
+      }
+      // write to file
+      std::ofstream output;
+      output.open(outputImageFile.c_str());
+      output << headers << labelsMetricsAndValues;
+      output.close();
+    }
+    else
+    {
+      std::cout << "Label,Metric,Value\n";
+      for (const auto &label : stats)
+      {
+        for (const auto &metric : label.second)
+        {
+          std::string metric_second;
+          if (std::isnan(metric.second))
+          {
+            metric_second = "NaN";
+          }
+          else if (std::isinf(metric.second))
+          {
+            metric_second = "INF";
+          }
+          else
+          {
+            if (metric.second > 10e100)
+            {
+              metric_second = "INF";
+            }
+            else
+            {
+              metric_second = std::to_string(metric.second);
+            }
+          }
+          std::cout << label.first << "," << metric.first << "," << metric_second << "\n";
+        }
+      }
+    }
+
+    return EXIT_SUCCESS;
+  }
+  else if (requestedAlgorithm == Hausdorff)
+  {
+    auto filter = itk::HausdorffDistanceImageFilter< TImageType, TImageType >::New();
+    filter->SetInput1(cbica::ReadImage< TImageType >(inputImageFile));
+    filter->SetInput2(cbica::ReadImage< TImageType >(referenceMaskForSimilarity));
+    try
+    {
+      filter->Update();
+    }
+    catch (const std::exception&e)
+    {
+      std::cerr << "Hausdorff calculation error: " << e.what() << "\n";
+      return EXIT_FAILURE;
+    }   
+
+    std::cout << "Hausdorff Distance: " << filter->GetHausdorffDistance() << "\n";
+  }
+
+  // if no other algorithm has been selected and mask & output files are present and in same space as input, apply it
+  else if (cbica::isFile(inputMaskFile) && !outputImageFile.empty())
+  {
+    auto errorMessage = "The input mask and mask are not in the same space.\n";
+    if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
+    {
+      auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
+      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
+      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      masker->Update();
+      cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
+    }
+    else if (TImageType::ImageDimension == 4)
+    {
+      // input image is 4D and mask is 3D
+      if (!cbica::ImageSanityCheck(inputMaskFile, inputImageFile, true))
+      {
+        std::cerr << errorMessage;
+        return EXIT_FAILURE;
+      }
+
+      auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+      using TBaseImageType = itk::Image< typename TImageType::PixelType, 3 >;
+      auto maskImage = cbica::ReadImage< TBaseImageType >(inputMaskFile);
+      auto inputImages = cbica::GetExtractedImages<
+        TImageType, TBaseImageType >(
+          inputImage);
+
+      std::vector< typename TBaseImageType::Pointer > outputImages;
+      outputImages.resize(inputImages.size());
+
+      for (size_t i = 0; i < inputImages.size(); i++)
+      {
+        auto masker = itk::MaskImageFilter< TBaseImageType, TBaseImageType >::New();
+        masker->SetInput(inputImages[i]);
+        masker->SetMaskImage(maskImage);
+        masker->Update();
+        outputImages[i] = masker->GetOutput();
+      }
+
+      auto output = cbica::GetJoinedImage< TBaseImageType, TImageType >(outputImages, inputImage->GetSpacing()[3]);
+      cbica::WriteImage< TImageType >(output, outputImageFile);
+    }
+    else
+    {
+      std::cerr << errorMessage;
+      return EXIT_FAILURE;
+    }
+  }
+  else
+  {
+    // no algorithm has been selected
+  }
+  
+  return EXIT_SUCCESS;
+}
+
+//! helper function to image stack joining
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_imageStack2join(std::vector< std::string >& inputImageFiles)
+{
+  std::vector< typename TImageType::Pointer > inputImages;
+  inputImages.resize(inputImageFiles.size());
+  for (size_t i = 0; i < inputImageFiles.size(); i++)
+  {
+    inputImages[i] = cbica::ReadImage< TImageType >(inputImageFiles[i]);
+  }
+  auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing);
+  cbica::WriteImage< TOutputImageType >(output, outputImageFile);
+  return EXIT_SUCCESS;
+}
+
+//! helper function to image stack extraction
+template< class TImageType, class TOutputImageType >
+int algorithmsRunner_join2imageStack()
+{
+  auto outputImages = cbica::GetExtractedImages< TImageType, TOutputImageType >(cbica::ReadImage< TImageType >(inputImageFile));
+  std::string path, base, ext;
+  cbica::splitFileName(outputImageFile, path, base, ext);
+  if ((outputImageFile.back() == '\\') || (outputImageFile.back() == '/'))
+  {
+    cbica::createDir(outputImageFile);
+    if (base.empty())
+    {
+      base = "extractedImage";
+    }
+  }
+  else
+  {
+    cbica::createDir(path);
+  }
+
+  for (size_t i = 0; i < outputImages.size(); i++)
+  {
+    cbica::WriteImage< TOutputImageType >(
+      outputImages[i],
+      cbica::normalizePath(path + "/" + base + "_" + std::to_string(i) + ".nii.gz")
+      );
+  }
   return EXIT_SUCCESS;
 }
 
@@ -584,8 +1145,9 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
   parser.addOptionalParameter("df", "dicomDirectory", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
-  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::FLOAT, "0-10", "[Resample] Isotropic resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to 1.0");
-  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
+  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::STRING, "0-10", "[Resample] Resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to " + resamplingResolution_full, "Use '-rf' for a reference file");
+  parser.addOptionalParameter("rf", "resizeReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
+  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
@@ -599,25 +1161,52 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
+  parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
+  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
-  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e");
+  parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
+      "Use the -bv or --bvec option to reorient an accompanying bvec file." );
+  parser.addOptionalParameter("bv", "bvec", cbica::Parameter::FILE, "bvec file to reorient", "The bvec file to reorient alongside the corresponding image", "For correct output, the given file should be in the same orientation as the input image",
+      "This option can only be used alongside the -or or --orient options.");
   parser.addOptionalParameter("thA", "threshAbove", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("thB", "threshBelow", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity BELOW which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("tAB", "threshAnB", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensities outside Lower and Upper thresholds will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
-  parser.addOptionalParameter("cov", "convert", cbica::Parameter::BOOLEAN, "0-1", "The values that will go inside and outside the thresholded region", "Defaults to '1'");
+  parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-i2w 10,20,30'");
+  parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
+  parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
+  parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
+  parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
+  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
+  parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
+  parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
+  parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");
+  parser.addOptionalParameter("cFE", "collectFileExt", cbica::Parameter::STRING, "File extension", "The file extension to check for in every file when collecting information", "Defaults to check all");
+  parser.addOptionalParameter("cP", "collectProperties", cbica::Parameter::STRING, "0-2", "Requested image property", "0: spacings, 1: size, 2: origin", "Defaults to 0", "Defaults to '-cP " + collectInfoProps + "'");
 
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_int.nii.gz -c int", "Cast an image pixel-by-pixel to a signed integer");
   parser.addExampleUsage("-i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear", "Resize an image by 75% using linear interpolation");
   parser.addExampleUsage("-i C:/test.nii.gz -inf", "Prints out image information to console (for DICOMs, this does a full dump of the tags)");
   parser.addExampleUsage("-i C:/test/1.dcm -o C:/test.nii.gz -d2n C:/test_reference.nii.gz", "DICOM to NIfTI conversion and do sanity check of the converted image with the reference image");
   parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -n2d C:/referenceDICOM/", "NIfTI to DICOM conversion and do sanity check of the converted image with the reference image");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/test_dicom/ -ds C:/referenceDICOM/ -dsJ C:/dicomSeg.json", "NIfTI Segmentation to DICOM-Seg conversion using the supplied reference DICOM and JSON");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -or RAI", "Re-orient input image to RAI");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -thO 1", "Otsu Threshold");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tBn 50,100", "Binary Threshold between 50 and 100 with default outside & inside values");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output.nii.gz -tAB 50,100 -tOI -100,10000", "Above & Below Threshold between 50 and 100 with outside value -100 and inside value 10000");
+  parser.addExampleUsage("-i C:/test/1.nii.gz -o C:/output -j2e 1", "Extract the joined image into its series");
+  parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation");
+  parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
+  parser.addExampleUsage("-i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
+  parser.addExampleUsage("-i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1", "From specified input directory, spacing & size of files with names containing 'volume' with extension '.nii.gz' is collected recursively");
 
   parser.addApplicationDescription("This application has various utilities that can be used for constructing pipelines around CaPTk's functionalities. Please add feature requests on the CaPTk GitHub page at https://github.com/CBICA/CaPTk.");
-
+  
   if (parser.isPresent("i"))
   {
     parser.getParameterValue("i", inputImageFile);
@@ -640,14 +1229,43 @@ int main(int argc, char** argv)
   else if (parser.isPresent("d2n"))
   {
     requestedAlgorithm = Dicom2Nifti;
+
+	  // check if the Nifti output filename has been specified?
+	  if (parser.isPresent("o"))
+	  {
+		  parser.getParameterValue("o", outputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
+
+	  // check if the Dicom input has been specified?
+	  if (parser.isPresent("i"))
+	  {
+		  parser.getParameterValue("i", inputImageFile);
+	  }
+	  else
+	  {
+		  std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
     parser.getParameterValue("d2n", targetImageFile);
-    parser.getParameterValue("o", outputImageFile);
   }
   else if (parser.isPresent("n2d"))
   {
     requestedAlgorithm = Nifti2Dicom;
     parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
     parser.getParameterValue("o", outputImageFile);
+    if (parser.isPresent("ndD"))
+    {
+      parser.getParameterValue("ndD", nifti2dicomTolerance);
+    }
+    if (parser.isPresent("ndO"))
+    {
+      parser.getParameterValue("ndO", nifti2dicomOriginTolerance);
+    }
   }
   else if (parser.isPresent("ds"))
   {
@@ -666,19 +1284,26 @@ int main(int argc, char** argv)
   }
   else if (parser.isPresent("r"))
   {
+    requestedAlgorithm = Resize;
     parser.getParameterValue("r", resize);
-    if (resize != 100)
+    if (parser.isPresent("ri"))
     {
-      requestedAlgorithm = Resize;
+      parser.getParameterValue("ri", resamplingInterpolator);
     }
-    else
+  }
+  else if (parser.isPresent("rr"))
+  {
+    requestedAlgorithm = Resample;
+    parser.getParameterValue("rr", resamplingResolution_full);
+    if (parser.isPresent("ri"))
     {
-      requestedAlgorithm = Resample;
-      if (parser.isPresent("rr"))
-      {
-        parser.getParameterValue("rr", resamplingResolution);
-      }
+      parser.getParameterValue("ri", resamplingInterpolator);
     }
+  }
+  else if (parser.isPresent("rf"))
+  {
+    requestedAlgorithm = Resample;
+    parser.getParameterValue("rf", resamplingReference);
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
@@ -707,6 +1332,10 @@ int main(int argc, char** argv)
   {
     parser.getParameterValue("or", orientationDesired);
     requestedAlgorithm = OrientImage;
+    if (parser.isPresent("bv"))
+    {
+        parser.getParameterValue("bv", inputBvecFile);
+    }
   }
   else if (parser.isPresent("tb"))
   {
@@ -838,6 +1467,141 @@ int main(int argc, char** argv)
     requestedAlgorithm = ConvertFormat;
   }
 
+  else if (parser.isPresent("i2w"))
+  {
+    requestedAlgorithm = Image2World;
+    parser.getParameterValue("i2w", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-i2w 10,20,30'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("w2i"))
+  {
+    requestedAlgorithm = World2Image;
+    parser.getParameterValue("w2i", coordinateToTransform);
+    if (coordinateToTransform.empty())
+    {
+      std::cerr << "Please provide the coordinate to transform in a comma-separated format: '-w2i 10.5,20.6,30.8'\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  else if (parser.isPresent("j2e"))
+  {
+    requestedAlgorithm = JoinedImage2Stack;
+
+    auto imageInfo_first = cbica::ImageInfo(inputImageFile);
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 2>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    case 4:
+    {
+      using TImageType = itk::Image<float, 4>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_join2imageStack< TImageType, TOImageType >();
+    }
+    default:
+      break;
+    }
+    return EXIT_SUCCESS;
+  }
+  else if (parser.isPresent("e2j"))
+  {
+    requestedAlgorithm = ImageStack2Join;
+    int pos;
+    parser.compareParameter("e2j", pos);
+    if (argc <= pos + 1)
+    {
+      std::cerr << "Please provide the spacing along the joined axis: '-e2j 1.0'.\n";
+      return EXIT_FAILURE;
+    }
+    parser.getParameterValue("e2j", imageStack2JoinSpacing);
+
+    auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
+    if (imagesToJoin.empty())
+    {
+      std::cerr << "Please pass a folder containing images the join using '-i'.\n";
+      return EXIT_FAILURE;
+    }
+    auto imageInfo_first = cbica::ImageInfo(imagesToJoin[0]);
+    for (size_t i = 1; i < imagesToJoin.size(); i++)
+    {
+      auto currentImageInfo = cbica::ImageInfo(imagesToJoin[i]);
+      if (imageInfo_first.GetImageDimensions() != currentImageInfo.GetImageDimensions())
+      {
+        std::cerr << "The image '" << imagesToJoin[i] << "' has a different dimension with the first image in series; cannot proceed.\n";
+        return EXIT_FAILURE;
+      }      
+    }
+
+    switch (imageInfo_first.GetImageDimensions())
+    {
+    case 2:
+    {
+      using TImageType = itk::Image<float, 2>;
+      using TOImageType = itk::Image<float, 3>;
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+    }
+    case 3:
+    {
+      using TImageType = itk::Image<float, 3>;
+      using TOImageType = itk::Image<float, 4>;
+      algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+    }
+    default:
+      break;
+    }
+    return EXIT_SUCCESS;
+  }
+  else if (parser.isPresent("ls"))
+  {
+    requestedAlgorithm = LabelSimilarity;
+    parser.getParameterValue("ls", referenceMaskForSimilarity);
+  }
+  else if (parser.isPresent("lsb"))
+  {
+    requestedAlgorithm = LabelSimilarityBraTS;
+    parser.getParameterValue("lsb", referenceMaskForSimilarity);
+  }
+  else if (parser.isPresent("hd"))
+  {
+    requestedAlgorithm = Hausdorff;
+    parser.getParameterValue("hd", referenceMaskForSimilarity);
+  }
+  else if (parser.isPresent("co"))
+  {
+    parser.getParameterValue("co", collectInfoRecurse);
+    if (parser.isPresent("cF"))
+    {
+      parser.getParameterValue("cF", collectInfoFile);
+    }
+    if (parser.isPresent("cFE"))
+    {
+      parser.getParameterValue("cFE", collectInfoFileExt);
+    }
+    if (parser.isPresent("cP"))
+    {
+      parser.getParameterValue("cP", collectInfoProps);
+    }
+    auto temp = cbica::stringSplit(collectInfoProps, ",");
+    std::vector< int > requestedProps;
+    for (size_t p = 0; p < temp.size(); p++)
+    {
+      requestedProps.push_back(std::atoi(temp[p].c_str()));
+    }
+    CollectImageInfo(requestedProps);
+    return EXIT_SUCCESS;
+  }
+  
   // this doesn't need any template initialization
   if (requestedAlgorithm == SanityCheck)
   {
@@ -852,13 +1616,54 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
   }
+
+  if (cbica::isDir(inputImageFile))
+  {
+    std::cerr << "Please pass the first file in the DICOM series as input.\n";
+    return EXIT_FAILURE;
+  }
+  if (!cbica::isFile(inputImageFile))
+  {
+    std::cerr << "Input file '" << inputImageFile << "' not found.\n";
+    return EXIT_FAILURE;
+  }
   auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
   if (requestedAlgorithm == Information)
   {
+    std::cout << "ITK Image information:.\n";
+    auto dims = inputImageInfo.GetImageDimensions();
+    auto size = inputImageInfo.GetImageSize();
+    auto origin = inputImageInfo.GetImageOrigins();
+    auto spacing = inputImageInfo.GetImageSpacings();
+    auto directions = inputImageInfo.GetImageDirections();
+    auto size_string = std::to_string(size[0]);
+    auto origin_string = std::to_string(origin[0]);
+    auto spacing_string = std::to_string(spacing[0]);
+    auto directions_string = "[" + std::to_string(directions[0][0]) + "x" + std::to_string(directions[0][1]) + "x" + std::to_string(directions[0][2]);
+    size_t totalSize = size[0];
+    for (size_t i = 1; i < dims; i++)
+    {
+      size_string += "x" + std::to_string(size[i]);
+      origin_string += "x" + std::to_string(origin[i]);
+      spacing_string += "x" + std::to_string(spacing[i]);
+      directions_string += ";" + std::to_string(directions[i][0]) + "x" + std::to_string(directions[i][1]) + "x" + std::to_string(directions[i][2]);
+      totalSize *= size[i];
+    }
+    directions_string += "]";
+    std::cout << "Property,Value\n";
+    std::cout << "Dimensions," << dims << "\n";
+    std::cout << "Size," << size_string << "\n";
+    std::cout << "Total," << totalSize << "\n";
+    std::cout << "Origin," << origin_string << "\n";
+    std::cout << "Spacing," << spacing_string << "\n";
+    std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
+    std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n";
+    std::cout << "Directions," << directions_string << "\n";
+
     if (cbica::IsDicom(inputImageFile)) // if dicom file
     {
-      std::cout << "DICOM file detected, will print out all tags.\n";
+      std::cout << "DICOM file detected, will print out all tags from here.\n";
       DicomMetadataReader reader;
       reader.SetFilePath(inputImageFile);
       bool readStatus = reader.ReadMetaData();
@@ -878,33 +1683,6 @@ int main(int argc, char** argv)
           << labelValuePair.first.c_str() << ","
           << labelValuePair.second.c_str() << "\n";
       }
-    }
-    else
-    {
-      std::cout << "Non-DICOM file detected, will print out ITK Image information.\n";
-      auto dims = inputImageInfo.GetImageDimensions();
-      auto size = inputImageInfo.GetImageSize();
-      auto origin = inputImageInfo.GetImageOrigins();
-      auto spacing = inputImageInfo.GetImageSpacings();
-      auto size_string = std::to_string(size[0]);
-      auto origin_string = std::to_string(origin[0]);
-      auto spacing_string = std::to_string(spacing[0]);
-      size_t totalSize = size[0];
-      for (size_t i = 1; i < dims; i++)
-      {
-        size_string += "x" + std::to_string(size[i]);
-        origin_string += "x" + std::to_string(origin[i]);
-        spacing_string += "x" + std::to_string(spacing[i]);
-        totalSize *= size[i];
-      }
-      std::cout << "Property,Value\n";
-      std::cout << "Dimensions," << dims << "\n";
-      std::cout << "Size," << size_string << "\n";
-      std::cout << "Total," << totalSize << "\n";
-      std::cout << "Origin," << origin_string << "\n";
-      std::cout << "Spacing," << spacing_string << "\n";
-      std::cout << "Component," << inputImageInfo.GetComponentTypeAsString() << "\n";
-      std::cout << "Pixel Type," << inputImageInfo.GetPixelTypeAsString() << "\n"; 
     }
     return EXIT_SUCCESS;
   }
@@ -928,10 +1706,23 @@ int main(int argc, char** argv)
       std::cout << "Original Image Orientation: " << output.first << "\n";
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
-      auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-      cbica::WriteImage< ImageType >(output.second, tempOutputFile);
-      cbica::WriteImage< ImageType >(cbica::ReadImage< TImageType >(tempOutputFile), outputImageFile);
-      std::remove(tempOutputFile.c_str());
+
+      if (ext.find(".nii") != std::string::npos)
+      {
+        std::cerr << "WARNING: NIfTI files do NOT support orientation properly [https://github.com/InsightSoftwareConsortium/ITK/issues/1042].\n";
+      }
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(output.second, tempOutputFile);
+        auto reorientedInput = cbica::ReadImage< ImageType >(tempOutputFile);
+        cbica::WriteImage< ImageType >(reorientedInput, outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(output.second, outputImageFile);
+      }
       return EXIT_SUCCESS;
     }
 
@@ -942,6 +1733,111 @@ int main(int argc, char** argv)
   case 4:
   {
     using ImageType = itk::Image< float, 4 >;
+
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    {
+      typedef vnl_matrix<double> MatrixType;
+
+      using OrientationImageType = itk::Image< float, 3 >;
+      auto imageSize = inputImageInfo.GetImageSize();
+
+      auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
+
+      // set the sub-image properties
+      typename ImageType::IndexType regionIndex;
+      typename ImageType::SizeType regionSize;
+      regionSize[0] = imageSize[0];
+      regionSize[1] = imageSize[1];
+      regionSize[2] = imageSize[2];
+      regionSize[3] = 0;
+      regionIndex[0] = 0;
+      regionIndex[1] = 0;
+      regionIndex[2] = 0;
+      regionIndex[3] = 0;
+
+      std::vector<ImageType::Pointer> OnePatientperfusionImages;
+
+      auto joinFilter = itk::JoinSeriesImageFilter< OrientationImageType, ImageType >::New();
+
+      bool originalOrientationOutput = false;
+      std::string originalOrientation;
+
+      // make orientations uniform uppercase
+      std::transform(orientationDesired.begin(), orientationDesired.end(), orientationDesired.begin(), ::toupper);
+      vtkAnatomicalOrientation vtkDesiredOrientation(orientationDesired);
+      vtkAnatomicalOrientation vtkOriginalOrientation; // will be read into from the input image orientation
+      if (!vtkDesiredOrientation.IsValid())
+      {
+          std::cout << "Cannot reorient: desired orientation \" " + orientationDesired + 
+              "\"" + "is not a valid orientation." << std::endl;
+          return(EXIT_FAILURE);
+      }
+      // loop through time points
+      for (size_t i = 0; i < imageSize[3]; i++)
+      {
+        regionIndex[3] = i;
+        typename ImageType::RegionType desiredRegion(regionIndex, regionSize);
+        auto filter = itk::ExtractImageFilter< ImageType, OrientationImageType >::New();
+        filter->SetExtractionRegion(desiredRegion);
+        filter->SetInput(inputImage);
+        filter->SetDirectionCollapseToSubmatrix();
+        filter->Update();
+        auto CurrentTimePoint = filter->GetOutput();
+
+        auto output = cbica::GetImageOrientation< OrientationImageType >(CurrentTimePoint, orientationDesired);
+        if (!originalOrientationOutput)
+        {
+          originalOrientation = output.first;
+          std::cout << "Original Image Orientation: " << originalOrientation << "\n";
+          vtkOriginalOrientation.SetForAcronym(originalOrientation);
+          originalOrientationOutput = true;
+        }
+
+        joinFilter->SetInput(i, output.second);
+      }
+
+      joinFilter->Update();
+
+      std::string path, base, ext;
+      cbica::splitFileName(outputImageFile, path, base, ext);
+      if (ext != ".mha")
+      {
+        auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), tempOutputFile);
+        cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
+        std::remove(tempOutputFile.c_str());
+      }
+      else
+      {
+        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), outputImageFile);
+      }
+      std::cout << "Finished reorienting " + inputImageFile + " (" + originalOrientation + ") to "
+          + outputImageFile + " (" + orientationDesired + ")" << std::endl;
+      if (!inputBvecFile.empty())
+      {
+          /* Bvec reorientation code is based on a set of python scripts from Drew Parker @ CBICA. 
+          See orientations_captk.py and test_las_to_lps.py in /CaPTk/deprecated/Utilities. */
+          std::cout << "Reorienting supplied bvec file to " + orientationDesired << std::endl;
+          std::string bvecOutputFile = path + "/" + base + ".bvec"; // same basename as output image
+
+          double transform[9] = { 0.0 };
+          vtkOriginalOrientation.GetTransformTo(vtkDesiredOrientation, transform);
+          MatrixType transformMatrix(3, 3, 9, transform);
+          MatrixType dataMatrix = ReadBvecFile(inputBvecFile);
+          MatrixType resultMatrix(dataMatrix); // same shape as data
+          resultMatrix = dataMatrix.transpose() * transformMatrix; // apply the transform
+          resultMatrix.inplace_transpose(); // transpose back to original shape
+          bool writeSucceeded = WriteBvecFile(resultMatrix, bvecOutputFile);
+          if (!writeSucceeded)
+          {
+              return EXIT_FAILURE;
+          }
+          std::cout << "Finished reorienting " + bvecOutputFile + " (" + originalOrientation + ") to "
+              + outputImageFile + " (" + orientationDesired + ")" << std::endl;
+      }
+      return EXIT_SUCCESS;
+    }
+
     return algorithmsRunner< ImageType >();
 
     break;
@@ -953,3 +1849,5 @@ int main(int argc, char** argv)
 
   return EXIT_SUCCESS;
 }
+
+

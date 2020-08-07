@@ -28,8 +28,8 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 //#include "cbicaITKImageInfo.h"
 
 // stuff used in the program
-std::string loggerFile, multipatient_file, patient_id, image_path_string, modalities_string, maskfilename, 
-selected_roi_string, roi_labels_string, param_file, outputdir, offset_String, outputFilename;
+std::string loggerFile, multipatient_file, patient_id = "DEFAULT", image_path_string, modalities_string, maskfilename, 
+selected_roi_string = "all", roi_labels_string = "all", param_file, outputDir, offset_String, outputFilename;
 
 bool debug = false, debugWrite = false, verticalConc = false, featureMaps = false;
 
@@ -40,22 +40,18 @@ std::vector< std::string > modality_names, image_paths, selected_roi, roi_labels
 
 //! The main algorithm, which is templated across the image type
 template< class TImageType >
-void algorithmRunner()
+void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, typename TImageType::Pointer inputMask)
 {
   FeatureExtraction<TImageType> features;
-  std::vector<typename TImageType::Pointer> inputimages;
 
-  if (!cbica::isFile(maskfilename))
+  if (inputMask.IsNull())
   {
-    std::cerr << "Mask file is needed [use parameter '-m' on command line for single subject or the header 'ROIFile' in batch file]; SubjectID: '" << patient_id << "'\n";
-    //exit(EXIT_FAILURE);
-    return;
-  }
-  if (image_paths.empty())
-  {
-    std::cerr << "Input images are needed [use parameter '-i' on command line for single subject or the header 'Images' in batch file]; SubjectID: '" << patient_id << "'\n";
-    //exit(EXIT_FAILURE);
-    return;
+    if (!cbica::isFile(maskfilename))
+    {
+      std::cerr << "Mask file is needed [use parameter '-m' on command line for single subject or the header 'ROIFile' in batch file]; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return;
+    }
   }
   if (modality_names.empty())
   {
@@ -63,12 +59,31 @@ void algorithmRunner()
     //exit(EXIT_FAILURE);
     return;
   }
-  if (image_paths.size() != modality_names.size())
+  if (inputImages.empty())
   {
-    std::cerr << "Number of images and modalities should be the same; SubjectID: '" << patient_id << "'\n";
-    //exit(EXIT_FAILURE);
-    return;
+    if (image_paths.empty())
+    {
+      std::cerr << "Input images are needed [use parameter '-i' on command line for single subject or the header 'Images' in batch file]; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return;
+    }
+    if (image_paths.size() != modality_names.size())
+    {
+      std::cerr << "Number of images and modalities should be the same; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return;
+    }
   }
+  else
+  {
+    if (inputImages.size() != modality_names.size())
+    {
+      std::cerr << "Number of images and modalities should be the same; SubjectID: '" << patient_id << "'\n";
+      //exit(EXIT_FAILURE);
+      return;
+    }
+  }
+
   if (patient_id.empty())
   {
     std::cerr << "Patient name or ID is needed [use parameter '-n' on command line for single subject or the header 'PATIENT_ID' in batch file]; SubjectID: '" << patient_id << "'\n";
@@ -78,39 +93,58 @@ void algorithmRunner()
   if (selected_roi.empty())
   {
     std::cout << "No ROI values have been selected for patient_id '" << patient_id << "', computation shall be done on all ROIs present in mask.\n";
-    //selected_roi = "all";
+    //selected_roi_string = "all";
   }
   if (roi_labels.empty())
   {
     std::cout << "No ROI labels have been provided for patient_id '" << patient_id << "', the ROI values will be used as labels instead.\n";
-    //roi_labels = "all";
+    //roi_labels_string = "all";
   }
-  cbica::dos2unix(param_file);
+  //param_file = cbica::dos2unix(param_file, outputDir);
   std::vector< std::string > imageNames = image_paths;
 
-  //check if all the input images and mask match dimension spacing and size
-  for (size_t i = 0; i < imageNames.size(); i++)
+  // if input images have not been defined before, read them from the paths
+  if (inputImages.empty())
   {
-    if (cbica::isDir(imageNames[i]))
+    //check if all the input images and mask match dimension spacing and size
+    for (size_t i = 0; i < imageNames.size(); i++)
     {
-      std::cerr << "Images cannot have directory input. Please use absolute paths; SubjectID: '" << patient_id << "'\n";
-      //exit(EXIT_FAILURE);
-      return;
+      if (cbica::isDir(imageNames[i]))
+      {
+        std::cerr << "Images cannot have directory input. Please use absolute paths; SubjectID: '" << patient_id << "'\n";
+        //exit(EXIT_FAILURE);
+        return;
+      }
+
+      auto currentImage = cbica::ReadImage< TImageType >(imageNames[i]);
+
+      if (inputMask.IsNull())
+      {
+        if (!cbica::ImageSanityCheck(imageNames[i], maskfilename))
+        {
+          std::cerr << "The input images and mask are not defined in the same physical space; SubjectID: '" << patient_id << "'\n";
+          //exit(EXIT_FAILURE);
+          return;
+        }
+      }
+      else
+      {
+        if (!cbica::ImageSanityCheck< TImageType >(currentImage, inputMask))
+        {
+          std::cerr << "The input images and mask are not defined in the same physical space; SubjectID: '" << patient_id << "'\n";
+          //exit(EXIT_FAILURE);
+          return;
+        }
+      }
+      inputImages.push_back(currentImage);
     }
-    if (!cbica::ImageSanityCheck(imageNames[i], maskfilename))
+
+    if (inputImages.size() != imageNames.size())
     {
-      std::cerr << "The input images and mask are not defined in the same physical space; SubjectID: '" << patient_id << "'\n";
-      //exit(EXIT_FAILURE);
-      return; 
+      std::cerr << "Not all images are in the same space as the mask, only those that pass this sanity check will be processed.\n";
     }
-    inputimages.push_back(cbica::ReadImage< TImageType >(imageNames[i]));
   }
-
-  if (inputimages.size() != imageNames.size())
-  {
-    std::cerr << "Not all images are in the same space as the mask, only those that pass this sanity check will be processed.\n";
-  }
-
+   
   if (debug)
   {
     std::cout << "[DEBUG] Initializing FE class.\n";
@@ -122,8 +156,15 @@ void algorithmRunner()
   }
 
   features.SetPatientID(patient_id);
-  features.SetInputImages(inputimages, modality_names);
-  features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  features.SetInputImages(inputImages, modality_names);
+  if (selected_roi.empty() || roi_labels.empty())
+  {
+    features.SetSelectedROIsAndLabels(selected_roi_string, roi_labels_string);
+  }
+  else
+  {
+    features.SetSelectedROIsAndLabels(selected_roi, roi_labels);
+  }
 
   // check if the provided labels are present mask image. if not exit the program 
   typename TImageType::Pointer mask = cbica::ReadImage< TImageType >(maskfilename);
@@ -157,20 +198,20 @@ void algorithmRunner()
 
   if (debug)
   {
-    std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
-    std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
-    std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
-    std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
-    std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
-    std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
-    std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
+    //std::cout << "[DEBUG] All configuration tests have passed, setting up the FE class based on the following parameters:\n"; 
+    //std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
+    //std::cout << "[DEBUG] Images    : " << image_path_string << "\n";
+    //std::cout << "[DEBUG] Modalities: " << modalities_string << "\n";
+    //std::cout << "[DEBUG] Mask File : " << maskfilename << "\n";
+    //std::cout << "[DEBUG] ROI Values: " << selected_roi_string << "\n";
+    //std::cout << "[DEBUG] ROI Labels: " << roi_labels_string << "\n";
     std::cout << "[DEBUG] Param File: " << param_file << "\n";
   }
 
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
-  features.SetOutputFilename(cbica::normPath(outputdir));
+  features.SetOutputFilename(outputFilename);
   features.SetVerticallyConcatenatedOutput(verticalConc);
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
@@ -178,7 +219,16 @@ void algorithmRunner()
   outputFilename = features.GetOutputFile();
 }
 
-//! Calls cbica::stringSplit() by checking for both "," and "|" as deliminators
+//! wrapper for the main algorithm
+template< class TImageType >
+void algorithmRunner()
+{
+  std::vector<typename TImageType::Pointer> tempImages;
+  typename TImageType::Pointer tempMask;
+  algorithmRunner< TImageType >(tempImages, tempMask);
+}
+
+//! Calls cbica::stringSplit() by checking for ",", ";" and "|" as deliminators
 std::vector< std::string > splitTheString(const std::string &inputString)
 {
   std::vector< std::string > returnVector;
@@ -189,6 +239,10 @@ std::vector< std::string > splitTheString(const std::string &inputString)
   else if (inputString.find("|") != std::string::npos)
   {
     returnVector = cbica::stringSplit(inputString, "|");
+  }
+  else if (inputString.find(";") != std::string::npos)
+  {
+    returnVector = cbica::stringSplit(inputString, ";");
   }
   else if(!inputString.empty()) // only a single value is present
   {
@@ -204,7 +258,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/1_params_default.csv'");
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory to save results", "Result can be a CSV or Feature Maps (for lattice)");
 
-  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Header format is as follows:", "'PATIENT_ID,IMAGES,MASK,ROI,SELECTED_ROI,ROI_LABEL,", "SELECTED_FEATURES,PARAM_FILE'", "Delineate individual fields by '|'");
+  parser.addOptionalParameter("b", "batchFile", cbica::Parameter::FILE, ".csv", "Input file with Multi-Patient Multi-Modality details", "Example: '${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv'");
 
   parser.addOptionalParameter("n", "name_patient", cbica::Parameter::STRING, "none", "Patient id", "Required for single subject mode");
   parser.addOptionalParameter("i", "imagePaths", cbica::Parameter::STRING, "none", "Absolute path of each coregistered modality", "Delineate by ','", "Example: -i c:/test1.nii.gz,c:/test2.nii.gz", "Required for single subject mode");
@@ -230,6 +284,20 @@ int main(int argc, char** argv)
 
   //bool loggerRequested = false;
   //cbica::Logging logger;
+
+  parser.getParameterValue("o", outputDir);
+
+  // check if the user has passed a file or a directory
+  if (cbica::isFile(outputDir) || 
+    (cbica::getFilenameExtension(outputDir, false) == ".csv"))
+  {
+    outputFilename = outputDir;
+    outputDir = cbica::getFilenamePath(outputFilename, false);
+  }
+  else
+  {
+    outputFilename = cbica::normalizePath(outputDir + "/results.csv");
+  }
 
   if (parser.isPresent("i"))
   {
@@ -284,6 +352,10 @@ int main(int argc, char** argv)
     parser.getParameterValue("t", modalities_string);
     modality_names = splitTheString(modalities_string);
   }
+  else
+  {
+    modality_names.push_back("DEFAULT");
+  }
 
   if (parser.isPresent("m"))
   {
@@ -291,6 +363,11 @@ int main(int argc, char** argv)
     if (cbica::isDir(maskfilename))
     {
       std::cerr << "Mask File cannot handle a directory input, please use absolute paths.\n";
+      exit(EXIT_FAILURE);
+    }
+    else if (!cbica::fileExists(maskfilename))
+    {
+      std::cerr << "Mask File cannot be non-existent.\n";
       exit(EXIT_FAILURE);
     }
   }
@@ -301,11 +378,6 @@ int main(int argc, char** argv)
   //  loggerRequested = true;
   //  logger.UseNewFile(loggerFile);
   //}
-
-  if (parser.isPresent("o"))
-  {
-    parser.getParameterValue("o", outputdir);
-  }
 
   if (debug)
   {
@@ -372,12 +444,6 @@ int main(int argc, char** argv)
       "Please provide a patient id or path to csv file containing patient details";
     return EXIT_FAILURE;
   }
-  if (!multipatient_file.empty() && !patient_id.empty())
-  {
-    std::cerr << "MULTIPLE INPUT PROVIDED" << "\n" <<
-      "Please provide either a patient id or path to csv file containing patient details";
-    return EXIT_FAILURE;
-  }
   if (parser.isPresent("of"))
   {
     parser.getParameterValue("of", offset_String);
@@ -391,7 +457,7 @@ int main(int argc, char** argv)
     parser.getParameterValue("ut", unitTestReferenceFile);
   }
 
-  if (!patient_id.empty())
+  if (multipatient_file.empty())
   {
     std::cout << "Single subject computation selected.\n";
 
@@ -414,7 +480,58 @@ int main(int argc, char** argv)
     case 2:
     {
       using ImageType = itk::Image < float, 2 >;
-      algorithmRunner< ImageType >();
+      ImageType::Pointer maskImage;
+      auto maskImageInfo = cbica::ImageInfo(maskfilename);
+      if (maskImageInfo.GetImageDimensions() == 3)
+      {
+        if (maskImageInfo.GetImageSize()[2] == 1)
+        {
+          // this is actually a 2D image so re-process accordingly
+          using PresumedImageType = itk::Image< float, 3 >;
+          auto temp = cbica::GetExtractedImages< PresumedImageType, ImageType >(cbica::ReadImage< PresumedImageType >(maskfilename));
+          maskImage = temp[0];
+          maskImage->DisconnectPipeline();
+        }
+      }
+      else
+      {
+        maskImage = cbica::ReadImage< ImageType >(maskfilename);
+        maskImage->DisconnectPipeline();
+      }
+
+      // get the input images into a vector
+      std::vector< ImageType::Pointer > inputImages;
+      inputImages.resize(image_paths.size());
+      for (size_t i = 0; i < image_paths.size(); i++)
+      {
+        // sanity check
+        if (!cbica::fileExists(image_paths[i]))
+        {
+          std::cerr << "Image File '" << image_paths[i] << "' does not exist on the filesystem.\n";
+          exit(EXIT_FAILURE);
+        }
+        inputImages[i] = cbica::ReadImage< ImageType >(image_paths[i]);
+        inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
+        // sanity check
+        if (i > 0)
+        {
+          if (!cbica::ImageSanityCheck< ImageType >(inputImages[i], inputImages[i - 1]))
+          {
+            std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+              "\n\t" << image_paths[i] << "\n";
+            exit(EXIT_FAILURE);
+          }
+        }
+      }
+
+      // sanity checks
+      if (!cbica::ImageSanityCheck< ImageType >(inputImages[0], maskImage))
+      {
+        std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+        exit(EXIT_FAILURE);
+      }
+
+      algorithmRunner< ImageType >(inputImages, maskImage);
       break;
     }
     case 3:
@@ -424,49 +541,62 @@ int main(int argc, char** argv)
       {
         // this is actually a 2D image so re-process accordingly
 
-        auto m_tempFolderLocation = cbica::getUserHomeDirectory() + "/.CaPTk/tmp_" + cbica::getCurrentProcessID() + "/";
-        cbica::createDir(m_tempFolderLocation);
-
-        ImageType::IndexType regionIndex;
-        ImageType::SizeType regionSize;
-
-        auto currentSize = genericImageInfo.GetImageSize();
-        auto currentOrigin = genericImageInfo.GetImageOrigins();
-        regionSize[0] = currentSize[0];
-        regionSize[1] = currentSize[1];
-        regionSize[2] = 0;
-        for (size_t d = 0; d < 3; d++)
-        {
-          regionIndex[d] = /*currentOrigin[d]*/0;
-        }
-
         using ActualImageType = itk::Image< float, 2 >;
-        ImageType::RegionType desiredRegion(regionIndex, regionSize);
-        auto filter = itk::ExtractImageFilter< ImageType, ActualImageType >::New();
-        filter->SetExtractionRegion(desiredRegion);
+        std::vector< ActualImageType::Pointer > inputImages; // vector of input image pointers - these are used so that I/O operations can be reduced
+        inputImages.resize(image_paths.size());
+        ActualImageType::Pointer maskImage;
+
         for (size_t i = 0; i < image_paths.size(); i++)
         {
-          filter->SetInput(cbica::ReadImage< ImageType >(image_paths[i]));
-          filter->SetDirectionCollapseToIdentity(); // This is required.
-          filter->Update();
+          auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(image_paths[i]));
+          inputImages[i] = temp[0];
+          inputImages[i]->DisconnectPipeline(); // ensure the new image exists as a separate memory block
 
-          auto currentFileBase = cbica::getFilenameBase(image_paths[i]);
-          image_paths[i] = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
-          cbica::WriteImage< ActualImageType >(filter->GetOutput(), image_paths[i]);
+          // sanity check
+          if (i > 0)
+          {
+            if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[i], inputImages[i - 1]))
+            {
+              std::cerr << "The images corresponding to the following paths do not have consistent physical dimensions:\t" << image_paths[i - 1] <<
+                "\n\t" << image_paths[i] << "\n";
+              exit(EXIT_FAILURE);
+            }
+          }
         }
-        filter->SetInput(cbica::ReadImage< ImageType >(maskfilename));
-        filter->SetDirectionCollapseToIdentity(); // This is required.
-        filter->Update();
 
-        auto currentFileBase = cbica::getFilenameBase(maskfilename);
-        maskfilename = m_tempFolderLocation + currentFileBase + "_2D.nii.gz";
-        cbica::WriteImage< ActualImageType >(filter->GetOutput(), maskfilename);
-        algorithmRunner< ActualImageType >();
-        cbica::deleteDir(m_tempFolderLocation);
+        auto maskImageInfo = cbica::ImageInfo(maskfilename);
+        if (maskImageInfo.GetImageDimensions() == 3)
+        {
+          if (maskImageInfo.GetImageSize()[2] == 1)
+          {
+            // this is actually a 2D image so re-process accordingly
+            auto temp = cbica::GetExtractedImages< ImageType, ActualImageType >(cbica::ReadImage< ImageType >(maskfilename));
+            maskImage = temp[0];
+            maskImage->DisconnectPipeline();
+          }
+        }
+        else
+        {
+          maskImage = cbica::ReadImage< ActualImageType >(maskfilename);
+          maskImage->DisconnectPipeline();
+        }
+
+        // sanity checks
+        if (!cbica::ImageSanityCheck< ActualImageType >(inputImages[0], maskImage))
+        {
+          std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
+          exit(EXIT_FAILURE);
+        }
+
+        // run the algorithm with new images
+        algorithmRunner< ActualImageType >(inputImages, maskImage);
+      }
+      else
+      {
+        // otherwise, it actually is a 3D image
+        algorithmRunner< ImageType >();
       }
 
-      // otherwise, it actually is a 3D image
-      algorithmRunner< ImageType >();
       break;
     }
     default:
@@ -487,7 +617,9 @@ int main(int argc, char** argv)
     {
       std::cout << "[DEBUG] Performing dos2unix using CBICA TK function; doesn't do anything in Windows machines.\n";
     }
-    cbica::dos2unix(multipatient_file);
+    
+    multipatient_file = cbica::dos2unix(multipatient_file, outputDir);
+
     std::ifstream inFile(multipatient_file.c_str());
     std::string csvPath = cbica::getFilenamePath(multipatient_file);
 
@@ -513,7 +645,7 @@ int main(int argc, char** argv)
       threads = maxThreads;
     }
 
-#pragma omp parallel for num_threads(threads)
+//#pragma omp parallel for num_threads(threads)
     for (int j = 1; j < static_cast<int>(allRows.size()); j++)
     {
       patient_id.clear();
@@ -562,26 +694,36 @@ int main(int argc, char** argv)
         {
           param_file = allRows[j][k];
         }
-        if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputdir"))
+        if ((check_wrap == "outputfile") || (check_wrap == "output") || (check_wrap == "outputDir"))
         {
-          outputdir = allRows[j][k];
+          outputDir = allRows[j][k];
         }
-        //else if (cbica::isDir(outputdir))
+        //else if (cbica::isDir(outputDir))
         //{
-        //  outputdir = outputdir + "/" + patient_id + ".csv";
+        //  outputDir = outputDir + "/" + patient_id + ".csv";
         //}
       } // end of k-loop
+
+      if (modality_names.empty())
+      {
+        for (size_t numberOfInputImages = 0; numberOfInputImages < image_paths.size(); numberOfInputImages++)
+        {
+          modality_names.push_back("DEFAULT");
+        }
+      }
+
+      // sanity check
+      if (image_paths.size() != modality_names.size())
+      {
+        std::cerr << "Number of images and modalites do not match.\n";
+        exit(EXIT_FAILURE);
+      }
 
       if (debug)
       {
         std::cout << "[DEBUG] Patient ID: " << patient_id << "\n";
         std::cout << "[DEBUG] Images: " << image_paths[0];
         std::string temp = modality_names[0];
-        if (image_paths.size() != modality_names.size())
-        {
-          std::cerr << "Number of images and modalites do not match.\n";
-          exit(EXIT_FAILURE);
-        }
         for (size_t imageNum = 1; imageNum < image_paths.size(); imageNum++)
         {
           std::cout << "," + image_paths[imageNum];

@@ -17,6 +17,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include "CheckOpenGLVersion.h"
+#include "SystemInformation.h"
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -47,12 +48,32 @@ int main(int argc, char** argv)
 {
 #endif
 
+	cbica::createDir(loggerFolderBase);
+	cbica::createDir(loggerFolder);
+
+	cbica::Logging(loggerFile, "New CaPTk session starting...");
+
   std::string cmd_inputs, cmd_mask, cmd_tumor, cmd_tissue;
   float cmd_maskOpacity = 1;
   bool comparisonMode = false;
 
-  // this is used to populate the available CWL files for the cli
-  auto cwlFiles = cbica::getCWLFilesInApplicationDir();
+  // this is used to populate the available CWL files for the cli  
+  auto cwlFolderPath = 
+#ifdef CAPTK_PACKAGE_PROJECT
+  cbica::normPath(cbica::getExecutablePath() + 
+#ifdef __APPLE__
+    "../Resources/etc/cwlDefinitions/"
+#else
+    "../etc/cwlDefinitions/"
+#endif
+    )
+#else
+  std::string(PROJECT_SOURCE_DIR) + "/data/cwlFiles"
+#endif
+  ;
+  // std::cout << cwlFolderPath + "\n"; 
+
+  auto cwlFiles = cbica::filesInDirectory(cwlFolderPath);
 
   // parse the command line
   auto parser = cbica::CmdParser(argc, argv, "CaPTk");
@@ -76,8 +97,8 @@ int main(int argc, char** argv)
   {
     for (auto & file : cwlFiles)
     {
-
       auto cwlFileBase = cbica::getFilenameBase(file);
+      auto cwlFileBase_actual = cwlFileBase;
       std::transform(cwlFileBase.begin(), cwlFileBase.end(), cwlFileBase.begin(), ::tolower);
       auto argv_1 = std::string(argv[1]);
       argv_1 = cbica::getFilenameBase(argv_1, false);
@@ -94,10 +115,18 @@ int main(int argc, char** argv)
         std::string argv_complete;
         for (size_t i = 2; i < argc; i++) // 2 because the argv[1] is always the "application"
         {
-          argv_complete += " " + std::string(argv[i]);
+          argv_complete += " \"" + std::string(argv[i]) + "\""; // add double quote for command tokenization
         }
         // Pass them in
-        return std::system((getApplicationPath(config["baseCommand"].as<std::string>()) + argv_complete).c_str());
+        auto commandToRun = getApplicationPath(cwlFileBase_actual) + argv_complete;
+        //std::cout << "[DEBUG] commandToRun: " << commandToRun << "\n";
+// #ifndef WIN32 
+        return std::system(commandToRun.c_str());
+// #else
+//         auto returnCode = std::system(commandToRun.c_str());
+//         std::system("pause");
+//         return returnCode;
+// #endif
       }
     }
   }
@@ -160,6 +189,11 @@ int main(int argc, char** argv)
   //cbica::setEnvironmentVariable("QT_QPA_PLATFORM_PLUGIN_PATH", captk_currentApplicationPath + "/platforms");
   //cbica::setEnvironmentVariable("QT_OPENGL", "software");
 
+  SystemInformation info;
+  QStringList sl = info.GetSystemInformation();
+  foreach(QString str, sl)
+	  cbica::Logging(loggerFile, str.toStdString());
+
   // starting the OpenGL version checking 
   const std::string openGLVersionCheckFile = loggerFolderBase + "openglVersionCheck.txt";
   if (!cbica::isFile(openGLVersionCheckFile))
@@ -172,20 +206,23 @@ int main(int argc, char** argv)
 #else
     CheckOpenGLVersion checker;
 #endif
-
     if (!checker.hasVersion_3_2())
     {
       std::string msg = "A working 3.2 version of OpenGL was not found in your hardware/software combination; consequently, CaPTk's GUI will not work; all CLIs will work as expected.\n\n";
       msg += "\tOpenGL Version : " + checker.version + "\n";
       msg += "\tOpenGL Renderer: " + checker.renderer + "\n";
-      msg += "\tOpenGL Vendor  : " + checker.vendor;
+      msg += "\tOpenGL Vendor  : " + checker.vendor + "\n\n";
+	  msg += "Please install OpenGL version 3.2 or greater, or use the command line interface to run CaPTk.";
+	  msg += "\n\nCheck the documentation for details.";
+	  ShowErrorMessage(msg);
 #if WIN32
-      ShowErrorMessage(msg);
       cbica::sleep(1000);
       return EXIT_FAILURE;
-#else
+#else // Attempt software rendering on non-Windows platforms, warn user 
       cbica::setEnvironmentVariable("QT_OPENGL", "software");
-      std::cerr << "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::string softwareRenderingMsg = "WARNING: Trying to run CaPTk GUI using software rendering - this might not work on all systems and in those cases, only the CLI will be available.\n";
+	  std::cerr << softwareRenderingMsg;
+	  ShowErrorMessage(softwareRenderingMsg);
 #endif
     }
     else
@@ -250,12 +287,6 @@ int main(int argc, char** argv)
     }
   }
 
-  cbica::createDir(loggerFolderBase);
-  cbica::createDir(loggerFolder);
-  cbica::createDir(captk_StuffFolderBase);
-  cbica::createDir(captk_SampleDataFolder);
-  cbica::createDir(captk_PretrainedFolder);
-
 #ifndef _WIN32
   std::string old_locale = setlocale(LC_NUMERIC, NULL);
   setlocale(LC_NUMERIC, "POSIX");
@@ -301,7 +332,7 @@ int main(int argc, char** argv)
   // show the "about" screen in the first run
   if (!cbica::fileExists(tutorialScreen))
   {
-    auto rec = QApplication::desktop()->screenGeometry();
+    // auto rec = QApplication::desktop()->screenGeometry();
     // std::cout << "Detected Size: " << rec.width() << "x" << rec.height() << "\n";
     window.about();
   }

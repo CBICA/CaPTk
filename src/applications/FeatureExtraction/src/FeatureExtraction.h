@@ -62,6 +62,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 
 //#include "CAPTk.h"
 #include "FeatureMap.h"
+#include "TextureFeatureBase.h"
 
 //! Common Definitions used in the class
 using ImageType2D = itk::Image< float, 2 >;
@@ -96,15 +97,21 @@ GaborWavelets,Directions,Int,03:13,8,The number of directions around the center 
 */
 enum Params
 {
-  Dimension, Axis, Radius, Neighborhood, Bins, Directions, Offset, Range,
-  LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, LatticeFullImage,
-  GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, ResamplingInterpolator_Mask, LBPStyle, ParamMax
+  Dimension, Axis, Radius, Neighborhood, Bins, Bins_Min, Directions, Offset, Range,
+  LatticeWindow, LatticeStep, LatticeBoundary, LatticePatchBoundary, LatticeWeight, 
+  LatticeFullImage, GaborFMax, GaborGamma, GaborLevel, EdgesETA, EdgesEpsilon, 
+  QuantizationExtent, QuantizationType, Resampling, ResamplingInterpolator_Image, 
+  ResamplingInterpolator_Mask, SliceComputation, NaNHandling, 
+  LBPStyle, MorphologicFeret, ParamMax
 };
 static const char ParamsString[ParamMax + 1][30] =
 {
-  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Directions", "Offset", "Range",
-  "Window", "Step", "Boundary", "PatchBoundary", "Weight", "FullImage",
-  "FMax", "Gamma", "Level", "ETA", "Epsilon", "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", "ResamplingInterpolator_Mask", "LBPStyle", "ParamMax"
+  "Dimension", "Axis", "Radius", "Neighborhood", "Bins", "Bins_Min", "Directions", "Offset", "Range",
+  "Window", "Step", "Boundary", "PatchBoundary", "Weight", 
+  "FullImage", "FMax", "Gamma", "Level", "ETA", "Epsilon", 
+  "Quantization_Extent", "Quantization_Type", "Resampling", "ResamplingInterpolator_Image", 
+  "ResamplingInterpolator_Mask", "SliceComputation", "NaNHandling",
+  "LBPStyle", "Feret", "ParamMax"
 };
 
 enum FeatureFamily
@@ -282,10 +289,17 @@ public:
   */
   void SetOutputFilename(std::string filename)
   {
+    auto ext = cbica::getFilenameExtension(filename, false);
     if (cbica::isDir(filename))
     {
       m_outputPath = filename;
-      m_outputFile = m_outputPath + "/results.csv";
+      m_outputFile = m_outputPath + "/results_" + cbica::getCurrentProcessID() + "-" + cbica::getCurrentLocalTimestamp() + ".csv";
+    }
+    else if (ext.empty()) // this is a directory, check if it is present and if not, create it
+    {
+      m_outputPath = filename;
+      cbica::createDir(m_outputPath);
+      m_outputFile = m_outputPath + "/results" + cbica::getCurrentProcessID() + "-" + cbica::getCurrentLocalTimestamp() + ".csv";
     }
     else
     {
@@ -331,12 +345,18 @@ public:
   /**
   \brief Enable vertically-concatenated output in CSV
   */
-  void SetVerticallyConcatenatedOutput(bool flag) { m_outputVerticallyConcatenated = flag; }
+  void SetVerticallyConcatenatedOutput(bool flag) 
+  { 
+    m_outputVerticallyConcatenated = flag; 
+  }
 
   /**
   \brief Enable/disable feature map writing
   */
-  void SetWriteFeatureMaps(bool flag) { m_writeFeatureMaps = flag; };
+  void SetWriteFeatureMaps(bool flag) 
+  { 
+    m_writeFeatureMaps = flag; 
+  }
 
   /**
   \brief Get the ROIs that were selected for the current process as a vector of ints
@@ -375,6 +395,14 @@ private:
   \param selected_feature Denotes a feature name
   */
   void SetFeatureParam(std::string featureFamily);
+
+  /**
+  \brief GetRadiusInImageCoordinates function gets the radius in image coordinates
+
+  \param radiusInWorldCoordinates Input radius in world coordinates
+  \return Corresponding radius in image coordinates
+  */
+  int GetRadiusInImageCoordinates(float radiusInWorldCoordinates);
 
   /**
   \brief Calculates the OffsetVectorPointer based on the provided radius in mm and directions
@@ -734,13 +762,15 @@ private:
     m_currentLatticeStart; //! this is the starting index of the current lattice patch
   bool m_LatticeComputation = false; //! flag to check if lattice-based computation has been enabled or not
   bool m_writeFeatureMaps = false; //! flag to check to write feature maps or not
+  bool m_keepNaNs = true; //! whether to keep the nan values or not
   float m_latticeWindow = 0, m_latticeStep = 0; //! these are defined in mm
   typename TImageType::IndexType m_latticeStepImage; //! lattice step as defined in the image coordinates
   typename TImageType::SizeType m_latticeSizeImage; //! lattice size in image space
   bool m_fluxNeumannEnabled = false, m_zeroPaddingEnabled = false; //! the boundary conditions
   bool m_patchOnRoiEnabled = false; //! whether to pull the entire patch or only along the ROI
   bool m_patchBoundaryDisregarded = false; //! only considers patches with all pixels != 0
-  bool m_patchFullImageComputation = false; //! whether or not the entire image is to be considered for lattice computation or not
+  bool m_patchFullImageComputation = false; //! whether computations across the entire image need to happen in addition to lattice or not
+  bool m_morphologicCalculateFeret = false; //! controls calculation of feret diameter
   typename TImageType::Pointer m_featureMapBaseImage; //! the feature map base: this is only used as the base image for the lattice feature maps
   std::map< std::string, // FeatureFamily_FeatureName
     typename TImageType::Pointer > m_downscaledFeatureMaps; // each feature map (represented by the string in key)
@@ -750,14 +780,19 @@ private:
 
   // the parameters that keep changing on a per-feature basis
   int m_Radius = 0, m_Bins = 0, m_Dimension = 0, m_Direction = 0, m_neighborhood = 0, m_LBPStyle = 0;
-  float m_Radius_float = 0.0, m_Range = 0;
+  std::vector< int > m_Bins_range, //! range of bins to calculate features on
+    m_Radius_range; //! range of radii to calculate features on
+  float m_Radius_float = 0.0, m_Range = 0, 
+    m_Bins_min = std::numeric_limits<float>::max(); //! the starting index of the histogram binning
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  std::string m_QuantizationType = "Uniform"; //! extent of quantization happening, either uniform or equal
-  std::string m_QuantizationExtent = "ROI"; //! type of quantization happening, either ROI-based or Image-based
+  int m_histogramBinningType = HistogramBinningType::FixedBinNumber; //! type of quantization happening, either FBN/FBS/Equal
+  std::string m_QuantizationExtent = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
   std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
   float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
   std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
     m_resamplingInterpolator_Mask = "Nearest";
+
+  bool m_SliceComputation = false; //! Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
 
   float m_gaborFMax = 0.25; //! TBD: what is the description of this?
   float m_gaborGamma = sqrtf(2); //! TBD: what is the description of this?

@@ -9,6 +9,8 @@
 #include <unistd.h>
 #endif
 
+#include "cbicaUtilities.h"
+
 #ifdef WIN32
 #define stat _stat
 #endif
@@ -96,6 +98,7 @@ fRegistrationDialog::fRegistrationDialog()
 
   connect(options_AFFINE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedAffineMode()));
   connect(options_RIGID_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedRigidMode()));
+  connect(options_DEFORMABLE_selected, SIGNAL(toggled(bool)), this, SLOT(SelectedDeformMode()));
 
   connect(options_MetricSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(SelectedMetric(int)));
   connect(nccRadii, SIGNAL(textChanged(QString)), this, SLOT(setRadii(QString)));
@@ -254,9 +257,9 @@ void fRegistrationDialog::SelectMovingFile1()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName1->setText(file);
     if (!matrixRadioButton->isChecked())
@@ -288,9 +291,9 @@ void fRegistrationDialog::SelectMovingFile2()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName2->setText(file);
 
@@ -324,9 +327,9 @@ void fRegistrationDialog::SelectMovingFile3()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName3->setText(file);
 
@@ -359,9 +362,9 @@ void fRegistrationDialog::SelectMovingFile4()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName4->setText(file);
 
@@ -395,9 +398,9 @@ void fRegistrationDialog::SelectMovingFile5()
       return;
     }
     mInputPathName = itksys::SystemTools::GetFilenamePath(file.toStdString()).c_str();
-    QString fileName = itksys::SystemTools::GetFilenameWithoutExtension(file.toStdString()).c_str();
-    QString extn = itksys::SystemTools::GetFilenameExtension(file.toStdString()).c_str();
-    QString fixedfileName = itksys::SystemTools::GetFilenameWithoutExtension(fixed).c_str();
+    QString fileName = cbica::getFilenameBase(file.toStdString()).c_str();
+    QString extn = ".nii.gz";
+    QString fixedfileName = cbica::getFilenameBase(fixed).c_str();
 
     movingFileName5->setText(file);
 
@@ -600,42 +603,73 @@ void fRegistrationDialog::SelectMovingOutputFile5()
 void fRegistrationDialog::SelectedAffineMode()
 {
   options_RIGID_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = true;
+  rigidMode = false;
+  deformMode = false;
+  degreesOfFreedom->setEnabled(true);
 }
 
 void fRegistrationDialog::SelectedRigidMode()
 {
   options_AFFINE_selected->setChecked(false);
+  options_DEFORMABLE_selected->setChecked(false);
   affineMode = false;
+  rigidMode = true;
+  deformMode = false;
+  degreesOfFreedom->setEnabled(false);
+}
+
+void fRegistrationDialog::SelectedDeformMode()
+{
+  options_AFFINE_selected->setChecked(false);
+  options_RIGID_selected->setChecked(false);
+  affineMode = false;
+  rigidMode = false;
+  deformMode = true;
+  degreesOfFreedom->setEnabled(false);
 }
 
 void fRegistrationDialog::SelectedMetric(int index)
 {
-  if (options_MetricSelector->currentIndex() == 0) {
+  switch (options_MetricSelector->currentIndex())
+  {
+  case 0:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 1) {
+  case 1:
+  {
     metric = "MI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 2) {
+  case 2:
+  {
     metric = "NCC";
     radii = true;
     options_NCC_radii->setDisabled(false);
     nccRadii->setDisabled(false);
+    break;
   }
-  else if (options_MetricSelector->currentIndex() == 3) {
+  case 3:
+  {
     metric = "SSD";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
   }
-  else {
+  default:
+  {
     metric = "NMI";
     options_NCC_radii->setDisabled(true);
     nccRadii->setDisabled(true);
+    break;
+  }
   }
 }
 
@@ -843,8 +877,14 @@ void fRegistrationDialog::ConfirmButtonPressed()
     ShowErrorMessage("Number of input, output and matrix file names do not match. Please check the fields.");
   }
 
-  else {
-    emit Registrationsignal(fixedFileName->text().toStdString(), inputfilenames, outputfilenames, matrixfilenames, registrationMode, metric, affineMode, radius, m_iterations);
+  else 
+  {
+    emit RegistrationSignal(fixedFileName->text().toStdString(), inputfilenames, 
+      outputfilenames, matrixfilenames, 
+      metric, 
+      options_RIGID_selected->isChecked(), 
+      options_AFFINE_selected->isChecked(), 
+      options_DEFORMABLE_selected->isChecked(), radius, m_iterations, degreesOfFreedom->text().toStdString());
     this->close();
   }
 }

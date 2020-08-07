@@ -56,9 +56,9 @@ fHelpTutorial::fHelpTutorial()
 
   m_dataDir = getCaPTkDataDir();
 #if CAPTK_PACKAGE_PROJECT
-  m_docDir = cbica::normPath(m_dataDir + "/../share/doc/");
+  m_docDir = cbica::normPath(m_dataDir + "/../share/doc");
 #else
-  m_docDir = std::string(PROJECT_SOURCE_DIR) + "../docs/html/";
+  m_docDir = std::string(PROJECT_SOURCE_DIR) + "docs";
 #endif
   m_helpFileFullPath = m_docDir + "/1_credits.html";
 
@@ -76,7 +76,7 @@ fHelpTutorial::fHelpTutorial()
 
   // m_webView = new QWebView();
   // NEW CHANGES
-  m_webView = new QWebEngineView();
+  m_webView = new QWebEngineView(this);
 
   //! we want to let the webpage take the max space
     //! this also makes sure that the labels do not get 
@@ -87,7 +87,7 @@ fHelpTutorial::fHelpTutorial()
 
   if (!cbica::fileExists(m_helpFileFullPath))
   {
-    cbica::Logging(loggerFile, "Unable to start help page, file '" + m_helpFileFullPath + "' not found");
+    cbica::Logging(loggerFile, "Unable to start about page, file '" + m_helpFileFullPath + "' not found");
   }
   else
   {
@@ -116,6 +116,7 @@ fHelpTutorial::fHelpTutorial()
   //this->m_webView->setTextSizeMultiplier(QApplication::desktop()->screen()->logicalDpiX() / 96.0);
   //this->show();
 
+  this->setFocus();
   QCoreApplication::processEvents();
 
 }
@@ -172,4 +173,11 @@ void fHelpTutorial::SetZoom(int zoomValue)
       this->zoomSlider->blockSignals(false);
     }
   }
+}
+
+void fHelpTutorial::showEvent(QShowEvent* event)
+{
+	// ensure content reload when showing
+	this->m_webView->reload();
+
 }

@@ -1,0 +1,9 @@
+FeatureName,ParamName,Type,Range,Default,Comments
+Generic,Quantization_Type,String,FixedBinNumber:FixedBinSize:Equal,FixedBinNumber,FixedBinNumber (FBN): the bins are uniformly distributed across the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent'; FixedBinSize (FBS): bins are added in a fixed step between the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent' the requested size is provided in 'Bins'; Equal: each bin holds an equal number of intensities
+Generic,Resampling,mm,0:10,1.0,Resamples all images and masks to this value of voxel/pixel resolution before computations (0: no resampling): reduce this number of more accuracy
+Generic,ResamplingInterpolator_Image,mm,Nearest:Linear:BSpline,Linear,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
+Generic,ResamplingInterpolator_Mask,mm,Nearest:NearestLabel:Linear:BSpline,Nearest,Type of interpolator to use if resampling is happening; ignored if m_resamplingResolution = 0
+Intensity,,,,,
+GLCM,Bins,Int,,256,The number of bins (FBN) or size of each bin (FBS) to calculate for the Histogram
+GLCM,Radius,Int,(1:9),1.0,Radius around the center voxel which can be in mm as well (needs to be defined as float in same space as input image/mask)
+GLCM,Offset,String,[Individual:Average:Combined],Combined,Either individual offset values or averagedcomputation for individual offsets might not work)

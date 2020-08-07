@@ -4,7 +4,6 @@
 #include "itkCSVNumericObjectFileWriter.h"
 #include "itkCovarianceSampleFilter.h"
 #include "itkMeanSampleFilter.h"
-//#include "CAPTk.h"
 #include "cbicaLogging.h"
 
 EGFRStatusPredictor::EGFRStatusPredictor()
@@ -39,7 +38,6 @@ double EGFRStatusPredictor::CalculateMaximumDrop(const VectorDouble &avgSignal)
 
   return (mean - min);
 }
-
 
 void EGFRStatusPredictor::CalculateQualifiedIndices(VectorVectorDouble &rpNearIntensities, VectorVectorDouble &rpFarIntensities, double & percentageNear, double & percentageFar)
 {
@@ -99,6 +97,7 @@ VariableSizeMatrixType EGFRStatusPredictor::GetSumOfTwoMatrice(const VariableSiz
       outputMatrix(i, j) = (matrix1(i, j) + matrix2(i, j)) / 2;
   return outputMatrix;
 }
+
 VariableSizeMatrixType EGFRStatusPredictor::MatrixTranspose(const VariableSizeMatrixType &inputmatrix)
 {
   VariableSizeMatrixType output;
@@ -109,6 +108,7 @@ VariableSizeMatrixType EGFRStatusPredictor::MatrixTranspose(const VariableSizeMa
       output(i, j) = inputmatrix(j, i);
   return output;
 }
+
 VariableSizeMatrixType EGFRStatusPredictor::GetCovarianceMatrix(const VectorVectorDouble &inputData)
 {
   int NumberOfSamples = inputData.size();
@@ -126,16 +126,14 @@ VariableSizeMatrixType EGFRStatusPredictor::GetCovarianceMatrix(const VectorVect
     mv[2] = inputData[i][2];
     sample->PushBack(mv);
   }
-
   typedef itk::Statistics::CovarianceSampleFilter< SampleType >CovarianceAlgorithmType;
   CovarianceAlgorithmType::Pointer covarianceAlgorithm = CovarianceAlgorithmType::New();
   covarianceAlgorithm->SetInput(sample);
   covarianceAlgorithm->Update();
-
   VariableSizeMatrixType CovMatrix = covarianceAlgorithm->GetCovarianceMatrix();
-
   return CovMatrix;
 }
+
 VariableSizeMatrixType EGFRStatusPredictor::GetCholeskyFactorization(VariableSizeMatrixType &inputData)
 {
   inputData[0][1] = 0;
@@ -157,6 +155,7 @@ VariableSizeMatrixType EGFRStatusPredictor::GetCholeskyFactorization(VariableSiz
 
   return inputData;
 }
+
 double EGFRStatusPredictor::CalculateBhattacharyaCoefficient(const VectorVectorDouble &rpNearIntensities, const VectorVectorDouble &rpFarIntensities)
 {
   double bDistance = 0;
@@ -189,19 +188,20 @@ double EGFRStatusPredictor::CalculateBhattacharyaCoefficient(const VectorVectorD
     for (unsigned int i = 0; i < nMeanVector.Size(); i++)
       meanDifference[0][i] = nMeanVector[i] - fMeanVector[i];
 
-
     //-------------vnl matrices------------------------
+    //this segment of code is applying cholesky factorization.
+    //EGFR_PCS is the number of principal components that code uses to calculate covariance matrices and bhattacharyya distance afterwards
     vnl_matrix<double> covarianceMatrix;
-    covarianceMatrix.set_size(3, 3);
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
+    covarianceMatrix.set_size(EGFR_PCS, EGFR_PCS);
+    for (int i = 0; i < EGFR_PCS; i++)
+      for (int j = 0; j < EGFR_PCS; j++)
         covarianceMatrix(i, j) = sumCovariance(i, j);
     vnl_matrix<double> covMatrix1;
     vnl_matrix<double> covMatrix2;
-    covMatrix1.set_size(3, 3);
-    covMatrix2.set_size(3, 3);
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
+    covMatrix1.set_size(EGFR_PCS, EGFR_PCS);
+    covMatrix2.set_size(EGFR_PCS, EGFR_PCS);
+    for (int i = 0; i < EGFR_PCS; i++)
+      for (int j = 0; j < EGFR_PCS; j++)
       {
         covMatrix1(i, j) = nCovMatrix(i, j);
         covMatrix2(i, j) = fCovMatrix(i, j);
@@ -215,7 +215,6 @@ double EGFRStatusPredictor::CalculateBhattacharyaCoefficient(const VectorVectorD
       bDistance = 0;
     else
     {
-
       VectorDouble tempmatrix;
       tempmatrix.push_back(meanDifference[0][0] * inverse[0][0] + meanDifference[0][1] * inverse[1][0] + meanDifference[0][2] * inverse[2][0]);
       tempmatrix.push_back(meanDifference[0][0] * inverse[0][1] + meanDifference[0][1] * inverse[1][1] + meanDifference[0][2] * inverse[2][1]);

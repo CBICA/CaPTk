@@ -2,6 +2,13 @@
 
 \page Getting_Started Getting Started
 
+For Download/Installation Instructions, please see the following:
+
+- [Download Instructions](Download.html)
+- [Installation Instructions](Installation.html)
+
+For Frequently Asked Questions, please see the dedicated [FAQ](FAQ.html) section.
+
 CaPTk has been designed as a modular platform, currently incorporating components for:
 -# User interaction (e.g., coordinate definition, region annotation, and spherical approximation of abnormalities)
   - \ref gs_imageLoading
@@ -31,7 +38,7 @@ Please see the dedicated [FAQ](FAQ.html) section.
 --------
 
 \section gs_supportedImages Supported Images
-Currently, CaPTk supports visualization of <b>MR, CT, PET, X-Ray and Full-field Digital Mammography (FFDM) </b> images in both NIfTI (i.e., <b>.nii</b>, <b>.nii.gz</b>) and DICOM (i.e., <b>.dcm</b>) formats. For MRI, the following modalities are currently supported (the image modality box equivalent is shown in parenthesis):
+Currently, CaPTk supports visualization of <b>MR, CT, PET, X-Ray and Full-field Digital Mammography (FFDM) </b> images in NIfTI (i.e., <b>.nii</b>, <b>.nii.gz</b>) format.  DICOM (i.e., <b>.dcm</b>) support is limited to a few protocols for MR, CT and MG modalities. In NIfTI format, for MRI, the following modalities are currently supported (the image modality box equivalent is shown in parenthesis):
 
 |   Acronym   |                               Image Type                              |
 |:-----------:|:---------------------------------------------------------------------:|
@@ -63,17 +70,19 @@ In addition, CaPTk offers the ability to extract and visualize commonly used mea
 
 References:
 
--# J.M.Soares, P.Marques, V.Alves, N.Sousa. "A hitchhiker's guide to diffusion tensor imaging", Front Neurosci. 7:31, 2013. DOI: 10.33
+-# J.M.Soares, P.Marques, V.Alves, N.Sousa. "A hitchhiker's guide to diffusion tensor imaging", Front Neurosci. 7:31, 2013, DOI: 10.33
 fnins.2013.00031
--# E.S.Paulson, K.M.Schmainda, "Comparison of dynamic susceptibility-weighted contrast-enhanced MR methods: recommendations for measuring relative cerebral blood volume in brain tumors", Radiology. 249(2):601-613, 2008. DOI: 10.1148/radiol.2492071659
+-# E.S.Paulson, K.M.Schmainda, "Comparison of dynamic susceptibility-weighted contrast-enhanced MR methods: recommendations for measuring relative cerebral blood volume in brain tumors", Radiology. 249(2):601-613, 2008, DOI: 10.1148/radiol.2492071659
 
 --------
 
-\section gs_imageLoading Image Loading
-The <b>File -> Load</b> menu is used to load all image types.
+\section gs_imageLoading Image & Mask Loading
+The <b>File -> Load -> Images</b> menu is used to load all image types. Images can also be loaded by dragging and dropping onto the application. In case of DICOM images, loading/dragging a single image loads the entire dicom series. 
+<br>
+Mask must be loaded via <b>File -> Load -> ROI</b> menu.
 
-\image html imageLoading_resize.png "Loading images for visualization/processing"
-\image latex imageLoading_resize.png "Loading images for visualization/processing"
+\image html imageLoading_resize.png "Loading images & mask for visualization/processing"
+\image latex imageLoading_resize.png "Loading images & mask for visualization/processing"
 
 --------
 For every loaded NIfTI image, the modality is automatically assigned using information from the filename. To <b> assign modalities </b> for DICOM images, or in case of a discrepancy in the modality of a NIfTI image, the user can use the drop-down modality switcher (see below) to revise the modality accordingly. This is typically needed in the <a href="ht_SpecialApps.html">Specialized Applications</a>.
@@ -87,9 +96,10 @@ For every loaded NIfTI image, the modality is automatically assigned using infor
 Sliders on each visualization panel (highlighted in green in the figure below) control the movement across respective axes. Note that in DSC-MRI, the single horizontal slider (highlighted in yellow) moves across the time of the acquired dynamic scan.
 <br>
 Various adjustments are available to the user, including:
--# contrast/brightness: right mouse button click + horizontal/vertical drag on any visualization panel, respectively.
--# windowing of intensities and setting of different visualization type: bottom-right panel.
--# zooming into the image via Ctrl + mouse wheel.
+-# Window/Level: right mouse button press + horizontal/vertical mouse move on any visualization panel, respectively.
+-# Manual Window/Level and setting of different visualization presets: bottom-right panel.
+-# Image zoom: Ctrl + mouse wheel.
+-# Image pan: Ctrl + left mouse button press + mouse move.
 
 The bottom-left panel of CaPTk (highlighted in red) shows basic information about the image and the position of the cross-hair. In the visualization panes, the "Z" axis is the center; and "Y" and "X" are to its left and right, respectively. "Z" represents the Axial view for RAI-to-LPS images. 
 
@@ -106,9 +116,15 @@ The "Overlay" functionality enables the visualization between two loaded images:
 -# Check the tick box "Change Opacity".
 -# Moving the slider changes the opacity between the "Overlay" and the "Underlay" images.
 
+
+The "Comparison Mode" puts the loaded images (3 maximum) side-by-side for easy visualization along the same axis.
+
+\image html comparisonMode.png "Comparison Mode visualization"
+\image latex comparisonMode.png "Comparison Mode visualization"
+
 --------
 
-\section gs_tabDocking Tab Docking (Windows-only)
+\section gs_tabDocking Tab Docking
 Double clicking on the tab bar will dock/undock the entire section, resulting in larger visualization panels in your monitor. This behavior is replicated by single click of the dock/undock button at the end of the section as well.
 
 \image html dock_comparison_resize.png "Left is while dock is active and right is undocked behavior"
@@ -166,13 +182,13 @@ Application-specific tissue types are automatically enabled when the correspondi
 
 References:
 
--# A.Gooya, K.M.Pohl, M.Billelo, G.Biros, C. Davatzikos, "Joint segmentation and deformable registration of brain scans guided by a tumog rowth model", Med Image Comput Comput Assist Interv. 14(Pt 2):532-40, 2011. DOI:10.1007/978-3-642-23629-7_65
--# A.Gooya, K.M.Pohl, M.Bilello, L.Cirillo, G.Biros, E.R.Melhem, C.Davatzikos, "GLISTR: glioma image segmentation and registration", IEET rans Med Imaging. 31(10):1941-54, 2012. DOI:10.1109/TMI.2012.2210558
--# D.Kwon, R.T.Shinohara, H.Akbari, C.Davatzikos, "Combining Generative Models for Multifocal Glioma Segmentation and Registration", MeI mage Comput Comput Assist Interv. 17(Pt 1):763-70, 2014. DOI:10.1007/978-3-319-10404-1_95
+-# A.Gooya, K.M.Pohl, M.Billelo, G.Biros, C. Davatzikos, "Joint segmentation and deformable registration of brain scans guided by a tumog rowth model", Med Image Comput Comput Assist Interv. 14(Pt 2):532-40, 2011, DOI:10.1007/978-3-642-23629-7_65
+-# A.Gooya, K.M.Pohl, M.Bilello, L.Cirillo, G.Biros, E.R.Melhem, C.Davatzikos, "GLISTR: glioma image segmentation and registration", IEET rans Med Imaging. 31(10):1941-54, 2012, DOI:10.1109/TMI.2012.2210558
+-# D.Kwon, R.T.Shinohara, H.Akbari, C.Davatzikos, "Combining Generative Models for Multifocal Glioma Segmentation and Registration", MeI mage Comput Comput Assist Interv. 17(Pt 1):763-70, 2014, DOI:10.1007/978-3-319-10404-1_95
 -# S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "Segmentation of gliomas in multimodam agnetic resonance imaging volumes based on a hybrid generative-discriminative framework", In Proc. Multimodal Brain Tumor Segmentation (BraTS) Challenge. 4:5-12, 2015.
--# S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "GLISTRboost: combining multimodal MRs egmentation, registration, and biophysical tumor growth modeling with gradient boosting machines for glioma segmentation", Brainlesion (2015). 9556:144-155, 2016. DOI:10.1007/978-3-319-30858-6_1
--# S.Bakas, H.Akbari, A.Sotiras, M.Bilello, M.Rozycki, J.Kirby, J.Freymann, K.Farahani, C.Davatzikos, "Advancing The Cancer Genome Atlag lioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data 4:170117, 2017. DOI:10.103s data.2017.117
--# D.Kwon, M.Niethammer, H.Akbari, M.Bilello, C.Davatzikos, K.M.Pohl, "PORTR: Pre-Operative and Post-Recurrence Brain Tumor Registration", IEEE Trans Med Imaging. 33(3):651-667, 2014. DOI:10.1109/TMI.2013.2293478
+-# S.Bakas, K.Zeng, A.Sotiras, S.Rathore, H.Akbari, B.Gaonkar, M.Rozycki, S.Pati, C.Davatzikos, "GLISTRboost: combining multimodal MRs egmentation, registration, and biophysical tumor growth modeling with gradient boosting machines for glioma segmentation", Brainlesion (2015). 9556:144-155, 2016, DOI:10.1007/978-3-319-30858-6_1
+-# S.Bakas, H.Akbari, A.Sotiras, M.Bilello, M.Rozycki, J.Kirby, J.Freymann, K.Farahani, C.Davatzikos, "Advancing The Cancer Genome Atlag lioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data 4:170117, 2017, DOI:10.103s data.2017.117
+-# D.Kwon, M.Niethammer, H.Akbari, M.Bilello, C.Davatzikos, K.M.Pohl, "PORTR: Pre-Operative and Post-Recurrence Brain Tumor Registration", IEEE Trans Med Imaging. 33(3):651-667, 2014, DOI:10.1109/TMI.2013.2293478
 
 --------
 
@@ -229,33 +245,48 @@ These are the keyboard shortcuts available on CaPTk:
 
 \section gs_utilities Utilities (Command-line only)
 
-To make pipeline construction using CaPTk easier, a bunch of utilities have been provided. They include 
+To make pipeline construction using CaPTk easier, a bunch of utilities have been provided:
+
 -# Resizing
--# DICOM conversion
--# Sanity checking
--# Image header information
+-# Resampling
+-# Image information
 -# Unique values in image
--# Changing pixel values. 
+-# Get smallest bounding box in mask (optional isotropic bounding box)
+-# Test 2 images
+-# Create mask from threshold
+-# DICOM to NIfTI conversion
+-# NIfTI to DICOM & DICOM-Seg conversion
+-# Re-orient image
+-# Cast image to another pixel type
+-# Thresholding:
+  - Below
+  - Above
+  - Above & Below
+  - Otsu 
+  - Binary
+-# Convert file formats
+-# Extract Image Series from Joined stack and vice-versa (4D <-> 3D)
+-# Transform coordinates from world to image and vice-versa
+-# Label similarity Metrics between 2 label images: pure mathematical formulations are given as output
+-# BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant.
+-# Collect information from all images in a directory and put it in CSV
 
-For full details, run the command:
-
-\verbatim
-Utilities.exe -u
-\endverbatim
+For a full list of this functionality and more details, please see the corresponding [How-To page](ht_utilities.html).
 
 --------
 
 \section gs_preprocessing Pre-processing
 Image pre-processing is essential to quantitative image analysis. CaPTk pre-processing tools available under the "Preprocessing" menu are fully-parameterizable and comprise:
 
-   -<b>Denoising.</b> Intensity noise reduction in regions of uniform intensity profile is offered through a low-level image processing method, namely Smallest Univalue Segment Assimilating Nucleus (SUSAN) [1]. This is a custom implementation and does <b>NOT</b> call out to the original implementation distributed by FSL.
-   -<b>Co-registration.</b> Registration of various images to the same anatomical template, for examining anatomically aligned imaging signals in tandem and at the voxel level, is done using the Greedy Registration algorithm [5].
-   -<b>Bias correction.</b> Correction for magnetic field inhomogeneity is provided using a non-parametric non-uniform intensity normalization [2].
-   -<b>Intensity normalization.</b> Conversion of signals across modalities to comparable quantities using histogram matching [4].
-   -<b>Z-Scoring normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].
-   -<b>Histogram Matching</b>
-   -<b>Skull Stripping (Deep Learning based)</b>
-   -<b>Mammogram Pre-processing</b>
+   - <b>Denoising.</b> Intensity noise reduction in regions of uniform intensity profile is offered through a low-level image processing method, namely Smallest Univalue Segment Assimilating Nucleus (SUSAN) [1]. This is a custom implementation and does <b>NOT</b> call out to the original implementation distributed by FSL.
+   - <b>Co-registration.</b> Registration of various images to the same anatomical template, for examining anatomically aligned imaging signals in tandem and at the voxel level, is done using the Greedy Registration algorithm [5].
+   - <b>Bias correction.</b> Correction for magnetic field inhomogeneity is provided using a non-parametric non-uniform intensity normalization [2].
+   - <b>Intensity normalization.</b> Conversion of signals across modalities to comparable quantities using histogram matching [4].
+   - <b>Z-Scoring normalization.</b> Images are normalized using a z-scoring mechanism with option to do the normalization within the region of interest or across the entire image. In addition, there is an option to remove outliers & noise from the image by removing a certain percentage of the top and bottom intensity ranges [6].
+   - <b>Histogram Matching</b>
+   - <b>Skull Stripping (Deep Learning based)</b>
+   - <b>Mammogram Pre-processing</b>
+   - <b>BraTS Pre-processing Pipeline</b>
 
 
 <B>NOTE:</B> An extended set of algorithms are available via the command line utility <b>Preprocessing</b>. For full details, run the command:
@@ -273,12 +304,13 @@ Preprocessing.exe -u
 
 References:
 
--# S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997. DOI:10.102A :1007963824710
--# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010. doi: 10.1109/TMI.2010.2046908
--# S.Bauer, L.P.Nolte, M.Reyes, "Skull-stripping for Tumor-bearing Brain Images", arXiv. abs/1204.0357, 2012.
--# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000D OI:10.1109/42.836373
--# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI, Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127 
--# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010. DOI:10.1002/hbm.20906 
+-# S.M.Smith, J.M.Brady, "SUSAN - a new approach to low level image processing", Int. J. Comput. Vis. 23(1):45-78, 1997, DOI:10.102A :1007963824710
+-# N.J.Tustison, B.B.Avants, P.A.Cook, Y.Zheng, A.Egan, P.A.Yushkevich, J.C.Gee, "N4ITK: Improved N3 Bias Correction", IEEE Trans MeI maging. 29(6):1310-20, 2010, DOI: 10.1109/TMI.2010.2046908
+-# S.P.Thakur, J.Doshi, S.Pati, S.M.Ha, C.Sako, S.Talbar, U.Kulkarni, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma:
+Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training", NeuroImage 2020, DOI:10.1016/j.neuroimage.2020.117081
+-# L.G.Nyul, J.K.Udupa, X.Zhang, "New Variants of a Method of MRI Scale Standardization", IEEE Trans Med Imaging. 19(2):143-50, 2000, DOI:10.1109/42.836373
+-# P.A.Yushkevich, J.Pluta, H.Wang, L.E.Wisse, S.Das, D.Wolk, "Fast Automatic Segmentation of Hippocampal Subfields and Medical Temporal Lobe Subregions in 3 Tesla and 7 Tesla MRI", Alzheimer's & Dementia: The Journal of Alzheimer's Association, 12(7), P126-127, DOI:10.1016/j.jalz.2016.06.205
+-# T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010, DOI:10.1002/hbm.20906 
 
 --------
 
@@ -356,8 +388,13 @@ Detailed explanation of using the command line is available in the \ref How_To_G
 |     Windows    |                        7, 8, 10                        |        XP, Vista       |
 |      Linux     | Ubuntu 16.04, 18.04; Debian 9, CentOS 7 (source build) | Ubuntu 14.04; CentOS 6 |
 |      macOS     |                      10.13, 10.14                      |          10.12         |
+|     Docker     |                          N.A.                          |           N.A.         |
 
-\section gs_FAQ_2 How do I run CaPTk Applications from the Command Line?
+\section gs_FAQ_2 What DICOM images are currently supported by CaPTk?
+  
+CaPTk has limited DICOM support. It only supports a limited protocols for MR, CT and MG modalities. DICOM loading has only been tested for images from UPenn. If you are not able to load your DICOM images, please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) and send some anonymized DICOM images for us to test.
+
+\section gs_FAQ_3 How do I run CaPTk Applications from the Command Line?
 
 
 - The full list of command line applications available is shown by running the following command (pretty much every application is available via the command line):
@@ -378,7 +415,7 @@ ${CaPTk_InstallDir}/bin/CaPTk -h
 
 - There are detailed examples of individual command line usage in the [How To](How_To_Guides.html) section of the documentation.
 
-\section gs_FAQ_3 What are the OpenGL requirements to run CaPTk?
+\section gs_FAQ_4 What are the OpenGL requirements to run CaPTk?
 
 - If CaPTk is unable to load images or you receive the error about minimum OpenGL version wasn't found, please update your display drivers in order to have **OpenGL version 3.2 or above**. Some useful resources:
   - OpenGL update for Ubuntu [[ref](https://www.phoronix.com/scan.php?page=news_item&px=Ubuntu-16.04-OI-Intel-GL-4.2)]:
@@ -388,12 +425,16 @@ sudo apt-add-repository ppa:oibaf/graphics-drivers && sudo apt-get update && sud
   - https://community.khronos.org/t/how-to-update-opengl/75314
   - https://ubuntuforums.org/showthread.php?t=2326268
   - https://www.techwalla.com/articles/how-to-update-opengl-drivers
+  - [A reply to a related issue](https://github.com/CBICA/CaPTk/issues/654#issuecomment-543744366):
+\verbatim
+MESA_GL_VERSION_OVERRIDE=4.5 #put the opengl version you want to use here
+\endverbatim
 
-\section gs_FAQ_4 What if I am having issues with the Linux Installer?
+\section gs_FAQ_5 What if I am having issues with the Linux Installer?
 
 This section highlights some of the common issues on Linux machines.
 
-\subsection gs_FAQ_4_1 FUSE Issues
+\subsection gs_FAQ_5_1 FUSE Issues
 
 If the installer successfully finishes and you are not able to run CaPTk due to FUSE issues, please extract the installer using the following command to extract the contents of the AppImage onto the hard drive: 
 \verbatim
@@ -416,7 +457,7 @@ FeatureExtraction \ # the executable should already be in the $PATH
 -o /usr/path/output.csv # the path to write the output 
 \endverbatim
     
-\subsection gs_FAQ_4_2 GLIBCXX or GLIBC Issues
+\subsection gs_FAQ_5_2 GLIBCXX or GLIBC Issues
 
 - This is happening because the Linux binaries are compiled using the [GCC-4.8 package on Ubuntu 16.04](https://packages.ubuntu.com/xenial/gcc-4.8); therefore you will need to update GCC 4.8.5 or newer in order to get CaPTk to work. Some examples are shown:
 
@@ -435,12 +476,41 @@ sudo yum install devtoolset-6
 \endverbatim  
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](Technical_Reference.html). Note that you will need a [C++11 compliant compiler](https://en.cppreference.com/w/cpp/compiler_support#cpp11).
+ 
+\subsection gs_FAQ_5_3 CXXABI issues
 
-\section gs_FAQ_5 Is there a minimum recommended screen resolution for running CaPTk?
+If you are running into mis-matched `CXXABI` behavior with a message similar to:
+
+\verbatim
+libstdc++.so.6: version `CXXABI_1.3.8' not found (required by /lib/x86_64-linux-gnu/libGLU.so.1).
+\endverbatim
+
+This means that you are running on a very new Linux distribution. Please see the discussion in https://github.com/CBICA/CaPTk/issues/1229 for details.
+
+\section gs_FAQ_6 Is there a minimum recommended screen resolution for running CaPTk?
   
 The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (>2K) screens and bug reports related to it will be appreciated.
 
-\section gs_FAQ_6 What if I am having an issue not listed here?
+\section gs_FAQ_7 Where can I find the CaPTk Docker Image? 
+
+You can find all the builds in our Docker Hub repository: https://hub.docker.com/r/cbica/captk
+
+\section gs_FAQ_8 How do I run the CaPTk Docker Image to show the interface?
+
+\verbatim
+docker run -it \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v $(pwd)/test:/app \
+  -e DISPLAY=$DISPLAY \
+  -u qtuser \
+  cbica/captk
+\endverbatim
+
+\section gs_FAQ_9 Is there something wrong with Feature Extraction?
+
+Please see the [Feature Extraction FAQ](https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions).
+
+\section gs_FAQ_10 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 

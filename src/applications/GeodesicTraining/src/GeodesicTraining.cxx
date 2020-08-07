@@ -17,12 +17,14 @@ std::string    loggerFile;
 bool           loggerRequested = false;
 
 bool        timerEnabled = false, closeWindow = true, includeDateTime = true, maxThreads = false, loiSet = false, subsample = true, 
-            balancedSubsample = GeodesicTrainingSegmentation::DEFAULT_BALANCED_SUBSAMPLE;
+            balancedSubsample = GeodesicTrainingSegmentation::DEFAULT_BALANCED_SUBSAMPLE, saveAll = false,
+            doPreprocessing = true, doCoordinateMaps = true, doStatisticalFilter = true, 
+            doCurvatureFilter = false, limitPixels = true;
 short       imageDimensions = 3;
 float       threshold = GeodesicTrainingSegmentation::DEFAULT_THRESHOLD, 
             inputImagesToAgdMapsRatio = GeodesicTrainingSegmentation::DEFAULT_INPUT_IMAGES_TO_AGD_MAPS_RATIO;
 int         tempPosition, numberOfThreads = 16, maxSamplesForSubsample = GeodesicTrainingSegmentation::DEFAULT_MAX_SAMPLES_SVM_SUBSAMPLE,
-            labelOfInterest = GeodesicTrainingSegmentation::DEFAULT_LABEL_OF_INTEREST,
+            pixelLimit = 10000000, labelOfInterest = GeodesicTrainingSegmentation::DEFAULT_LABEL_OF_INTEREST,
             labelTC = GeodesicTrainingSegmentation::DEFAULT_LABEL_TC, labelET = GeodesicTrainingSegmentation::DEFAULT_LABEL_ET,
             labelED = GeodesicTrainingSegmentation::DEFAULT_LABEL_ED, labelHT = GeodesicTrainingSegmentation::DEFAULT_LABEL_HT;
 std::string labelsPath = "", mode = DEFAULT_MODE, outputDir = "./", configFilePath = "", rfConfigFilePath = "",
@@ -49,6 +51,7 @@ int main(int argc, char *argv[])
 
 	std::string modeMsg = "Available modes are: \n\n";
 	modeMsg += "                             reversegeotrain -> [DEFAULT MODE] use AGD and SVMs to produce labels\n";
+	modeMsg += "                             sporadic        -> Same as reversegeotrain but best for sporadic areas\n";
 	modeMsg += "                             svmlabels       -> use SVMs to produce labels\n";
 	modeMsg += "           [2-class]         svmpseudo       -> use SVMs to produce pseudoprobability maps\n";
 	modeMsg += "           [1-class]         agd             -> run AGD to produce agd maps\n";
@@ -115,6 +118,13 @@ int main(int argc, char *argv[])
 	parser.addOptionalParameter("nb", "nobalancesamples", cbica::Parameter::STRING, "int", "Don't balance the subsampling (SVM Subsampling)");
 	//parser.addOptionalParameter("pt", "pixeltype", cbica::Parameter::STRING, "string", "Input image(s) pixel type (int or float) [default is float]");
 	parser.addOptionalParameter("id", "imagedimensions", cbica::Parameter::STRING, "int", "Input image(s) dimensions [only 3D supported for now]");
+	parser.addOptionalParameter("sa", "saveall", cbica::Parameter::STRING, "-", "Save all output");
+	parser.addOptionalParameter("ncm", "nocoordinatemaps", cbica::Parameter::STRING, "-", "Don't use coordinate maps");
+	parser.addOptionalParameter("np", "nopreprocessing", cbica::Parameter::STRING, "-", "Preprocessing: Turn off everything");
+	parser.addOptionalParameter("nsf", "nostatfilter", cbica::Parameter::STRING, "-", "Preprocessing: Turn off just statistical normalization filter");
+	parser.addOptionalParameter("cf", "curvaturefilter", cbica::Parameter::STRING, "-", "Preprocessing: Turn on curvature anisotropic filter");
+	parser.addOptionalParameter("lp", "limitpixels", cbica::Parameter::STRING, "int", "Preprocessing: Image size will be max this value (default 5000000)");
+	parser.addOptionalParameter("nlp", "nolimitpixels", cbica::Parameter::STRING, "-", "Preprocessing: Image size will not be limited (might change because of spacing)");
 
 	// Parameters parsing
 
@@ -282,6 +292,42 @@ int main(int argc, char *argv[])
 		// Input image(s) dimensions
 		imageDimensions = std::stoi(argv[tempPosition + 1]);
 	}
+	if (parser.compareParameter("sa", tempPosition)) {
+		// Input image(s) dimensions
+		saveAll = true;
+	}
+	if (parser.compareParameter("ncm", tempPosition))
+	{
+		// No coordinate maps 
+		doCoordinateMaps = false;
+	}
+	if (parser.compareParameter("np", tempPosition))
+	{
+		// Preprocessing: No preprocessing
+		doPreprocessing = false;
+	}
+	if (parser.compareParameter("nsf", tempPosition))
+	{
+		// Preprocessing: No stat filter
+		doStatisticalFilter = false;
+	}
+	if (parser.compareParameter("cf", tempPosition))
+	{
+		// Preprocessing: curvature anisotropic diffusion filter
+		doCurvatureFilter = true;
+	}
+	if (parser.compareParameter("lp", tempPosition))
+	{
+		// Preprocessing: limit pixels to value
+		pixelLimit = std::stoi(argv[tempPosition + 1]);
+	}
+	if (parser.compareParameter("nlp", tempPosition))
+	{
+		// Preprocessing: don't limit pixels
+		limitPixels = false;
+	}
+
+
 	if (parser.compareParameter("cl", tempPosition)) {
 		// Change labels list (The label before the '/' will be changed with the label after the '/')
 		std::string clsRaw = argv[tempPosition + 1];
@@ -362,6 +408,9 @@ void RunGeodesicTraining()
 	else if (mode == "reversegeotrain") {
 		geodesicTraining.SetMode(GeodesicTrainingSegmentation::MODE::REVERSE_GEOTRAIN);
 	}
+	else if (mode == "sporadic") {
+		geodesicTraining.SetMode(GeodesicTrainingSegmentation::MODE::REVERSE_GEOTRAIN_SPORADIC);
+	}
 	else if (mode == "geotrain") {
 		geodesicTraining.SetMode(GeodesicTrainingSegmentation::MODE::GEOTRAIN);
 	}
@@ -412,18 +461,22 @@ void RunGeodesicTraining()
 	geodesicTraining.SetLabels(labelsPath);
 	geodesicTraining.SetConfigFile(configFilePath);     // For modes that use SVMs
 	geodesicTraining.SetRfConfigFile(rfConfigFilePath); // For modes that use RFs
+	geodesicTraining.SetDoCoordinateMaps(doCoordinateMaps);
 	geodesicTraining.SetGroundTruth(groundTruthPath, groundTruthSkip);
 	geodesicTraining.SetChangeLabelsMap(changeLabelsMap);
 	geodesicTraining.SetThreshold(threshold);
-	//geodesicTraining.SetInputImageToAgdMapsRatio(inputImagesToAgdMapsRatio);
 	geodesicTraining.SetOutputPath(outputDir, datasetName, tag, includeDateTime);
-	geodesicTraining.SetSaveAll(true);
+	geodesicTraining.SetSaveAll(saveAll);
+	geodesicTraining.SaveOnlyNormalSegmentation(!saveAll, "segmentation");
 	geodesicTraining.SetTimerEnabled(timerEnabled);
 	geodesicTraining.SetNumberOfThreads(numberOfThreads);
 	geodesicTraining.SetNumberOfThreadsMax(maxThreads);
 	geodesicTraining.SetSubsampling(subsample, maxSamplesForSubsample);
 	geodesicTraining.SetPretrainedModelsPaths(inputModels); // For mode "generateconfig"
 	geodesicTraining.SetImportanceValues(importanceValues); // For mode "generateconfig"
+	geodesicTraining.SetProcessing(doPreprocessing, inputImagesToAgdMapsRatio, 
+		doStatisticalFilter, doCurvatureFilter, limitPixels, pixelLimit
+	);
 
 	if (loiSet) {
 		geodesicTraining.SetLabelOfInterest(labelOfInterest);

@@ -124,71 +124,6 @@ namespace cbica
       return true;
   }
 
-  std::vector<std::string> getCWLFilesInApplicationDir() 
-  {
-    auto appDir = getExecutablePath();
-
-#ifdef __APPLE__
-    appDir += "../Resources/bin";
-#endif
-
-    auto filesInDir = filesInDirectory(appDir);
-    auto cwlFiles = filesInDir;
-    cwlFiles.clear();
-    for (size_t i = 0; i < filesInDir.size(); i++)
-    {
-      if (getFilenameExtension(filesInDir[i], false).find(".cwl") != std::string::npos)
-      {
-        cwlFiles.push_back(filesInDir[i]);
-      }
-    }
-    //std::vector<std::string> files;
-
-    //#ifdef _WIN32
-    //  WIN32_FIND_DATA data;
-    //  HANDLE hFind = FindFirstFile("\\*", &data);
-
-    //  if ( hFind != INVALID_HANDLE_VALUE ) {
-    //    do {
-    //      files.push_back(data.cFileName);
-    //    } while (FindNextFile(hFind, &data));
-    //    FindClose(hFind);
-    //  }
-    //#else
-    //  DIR *dir;
-    //  struct dirent *ent;
-    //  if ((dir = opendir(".")) != NULL) {
-    //    /* print all the files and directories within directory */
-    //    while ((ent = readdir (dir)) != NULL) {
-    //      if (ent->d_type == DT_REG) {  
-    //        files.push_back(ent->d_name);
-    //      }
-    //    }
-    //    closedir (dir);
-    //  } else {
-    //    /* could not open directory */
-    //    perror ("");
-    //    return files;
-    //  }
-    //#endif
-
-    //// Prune non cwl files
-    //std::vector<std::string> cwlfiles;
-    //for(auto const& value: files) {
-
-    //  if (value.substr(value.size() - 4) == ".cwl") {
-    //    cwlfiles.push_back(value);
-    //  }
-
-    //}
-
-    //// Sort cwl files
-    //std::sort(cwlfiles.begin(), cwlfiles.end());
-
-    return cwlFiles;
-
-  }
-
   std::string getEnvironmentVariableValue(const std::string &environmentVariable)
   {
     std::string returnString = "";
@@ -690,8 +625,11 @@ namespace cbica
     {
       if (!fileExists(filename))
       {
-        std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
-        exit(EXIT_FAILURE);
+        if (!isDir(filename))
+        {
+          std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
+          exit(EXIT_FAILURE);
+        }
       }
     }
     std::string path, base, ext;
@@ -794,6 +732,7 @@ namespace cbica
 
   std::string getFullPath()
   {
+    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -812,12 +751,15 @@ namespace cbica
 #else
     //! Initialize pointers to file and user names
     char path[PATH_MAX];
-    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
-      //path = dirname(path);
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    if (count == -1)
       std::cerr << "[getFullPath()] Error during getting full path..";
+    std::string appPath = std::string(path, (count > 0) ? count : 0);
+    path[0] = '\0';
+    return appPath;
 #endif
 
-    std::string return_string = std::string(path);
+    return_string = std::string(path);
     path[0] = '\0';
 
     return return_string;
@@ -1255,6 +1197,44 @@ namespace cbica
     return cbica::setEnvironmentVariable(variable_name, "");
   }
 
+  std::vector< std::string > filesInDirectory(const std::string &dirName,
+    std::string filePattern, std::string fileExtension,
+    bool returnFullPath, bool recurse)
+  {
+    std::vector< std::string > returnVector;
+    // set up required folders
+    std::vector< std::string > subDirsInInput = { dirName };
+    if (recurse)
+    {
+      auto temp = subdirectoriesInDirectory(dirName, recurse, true);
+      subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end());
+    }
+
+    // loop through all requested directories
+    for (size_t i = 0; i < subDirsInInput.size(); i++)
+    {
+      auto allFilesInCurrentDir = cbica::filesInDirectory(cbica::normPath(subDirsInInput[i]));
+
+      // loop through all files
+      for (size_t j = 0; j < allFilesInCurrentDir.size(); j++)
+      {
+        auto currentExt = cbica::getFilenameExtension(allFilesInCurrentDir[j]);
+        if ( // if file patter is not empty, search for it in the filename
+          (!filePattern.empty() && (allFilesInCurrentDir[j].find(filePattern) != std::string::npos)) ||
+          filePattern.empty() // otherwise, pass it as-is
+          )
+        {
+          if (fileExtension == currentExt)
+          {
+            returnVector.push_back(allFilesInCurrentDir[j]);
+          } // end extension check
+        } // end file-pattern check
+      } // end files-loop
+    } // end dirs-loop
+
+    return returnVector;
+  }
+
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
@@ -1359,7 +1339,7 @@ namespace cbica
           }
           if (recursiveSearch)
           {
-            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true);
+            std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + std::string(fd.cFileName), true, returnFullPath);
             allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
           }
         }
@@ -1378,7 +1358,7 @@ namespace cbica
     {
       if (recursiveSearch && (dirp->d_type == DT_DIR) && (dirp->d_name[0] != '.') && (dirp->d_name != std::string(".svn").c_str()))
       {
-        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true);
+        std::vector<std::string> tempVector = subdirectoriesInDirectory(dirName + "/" + dirp->d_name, true, returnFullPath);
         allDirectories.insert(allDirectories.end(), tempVector.begin(), tempVector.end());
       }
 
@@ -1674,10 +1654,10 @@ namespace cbica
     returnStatistics["PP"] = static_cast<float>(confusionMatrix["PP"]);
 
     // https://en.wikipedia.org/wiki/Accuracy_and_precision
-    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (2 * inputRealLabels.size());
+    returnStatistics["Accuracy"] = (returnStatistics["TP"] + returnStatistics["TN"]) / (returnStatistics["TP"] + returnStatistics["TN"] + returnStatistics["FP"] + returnStatistics["FN"]);
 
     // https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values
-    returnStatistics["PPV"] = returnStatistics["TP"] / returnStatistics["PP"];
+    returnStatistics["PPV"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FP"]);
     returnStatistics["Precision"] = returnStatistics["PPV"];
 
     // https://en.wikipedia.org/wiki/False_discovery_rate
@@ -1693,7 +1673,7 @@ namespace cbica
     returnStatistics["Prevalence"] = returnStatistics["RP"] / (2 * inputRealLabels.size());
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TPR"] = returnStatistics["TP"] / returnStatistics["RP"];
+    returnStatistics["TPR"] = returnStatistics["TP"] / (returnStatistics["TP"] + returnStatistics["FN"]);
     returnStatistics["Sensitivity"] = returnStatistics["TPR"];
     returnStatistics["Recall"] = returnStatistics["TPR"];
     returnStatistics["POD"] = returnStatistics["TPR"];
@@ -1707,7 +1687,7 @@ namespace cbica
     returnStatistics["MR"] = returnStatistics["FNR"];
 
     // https://en.wikipedia.org/wiki/Sensitivity_and_specificity
-    returnStatistics["TNR"] = returnStatistics["TN"] / returnStatistics["RP"];
+    returnStatistics["TNR"] = returnStatistics["TN"] / (returnStatistics["TN"] + returnStatistics["FP"]);
     returnStatistics["Specificity"] = returnStatistics["TNR"];
 
     // https://en.wikipedia.org/wiki/Likelihood_ratios_in_diagnostic_testing#positive_likelihood_ratio
@@ -2017,6 +1997,7 @@ namespace cbica
       if (idx != std::string::npos)
       {
         extension = "." + dataFile_wrap.substr(idx + 1);
+
         if (extension.find("/") != std::string::npos)
           extension = "";
         else {
@@ -2026,7 +2007,6 @@ namespace cbica
         }
       }
       // else // there is no extension for file
-
       path_name = dirname(cbica::constCharToChar(dataFile_wrap.c_str()));
       basename_var = basename(cbica::constCharToChar(dataFile_wrap.c_str()));
 #endif
@@ -2056,6 +2036,20 @@ namespace cbica
       {
         baseName = std::string(basename_var);
       }
+
+#ifdef __APPLE__
+      idx = baseName.rfind('.');
+      
+      if (idx != std::string::npos)
+      {
+        extension = "." + baseName.substr(idx + 1);
+        if (extension.find("/") != std::string::npos)
+          extension = "";
+        else {
+          baseName = replaceString(baseName, extension, "");
+        }
+      }
+#endif
 
 #if (_MSC_VER >= 1700)
       path_name[0] = NULL;
@@ -2100,7 +2094,7 @@ namespace cbica
     for (size_t pos = 0;; pos += replaceWith.length())
     {
       pos = return_string.find(toReplace, pos);
-      // std::cout << "pos: " << pos << std::endl;
+
       if (pos == std::string::npos)
         break;
 
@@ -2132,11 +2126,12 @@ namespace cbica
     return cbica::constCharToChar(std::string(input));
   }
 
-  void dos2unix(const std::string inputFile)
+  void dos2unixFile(const std::string &inputFile, const std::string outputFile)
   {
 #ifndef WIN32 // this function is not needed for Windows systems
-    auto tempDir = createTmpDir();
-    auto tempFile = tempDir + "tempFile.txt";
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
 
     std::ifstream in(inputFile.c_str());
     if (!in.is_open())
@@ -2144,22 +2139,37 @@ namespace cbica
       std::cerr << "Error: could not open '" << inputFile << "'\n";
       return;
     }
-    std::ofstream out(tempFile.c_str());
+    if (isFile(outputFile))
+    {
+      std::cerr << "File '" << outputFile << "' already exists, please try another.\n";
+      return;
+    }
+    std::ofstream out(outputFile.c_str());
     std::istreambuf_iterator<char> input(in), end;
     std::ostreambuf_iterator<char> output(out);
 
     std::remove_copy(input, end, output, '\r');
     out.close();
-
-    std::remove(inputFile.c_str());
-    cbica::copyFile(tempFile, inputFile);
-
-    if (removeDirectoryRecursively(tempDir) != 0)
-    {
-      std::cerr << "There was an issue deleting the tempDir '" << tempDir << "'\n";
-    }
 #endif
     return;
+  }
+
+  std::string dos2unix(const std::string &inputFile, const std::string outputDir)
+  {
+#ifndef WIN32 // this function is not needed for Windows systems
+    std::string path, base, ext;
+    cbica::splitFileName(inputFile, path, base, ext);
+    cbica::getFilenameBase(inputFile);
+
+    // generate a unique filename
+    auto tempFile = outputDir + "/" + cbica::getFilenameBase(inputFile) + "_" +
+      getCurrentProcessID() + "-" + getCurrentLocalTimestamp() + "_dos2unix" + ext;
+
+    dos2unixFile(inputFile, tempFile);
+
+    return tempFile;
+#endif
+    return inputFile;
   }
 
   size_t getTotalMemory()

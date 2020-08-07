@@ -38,6 +38,11 @@ public:
   {
     m_extractionType = inputRange;
   }
+
+  void EnableCalculateFeretDiameter()
+  {
+    m_calculateFeretDiameter = true;
+  }
   
   /**
   \brief Update calculate five feature values
@@ -64,7 +69,10 @@ public:
 
       auto i2l = itk::LabelImageToShapeLabelMapFilter < TShapeImageType >::New();
       i2l->SetInput(connected->GetOutput());
-      //i2l->ComputeFeretDiameterOn();
+      if (m_calculateFeretDiameter)
+      {
+        i2l->ComputeFeretDiameterOn();
+      }
       i2l->ComputePerimeterOn();
       //i2l->ComputeOrientedBoundingBoxOn();
       i2l->Update();
@@ -125,7 +133,11 @@ public:
 
           //std::cout << "EllipseDiameter" + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
         }
-        //m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
+
+        if (m_calculateFeretDiameter)
+        {
+          this->m_features["FeretDiameter"] = labelObject->GetFeretDiameter();
+        }
         this->m_features["PerimeterOnBorder"] = labelObject->GetPerimeterOnBorder();
         this->m_features["Perimeter"] = labelObject->GetPerimeter();
         this->m_features["PixelsOnBorder"] = labelObject->GetNumberOfPixelsOnBorder();
@@ -188,7 +200,11 @@ public:
 
               //std::cout << "EllipseDiameter" + labelString + "_Axis-" + std::to_string(d) << " = " << ellipseDiameter[d] << "\n";
             }
-            //m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
+
+            if (m_calculateFeretDiameter)
+            {
+              this->m_features["FeretDiameter" + labelString] = labelObject->GetFeretDiameter();
+            }
             this->m_features["PerimeterOnBorder" + labelString] = labelObject->GetPerimeterOnBorder();
             this->m_features["Perimeter" + labelString] = labelObject->GetPerimeter();
             this->m_features["PixelsOnBorder" + labelString] = labelObject->GetNumberOfPixelsOnBorder();
@@ -232,4 +248,6 @@ private:
   };
 
   int m_extractionType = ExtractionType::Largest;
+
+  bool m_calculateFeretDiameter = false; //! substantially increases compute time
 };

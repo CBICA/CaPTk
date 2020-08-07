@@ -4,7 +4,10 @@
 
 ## Windows
 
-The Windows executable package contains all required dependencies and does not need administrative privileges for installation. This is a standard MSI installer. If a security prompt comes up, click on "Run Anyway".
+- Download the ".msi" installer file and double click to open.
+- On Windows 10, sometimes, Microsoft Edge does not let you download installers from unknown sources for security purposes (the warning comes up after the download finishes); you will need to select "Keep File" and follow prompts.
+- If a security prompt comes up after opening the installer, click on "Run Anyway".
+- Follow prompts for installation.
 
 ## Linux
 
@@ -14,9 +17,13 @@ The Windows executable package contains all required dependencies and does not n
 \verbatim
 chmod +x CaPTk_${Version}.bin
 \endverbatim
-- Run the following command to start CaPTk:
+- To install CaPTk to the current directory where the AppImage was downloaded, run the following command:
 \verbatim
 ./CaPTk_${Version}.bin
+\endverbatim
+- To specify a preferred directory to install CaPTk, run the following command:
+\verbatim
+./CaPTk_${Version}.bin --target {path_to_preferred_directory}
 \endverbatim
 - Follow prompts to install.
 
@@ -31,8 +38,10 @@ chmod +x CaPTk_${Version}.bin
 --------------------------------------------------------------------
 
 --------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="ReleaseNotes.html"><b>Next (Changelog)<b></a>
 \endhtmlonly
+
 --------------------------------------------------------------------
 */

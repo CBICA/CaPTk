@@ -24,70 +24,71 @@ namespace cbica
   ImageInfo::ImageInfo(const std::string &fName)
   {
     auto fName_norm = cbica::normPath(fName);
-    auto fName_ext = cbica::getFilenameExtension(fName);
-    if (!fName_ext.empty())
-    {
-      std::transform(fName_ext.begin(), fName_ext.end(), fName_ext.begin(), ::tolower);
-    }
-
     if (cbica::isFile(fName) /*&& (fName_ext != ".dcm")*/)
     {
+      auto fName_ext = cbica::getFilenameExtension(fName);
+      if (!fName_ext.empty())
+      {
+        std::transform(fName_ext.begin(), fName_ext.end(), fName_ext.begin(), ::tolower);
+      }
+
       m_fileName = fName_norm;
-
-      m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
-      
-      if (cbica::IsDicom(fName_norm))
+    }
+    else if (cbica::isDir(fName_norm))
+    {
+      auto filesInDir = cbica::filesInDirectory(fName_norm);
+      if (!filesInDir.empty())
       {
-        gdcm::Reader reader;
-        reader.SetFileName(m_fileName.c_str());
-
-        if (!reader.CanRead())
+        if (cbica::IsDicom(filesInDir[0]))
         {
-          itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
+          m_fileName = filesInDir[0];
         }
-      }
-      
-      if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
-      {
-        itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
-      }
-
-      // exception handling in case of NULL pointer initialization
-      if (m_itkImageIOBase)
-      {
-        m_itkImageIOBase->SetFileName(m_fileName);
-        m_itkImageIOBase->ReadImageInformation();
+        else
+        {
+          std::cerr << "Please pass a single file.\n";
+          return;
+        }
       }
       else
       {
-        itkGenericExceptionMacro("Could not read the input image information from '" << m_fileName << "'\n");
-      }
-
-      m_itkImageIOBase->SetFileName(m_fileName);
-      m_itkImageIOBase->ReadImageInformation();
-
-      m_IOComponentType = m_itkImageIOBase->GetComponentType();
-      m_pixelType = m_itkImageIOBase->GetPixelType();
-      m_IOComponentType_asString = m_itkImageIOBase->GetComponentTypeAsString(m_IOComponentType);
-      m_pixelType_asString = m_itkImageIOBase->GetPixelTypeAsString(m_pixelType);
-
-      for (size_t i = 0; i<m_itkImageIOBase->GetNumberOfDimensions(); i++)
-      {
-        m_spacings.push_back(m_itkImageIOBase->GetSpacing(i));
-        m_origins.push_back(m_itkImageIOBase->GetOrigin(i));
-        m_size.push_back(m_itkImageIOBase->GetDimensions(i));
+        std::cerr << "Empty Directory passed.\n";
+        return;
       }
     }
-    //else if (fName_ext == ".dcm")
-    //{
-    //  m_dicomDetected = true;
-    //  // nothing to do here
-    //  return;
-    //}
+
+    m_itkImageIOBase = itk::ImageIOFactory::CreateImageIO(m_fileName.c_str(), itk::ImageIOFactory::ReadMode);
+
+    if (!m_itkImageIOBase->CanReadFile(m_fileName.c_str()))
+    {
+      itkGenericExceptionMacro("Cannot read '" << m_fileName << "'\n");
+    }
+
+    // exception handling in case of NULL pointer initialization
+    if (m_itkImageIOBase)
+    {
+      m_itkImageIOBase->SetFileName(m_fileName);
+      m_itkImageIOBase->ReadImageInformation();
+    }
     else
     {
-      std::cerr << "Please pass a supported image.\n";
-      return;
+      itkGenericExceptionMacro("Could not read the input image information from '" << m_fileName << "'\n");
+    }
+
+    m_itkImageIOBase->SetFileName(m_fileName);
+    m_itkImageIOBase->ReadImageInformation();
+
+    m_IOComponentType = m_itkImageIOBase->GetComponentType();
+    m_pixelType = m_itkImageIOBase->GetPixelType();
+    m_IOComponentType_asString = m_itkImageIOBase->GetComponentTypeAsString(m_IOComponentType);
+    m_pixelType_asString = m_itkImageIOBase->GetPixelTypeAsString(m_pixelType);
+    m_dimensions = m_itkImageIOBase->GetNumberOfDimensions();
+
+    for (size_t i = 0; i < m_dimensions; i++)
+    {
+      m_spacings.push_back(m_itkImageIOBase->GetSpacing(i));
+      m_origins.push_back(m_itkImageIOBase->GetOrigin(i));
+      m_size.push_back(m_itkImageIOBase->GetDimensions(i));
+      m_directions.push_back(m_itkImageIOBase->GetDirection(i));
     }
   }
 
@@ -134,6 +135,11 @@ namespace cbica
   itk::ImageIOBase::IOPixelType ImageInfo::GetPixelType()
   {
     return m_pixelType;
+  }
+
+  std::vector< std::vector< double > > ImageInfo::GetImageDirections()
+  {
+    return m_directions;
   }
 
 }

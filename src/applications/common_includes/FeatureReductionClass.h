@@ -45,6 +45,7 @@ public:
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePointsFullPCA(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
 
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities);
+  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities);
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePoints(vnl_matrix<double> &intensities);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);

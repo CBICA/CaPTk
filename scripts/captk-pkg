@@ -115,8 +115,10 @@ RUN_FIXES () {
   # to be marked as executable or else the whole thing WILL NOT work. We'll get to that in a second.
   echo "[:] Adding LIBRA..."
   cd ${SRC_DIR}
-  cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
-  cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+  # # nothing do here since the installation has happened via CMake
+  # cp ./src/applications/individualApps/libra/bin/libra ./bin/install/appdir/usr/bin/
+  # cp ./src/applications/individualApps/libra/libexec/libra ./bin/install/appdir/usr/libexec/
+  # cp ./src/applications/individualApps/libra/libexec/MCR/bin/glnxa64/matlab_helper ./bin/install/appdir/usr/libexec/MCR/bin/glnxa64/matlab_helper
   #cp -r ./src/applications/individualApps/libra/MCR ./bin/install/appdir/usr/libexec/\
 
   # Move into install
@@ -143,9 +145,14 @@ RUN_FIXES () {
 
   echo "[:] Marking MATLAB binaries as executable..."
 
-  # The magic file that we need to be executable from earlier
+  # # The magic file that we need to be executable from earlier
   cd ./libexec/MCR/v84/bin/glnxa64
   chmod +x matlab_helper
+  # cd ${USR_DIR}/libexec/MCR/v84/etc/glnxa64
+  # chmod +x MLM
+  # chmod +x lmgrd
+  # chmod +x lmutil
+
 
   # Go back up to /bin
   cd ${USR_DIR}/bin
@@ -200,6 +207,7 @@ RUN_DEPLOYQT () {
   # Replace AppRun
   rm ./appdir/AppRun
   cp ../../data/applications/AppRun ./appdir/
+  # cp ../../data/applications/CaPTk.desktop ./appdir/
 
   if [ -z "$PKG_COPY_QT_LIBS" ]; then
   
@@ -213,17 +221,22 @@ RUN_DEPLOYQT () {
     qt_libs_path="$(dirname "${qmake_path}")/../lib"
     cp ${qt_libs_path}/*.so ./appdir/usr/lib/
     cp ${qt_libs_path}/*.so.5 ./appdir/usr/lib/
-    cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/
-    cp ${qt_libs_path}/*.so.5.11.1 ./appdir/usr/lib/
+    # we only support the copy of qt 5.11 and 5.12
+    count=`ls -1 ${qt_libs_path}/*.so.5.11 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then cp ${qt_libs_path}/*.so.5.11 ./appdir/usr/lib/; cp ${qt_libs_path}/*.so.5.11.* ./appdir/usr/lib/ ; fi ;
+    count=`ls -1 ${qt_libs_path}/*.so.5.12 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then cp ${qt_libs_path}/*.so.5.12 ./appdir/usr/lib/; cp ${qt_libs_path}/*.so.5.12.* ./appdir/usr/lib/ ; fi ;
 
   fi
 
-  # Download and mark executable appimagetool. Using release 11 as of 3/5/18
-  wget -nc https://github.com/AppImage/AppImageKit/releases/download/11/appimagetool-x86_64.AppImage
-  chmod +x appimagetool-x86_64.AppImage
+  # Download and mark executable appimagetool.
+  wget -nc https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
 
-  # Build the AppImage
-  ./appimagetool-x86_64.AppImage ./appdir
+  chmod a+x appimagetool-x86_64.AppImage
+
+  # # Build the AppImage
+  export ARCH=x86_64 appimagetool
+  ./appimagetool-x86_64.AppImage ./appdir -v 
 
   # Move the appimage up to the root
   mv ./CaPTk*.AppImage ../../CaPTk.bin
@@ -263,6 +276,12 @@ echo "[:] Creating binary directory..."
 mkdir -p bin
 cd bin
 
+if [ -z "$CAPTK_BUILD_THREADS" ]; then
+
+  CAPTK_BUILD_THREADS=2
+
+fi
+
 # Optional flag one can set in the terminal to skip the double build process, used in Azure
 if [ -z "$PKG_FAST_MODE" ]; then
 
@@ -279,7 +298,7 @@ if [ -z "$PKG_FAST_MODE" ]; then
 
   # Make install/strip
   echo "[:] Building superbuild..."
-  make -j2
+  make -j$CAPTK_BUILD_THREADS
 
   # CaPTk
   # Configure cmake
@@ -288,7 +307,7 @@ if [ -z "$PKG_FAST_MODE" ]; then
 
   # Make install/strip
   echo "[:] Building CaPTk..."
-  make -j2 install/strip
+  make -j$CAPTK_BUILD_THREADS install/strip
 
 else
 
@@ -296,13 +315,13 @@ else
 
   # Make install/strip
   echo "[:] Installing CaPTk..."
-  make -j2 install/strip
+  make -j$CAPTK_BUILD_THREADS install/strip
 
 fi
 
 # Install docs
-echo "[:] Installing docs..."
-cp -r ../docs install/appdir/usr/
+# echo "[:] Installing docs..."
+# cp -r ../docs install/appdir/usr/
 
 # We need to fix the project first
 RUN_FIXES
@@ -312,55 +331,58 @@ if toolversion ldd '>=' 2.24; then
 else
   # Install and deploy
   RUN_DEPLOYQT
+
+  echo "[:] Building Installer..."
+
+  # Now that we have a custom AppImage, we need to package around it an installer with makeself.
+  # You can read more about it but it basically creates a temporary filesystem/disk that you can read and move files from, kind of like an AppImage but it creates 
+  # a zipfile attached to a shell script as output.
+
+  # Step 1: Get makeself, and extract it
+  wget -nc https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
+  chmod +x ./makeself-2.4.0.run
+  ./makeself-2.4.0.run
+  rm makeself-2.4.0.run
+
+  # Step 2: Create a package directory for makeself to package
+  rm -rf pkg
+  mkdir pkg
+  # We package the AppImage, the license, and a script to display the agreement and install the AppImage
+  mv CaPTk.bin ./pkg/
+  # Move cwl in
+  cp ./data/cwlFiles/*.cwl ./pkg/
+  # Move license in
+  cp ./LICENSE ./pkg/
+  # Move installer in
+  cp ./scripts/linux-makeself ./pkg/
+  chmod +x ./pkg/linux-makeself
+
+  # Create version file
+  # This should always create a file because the installer script needs the version number and won't have access to the cmake
+  # Save version as variable
+
+  # picking up the version from the CMakeCache, because what is where the real version gets populated
+  str=`cat bin/CMakeCache.txt | grep PROJECT_VERSION | awk '{print $1}'`
+  ver=${str#*=}
+  echo "Creating installer for CaPTk version ${ver}"
+
+  # Should not be an issue to write to this file considering that pkg is created and destroyed in this script
+  echo ${ver} >> ./pkg/version
+
+  # Step 3: Wrap it all upp
+
+  # Create the installer
+  ./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
+
+  # ensure a unique identifier for centos7
+  # if [[ "$OSrelease" == 'centos7' ]]; then
+  #  mv CaPTk_${ver}_Installer.bin CaPTk_${ver}_Installer_centos7.bin
+  # fi
+
+  # Cleanup
+  rm -rf ./pkg
+  rm -rf ./makeself-2.4.0*
+
+  # Done
+  echo "[:] Done. Created installer"
 fi
-
-echo "[:] Building Installer..."
-
-# Now that we have a custom AppImage, we need to package around it an installer with makeself.
-# You can read more about it but it basically creates a temporary filesystem/disk that you can read and move files from, kind of like an AppImage but it creates 
-# a zipfile attached to a shell script as output.
-
-# Step 1: Get makeself, and extract it
-wget -nc https://github.com/megastep/makeself/releases/download/release-2.4.0/makeself-2.4.0.run
-chmod +x ./makeself-2.4.0.run
-./makeself-2.4.0.run
-rm makeself-2.4.0.run
-
-# Step 2: Create a package directory for makeself to package
-mkdir pkg
-# We package the AppImage, the license, and a script to display the agreement and install the AppImage
-mv CaPTk.bin ./pkg/
-# Move cwl in
-cp ./data/cwlFiles/*.cwl ./pkg/
-# Move license in
-cp ./LICENSE ./pkg/
-# Move installer in
-cp ./scripts/linux-makeself ./pkg/
-chmod +x ./pkg/linux-makeself
-
-# Create version file
-# This should always create a file because the installer script needs the version number and won't have access to the cmake
-# Save version as variable
-
-# Get the version of CaPTk from cmake, assuming it is being ran with respect to a cmake file in the current directory
-# If you notice the version numbers start appearing as `..` or something dumb, make sure no one changed the CMake because I almost guarantee you that's the issue you're seeing
-MAJOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MAJOR" | awk '{print $3}'`
-MINOR=`cat CMakeLists.txt | grep "( PROJECT_VERSION_MINOR" | awk '{print $3}'`
-PATCH=`cat CMakeLists.txt | grep "( PROJECT_VERSION_PATCH" | awk '{print $3}'`
-
-ver="${MAJOR}.${MINOR}.${PATCH}"
-
-# Should not be an issue to write to this file considering that pkg is created and destroyed in this script
-echo ${ver} >> ./pkg/version
-
-# Step 3: Wrap it all upp
-
-# Create the installer
-./makeself-2.4.0/makeself.sh --gzip pkg/ CaPTk_${ver}_Installer.bin "CaPTk Linux Installer" ./linux-makeself
-
-# Cleanup
-rm -rf ./pkg
-rm -rf ./makeself-2.4.0*
-
-# Done
-echo "[:] Done. Created installer"

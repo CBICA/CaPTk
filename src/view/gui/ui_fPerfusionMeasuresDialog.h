@@ -132,6 +132,10 @@ public:
     inputGridLayout->addWidget(inputEchoLabel, 1, 0, 1, 1);
     inputGridLayout->addWidget(inputEchoName, 1, 1, 1, 1);
 
+	//hiding the echo time from UI
+	inputEchoLabel->hide();
+	inputEchoName->hide();
+
     inputGridLayout->addWidget(m_rcbv, 3, 0, 1, 1);
     inputGridLayout->addWidget(m_ph, 4, 0, 1, 1);
     inputGridLayout->addWidget(m_psr, 5, 0, 1, 1);

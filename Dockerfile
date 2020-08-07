@@ -1,49 +1,29 @@
-FROM ubuntu:16.04
+FROM cbica/captk_centos7:devtoolset-4_superbuild
 
-MAINTAINER CBICA_UPenn software@cbica.upenn.edu
+LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-#update
-RUN apt-get update && \
-    apt-get install -y sudo curl git && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
-    sudo apt-get install git-lfs
+RUN yum update -y
 
-#general dependencies
-RUN apt-get install -y \
-    build-essential \
-    mesa-common-dev \
-    freeglut3-dev \
-    wget \
-    git-core \
-    unzip \
-    doxygen 
-    
-RUN git lfs install
+RUN yum install git
 
-RUN ln -s `locate libc.so.6` /lib/libc.so
+# We will do git pull on the CBICA/CaPTk master, because that is the repo using which the base image is made
+# We will not do compiles on the PR because the idea is that the Xenial build will check the build status of
+# the PR in any case.
+RUN cd CaPTk; \ 
+    git pull origin master
 
-# install latest cmake 
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.14.3/cmake-3.14.3-Linux-x86_64.tar.gz && \
-    tar -xzf cmake-3.14.3-Linux-x86_64.tar.gz
+RUN cd CaPTk/bin; \
+    if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
+    cmake -DITK_DIR=./bin/ITK-build -DDCMTK_DIR=./bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
+    make && make install/strip; 
+    #cd .. && ./scripts/captk-pkg
 
-# clone the current repo
-RUN git clone https://github.com/CBICA/CaPTk.git
+# cleanup
+RUN rm -rf CaPTk/bin/binaries_linux.zip
 
-# start superbuild and then build CaPTk
-RUN export PATH=`pwd`/cmake-3.14.3-Linux-x86_64/bin:$PATH && \
-    which cmake && \
-    cd CaPTk && \
-    echo "=== Starting CaPTk Superbuild ===" && \
-    mkdir bin && cd bin && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install_libs \
-    -Wno-dev .. && \
-    make -j4 && \
-    echo "=== Building CaPTk ===" && \
-    cmake -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=./install \
-    -Wno-dev .. && \
-    make install/strip -j4
+# set up the docker for GUI
+ENV QT_X11_NO_MITSHM=1
+ENV QT_GRAPHICSSYSTEM="native"
 
 # define entry point
-ENTRYPOINT ["/CaPTk/bin/install/bin/CaPTk"]
+ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]

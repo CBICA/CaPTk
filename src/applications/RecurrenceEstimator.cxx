@@ -2,6 +2,8 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 
+#include "CaPTkGUIUtils.h"
+
 //------------------Survival Prediction on existing model-----------------------
 std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjectsFromGivenDirectoryForRecurrence(const CAPTK::MachineLearningApplicationSubtype type, const std::string &directoryname, const bool &useConventionalData, const bool &useDTIData, const bool &usePerfData, const bool &useDistData)
 {
@@ -169,7 +171,7 @@ int main(int argc, char **argv)
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "RecurrenceEstimator");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having SVM models", "Penn Model: " + getAppropriateDownloadLink("RecurrenceEstimator", "Model"));
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("RecurrenceEstimator -t 0 -i <input dir> -o <output dir>");
@@ -292,6 +294,14 @@ int main(int argc, char **argv)
     {
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+        if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+        {
+            std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+            return EXIT_FAILURE;
+        }
     }
     RecurrencePredictionOnExistingModel(modelDirectoryName, inputDirectoryName, outputDirectoryName);
   }

@@ -45,6 +45,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "vtkInteractorStyleImage.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkRenderWindowInteractor.h"
+#include <vtkCornerAnnotation.h>
 
 ///// debug
 //#define _CRTDBG_MAP_ALLOC
@@ -122,7 +123,9 @@ Slicer::Slicer()
   borderWidget = vtkSmartPointer<vtkBorderWidget>::New();
   borderCallback = new vtkBorderCallback();
 
-
+  this->mCornerAnnotation = vtkSmartPointer<vtkCornerAnnotation>::New();
+  this->mCornerAnnotation->GetTextProperty()->SetColor(1, 1, 1);
+  this->Renderer->AddViewProp(mCornerAnnotation);
 }
 
 void Slicer::SetActive(bool active)
@@ -196,9 +199,64 @@ void Slicer::SetInitPosition()
 
 void Slicer::SetCurrentPosition(double x, double y, double z)
 {
-	mCursor[0] = x;
-	mCursor[1] = y;
-	mCursor[2] = z;
+    double X = (x - this->GetInput()->GetOrigin()[0]) / this->GetInput()->GetSpacing()[0];
+    double Y = (y - this->GetInput()->GetOrigin()[1]) / this->GetInput()->GetSpacing()[1];
+    double Z = (z - this->GetInput()->GetOrigin()[2]) / this->GetInput()->GetSpacing()[2];
+
+    // round up pixel values
+    X = ROUND(X);
+    Y = ROUND(Y);
+    Z = ROUND(Z);
+
+    // Force pixel pos within bounds of image if not already
+#if VTK_MAJOR_VERSION <= 5
+    int minX = this->GetInput()->GetWholeExtent()[0];
+    int maxX = this->GetInput()->GetWholeExtent()[1];
+    int minY = this->GetInput()->GetWholeExtent()[2];
+    int maxY = this->GetInput()->GetWholeExtent()[3];
+    int minZ = this->GetInput()->GetWholeExtent()[4];
+    int maxZ = this->GetInput()->GetWholeExtent()[5];
+#else
+    int minX = this->GetInput()->GetExtent()[0];
+    int maxX = this->GetInput()->GetExtent()[1];
+    int minY = this->GetInput()->GetExtent()[2];
+    int maxY = this->GetInput()->GetExtent()[3];
+    int minZ = this->GetInput()->GetExtent()[4];
+    int maxZ = this->GetInput()->GetExtent()[5];
+#endif
+    if (X < minX)
+    {
+        X = minX;
+    }
+    else if (X > maxX)
+    {
+        X = maxX;
+    }
+    if (Y < minY)
+    {
+        Y = minY;
+    }
+    else if (Y > maxY)
+    {
+        Y = maxY;
+    }
+    if (Z < minZ)
+    {
+        Z = minZ;
+    }
+    else if (Z > maxZ)
+    {
+        Z = maxZ;
+    }
+    // Re-update world pos to match new pixel pos
+    x = X * this->GetInput()->GetSpacing()[0] + this->GetInput()->GetOrigin()[0];
+    y = Y * this->GetInput()->GetSpacing()[1] + this->GetInput()->GetOrigin()[1];
+    z = Z * this->GetInput()->GetSpacing()[2] + this->GetInput()->GetOrigin()[2];
+
+    // Set cursor to match new world pos
+    mCursor[0] = x;
+    mCursor[1] = y;
+    mCursor[2] = z;
 }
 
 void Slicer::SetInteractorStyle(vtkInteractorStyle * style)
@@ -739,16 +797,19 @@ void Slicer::UpdateOrientation()
     switch (this->SliceOrientation)
     {
     case vtkImageViewer2::SLICE_ORIENTATION_XY:
+		this->mCornerAnnotation->SetText(0, "Axial");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(0, 0, -1);
       cam->SetViewUp(0, -1, 0);
       break;
     case vtkImageViewer2::SLICE_ORIENTATION_XZ:
+		this->mCornerAnnotation->SetText(0, "Coronal");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(0, -1, 0);
       cam->SetViewUp(0, 0, 1);
       break;
     case vtkImageViewer2::SLICE_ORIENTATION_YZ:
+		this->mCornerAnnotation->SetText(0, "Sagittal");
       cam->SetFocalPoint(0, 0, 0);
       cam->SetPosition(1, 0, 0);
       cam->SetViewUp(0, 0, 1);
@@ -1099,6 +1160,10 @@ void Slicer::ClipDisplayedExtent(int extent[6], int refExtent[6])
       extent[i + 1] = refExtent[i];
     }
   }
+}
+void Slicer::SetImageSeriesDescription(std::string description)
+{
+	this->mCornerAnnotation->SetText(vtkCornerAnnotation::UpperLeft, description.c_str());
 }
 void Slicer::ResetMap()
 {

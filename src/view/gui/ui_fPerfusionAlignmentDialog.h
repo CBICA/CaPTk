@@ -2,21 +2,6 @@
 #define ui_fPerfusionAligner_H
 
 #include <QtCore/QVariant>
-// #include <QtGui/QAction>
-// #include <QtGui/QApplication>
-// #include <QtGui/QButtonGroup>
-// #include <QtGui/QCheckBox>
-// #include <QtGui/QDialog>
-// #include <QtGui/QFrame>
-// #include <QtGui/QGridLayout>
-// #include <QtGui/QHBoxLayout>
-// #include <QtGui/QHeaderView>
-// #include <QtGui/QLabel>
-// #include <QtGui/QLineEdit>
-// #include <QtGui/QPushButton>
-// #include <QtGui/QSpacerItem>
-// #include <QtGui/QSpinBox>
-// NEW CHANGES
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
@@ -53,10 +38,6 @@ public:
   QLabel *inputT1ceImageLabel;
   QLineEdit *inputT1ceImageName;
   QPushButton *inputT1ceImageButton;
-
-  QLabel *inputDicomImageLabel;
-  QLineEdit *inputDicomImageName;
-  QPushButton *inputDicomImageButton;
 
   QLabel *inputAfterPointsLabel;
   QLineEdit *inputAfterPointsName;
@@ -139,25 +120,6 @@ public:
     inputT1ceImageButton->setText(QString("Browse"));
 
 
-
-
-    inputDicomImageLabel = new QLabel(inputGroupBox);
-    sizePolicy.setHeightForWidth(inputDicomImageLabel->sizePolicy().hasHeightForWidth());
-    inputDicomImageLabel->setSizePolicy(sizePolicy);
-
-    inputDicomImageName = new QLineEdit("");
-    inputDicomImageName->setObjectName(QString::fromUtf8("inputDicomImageName"));
-    sizePolicy.setHeightForWidth(inputDicomImageName->sizePolicy().hasHeightForWidth());
-    inputDicomImageName->setSizePolicy(sizePolicy);
-    inputDicomImageName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-
-    inputDicomImageButton = new QPushButton(inputGroupBox);
-    inputDicomImageButton->setObjectName(QString::fromUtf8("inputDicomImageButton"));
-    inputDicomImageButton->setText(QString("Browse"));
-
-
-
-
     inputBeforePointsLabel = new QLabel(inputGroupBox);
     sizePolicy.setHeightForWidth(inputBeforePointsLabel->sizePolicy().hasHeightForWidth());
     inputBeforePointsLabel->setSizePolicy(sizePolicy);
@@ -203,29 +165,20 @@ public:
     inputGridLayout->addWidget(inputT1ceImageName, 1, 1, 1, 1);
     inputGridLayout->addWidget(inputT1ceImageButton, 1, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputDicomImageLabel, 2, 0, 1, 1);
-    inputGridLayout->addWidget(inputDicomImageName, 2, 1, 1, 1);
-    inputGridLayout->addWidget(inputDicomImageButton,2, 2, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsLabel, 2, 0, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsName, 2, 1, 1, 1);
 
-    inputGridLayout->addWidget(inputBeforePointsLabel, 3, 0, 1, 1);
-    inputGridLayout->addWidget(inputBeforePointsName, 3, 1, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsLabel, 3, 0, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsName, 3, 1, 1, 1);
 
-    inputGridLayout->addWidget(inputAfterPointsLabel, 4, 0, 1, 1);
-    inputGridLayout->addWidget(inputAfterPointsName, 4, 1, 1, 1);
-
-    inputGridLayout->addWidget(inputEchoTimeLabel, 5, 0, 1, 1);
-    inputGridLayout->addWidget(inputEchoTimeName, 5, 1, 1, 1);
+    inputGridLayout->addWidget(inputEchoTimeLabel, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputEchoTimeName, 4, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
     outputGroupBox->setTitle(QString::fromStdString("Output"));
-
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
-
-    //outputImageLabel = new QLabel(outputGroupBox);
-    //sizePolicy.setHeightForWidth(outputImageLabel->sizePolicy().hasHeightForWidth());
-    //outputImageLabel->setSizePolicy(sizePolicy);
 
     outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
@@ -235,8 +188,6 @@ public:
 
     outputImageButton = new QPushButton(outputGroupBox);
     outputImageButton->setObjectName(QString::fromUtf8("outputImageButton"));
-    //outputImageButton->setIcon(ButtonIcon);
-    //outputImageButton->setIconSize(QSize(20, 20)); // needs to be screenSize dependent
     outputImageButton->setText(QString("Browse"));
 
     longRunningWarning = new QLabel(outputGroupBox);
@@ -245,7 +196,6 @@ public:
     longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
-    //outputGridLayout->addWidget(outputImageLabel, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
     outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
@@ -288,7 +238,6 @@ public:
     inputEchoTimeLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Echo time (seconds)", 0));
     inputImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "DSC-MRI Image", 0));
     inputT1ceImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "T1 PostContrast Image", 0));
-    inputDicomImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Dicom Image", 0));
 
     confirmButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPerfusionAlignmentDialog", "Cancel", 0));

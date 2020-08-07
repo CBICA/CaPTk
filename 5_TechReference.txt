@@ -8,6 +8,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
 
 - \subpage tr_FeatureExtraction "Feature Extraction"
 - \subpage tr_integration "Integrating your Application in CaPTk"
+- \subpage tr_sourceBuid "Building CaPTk from source"
 
 Training videos can be accessed in our <a href="https://www.youtube.com/channel/UC69N7TN5bH2onj4dHcPLxxA"><b>YouTube Channel</b></a>, specifically in the <a href="https://www.youtube.com/playlist?list=PLXdcXDD5czvjFFQGX9Jm3KouP0H9cWowu"><b>CaPTk Playlist</b></a>.
 
@@ -18,20 +19,33 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 /**
 \page tr_FeatureExtraction Feature Extraction
 
-\section tr_fe_defaults Defaults
+\section tr_fe_defaults Pre-Existing Parameter Configurations
 
-Here we describe the various defaults.
+The Feature Extraction module ships with a set of pre-configured parameter files for 3D and 2D images (there are different extraction paradigms). The idea behind providing these configurations for users to have a template to start with and then customize the feature extraction based on their dataset(s). 
 
+During invocation from the CLI, the appropriate file should be passed after the <b>-p</b> parameter. 
+
+See the subsequent sections for details.
+
+\subsection tr_fe_def_main Default 3D Image Feature Extraction Parameters
+
+This is primarily targeted at brain tumor image feature extraction and users should customize it for their own dataset.
+
+For a description of the parameters and related explanations, please see <b>${CaPTk_InstallDir}/data/features/1_params_default.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv.
+
+\subsection tr_fe_def_lattice Default 2D Image Feature Extraction Parameters
+
+This are primarily targeted at mammogram image feature extraction and users should customize it for their own dataset.
+
+For a description of the parameters and related explanations, please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/2_params_default_lattice.csv.
+
+\subsection tr_fe_customization Customizing Parameters
+
+The user will need to pass a custom parameter file to Feature Extraction. For details on creating such a file, please see https://github.com/CBICA/CaPTk/tree/master/src/applications/FeatureExtraction#the-parameter-file.
 
 \section tr_fe_batch Batch Mode
 
-Here we describe the batch processing mode.
-
-Here is a more detailed description of the batch mode.
-
-\section tr_fe_somethingElse Something Else 
-
-And the list goes on.
+An example of the list file for batch processing can be found in <b>${CaPTk_InstallDir}/share/featureExtractionBatch/batch_featureExtraction.csv</b> or https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/batchMode/batch_featureExtraction.csv. 
 
 \section tr_fe_math Extracted Features
 
@@ -78,7 +92,7 @@ And the list goes on.
         <ul>
           <li>Bin Frequency
         </ul>
-      <td>Num_Bins
+      <td>Bins
       <td>N.A.
       <td>10
       <td>
@@ -103,6 +117,8 @@ And the list goes on.
           <li>Perimeter       
           <li>Roundness 
           <li>Eccentricity
+          <li>Ellipse Diameter
+          <li>Equivalent Spherical Radius
        </ul>
       <td>Dimensions <br>Axis
       <td>2D:3D <br>x,y,z
@@ -140,8 +156,8 @@ And the list goes on.
           <li>Variance
           <li>Auto<br>Correlation          
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
-      <td>N.A. <br><br>3:13 <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>Individual/Average/Combined<br><br>x,y,z
       <td>10 <br><br>13 <br><br>2 <br><br>3D  <br><br>Average <br><br>z
       <td> 
         For a given image, a Grey Level Co-occurrence Matrix is created and \f$ g(i,j) \f$ represents an element in matrix
@@ -173,9 +189,9 @@ And the list goes on.
           <li>LRLGE
           <li>LRHGE    
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined<br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Offset
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>Individual/Average/Combined
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z  <br><br>Average <br><br>1
       <td>
         For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j. Please note that some features are only extracted in DebugMode (by using the "-d" parameter from the command line); these defines features that are mathematically formulated in previous published material but not completely aligned with The Image Biomarker Standardisation Initiative.
         <ul>
@@ -203,9 +219,9 @@ And the list goes on.
           <li>Complexity
           <li>Strength
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br> <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>3D <br><br>N.A. <br><br>1
+      <td>Bins <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>3D <br><br>N.A. <br><br>1
       <td> 
         <ul>
           <li>Coarseness =\f$ \Big[ \epsilon + \sum_{i=0}^{G_{k}} p_{i}s(i) \Big]\f$
@@ -235,9 +251,9 @@ And the list goes on.
           <li>GLV
           <li>ZLV      
         </ul>
-      <td>Num_Bins <br><br>Num_Directions <br><br>Radius <br><br>Dimensions <br><br>Axis <br><br>Distance_Range
-      <td>N.A. <br><br>3:13 <br><br><br>N.A. <br><br>2D:3D <br><br>x,y,z <br><br>1:5
-      <td>10 <br><br>13 <br><br><br>2 <br><br>3D <br><br>z <br><br>4
+      <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Axis
+      <td>N.A. <br><br>N.A. <br><br>2D:3D <br><br>x,y,z 
+      <td>10 <br><br>13 <br><br>2 <br><br>3D <br><br>z <br><br>4
       <td>
         For a given image, a run-length matrix \f$ P(i; j)\f$  is defined as the number of runs with pixels of gray level i and run length j.
         <ul>
@@ -255,8 +271,47 @@ And the list goes on.
         </ul> 
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
+    <tr>
+      <td align="center">Lattice<br>-based
+      <td>
+        <ul>
+          <li>Selected features
+          <li>Feature Maps
+        </ul>
+      <td>
+        <ul>
+          <li>FullImage
+          <li>Window
+          <li>Step
+          <li>Boundary
+          <li>PatchBoundary
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0-1
+          <li>(mm)0:ImageSize
+          <li>(mm)0:ImageSize
+          <li>NoPadding:ZeroPadding
+          <li>Full:ROI:None
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>0
+          <li>6.3
+          <li>6.3
+          <li>NoPadding
+          <li>Full
+        </ul>
+      </td>
+      <td>
+        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
+      </td>
+    </tr>
 </table>
 
+Detailed explanation of the mathematics and other details can be found in the [Image Biomarker Standardization Initiative (IBSI) page](https://ibsi.readthedocs.io/en/latest/).
 
 The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
@@ -312,7 +367,7 @@ Before building CaPTk, the following software libraries are required to be insta
 |-----------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Archiver or Git                   | N.A.                      | - **Windows**: Built-in unzip tool<br>- **Linux**: [gzip](https://www.gzip.org/)                                                     |
 | C++ compiler                      | C++11 compliance needed   | - **Windows**: Visual Studio 2015/2017<br>- **Linux**: GCC/4.9.2-7.4.0<br>- **macOS**: CLang 10.0.0, LLVM 6.0.1                                     |
-| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel |
+| OpenGL                            | 3.2+ (hardware-dependent) | - **Windows/macOS**: Update graphics drivers<br>- **Ubuntu**: apt-get install libgl-dev<br>- **CentOS**: yum install mesa-libGL-devel<br>- [Details in FAQ](FAQ.html#gs_FAQ_3) |
 | [CMake](https://cmake.org/files/) | 3.10 - 3.12               | To configure the CaPTk compilation along with its dependencies (via Superbuild).                                                                |
 | X11 [Linux-only]                  | N.A.                      | - **Ubuntu**: apt-get install libxkbcommon-x11-0<br>- **CentOS**: yum install libXt-deve                                             |
 | dos2unix [Linux-only]             | N.A.                      | - **Ubuntu**: apt-get install dos2unix<br>- **CentOS**: yum install dos2unix                                                         |
@@ -326,12 +381,12 @@ Ensure all dependencies are met before proceeding.
 
 Please follow commands below in a shell/terminal (e.g., Bash (http://www.gnu.org/software/bash/)). They will configure and build CaPTk using GNU Make (http://www.gnu.org/software/make/). The main CMake configuration file (CMakeLists.txt) is located in the root directory of the package. <b>Windows</b> users need to follow the equivalent graphical interface or from PowerShell.
 
-Extract source files and create the build directory:
+An example of the list of commands to run to compile CaPTk and its dependencies:
 
 \verbatim
 git clone https://github.com/CBICA/CaPTk.git
-git lfs fetch --all # downloads all the precompiled binaries for different applications and Qt
 cd CaPTk
+git submodule update --init --recursive # this ensures all submodules are initialized and up-to-date
 mkdir build # this is where we will build all the binaries
 cd build
 cmake .. # configure the superbuild first - builds ITK, VTK and OpenCV based on specific Qt version which is downloaded
@@ -377,11 +432,12 @@ Let’s say the name of your application is <b>yourPythonApp</b>. The following 
 
 --------
 
---------
+--------------------------------------------------------------------
+
 \htmlonly
 <div align="right"><a href="Download.html"><b>Next (Download)<b></a>
 \endhtmlonly
---------
 
+--------------------------------------------------------------------
 
 */

@@ -10,6 +10,7 @@ makeself-*.run*
 archive
 
 src/applications/*/bin
+src/applications/*/bin_*
 
 # test data
 data/TestData/
@@ -39,7 +40,7 @@ ibsi_phantom
 /src/applications/FeatureExtraction/runner.ps1
 
 mac-pkg.sh
-deepmedic
+src/applications/individualApps/deepmedic
 itksnap
 libra
 confetti
@@ -56,3 +57,4 @@ testing
 vsts*
 superbuild
 build
+

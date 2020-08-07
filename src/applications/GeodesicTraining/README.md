@@ -9,7 +9,7 @@ This tool is developed and maintained by the [Center for Biomedical Image Comput
 
 ### Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
-- This code (excluding dependent libraries) is governed by the license provided [here](https://www.med.upenn.edu/sbia/software-agreement.html) unless otherwise specified.
+- This code (excluding dependent libraries) is governed by the license provided [here](http://www.med.upenn.edu/sbia/software-agreement.html) unless otherwise specified.
 
 ### Contents 
 - [How does it work?](#how-does-it-work)  

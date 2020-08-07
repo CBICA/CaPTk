@@ -52,6 +52,9 @@ SET( GUI
   fSBRTAnalysisDialog
   fTexturePipelineDialog
   AppearancePage
+  CaPTkDockWidget
+  fBiasCorrectionDialog
+  fBraTSSegmentation
   #fSegmentationPanel
   #fHelpAppDialog
 )
@@ -83,6 +86,10 @@ SET( GUI_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/ApplicationPreferences.cpp"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.h"
   "${CaPTk_SOURCE_DIR}/src/applications/GeodesicSegmentation.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformationDisplayWidget.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformation.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/SystemInformation.cpp"
   #"${CMAKE_CURRENT_SOURCE_DIR}/ApplicationBase.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.h"
   #"${CMAKE_CURRENT_SOURCE_DIR}/NearFarDrawingManager.cpp"
@@ -150,6 +157,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc
+  ${CaPTk_SOURCE_DIR}/src/applications/Preprocessing/src/depends
   #${CMAKE_CURRENT_SOURCE_DIR}/inc
   #${VTK_INCLUDE_DIRS} 
 )

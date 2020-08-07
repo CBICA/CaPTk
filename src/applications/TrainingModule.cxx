@@ -22,11 +22,15 @@ int main(int argc, char *argv[])
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "TrainingModule");
   parser.addRequiredParameter("f", "features", cbica::Parameter::STRING, "", "The input file having features (*.csv).");
-  parser.addRequiredParameter("l", "label", cbica::Parameter::STRING, "", "The input file having target labels (*.csv).");
-  parser.addRequiredParameter("c", "classifier", cbica::Parameter::INTEGER, "", "The SVM kernel to be used in developing model (1=Linear, 2=RBF).");
-  parser.addRequiredParameter("n", "configuration", cbica::Parameter::INTEGER, "", "The Configuration type, Cross-validation (n=1), Split Train-Test (n=2), Train only (n=3), and Test only (n=4).");
-  parser.addRequiredParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Cross-validation (5/10) and the size of training set for TrainTest (k<n).");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output direcory to write output");
+
+  parser.addOptionalParameter("l", "label", cbica::Parameter::STRING, "", "The input file having target labels (*.csv).");
+  parser.addOptionalParameter("c", "classifier", cbica::Parameter::INTEGER, "", "The SVM kernel to be used in developing model (1=Linear, 2=RBF).");
+  parser.addOptionalParameter("s", "feature selection", cbica::Parameter::INTEGER, "", "The feature selection method to be used in developing model (1=EffectSize, 2=Correlation, 3=SVM FFS, 4=SVM RFE).");
+  parser.addOptionalParameter("n", "configuration", cbica::Parameter::INTEGER, "", "The Configuration type, Cross-validation (n=1), Split Train-Test (n=2), Train only (n=3), and Test only (n=4).");
+  parser.addOptionalParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Cross-validation (5/10) and the size of training set for TrainTest (k<n).");
+  parser.addOptionalParameter("p", "hyperparameteroptimization", cbica::Parameter::INTEGER, "", "Whether parameters of the classifier need to be optimized or not during feature selection (1=yes, 0 =No)");
+  parser.addOptionalParameter("r", "internalcrossvalidation", cbica::Parameter::INTEGER, "", "Internal cross-validation during feature selection (1=resubstitution, 2=5-fold)");
 
   parser.addOptionalParameter("m", "output", cbica::Parameter::STRING, "", "The model direcory (needed only when n=4)");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
@@ -42,14 +46,16 @@ int main(int argc, char *argv[])
 
   int tempPosition;
   std::string inputFeaturesFile, inputLabelsFile, outputDirectoryName, modelDirectoryName, toWrite;
-  int classifierType;
-  int foldType;
-  int confType;
+
+  //assigning default values
+  int classifierType=1;
+  int featureselectionType=1;
+  int optimizationType=0;
+  int crossvalidationType=1;
+  int foldType=10;
+  int confType=1;
 
   TrainingModule mTrainingSimulator;
-  ////mTrainingSimulator.Run("W:/Projects/PSU/Selected1040/Features_PSU_1_Training.csv", "W:/Projects/PSU/Selected1040/Labels_PSU_1_Training.csv", "W:/Projects/PSU/Selected1040/Output1_TrainingTesting/PSU", 1, 0, 3, "");
-  //mTrainingSimulator.Run("E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Features_PSU_Training_1.csv","E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Labels_PSU_Training_1.csv","E:/SoftwareDevelopmentProjects/PseudoprogressionRelatedMaterial/IterationsData/Output1_TrainingTesting/PSU", 1, 0, 3,"");
-
   if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
   {
     parser.echoUsage();
@@ -76,19 +82,16 @@ int main(int argc, char *argv[])
   {
     inputFeaturesFile = argv[tempPosition + 1];
     std::cout << "Input Features File:"<<inputFeaturesFile << std::endl;
-    //inputFeaturesFile = "W:/Projects/PSU/PSU_Selected_Features_WithoutScaling.csv";
-    //inputFeaturesFile = "W:/Projects/PSU/REC_Selected_Features_NewSheet_WithoutScaling.csv";
   }
   if (parser.compareParameter("l", tempPosition))
   {
     inputLabelsFile = argv[tempPosition + 1];
     std::cout << "Input Labels File:" << inputLabelsFile << std::endl;
-    //inputLabelsFile = "W:/Projects/PSU/labels_pseudoprogression.csv";
-    //inputLabelsFile = "W:/Projects/PSU/labels_recurrence.csv";
   }
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
+    cbica::createDir(outputDirectoryName);
   }
   if (parser.compareParameter("m", tempPosition))
   {
@@ -98,6 +101,10 @@ int main(int argc, char *argv[])
   {
     classifierType = atoi(argv[tempPosition + 1]);
   }
+  if (parser.compareParameter("s", tempPosition))
+  {
+    featureselectionType = atoi(argv[tempPosition + 1]);
+  }
   if (parser.compareParameter("k", tempPosition))
   {
     foldType = atoi(argv[tempPosition + 1]);
@@ -106,13 +113,37 @@ int main(int argc, char *argv[])
   {
     confType = atoi(argv[tempPosition + 1]);
   }
+  if (parser.compareParameter("p", tempPosition))
+  {
+    optimizationType = atoi(argv[tempPosition + 1]);
+  }
+  if (parser.compareParameter("r", tempPosition))
+  {
+    crossvalidationType = atoi(argv[tempPosition + 1]);
+  }
   //TrainingModule mTrainingSimulator;
   std::cout << "Calling function" << std::endl;
-  if (mTrainingSimulator.Run(inputFeaturesFile, inputLabelsFile, outputDirectoryName, classifierType, foldType, confType,modelDirectoryName) == true)
+
+  if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN |
+    confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE |
+    confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {
-    std::cout << "The trained model and classification performance has been saved at the specified location!!!\n";
-    std::cout << "Finished successfully!!!\n";
+    if (inputLabelsFile == "")
+    {
+      std::cout << "Please provide the class label file." << std::endl;
+      return EXIT_FAILURE;
+    }
   }
+  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST)
+  {
+    if (modelDirectoryName == "")
+    {
+      std::cout << "Please provide the model directory name." << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+  if (mTrainingSimulator.Run(inputFeaturesFile, outputDirectoryName, inputLabelsFile, modelDirectoryName, classifierType, foldType, confType,featureselectionType,optimizationType, crossvalidationType) == true)
+    std::cout << "Finished successfully!!!\n";
   else
     std::cout << "Encountered an error!!!\n";
 

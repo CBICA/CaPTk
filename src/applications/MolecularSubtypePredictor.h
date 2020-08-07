@@ -20,12 +20,14 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "NiftiDataManager.h"
 #include "FeatureReductionClass.h"
 #include "FeatureScalingClass.h"
+#include "TrainingModule.h"
 #include "FeatureExtractionClass.h"
 #include "itkCSVArray2DFileReader.h"
 #include "itkConnectedComponentImageFilter.h"
 #include "CaPTkEnums.h"
 #include "cbicaLogging.h"
 #include "CaPTkGUIUtils.h"
+#include "CaPTkUtils.h"
 
 #ifdef APP_BASE_CAPTK_H
 #include "ApplicationBase.h"
@@ -35,15 +37,9 @@ typedef itk::Image< float, 3 > ImageType;
 typedef itk::CSVArray2DFileReader<double> CSVFileReaderType;
 typedef vnl_matrix<double> MatrixType;
 
-// pre-calculated values
-#define SURVIVAL_MODEL6_RHO		-1.0927
-#define SURVIVAL_MODEL6_G		0.0313
-#define SURVIVAL_MODEL18_RHO	-0.2854
-#define SURVIVAL_MODEL18_G		0.5
-
 #define SURVIVAL_SIZE_COMP 100
 #define SURVIVAL_NO_NEAR_DIST 100
-
+#define MOLECULAR_NO_OF_FEATURES 161
 
 /**
 \class MolecularSubtypePredictor
@@ -267,10 +263,10 @@ public:
 
 
 
-	VariableSizeMatrixType SelectSixMonthsModelFeatures(const VariableSizeMatrixType &SixMonthsFeatures);
-	VariableSizeMatrixType SelectEighteenMonthsModelFeatures(const VariableSizeMatrixType &EighteenModelFeatures);
-
-	template<class ImageType>
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VariableLengthVectorType &selectedFeatures);
+  VariableSizeMatrixType SelectModelFeatures(const VariableSizeMatrixType &ModelFeatures, const VectorDouble &selectedFeatures);
+  
+  template<class ImageType>
 	typename ImageType::Pointer RemoveSmallerComponentsFromTumor(const typename ImageType::Pointer &etumorImage, const typename ImageType::Pointer &ncrImage);
 
 	VariableLengthVectorType DistanceFunction(const VariableSizeMatrixType &testData, const std::string &filename, const double &rho, const double &bestg);
