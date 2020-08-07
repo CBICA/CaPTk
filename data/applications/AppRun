@@ -5,5 +5,6 @@
 # comes bundled with can use those qt libraries over the existing ones that may be on the system.
 
 HERE="$(dirname "$(readlink -f "${0}")")"
+export ORIGINAL_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=${HERE}/usr/lib/:$LD_LIBRARY_PATH
 exec "${HERE}/usr/bin/CaPTk" "$@"

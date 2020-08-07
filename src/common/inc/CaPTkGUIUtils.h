@@ -311,10 +311,25 @@ inline std::string getCaPTkDataDir()
   return captk_dataDir;
 }
 
-//! opens the link using Qt's desktop services
+//! opens the link using Qt's desktop services 
 inline bool openLink(const std::string &link)
 {
-  return QDesktopServices::openUrl(QUrl(link.c_str()));
+#ifndef _WIN32
+  // temporarily remove CaPTk libs from LD_LIBRARY_PATH to avoid interference with desktop apps
+  // vars set by AppRun in linux/mac appimage
+  std::string captk_ldpathValue = cbica::getEnvironmentVariableValue("LD_LIBRARY_PATH");
+  std::string desktop_ldpathValue = cbica::getEnvironmentVariableValue("ORIGINAL_LD_LIBRARY_PATH");
+  if (desktop_ldpathValue.length() > 0)
+  {
+      cbica::setEnvironmentVariable("LD_LIBRARY_PATH", desktop_ldpathValue);
+  }
+  bool result = QDesktopServices::openUrl(QUrl(link.c_str()));
+  cbica::setEnvironmentVariable("LD_LIBRARY_PATH", captk_ldpathValue); // restore pre-call state
+#else // Windows
+  bool result = QDesktopServices::openUrl(QUrl(link.c_str()));
+#endif
+
+  return result;
 }
 
 //! get download link
