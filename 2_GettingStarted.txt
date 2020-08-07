@@ -476,6 +476,16 @@ sudo yum install devtoolset-6
 \endverbatim  
 
 - You can still build CaPTk from source using the instructions in [Technical Reference](Technical_Reference.html). Note that you will need a [C++11 compliant compiler](https://en.cppreference.com/w/cpp/compiler_support#cpp11).
+ 
+\subsection gs_FAQ_5_3 CXXABI issues
+
+If you are running into mis-matched `CXXABI` behavior with a message similar to:
+
+\verbatim
+libstdc++.so.6: version `CXXABI_1.3.8' not found (required by /lib/x86_64-linux-gnu/libGLU.so.1).
+\endverbatim
+
+This means that you are running on a very new Linux distribution. Please see the discussion in https://github.com/CBICA/CaPTk/issues/1229 for details.
 
 \section gs_FAQ_6 Is there a minimum recommended screen resolution for running CaPTk?
   
@@ -500,7 +510,7 @@ docker run -it \
 
 Please see the [Feature Extraction FAQ](https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions).
 
-\section gs_FAQ_9 What if I am having an issue not listed here?
+\section gs_FAQ_10 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
 

@@ -64,7 +64,6 @@ The ```Generic``` options in the parameter file control all options, which are:
 | Quantization_Type | FixedBinNumber (FBN): the bins are uniformly distributed across the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent';<br> FixedBinSize (FBS): bins are added in a fixed step between the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent' the requested size is provided in 'Bins';<br> Equal: each bin holds an equal number of intensities |
 | SliceComputation | Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only |
 | NaN-Handling | Specify how to handle features with NaN values 'Remove' removes the feature from output - keep in mind this might cause issues with output file in multi-subject (i.e. Training/Batch) mode |
-| WholeImageBinning | Controls whether the entire image binning happens or just the defined region |
 
 ### Making your own parameter file
 
