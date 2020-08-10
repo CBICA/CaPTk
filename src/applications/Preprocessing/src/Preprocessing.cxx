@@ -361,7 +361,7 @@ int algorithmsRunner()
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        interimFiles_affineTransform = outputDir + "/affine_" + _inputFileTOFixedFileBase + _registrationMetrics + ".mat";
         affine_defaultNamedUsed = true;
       }
       else
@@ -370,8 +370,8 @@ int algorithmsRunner()
       }
       if (registrationDeformableTransformInput.empty())
       {
-        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_deformField = outputDir + "/deform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
         deformable_defaultNamedUsed = true;
       }
       else
