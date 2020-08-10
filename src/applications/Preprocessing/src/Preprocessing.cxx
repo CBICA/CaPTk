@@ -470,35 +470,39 @@ int algorithmsRunner()
           return EXIT_FAILURE;
         }
 
-        auto outputImageFileInv = outputImageFile;
+        // check if inverse field is present and then perform re-slicing, otherwise, skip
+        if (cbica::isFile(interimFiles_invDeformField))
         {
-          std::string path, base, ext;
-          cbica::splitFileName(outputImageFileInv, path, base, ext);
-          outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
-        }
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri NN -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
+          auto outputImageFileInv = outputImageFile;
+          {
+            std::string path, base, ext;
+            cbica::splitFileName(outputImageFileInv, path, base, ext);
+            outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
+          }
+          if (registrationSegmentationMoving)
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + registrationFixedImageFile +
+              " -rm " + inputImageFile +
+              " " + outputImageFileInv +
+              " -ri NN -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
+          else
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + registrationFixedImageFile +
+              " -rm " + inputImageFile +
+              " " + outputImageFileInv +
+              " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
 
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
-          return EXIT_FAILURE;
+          if (std::system(commandToCall.c_str()) != 0)
+          {
+            std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+            return EXIT_FAILURE;
+          }
         }
         break;
       }
