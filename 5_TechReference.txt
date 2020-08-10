@@ -132,6 +132,19 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
     </tr>
     <tr>
+      <td align="center">Edge<br>Eenhancing<br>Index
+      <td>
+      <td>Normalizing factor
+      <td>&eta
+      <td>5 
+      <td>
+      The edge-enhancing index of an image I is defined as:
+        <ul> 
+          <li>E(I) = \f$  (\frac{&lambda_{1}-&lambda_{2}}{&lambda_{1}+&lambda_{2}+&eta})^2 \f$
+        </ul>
+      where &lambda_{1} and &lambda_{2} (&lambda_{1}>&lambda_{2}) are eigenvalues of the diffusion tension matrix of I and &eta is a normalizing factor. Available only on 2D.
+    </tr>
+    <tr>
       <td align="center">Local Binary<br>Pattern (LBP)
       <td>
       <td>Radius <br>Neighborhood
