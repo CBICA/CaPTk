@@ -605,7 +605,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma PseudoProgression Infiltration Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-Progression Estimator"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)

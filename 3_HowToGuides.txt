@@ -24,7 +24,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
   - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
   - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
-  - [Brain Cancer: Pseudoprogression/TrueProgression Index](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Pseudo-Progression/TrueProgression Estimator](Glioblastoma_Pseudoprogression.html)
   - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
   - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
   - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
@@ -456,7 +456,7 @@ Contains the following applications:
 - \subpage Glioblastoma_Atlas "Brain Cancer: Population Atlas"
 - \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
 - \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
-- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudoprogression Infiltration Index"
+- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudo-Progression Estimator"
 - \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Survival Prediction Index"
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
@@ -824,7 +824,7 @@ References:
 
 
 /**
-\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudoprogression Infiltration Index
+\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudo-Progression Estimator
 This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
 
 <b>REQUIREMENTS:</b>
@@ -859,7 +859,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 
 <b>USAGE:</b>
 
-- Pseudoprogression assessment on a batch of subjects.
+- Pseudo-Progression estimation on a batch of subjects.
 	- Train a new model: 
 		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory" where the trained model should be saved.
@@ -1278,7 +1278,7 @@ ${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTI
 */
 
 /**
-\page PCA_Extraction Miscellaneous: PCA Volume Extraction
+\page PCA_Extraction Miscellaneous: Perfusion PCA Volume Extraction
 
 This application extracts the principal components from DSC-MRI scans as mentioned in [1].
 
@@ -1288,7 +1288,7 @@ This application extracts the principal components from DSC-MRI scans as mention
 
 <b> USAGE:</b>
 	-# Load a DSC-MRI in CaPTk and the mask (Label:1) defining the voxels to extract the measurements.
-  -# Launch the application from "Applications" -> "PCA Volume Extraction".
+  -# Launch the application from "Applications" -> "Perfusion PCA".
   -# Specify the number of principal components required and the output directory.
 	-# Press the "Confirm" button.
 	-# The principal components will be extracted at the specified location and also loaded in CaPTk (~5 minutes).
