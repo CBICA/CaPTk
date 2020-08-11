@@ -314,7 +314,7 @@ inline std::string getCaPTkDataDir()
 //! opens the link using Qt's desktop services 
 inline bool openLink(const std::string &link)
 {
-#ifndef _WIN32
+#ifdef __linux__
   // temporarily remove CaPTk libs from LD_LIBRARY_PATH to avoid interference with desktop apps
   // vars set by AppRun in linux/mac appimage
   std::string captk_ldpathValue = cbica::getEnvironmentVariableValue("LD_LIBRARY_PATH");
@@ -325,7 +325,7 @@ inline bool openLink(const std::string &link)
   }
   bool result = QDesktopServices::openUrl(QUrl(link.c_str()));
   cbica::setEnvironmentVariable("LD_LIBRARY_PATH", captk_ldpathValue); // restore pre-call state
-#else // Windows
+#else 
   bool result = QDesktopServices::openUrl(QUrl(link.c_str()));
 #endif
 
