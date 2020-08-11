@@ -174,10 +174,15 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
     for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
     {
       std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-      if (result[subjectID] > 0)
-        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutant." << std::endl;
+      if (isinf(result[subjectID]) == true)
+        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Not determined." << std::endl;
       else
-        std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
+      {
+        if (result[subjectID] > 0)
+          std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Mutant." << std::endl;
+        else
+          std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Wildtype." << std::endl;
+      }
     }
   }
 	return EXIT_SUCCESS;
