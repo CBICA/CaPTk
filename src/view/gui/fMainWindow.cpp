@@ -889,7 +889,7 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
 
 
