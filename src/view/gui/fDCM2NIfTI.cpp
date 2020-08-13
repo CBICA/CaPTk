@@ -18,7 +18,7 @@ fDCM2NIfTIConverter::fDCM2NIfTIConverter()
   connect(outputDirButton, SIGNAL(clicked()), this, SLOT(SelectOutputDir()));
 
 #if WIN32
-  m_exe = "/dcm2nii.exe";
+  m_exe = "/dcm2niix.exe";
 
   if (QFile(QApplication::applicationDirPath() + m_exe).exists())
   {
@@ -26,11 +26,11 @@ fDCM2NIfTIConverter::fDCM2NIfTIConverter()
   }
   else
   {
-    m_exe = QApplication::applicationDirPath() + "/../../src/applications/individualApps/dcm2nii" + m_exe;
+    m_exe = QApplication::applicationDirPath() + "/../../src/applications/individualApps/dcm2niix" + m_exe;
   }
 
 #elif __linux__
-  m_exe =  "." + QApplication::applicationDirPath() + "/dcm2nii";
+  m_exe =  "." + QApplication::applicationDirPath() + "/dcm2niix";
 #endif
 
 }
