@@ -418,9 +418,9 @@ int algorithmsRunner()
 	#endif
 #else
 	#if WIN32
-		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2nii" + "/dcm2niix.exe";
+		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2niix" + "/dcm2niix.exe";
 	#else
-		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2nii" + "/dcm2niix";
+		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2niix" + "/dcm2niix";
 	#endif
 #endif
 
