@@ -1,4 +1,5 @@
 function(changeLibOmpDylib target application)
+  message(STATUS "adding post-build libomp install_name_tool change command for target ${target} and application ${application}") 
   changeDylib(${target} ${application} libomp.dylib /usr/local/opt/libomp/lib)
   
 endfunction()
