@@ -667,7 +667,8 @@ jobs:
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
-
+        # Try this again here just in case this somehow changes Utilities back...
+        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib Utilities
       displayName: 'Ensure documentation is picked up properly'
 
 
