@@ -643,8 +643,11 @@ jobs:
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
         
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
-
+        
         make -j 2
+        
+        # Hacky trick to fix libomp search -- normally the build should do this, but it mysteriously fails on Utilities...
+        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib Utilities
       displayName: 'Configure and compile CaPTk'
 
     - bash: |
