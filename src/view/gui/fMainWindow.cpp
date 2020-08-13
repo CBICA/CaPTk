@@ -8022,12 +8022,14 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std:
   // first pass on our own stuff
   auto filesInDir = cbica::filesInDirectory(inputDir);
   auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
+  readDicomImage = nullptr;
 
   bool writeSuccess = false;
 
   if (!readDicomImage)
   {
-    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+    //std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+	  std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -o " + outputDir + " -z y " + inputDir;
 
     if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
     {
