@@ -1267,6 +1267,7 @@ int main(int argc, char** argv)
 		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti folder was not found. Please use the '-o' parameter.\n";
 		  return EXIT_FAILURE;
 	  }
+
 	  //check if output path is a folder
 	  if (!cbica::isDir(outputFolderPath))
 	  {
