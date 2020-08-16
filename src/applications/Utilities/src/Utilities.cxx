@@ -90,7 +90,12 @@ void CollectImageInfo(std::vector< int > requestedInfoVector)
   std::vector< std::string > subDirsInInput = { inputImageFile };
   if (collectInfoRecurse)
   {
-    subDirsInInput = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+    auto temp = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+    //subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end()); // this results is double file names during recorsion
+    if (!temp.empty())
+    {
+      subDirsInInput = temp;
+    }
   }
 
   std::vector< int > imageDimensions;
