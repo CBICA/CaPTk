@@ -580,7 +580,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
         results.push_back(-1*result[i]);
-        if(isinf(results[i])==true)
+        if(std::isinf(results[i])==true)
           myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Not determined \n";
         else
         {

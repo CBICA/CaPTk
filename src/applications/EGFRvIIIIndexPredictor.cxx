@@ -174,7 +174,7 @@ int EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory,
     for (unsigned int subjectID = 0; subjectID < QualifiedSubjects.size(); subjectID++)
     {
       std::map<CAPTK::ImageModalityType, std::string> onesubject = QualifiedSubjects[subjectID];
-      if (isinf(result[subjectID]) == true)
+      if (std::isinf(result[subjectID]) == true)
         std::cout << static_cast<std::string>(onesubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) << ": Score=" << std::to_string(result[subjectID]) << " Not determined." << std::endl;
       else
       {
