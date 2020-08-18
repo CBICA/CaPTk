@@ -1029,11 +1029,11 @@ References:
 
 /**
 \page BreastCancer_LIBRA Breast Cancer: Breast Density Estimation (LIBRA)
-The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density segmentation in full-field digital mammography (FFDM) [1]. LIBRA is available in single and batch mode. 
+The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density evaluation in full-field digital mammography (FFDM) [1]. Besides breast density estimates, LIBRA also provides breast segmentation masks which indicate the dense (i.e., fibroglandular) versus fatty tissue regions of the breast. LIBRA is available in single and batch mode. 
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
 	- For single mode: Each image stored in a separate folder.
 	- For batch mode: All images stored in a single folder.
 	
@@ -1041,13 +1041,13 @@ The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a so
 - Single mode:
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> LIBRA_SingleImage' menu option.
-	-# LIBRA is executed and the segmentation mask is automatically loaded back to CaPTk. 
+	-# LIBRA is executed and the breast segmentation mask is automatically loaded back to CaPTk. 
 	-# LIBRA outputs (described in the Outputs section below) are automatically saved in a temp folder under the CaPTk directory.
 - Batch mode:
 	-# Launch LIBRA using the 'Applications -> LIBRA_BatchMode' menu option.
 	-# The user is prompted to select the folder which contains the images for analysis.
-	-# The user is then prompted to select an output folder where the density scores and density segmentation images .jpg files will be stored. Note: If the folder already exists and contains density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.
-	-# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the density segmentation outline which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.
+	-# The user is then prompted to select an output folder where the breast density estimates and segmentation images will be stored. Note: If the folder already exists and contains breast density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.
+	-# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the breast segmentation masks which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.
 	-# LIBRA will then begin processing all the FFDM images; the progress of the software can be monitored via the related command-prompt window that opens when LIBRA starts running. When analysis is complete, a prompt appears asking the user if they want to open the results folder and if they want to perform additional analyses.
 
 <b>OUTPUT:</b>
@@ -1111,11 +1111,11 @@ References:
 /**
 \page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
 
-This application uses LIBRA [1] to extract the breast region in the loaded image and is only availabe via the GUI (the [Breast Texture Pipeline](BreastCancer_texture.html) can be used to generate a mask and perform radiomic analysis via the command line). 
+This application uses LIBRA [1] to extract the breast region in the loaded image and is only availabe via the GUI (the [Breast Texture Feature Extraction](BreastCancer_texture.html) can be used to generate a mask and perform radiomic analysis via the command line). 
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
 	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>
