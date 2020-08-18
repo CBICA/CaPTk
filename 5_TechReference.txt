@@ -317,7 +317,8 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
       </td>
       <td>
-        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
+        When activated, this option performs feature calculation on multiple local square (for 2D images) or cubic (for 3D images) regions defined by on a lattice virtually overlaid on the image.
+        <br>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
       </td>
     </tr>
 </table>
