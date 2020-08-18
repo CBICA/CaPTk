@@ -2715,6 +2715,7 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
+        ++progressBar;
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
