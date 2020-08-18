@@ -1,7 +1,7 @@
 By installing the Cancer and Phenomics Toolkit (CaPTk), the user agrees to the following licenses, which pertain to the code and its different constituents:
 
-1. SBIA Software License - https://www.med.upenn.edu/sbia/software-agreement.html
-2. SBIA Non-Commercial Software License (applies to PHI Estimator) - https://www.med.upenn.edu/sbia/software-agreement-non-commercial.html
+1. CBICA Software License - https://www.med.upenn.edu/cbica/software-agreement.html
+2. CBICA Non-Commercial Software License (applies to PHI Estimator) - https://www.med.upenn.edu/cbica/software-agreement-non-commercial.html
 3. Insight Toolkit License (Apache 2.0) - https://itk.org/about/#license
 4. Visualization Toolkit License (BSD) - https://vtk.org/about/#license
 5. Qt Open Source License - https://doc.qt.io/qt-5.10/qtcore-index.html#licenses-and-attributions; our copy can be found at https://github.com/CBICA/qt
