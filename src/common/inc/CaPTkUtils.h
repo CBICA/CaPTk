@@ -283,7 +283,7 @@ inline void WriteCSVFilesWithHorizontalAndVerticalHeaders(VariableSizeMatrixType
   std::ofstream myfile;
   myfile.open(filepath);
 
-  myfile << vertical_ids[0];
+  myfile << "Subject ID"<<","<< vertical_ids[0];
   for (unsigned int col_index = 1; col_index < vertical_ids.size(); col_index++)
     myfile << "," << vertical_ids[col_index];
   myfile << "\n";
