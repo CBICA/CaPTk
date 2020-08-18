@@ -148,12 +148,10 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td align="center">Local Binary<br>Pattern (LBP)
       <td>
       <td>Radius <br>Neighborhood
-      <td>N.A. <br>2:4:8
-      <td>N.A. <br>8
+      <td>1 <br>2:4:8
+      <td>1 <br>8
       <td>
-        <ul>
-          <li>The LBP codes are computed using N sampling points on a  circle of radius R and using mapping table.
-        </ul>
+          The pixel-wise LBP codes are computed using N number of neighbors on a circle of radius R around each pixel and using a rotation invariant implementation. The output value corresponds to the mean of the LBP map.
     </tr>
     <tr>
       <td align="center">Grey Level<br>Co-occurrence<br>Matrix<br> (GLCM)
