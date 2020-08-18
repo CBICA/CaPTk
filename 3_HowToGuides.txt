@@ -1081,12 +1081,12 @@ References:
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
-This application extracts the Texture Features as described in the paper [1]. It uses [LIBRA](BreastCancer_LIBRA.html) for segmentation and the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the feature computation.
+This application extracts radiomic features related to breast cancer risk, as described in the paper [1]. It is based upon [LIBRA](BreastCancer_LIBRA.html) for segmentation of the breast and the lattice-based mode of <a href="ht_FeatureExtraction">Feature Extraction</a> backend to perform radiomic feature calculations.
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
-	- Each image stored in a separate folder.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
+	- Each image stored in a separate folder (required only in GUI).
 	
 <b>USAGE:</b>
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
@@ -1101,7 +1101,7 @@ ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/ou
 
 References:
 
--# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012, DOI:10.1118/1.4736530
+-# Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
 
 --------
 
