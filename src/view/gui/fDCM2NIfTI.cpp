@@ -30,7 +30,7 @@ fDCM2NIfTIConverter::fDCM2NIfTIConverter()
   }
 
 #elif __linux__
-  m_exe =  "." + QApplication::applicationDirPath() + "/dcm2niix";
+  m_exe =  /*"." + */QApplication::applicationDirPath() + "/dcm2niix";
 #endif
 
 }
