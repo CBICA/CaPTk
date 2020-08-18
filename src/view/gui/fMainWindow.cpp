@@ -417,7 +417,7 @@ fMainWindow::fMainWindow()
   menuDeepLearning->addSeparator();
   temp = populateStringListInMenu(" ", this, menuDeepLearning, "Training", false);
 
-  menuDownload->addAction("All");
+  // menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
   {
     if (currentActionAndName.name != "Glioblastoma")
