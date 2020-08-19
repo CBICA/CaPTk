@@ -893,7 +893,7 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
 
 
@@ -1244,9 +1244,12 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
     ImageType::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
 
+    auto originalOrientation = mSlicerManagers[index]->mOrientation;
+    auto reorientedImage = cbica::GetImageOrientation< ImageTypeFloat3D >(convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage), originalOrientation);
+
     if (mSlicerManagers[index]->GetPreset() == PRESET_THRESHOLD)
     {
-      auto img = convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+      auto img = reorientedImage.second;
       double threshold = mSlicerManagers[index]->mThreshold;
       //
       auto duplicator = itk::ImageDuplicator< ImageTypeFloat3D >::New();
@@ -1281,7 +1284,7 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
     }
     else
     {
-      auto img = convertVtkToItk< ImageType::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+      auto img = reorientedImage.second;
 
       auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
       infoChanger->SetInput(img);
@@ -1297,7 +1300,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       if (InputPixelType == "short")
       {
         using ImageTypeToWrite = itk::Image<short, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1311,7 +1317,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned short")
       {
         using ImageTypeToWrite = itk::Image<unsigned short, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1325,7 +1334,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "char")
       {
         using ImageTypeToWrite = itk::Image<char, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1339,7 +1351,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned char")
       {
         using ImageTypeToWrite = itk::Image<unsigned char, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1353,7 +1368,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "int")
       {
         using ImageTypeToWrite = itk::Image<int, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1367,7 +1385,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned int")
       {
         using ImageTypeToWrite = itk::Image<unsigned int, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1381,7 +1402,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "double")
       {
         using ImageTypeToWrite = itk::Image<double, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1395,7 +1419,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "float")
       {
         using ImageTypeToWrite = itk::Image<float, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1771,7 +1798,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
       imageManager->SetOriginalDirection(currentImage->GetDirection());
       imageManager->SetOriginalOrigin(currentImage->GetOrigin());
-      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fname));
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname)); // defaults to RAI
+      imageManager->SetOriginalOrientation(tempImage.first);
+      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(tempImage.second);
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fname);
     }
@@ -7994,40 +8023,24 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadA
 
 void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  // first pass on our own stuff
-  auto filesInDir = cbica::filesInDirectory(inputDir);
-  auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
+	bool writeSuccess = false;
 
-  bool writeSuccess = false;
+	std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -o " + outputDir + " -z y " + inputDir;
 
-  if (!readDicomImage)
-  {
-    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+	if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+	{
+		ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+		return;
+	}
+	else
+	{
+		writeSuccess = true;
+	}
 
-    if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
-    {
-      ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-      return;
-    }
-    else
-    {
-      writeSuccess = true;
-    }
-  }
-  else
-  {
-    // adding a timestamp to the file to make it unique
-    auto timeStamp = cbica::getCurrentLocalDateAndTime();
-    timeStamp = cbica::replaceString(timeStamp, ":", "");
-    timeStamp = cbica::replaceString(timeStamp, ",", "");
-    cbica::WriteImage< ImageTypeFloat3D >(readDicomImage, outputDir + "/dicom2nifti_" + timeStamp + ".nii.gz");
-    writeSuccess = true;
-  }
-
-  if (writeSuccess)
-  {
-    ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
-  }
+	if (writeSuccess)
+	{
+		ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
+	}
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
