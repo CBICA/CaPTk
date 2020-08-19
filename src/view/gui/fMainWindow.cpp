@@ -8019,40 +8019,24 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadA
 
 void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  // first pass on our own stuff
-  auto filesInDir = cbica::filesInDirectory(inputDir);
-  auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
+	bool writeSuccess = false;
 
-  bool writeSuccess = false;
+	std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -o " + outputDir + " -z y " + inputDir;
 
-  if (!readDicomImage)
-  {
-    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+	if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+	{
+		ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+		return;
+	}
+	else
+	{
+		writeSuccess = true;
+	}
 
-    if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
-    {
-      ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-      return;
-    }
-    else
-    {
-      writeSuccess = true;
-    }
-  }
-  else
-  {
-    // adding a timestamp to the file to make it unique
-    auto timeStamp = cbica::getCurrentLocalDateAndTime();
-    timeStamp = cbica::replaceString(timeStamp, ":", "");
-    timeStamp = cbica::replaceString(timeStamp, ",", "");
-    cbica::WriteImage< ImageTypeFloat3D >(readDicomImage, outputDir + "/dicom2nifti_" + timeStamp + ".nii.gz");
-    writeSuccess = true;
-  }
-
-  if (writeSuccess)
-  {
-    ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
-  }
+	if (writeSuccess)
+	{
+		ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
+	}
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
