@@ -383,11 +383,15 @@ fMainWindow::fMainWindow()
   std::string breastAppList = "";
 
 #ifndef __APPLE__
-  breastAppList = " librasingle librabatch breastSegment texturePipeline";
+  breastAppList = " librasingle librabatch texturePipeline";
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
+
+#ifndef __APPLE__
+  segAppList += " breastSegment";
+#endif
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives PerfusionAlignment TrainingModule";
   
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain BraTSPipeline";
@@ -657,11 +661,6 @@ fMainWindow::fMainWindow()
       vectorOfBreastApps[i].action->setText("  Breast Density Estimator (LIBRA) BatchMode"); //TBD set at source
       connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationLIBRABatch()));
     }
-    else if (vectorOfBreastApps[i].name.find("breastSegment") != std::string::npos)
-    {
-      vectorOfBreastApps[i].action->setText("  Breast Segmentation"); //TBD set at source
-      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
-    }
     else if (vectorOfBreastApps[i].name.find("texturePipeline") != std::string::npos)
     {
       vectorOfBreastApps[i].action->setText("  Texture Feature Pipeline"); //TBD set at source
@@ -714,6 +713,11 @@ fMainWindow::fMainWindow()
     {
       vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepLearning)"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
+    }
+    else if (vectorOfSegmentationApps[i].name.find("breastSegment") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation"); //TBD set at source
+      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
   }
 
