@@ -58,3 +58,5 @@ vsts*
 superbuild
 build
 
+
+src/applications/individualApps/dcm2niix/
