@@ -1676,6 +1676,28 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
+      /// sanity checks for required generic options
+      if (m_histogramBinningType < 0)
+      {
+        std::cerr << "Histogram binning type needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingResolution < 0)
+      {
+        std::cerr << "Resampling rate needs to be defined in the parameter file (use '0' to disable), please see default parameter file for example.\n";
+      }
+      if (m_QuantizationExtent.empty())
+      {
+        std::cerr << "Quantization extent needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingInterpolator_Image.empty())
+      {
+        std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingInterpolator_Mask.empty())
+      {
+        std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+
       // get the quantization properties, if any
       {
         auto temp = m_Features.find(FeatureFamilyString[Generic]);
@@ -2715,6 +2737,7 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
+        ++progressBar;
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";

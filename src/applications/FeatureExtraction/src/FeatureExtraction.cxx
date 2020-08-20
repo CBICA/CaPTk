@@ -398,7 +398,7 @@ int main(int argc, char** argv)
     parser.getParameterValue("p", param_file);
     if (!cbica::fileExists(param_file))
     {
-      std::cerr << "The param file provided wasn't found: " << param_file << "\n";
+      std::cerr << "The param file provided wasn't found: " << param_file << "; examples are in '${CaPTk_installDir}/data/features'\n";
       return EXIT_FAILURE;
     }
   }
