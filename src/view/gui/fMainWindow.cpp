@@ -716,7 +716,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfSegmentationApps[i].name.find("breastSegment") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation using LIBRA"); //TBD set at source
+      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation of FFDM using LIBRA"); //TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
   }
