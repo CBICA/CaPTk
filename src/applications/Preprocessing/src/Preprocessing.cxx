@@ -684,7 +684,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(bias_otsuBins));
   parser.addOptionalParameter("nFL", "nFittingLevels", cbica::Parameter::INTEGER, "N.A.", "The number of fitting levels to use for bias correction", "Defaults to " + std::to_string(bias_fittingLevels));
   parser.addOptionalParameter("nMI", "nMaxIterations", cbica::Parameter::INTEGER, "N.A.", "The maximum number of iterations for bias correction (only works for N3)", "Defaults to " + std::to_string(bias_maxIterations));
-  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::INTEGER, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
+  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::FLOAT, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
