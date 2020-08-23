@@ -18,6 +18,7 @@
 #include "itkCSVArray2DFileReader.h"
 #include "itkCSVNumericObjectFileWriter.h"
 #include "itkInvertIntensityImageFilter.h"
+#include "itkRoundImageFilter.h"
 
 #include "vtkAnatomicalOrientation.h"
 
@@ -267,6 +268,15 @@ int algorithmsRunner()
   if (requestedAlgorithm == Resize)
   {
     auto outputImage = cbica::ResizeImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resize, resamplingInterpolator);
+
+    // round if user has passed '-rm 1'
+    if (resamplingMasks)
+    {
+      auto rounder = itk::RoundImageFilter< TImageType, TImageType >::New();
+      rounder->SetInput(outputImage);
+      rounder->Update();
+      outputImage = rounder->GetOutput();
+    }
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resizing by a factor of " << resize << "% completed.\n";
@@ -308,6 +318,15 @@ int algorithmsRunner()
       }
     }
     auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
+
+    // round if user has passed '-rm 1'
+    if (resamplingMasks)
+    {
+      auto rounder = itk::RoundImageFilter< TImageType, TImageType >::New();
+      rounder->SetInput(outputImage);
+      rounder->Update();
+      outputImage = rounder->GetOutput();
+    }
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resampled image to a resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
