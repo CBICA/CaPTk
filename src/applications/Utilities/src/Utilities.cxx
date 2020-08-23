@@ -1326,6 +1326,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("ri", resamplingInterpolator);
     }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
+    }
   }
   else if (parser.isPresent("rr"))
   {
