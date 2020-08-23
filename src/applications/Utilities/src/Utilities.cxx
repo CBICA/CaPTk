@@ -1175,6 +1175,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rr", "resampleResolution", cbica::Parameter::STRING, "0-10", "[Resample] Resolution of the voxels/pixels to change to", "Defaults to " + resamplingResolution_full, "Use '-rf' for a reference file");
   parser.addOptionalParameter("rf", "resampleReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
   parser.addOptionalParameter("ri", "resampleInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
+  parser.addOptionalParameter("rm", "resampleMask", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Rounds the output of the resample, useful for resampling masks", "Defaults to '0'");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
