@@ -76,7 +76,7 @@ float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, th
 float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
 int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false;
 
 std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
 
@@ -1335,6 +1335,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("ri", resamplingInterpolator);
     }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
+    }
   }
   else if (parser.isPresent("rf"))
   {
@@ -1343,6 +1347,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
+    }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
     }
   }
   else if (parser.isPresent("s"))
