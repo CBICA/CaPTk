@@ -293,7 +293,11 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       N.A.
       </td>
       <td>
-
+        1 <br>
+        N.A. <br>
+        4 <br>
+        \sqrt{2} <br
+        0.25
       </td>
 
     </tr>
