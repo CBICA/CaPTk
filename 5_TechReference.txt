@@ -289,7 +289,6 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         Gamma<br>
         Fmax
       </td>
-  
       <td>
       N.A.
       </td>
@@ -307,7 +306,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       </td>
     </tr>
     <tr>
-      <tdalign="center">Power spectrum
+      <td align="center">Power spectrum
       <td>
       Beta 
       </td>
