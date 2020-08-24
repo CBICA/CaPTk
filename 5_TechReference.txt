@@ -317,11 +317,8 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td>
       N.A.
       </td>
-
-  
-
     </tr>
-     <tr>
+    <tr>
       <td align="center">Lattice<br>-based
       <td>
         <ul>
