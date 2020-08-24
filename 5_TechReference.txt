@@ -300,7 +300,10 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         0.25
       </td>
       <td>
-      For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max
+      For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
+      The \gamma parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition.
+      Features are extracted for each resulting image generated for each direction and level.
+
       </td>
     </tr>
      <tr>
