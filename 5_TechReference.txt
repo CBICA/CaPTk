@@ -299,7 +299,9 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         \sqrt{2} <br>
         0.25
       </td>
-
+      <td>
+      For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max
+      </td>
     </tr>
      <tr>
       <td align="center">Lattice<br>-based
