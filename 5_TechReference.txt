@@ -319,6 +319,10 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td>
       center of image
       </td>
+      <td>
+      A discrete fourier transform is applied to each image to decompose te information in the image into signals with varying frequencies. The power spectrum is computed for each signal.
+      Plotting the relation between spatial frequency and average power, the slope of the a line fit to this relation is determined.
+      </td>
 
     </tr>
     <tr>
