@@ -272,7 +272,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
     <tr>
-      <td align="center">Gabor wavelets
+      <td align="center">Gabor Wavelets
       <td> 
         <ul>
           <li> Mean 
@@ -306,7 +306,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       </td>
     </tr>
     <tr>
-      <td align="center">Power spectrum
+      <td align="center">Power Spectrum
       <td>
       Beta 
       </td>
