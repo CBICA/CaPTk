@@ -283,6 +283,14 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
           Features are calculated for each level and orientation
         </ul>
       </td>
+      <td>
+        Radius
+        Direction
+        Level
+        Gamma
+        Fmax
+      </td>
+
     </tr>
      <tr>
       <td align="center">Lattice<br>-based
