@@ -275,18 +275,18 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td align="center">Gabor wavelets
       <td> 
         <ul>
-          <li> Mean <br>
-          <li> Standard deviation <br>
-          <li> Variance <br>
-          <li> Maximum <br>
+          <li> Mean 
+          <li> Standard deviation 
+          <li> Variance 
+          <li> Maximum
           <li>Sum
         </ul>
       </td>
       <td>
-        Radius
-        Direction
-        Level
-        Gamma
+        Radius<br>
+        Direction<br>
+        Level<br>
+        Gamma<br>
         Fmax
       </td>
       <td>
