@@ -301,7 +301,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       </td>
       <td>
       For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
-      The \f$ \gamma \f$ parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition.
+      The \f$ \gamma \f$ parameter determines the spatial aspect ratio, and the levels parameter determines the number of levels to perform wavelet decomposition.
       Features are extracted for each resulting image generated for each direction and level.
       </td>
     </tr>
@@ -320,8 +320,8 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       center of image
       </td>
       <td>
-      A discrete fourier transform is applied to each image to decompose te information in the image into signals with varying frequencies. The power spectrum is computed for each signal.
-      Plotting the relation between spatial frequency and average power, the slope of the a line fit to this relation is determined.
+      A discrete fourier transform is applied to each image to decompose the information in the image into signals with varying frequencies. The power spectrum is computed for each signal.
+      Plotting the relation between spatial frequency and average power, the slope of a line fit to this relation is calculated.
       </td>
 
     </tr>
