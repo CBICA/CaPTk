@@ -305,7 +305,7 @@ jobs:
     #   displayName: 'Move superbuild and qt and compiled apps'
     
     - powershell: |
-        set GIT_REDIRECT_STDERR=2>&1
+        $env:GIT_REDIRECT_STDERR = '2>&1'
         git pull origin master
         git log -1
         # cat CMakeLists.txt | grep -i "PROJECT_VERSION"
