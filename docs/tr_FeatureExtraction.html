@@ -478,32 +478,25 @@ Maximum </li>
 <li>
 Sum </li>
 </ul>
-</td><td><p class="starttd">Radius<br  />
+</td><td>Radius<br  />
  Direction<br  />
  Level<br  />
  Gamma<br  />
- Fmax </p>
-<p class="endtd"></p>
-</td><td>N.A.  </td><td>1 <br  />
+ Fmax  </td><td>N.A.  </td><td>1 <br  />
  N.A. <br  />
  4 <br  />
  \( \sqrt{2} &lt;br&gt; 0.25 &lt;/td&gt; &lt;td&gt; For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. The \) \gamma parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition. Features are extracted for each resulting image generated for each direction and level.   </td></tr>
 <tr>
-</tr>
-</table>
-<p>tdalign="center"&gt;Power spectrum </p>
-<p>Beta  </p>
-<p>Center  </p>
-<p>N.A.   </p>
-<p>Lattice<br  />
--based </p>
-<ul>
+<td align="center">Power spectrum </td><td>Beta  </td><td>Center  </td><td>N.A.   </td></tr>
+<tr>
+<td align="center">Lattice<br  />
+-based </td><td><ul>
 <li>
 Selected features </li>
 <li>
 Feature Maps </li>
 </ul>
-<ul>
+</td><td><ul>
 <li>
 FullImage </li>
 <li>
@@ -515,7 +508,7 @@ Boundary </li>
 <li>
 PatchBoundary </li>
 </ul>
-<ul>
+</td><td><ul>
 <li>
 0-1 </li>
 <li>
@@ -527,7 +520,7 @@ NoPadding:ZeroPadding </li>
 <li>
 Full:ROI:None </li>
 </ul>
-<ul>
+</td><td><ul>
 <li>
 0 </li>
 <li>
@@ -539,7 +532,8 @@ NoPadding </li>
 <li>
 Full </li>
 </ul>
-<p>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.   </p>
+</td><td>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.   </td></tr>
+</table>
 <p>Detailed explanation of the mathematics and other details can be found in the <a href="https://ibsi.readthedocs.io/en/latest/">Image Biomarker Standardization Initiative (IBSI) page</a>.</p>
 <p>The parameterization of the <b>lattice-based strategy</b> for feature extraction is defined by:</p><ul>
 <li>The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm).</li>

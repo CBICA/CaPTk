@@ -316,6 +316,10 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td>
       N.A.
       </td>
+      <td>
+      center of image
+      </td>
+
     </tr>
     <tr>
       <td align="center">Lattice<br>-based
