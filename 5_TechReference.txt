@@ -289,6 +289,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         Gamma<br>
         Fmax
       </td>
+  
       <td>
       N.A.
       </td>
@@ -303,8 +304,22 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
       The \f$ \gamma parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition.
       Features are extracted for each resulting image generated for each direction and level.
-
       </td>
+    </tr>
+    <tr>
+      <tdalign="center">Power spectrum
+      <td>
+      Beta 
+      </td>
+      <td>
+      Center
+      </td>
+      <td>
+      N.A.
+      </td>
+
+  
+
     </tr>
      <tr>
       <td align="center">Lattice<br>-based
