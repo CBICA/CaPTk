@@ -296,12 +296,12 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         1 <br>
         N.A. <br>
         4 <br>
-        \f$ \sqrt{2} <br>
+        \f$ \sqrt{2} \f$ <br>
         0.25
       </td>
       <td>
       For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
-      The \f$ \gamma parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition.
+      The \f$ \gamma \f$ parameter determines the spatial aspect ratio, and the levels parameter determins the number of levels to perform wavelet decomposition.
       Features are extracted for each resulting image generated for each direction and level.
       </td>
     </tr>
