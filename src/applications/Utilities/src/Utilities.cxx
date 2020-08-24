@@ -66,14 +66,14 @@ enum AllInfo
 int requestedAlgorithm = 0;
 
 std::string inputImageFile, inputMaskFile, outputImageFile, targetImageFile, resamplingInterpolator = "LINEAR", dicomSegJSON, orientationDesired, coordinateToTransform, referenceMaskForSimilarity;
-std::string dicomFolderPath;
+std::string dicomFolderPath,outputFolderPath;
 std::string inputBvecFile;
 size_t resize = 100;
 int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
-float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
 int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
@@ -90,7 +90,12 @@ void CollectImageInfo(std::vector< int > requestedInfoVector)
   std::vector< std::string > subDirsInInput = { inputImageFile };
   if (collectInfoRecurse)
   {
-    subDirsInInput = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+    auto temp = cbica::subdirectoriesInDirectory(inputImageFile, collectInfoRecurse, true);
+    //subDirsInInput.insert(subDirsInInput.end(), temp.begin(), temp.end()); // this results is double file names during recorsion
+    if (!temp.empty())
+    {
+      subDirsInInput = temp;
+    }
   }
 
   std::vector< int > imageDimensions;
@@ -400,49 +405,71 @@ int algorithmsRunner()
   }
   else if (requestedAlgorithm == Dicom2Nifti)
   {
-    auto readDicomImage = cbica::ReadImage< TImageType >(inputImageFile);
-    if (!readDicomImage)
-    {
-      std::cout << "Dicom Load Failed" << std::endl;
-      return EXIT_FAILURE;
-    }
+    //get folder from input dicom image
+	dicomFolderPath = cbica::getFilenamePath(inputImageFile);
 
-    cbica::WriteImage< TImageType>(readDicomImage, outputImageFile);
+	// construct path to dcm2niix for debug/release modes and different OS
+	std::string m_exe; 
+#ifdef CAPTK_PACKAGE_PROJECT
+	#if WIN32
+		m_exe = cbica::getExecutablePath() + "/dcm2niix.exe";
+	#else
+		m_exe = cbica::getExecutablePath() + "/dcm2niix";
+	#endif
+#else
+	#if WIN32
+		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2niix" + "/dcm2niix.exe";
+	#else
+		m_exe = cbica::getExecutablePath() + "../../src/applications/individualApps/dcm2niix" + "/dcm2niix";
+	#endif
+#endif
 
-    if (!targetImageFile.empty())
-    {
-      if (!cbica::ImageSanityCheck< TImageType >(readDicomImage, cbica::ReadImage< TImageType >(targetImageFile)))
-      {
-        std::cerr << "Input image and target image physical space mismatch.\n";
-        return EXIT_FAILURE;
-      }
-      else
-      {
-        auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
-        auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
-        auto size = inputImage->GetBufferedRegion().GetSize();
-        diffFilter->SetValidInput(cbica::ReadImage< TImageType >(targetImageFile));
-        diffFilter->SetTestInput(inputImage);
-        diffFilter->VerifyInputInformationOn();
-        diffFilter->SetDifferenceThreshold(testThresh);
-        diffFilter->SetToleranceRadius(testRadius);
-        diffFilter->UpdateLargestPossibleRegion();
+		//construct command
+	std::string fullCommandToRun = cbica::normPath(m_exe) + " -o " + cbica::normPath(outputFolderPath) + " -z y " + cbica::normPath(dicomFolderPath);
 
-        size_t totalSize = 1;
-        for (size_t d = 0; d < TImageType::ImageDimension; d++)
-        {
-          totalSize *= size[d];
-        }
+	//run command via system call
+	if (std::system((fullCommandToRun).c_str()) != 0)
+	{
+		std::cerr << "Something went wrong during dicom to nifti conversion, please re-try or contact sofware@cbica.upenn.edu.\n";
+		return EXIT_FAILURE;
+	}
 
-        std::cout << "Total Voxels/Pixels in Image: " << totalSize << "\n";
-        std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
-        std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
-        std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
-        std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
-        std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
-        std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
-      }
-    }
+	//commented below as not sure about the use case for this
+
+    //if (!targetImageFile.empty())
+    //{
+    //  if (!cbica::ImageSanityCheck< TImageType >(readDicomImage, cbica::ReadImage< TImageType >(targetImageFile)))
+    //  {
+    //    std::cerr << "Input image and target image physical space mismatch.\n";
+    //    return EXIT_FAILURE;
+    //  }
+    //  else
+    //  {
+    //    auto diffFilter = itk::Testing::ComparisonImageFilter< TImageType, TImageType >::New();
+    //    auto inputImage = cbica::ReadImage< TImageType >(inputImageFile);
+    //    auto size = inputImage->GetBufferedRegion().GetSize();
+    //    diffFilter->SetValidInput(cbica::ReadImage< TImageType >(targetImageFile));
+    //    diffFilter->SetTestInput(inputImage);
+    //    diffFilter->VerifyInputInformationOn();
+    //    diffFilter->SetDifferenceThreshold(testThresh);
+    //    diffFilter->SetToleranceRadius(testRadius);
+    //    diffFilter->UpdateLargestPossibleRegion();
+
+    //    size_t totalSize = 1;
+    //    for (size_t d = 0; d < TImageType::ImageDimension; d++)
+    //    {
+    //      totalSize *= size[d];
+    //    }
+
+    //    std::cout << "Total Voxels/Pixels in Image: " << totalSize << "\n";
+    //    std::cout << "Number of Difference Voxels : " << diffFilter->GetNumberOfPixelsWithDifferences() << "\n";
+    //    std::cout << "Percentage of Diff Voxels   : " << diffFilter->GetNumberOfPixelsWithDifferences() * 100 / totalSize << "\n";
+    //    std::cout << "Minimum Intensity Difference: " << diffFilter->GetMinimumDifference() << "\n";
+    //    std::cout << "Maximum Intensity Difference: " << diffFilter->GetMaximumDifference() << "\n";
+    //    std::cout << "Average Intensity Difference: " << diffFilter->GetMeanDifference() << "\n";
+    //    std::cout << "Overall Intensity Difference: " << diffFilter->GetTotalDifference() << "\n";
+    //  }
+    //}
   }
   else if (requestedAlgorithm == Nifti2Dicom)
   {
@@ -454,7 +481,7 @@ int algorithmsRunner()
     {
       prevOutput = true;
     }
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance);
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance);
     if (!prevOutput)
     {
       if (cbica::exists(outputImageFile))
@@ -463,7 +490,9 @@ int algorithmsRunner()
       }
       else
       {
-        std::cerr << "Direction tolerance: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "Tolerance values:\n";
+        std::cerr << "  Direction: " << nifti2dicomTolerance << "%\n";
+        std::cerr << "     Origin: " << nifti2dicomOriginTolerance << "%\n";
         std::cerr << "Couldn't write DICOM series.\n";
         return EXIT_FAILURE;
       }
@@ -893,6 +922,12 @@ int algorithmsRunner()
     auto inputImage = cbica::ReadImage< DefaultImageType >(inputImageFile);
     auto referenceImage = cbica::ReadImage< DefaultImageType >(referenceMaskForSimilarity);
 
+    if (!cbica::ImageSanityCheck< DefaultImageType >(inputImage, referenceImage))
+    {
+      std::cerr << "Images are not aligned, please ensure both images have the same origin, spacing and direction cosines before trying to extract similarity measures (use '-inf' for image information).\n";
+      return EXIT_FAILURE;
+    }
+
     if (!inputMaskFile.empty())
     {
       if (cbica::ImageSanityCheck(inputImageFile, inputMaskFile))
@@ -1154,6 +1189,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
+  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
@@ -1221,14 +1257,21 @@ int main(int argc, char** argv)
   {
     requestedAlgorithm = Dicom2Nifti;
 
-	  // check if the Nifti output filename has been specified?
+	  // check if the Nifti output folder path has been specified?
 	  if (parser.isPresent("o"))
 	  {
-		  parser.getParameterValue("o", outputImageFile);
+		  parser.getParameterValue("o", outputFolderPath);
 	  }
 	  else
 	  {
-		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti filename was not found. Please use the '-o' parameter.\n";
+		  std::cerr << "DICOM2Nifti conversion requested but the output Nifti folder was not found. Please use the '-o' parameter.\n";
+		  return EXIT_FAILURE;
+	  }
+
+	  //check if output path is a folder
+	  if (!cbica::isDir(outputFolderPath))
+	  {
+		  std::cerr << "Please pass the path to the output folder where you want to save the nifti file.\n";
 		  return EXIT_FAILURE;
 	  }
 
@@ -1242,7 +1285,8 @@ int main(int argc, char** argv)
 		  std::cerr << "DICOM2Nifti conversion requested but the input Dicom data was not found. Please use the '-i' parameter.\n";
 		  return EXIT_FAILURE;
 	  }
-    parser.getParameterValue("d2n", targetImageFile);
+
+    //parser.getParameterValue("d2n", targetImageFile);
   }
   else if (parser.isPresent("n2d"))
   {
@@ -1252,6 +1296,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("ndD"))
     {
       parser.getParameterValue("ndD", nifti2dicomTolerance);
+    }
+    if (parser.isPresent("ndO"))
+    {
+      parser.getParameterValue("ndO", nifti2dicomOriginTolerance);
     }
   }
   else if (parser.isPresent("ds"))

@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0.nonRelease.20200824.0</span>
    </div>
   </td>
  </tr>
@@ -68,12 +68,14 @@ $(document).ready(function(){initNavTree('FAQ.html',''); initResizable(); });
 <li class="level1"><a href="#gs_FAQ_4">What are the OpenGL requirements to run CaPTk?</a></li>
 <li class="level1"><a href="#gs_FAQ_5">What if I am having issues with the Linux Installer?</a><ul><li class="level2"><a href="#gs_FAQ_5_1">FUSE Issues</a></li>
 <li class="level2"><a href="#gs_FAQ_5_2">GLIBCXX or GLIBC Issues</a></li>
+<li class="level2"><a href="#gs_FAQ_5_3">CXXABI issues</a></li>
 </ul>
 </li>
 <li class="level1"><a href="#gs_FAQ_6">Is there a minimum recommended screen resolution for running CaPTk?</a></li>
 <li class="level1"><a href="#gs_FAQ_7">Where can I find the CaPTk Docker Image?</a></li>
 <li class="level1"><a href="#gs_FAQ_8">How do I run the CaPTk Docker Image to show the interface?</a></li>
 <li class="level1"><a href="#gs_FAQ_9">Is there something wrong with Feature Extraction?</a></li>
+<li class="level1"><a href="#gs_FAQ_10">What if I am having an issue not listed here?</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="gs_FAQ_1"></a>
@@ -172,6 +174,11 @@ sudo yum install devtoolset-6
 </li>
 <li>You can still build CaPTk from source using the instructions in <a href="Technical_Reference.html">Technical Reference</a>. Note that you will need a <a href="https://en.cppreference.com/w/cpp/compiler_support#cpp11">C++11 compliant compiler</a>.</li>
 </ul>
+<h2><a class="anchor" id="gs_FAQ_5_3"></a>
+CXXABI issues</h2>
+<p>If you are running into mis-matched <code>CXXABI</code> behavior with a message similar to:</p>
+<pre class="fragment">libstdc++.so.6: version `CXXABI_1.3.8' not found (required by /lib/x86_64-linux-gnu/libGLU.so.1).
+</pre><p>This means that you are running on a very new Linux distribution. Please see the discussion in <a href="https://github.com/CBICA/CaPTk/issues/1229">https://github.com/CBICA/CaPTk/issues/1229</a> for details.</p>
 <h1><a class="anchor" id="gs_FAQ_6"></a>
 Is there a minimum recommended screen resolution for running CaPTk?</h1>
 <p>The minimum recommended resolution is 1200x1024. We have seen some visualization issues with high DPI (&gt;2K) screens and bug reports related to it will be appreciated.</p>
@@ -189,8 +196,8 @@ How do I run the CaPTk Docker Image to show the interface?</h1>
 </pre><h1><a class="anchor" id="gs_FAQ_9"></a>
 Is there something wrong with Feature Extraction?</h1>
 <p>Please see the <a href="https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions">Feature Extraction FAQ</a>.</p>
-<h1><a class="anchor" id="gs_FAQ_9"></a>
-Is there something wrong with Feature Extraction?</h1>
+<h1><a class="anchor" id="gs_FAQ_10"></a>
+What if I am having an issue not listed here?</h1>
 <p>Please <a href="https://github.com/CBICA/CaPTk/issues/new?assignees=&amp;labels=&amp;template=bug-report.md&amp;title=">open a new issue</a> with us and we will do our best to resolve it. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

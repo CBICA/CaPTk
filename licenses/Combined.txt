@@ -2,10 +2,10 @@ By installing the Cancer and Phenomics Toolkit (CaPTk), the user agrees to the f
 
 1. SBIA Software License - https://www.med.upenn.edu/sbia/software-agreement.html
 2. SBIA Non-Commercial Software License (applies to PHI Estimator) - https://www.med.upenn.edu/sbia/software-agreement-non-commercial.html
-3. Insight Toolkit License - https://cmake.org/Wiki/ITK/License_Information
-4. Visualization Toolkit License - http://www.vtk.org/licensing/
+3. Insight Toolkit License (Apache 2.0) - https://itk.org/about/#license
+4. Visualization Toolkit License (BSD) - https://vtk.org/about/#license
 5. Qt Open Source License - https://doc.qt.io/qt-5.10/qtcore-index.html#licenses-and-attributions; our copy can be found at https://github.com/CBICA/qt
-6. CC Attribution-ShareAlike for SRI24 data - https://creativecommons.org/licenses/by-sa/3.0/us/legalcode 
-7. MRIcroGL License - BSD
-8. YAML-CPP - MIT License and can be found at https://opensource.org/licenses/MIT
-9. Eigen - MPL2 License and can be found at https://www.mozilla.org/en-US/MPL/2.0/
+6. SRI24 Atlas License (CC Attribution-ShareAlike) - https://creativecommons.org/licenses/by-sa/3.0/us/legalcode 
+7. MRIcroGL License (BSD) - https://github.com/rordenlab/MRIcroGL12/blob/master/license.txt
+8. YAML-CPP License (MIT) - https://opensource.org/licenses/MIT
+9. Eigen License (MPL2) - https://www.mozilla.org/en-US/MPL/2.0/
