@@ -578,8 +578,8 @@ jobs:
 
     # Moving LFS Files
     - bash: |
-        #rm -rf bin
-        #mkdir -p bin
+        rm -rf bin
+        mkdir -p bin
         cd bin
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
         wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
@@ -635,7 +635,7 @@ jobs:
         cd bin
         pwd
 
-        #rm -rf CaPTk_*
+        rm -rf CaPTk_*
 
         cmake ../
         rm CMakeCache.txt
@@ -645,13 +645,10 @@ jobs:
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
         
         # Debug using vsts' cache
-        cp CMakeCache.txt /Users/Shared/phuc-vsts-cmakecache.txt 
+        cp CMakeCache.txt /Users/Shared/latest-vsts-cmakecache.txt 
         make -j 2
         
          
-        
-        # Hacky trick to fix libomp search -- normally the build should do this, but it mysteriously fails on Utilities...
-        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib Utilities
       displayName: 'Configure and compile CaPTk'
 
     - bash: |
@@ -671,8 +668,7 @@ jobs:
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
         make -j 2
-        # Try this again here just in case this somehow changes Utilities back...
-        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib Utilities
+
       displayName: 'Ensure documentation is picked up properly'
 
 
@@ -693,7 +689,7 @@ jobs:
         pkgpath=""
         if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
         
-        # Try patching Utilities as late as possible. Seems to be necessary
+        # Try patching Utilities as late as possible. Seems to be necessary for Utilities specifically.
         install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $pkgpath/Contents/Resources/bin/Utilities
         
         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
