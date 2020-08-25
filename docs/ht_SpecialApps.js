@@ -4,7 +4,7 @@ var ht_SpecialApps =
     [ "Brain Cancer: Population Atlas", "Glioblastoma_Atlas.html", null ],
     [ "Brain Cancer: Confetti", "Glioblastoma_Confetti.html", null ],
     [ "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)", "Glioblastoma_Recurrence.html", null ],
-    [ "Brain Cancer: Pseudoprogression Infiltration Index", "Glioblastoma_Pseudoprogression.html", null ],
+    [ "Brain Cancer: Pseudo-Progression Estimator", "Glioblastoma_Pseudoprogression.html", null ],
     [ "Brain Cancer: Glioblastoma Survival Prediction Index", "Glioblastoma_Survival.html", null ],
     [ "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)", "Glioblastoma_PHI.html", null ],
     [ "Brain Cancer: Glioblastoma EGFRvIII SVM Index", "Glioblastoma_EGFRvIII.html", null ],
@@ -17,6 +17,6 @@ var ht_SpecialApps =
     [ "Miscellaneous: Perfusion Alignment", "Perfusion_Alignment.html", null ],
     [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
     [ "Miscellaneous: Perfusion Derivatives", "Perfusion_Derivatives.html", null ],
-    [ "Miscellaneous: PCA Volume Extraction", "PCA_Extraction.html", null ],
+    [ "Miscellaneous: Perfusion PCA Volume Extraction", "PCA_Extraction.html", null ],
     [ "Miscellaneous: Training Module", "Training_Module.html", null ]
 ];
