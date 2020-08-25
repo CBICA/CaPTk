@@ -694,7 +694,7 @@ jobs:
         if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
         
         # Try patching Utilities as late as possible. Seems to be necessary
-        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $(pkgpath)/Contents/Resources/bin/Utilities
+        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $pkgpath/Contents/Resources/bin/Utilities
         
         pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
 
