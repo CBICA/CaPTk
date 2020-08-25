@@ -976,7 +976,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   //    FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
   //  featureCounter++;
   //}
-  if (confType != 4)
+  if (confType != CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST)
   {
     try
     {
@@ -1004,7 +1004,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   TrainingModule mTrainingSimulator;
   VectorDouble FinalResult;
 
-  if (confType == 1)
+  if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {  
     //z-scoring of input features and saving corresponding mean and standard deviation in the output directory
     FeatureScalingClass mFeaturesScaling;
@@ -1036,7 +1036,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
     std::cout << "Scaling parameters written." << std::endl;
     FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype,featureselectiontype,optimizationType,crossvalidationType);
   }
-  else if (confType == 2)
+  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE)
   {
     //scaling of input features and saving corresponding mean and standard deviation in the output directory
     FeatureScalingClass mFeaturesScaling;
@@ -1093,7 +1093,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
     std::cout << "Scaling parameters written." << std::endl;
     FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
   }
-  else if (confType == 3)   //train
+  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN)   //train
   {
     if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype,featureselectiontype,optimizationType, crossvalidationType) == true)
       std::cout << "Training finished successfully: Trained model saved in the specified output directory." << std::endl;
@@ -1116,18 +1116,6 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   return true;
 }
 
-template <typename T>
-std::vector<size_t> TrainingModule::sort_indexes(const std::vector<T> &v)
-{
-  // initialize original index locations
-  std::vector<size_t> idx(v.size());
-  std::iota(idx.begin(), idx.end(), 0);
-
-  // sort indexes based on comparing values in v
-  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2]; });
-
-  return idx;
-}
 
 
 
@@ -2174,7 +2162,8 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
     //check crossvalidated performance after adding the current feature
     double bestCV = 0;
     double bestC = 1;
-    double bestG = 1 / currentFeatureSet.Cols();
+    double numerator = 1;
+    double bestG = numerator / ((double)currentFeatureSet.Cols());
     if (optimizationtype == 1)
     {
       if (classifiertype == 2)

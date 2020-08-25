@@ -53,14 +53,14 @@ public:
   {
     auto temp = std::floor((intensity - m_MinimumRange) / m_Stepsize);
 
-    //TBD
-    //if (std::floor((intensity - m_MinimumRange) / m_Stepsize) < -1) 
-    //{
-    //  auto blah = 1;
-    //}
-    //TBD
-
-    return std::floor((intensity - m_MinimumRange) / m_Stepsize);
+    if (vnl_math_isinf(temp) || vnl_math_isnan(temp))
+    {
+      return 0;
+    }
+    else
+    {
+      return temp;
+    }
   }
 
   double IndexToMinIntensity(int index)
@@ -450,6 +450,7 @@ private:
       if (maskIter.Get() > 0)
       {
         imageIter.SetIndex(maskIter.GetIndex());
+        auto temp_imageIterGet = imageIter.Get();
         auto startIntensityIndex = holder.IntensityToIndex(static_cast<double>(imageIter.Get()));
 
         ////TBD

@@ -297,10 +297,6 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer itkImage,
   const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
-  //neighbouring grey level dependece based features (IBSI 3.11)
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGLDM" << std::endl;
-  //offset should be always 26 (3D) or 8 (2D): this feature family is rotationally invariant
-
   NGLDMFeatures< TImage > ngldmCalculator;
   ngldmCalculator.SetInputImage(itkImage);
   ngldmCalculator.SetInputMask(maskImage);
@@ -328,30 +324,6 @@ void FeatureExtraction< TImage >::CalculateNGLDM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
   }
-  //featurevec["LowDependenceEmphasis"] = ngldmCalculator.GetLowDependenceEmphasis();
-  //featurevec["HighDependenceEmphasis"] = ngldmCalculator.GetHighDependenceEmphasis();
-  //featurevec["LowGreyLevelCountEmphasis"] = ngldmCalculator.GetLowGreyLevelCountEmphasis();
-  //featurevec["HighGreyLevelCountEmphasis"] = ngldmCalculator.GetHighGreyLevelCountEmphasis();
-  //featurevec["LowDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceLowGreyLevelEmphasis();
-  //featurevec["LowDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetLowDependenceHighGreyLevelEmphasis();
-  //featurevec["HighDependenceLowGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceLowGreyLevelEmphasis();
-  //featurevec["HighDependenceHighGreyLevelEmphasis"] = ngldmCalculator.GetHighDependenceHighGreyLevelEmphasis();
-  //featurevec["GreyLevelNonUniformity"] = ngldmCalculator.GetGreyLevelNonUniformity();
-  //featurevec["GreyLevelNonUniformityNormalised"] = ngldmCalculator.GetGreyLevelNonUniformityNormalised();
-  //featurevec["DependenceCountNonUniformity"] = ngldmCalculator.GetDependenceCountNonUniformity();
-  //featurevec["DependenceCountNonUniformityNormalised"] = ngldmCalculator.GetDependenceCountNonUniformityNormalised();
-  //featurevec["DependenceCountPercentage"] = ngldmCalculator.GetDependenceCountPercentage();
-  //featurevec["GreyLevelVariance"] = ngldmCalculator.GetGreyLevelVariance();
-  //featurevec["DependenceCountVariance"] = ngldmCalculator.GetDependenceCountVariance();
-  //featurevec["DependenceCountEntropy"] = ngldmCalculator.GetDependenceCountEntropy();
-  //featurevec["DependenceCountEnergy"] = ngldmCalculator.GetDependenceCountEnergy();
-  //featurevec["MeanGreyLevelCount"] = ngldmCalculator.GetMeanGreyLevelCount();
-  //featurevec["MeanDependenceCount"] = ngldmCalculator.GetMeanDependenceCount();
-  //featurevec["ExpectedNeighbourhoodSize"] = ngldmCalculator.GetExpectedNeighbourhoodSize();
-  //featurevec["AverageNeighbourhoodSize"] = ngldmCalculator.GetAverageNeighbourhoodSize();
-  //featurevec["AverageIncompleteNeighbourhoodSize"] = ngldmCalculator.GetAverageIncompleteNeighbourhoodSize();
-  //featurevec["PercentageOfCompleteNeighbourhoods"] = ngldmCalculator.GetPercentageOfCompleteNeighbourhoods();
-  //featurevec["PercentageOfDependenceNeighbours"] = ngldmCalculator.GetPercentageOfDependenceNeighbours();
 }
 
 
@@ -381,7 +353,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   if (m_debug)
   {
     ngtdmCalculator.EnableDebugMode();
-    //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM::calculator.GetRange()" << ngtdmCalculator.GetRange() << std::endl;
   }
 
   auto temp = ngtdmCalculator.GetOutput();
@@ -389,240 +360,6 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
   {
     featurevec[f.first] = f.second;
   }
-  ////auto temp = calculator.GetOutput();
-  //double double_Strength = ngtdmCalculator.GetStrength();
-  //double double_Complexity = ngtdmCalculator.GetComplexity();
-  //double double_Coarsness = ngtdmCalculator.GetCoarsness();
-  //double double_Contrast = ngtdmCalculator.GetContrast();
-  //double double_Busyness = ngtdmCalculator.GetBusyness();
-
-  //featurevec["Strength"] = ngtdmCalculator.GetStrength();
-  //featurevec["Complexity"] = ngtdmCalculator.GetComplexity();
-  //featurevec["Coarseness"] = ngtdmCalculator.GetCoarsness();
-  //featurevec["Constrast"] = ngtdmCalculator.GetContrast();
-  //featurevec["Busyness"] = ngtdmCalculator.GetBusyness();
-  /* commenting out old codes calling NGLDM
-  typedef itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceFeaturesFilter< TImage > FilterType;
-  typedef typename FilterType::NeighbourhoodGreyLevelDifferenceFeaturesFilterType TextureFilterType;
-  //typedef itk::MinimumMaximumImageCalculator< TImage > MinMaxComputerType;
-
-  using MatrixGenerator = itk::Statistics::EnhancedScalarImageToNeighbourhoodGreyLevelDifferenceMatrixFilter< TImage >;
-  using FeatureCalculator = itk::Statistics::EnhancedHistogramToNeighbourhoodGreyLevelDifferenceFeaturesFilter< typename MatrixGenerator::HistogramType >;
-
-  typename MatrixGenerator::Pointer matrixFilter = MatrixGenerator::New();
-  typename FeatureCalculator::Pointer featureFilter = FeatureCalculator::New();
-  matrixFilter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  matrixFilter->SetNumberOfBinsPerAxis(m_Bins);
-  matrixFilter->SetInput(itkImage);
-  matrixFilter->SetMaskImage(maskImage);
-
-  //voxel count
-  //unsigned long numberOfVoxels = 0;
-  //itk::ImageRegionConstIterator<TImage> voxelCountIter(maskImage, maskImage->GetLargestPossibleRegion());
-  //while (!voxelCountIter.IsAtEnd())
-  //{
-   // if (voxelCountIter.Get() > 0)
-    //  ++numberOfVoxels;
-   // ++voxelCountIter;
-  //}
-
-  //add offsets except self voxel
-  typename OffsetVector::ConstIterator offsetIt;
-  std::vector <OffsetType> tVector;
-  for (offsetIt = offset->Begin(); offsetIt != offset->End(); offsetIt++)
-  {
-
-    tVector.push_back(offsetIt.Value());
-  }
-  matrixFilter->AddOffsets(tVector);
-  matrixFilter->Update();
-
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-
-  //requestedFeatures->push_back(TextureFilterType::Coarseness);
-  //requestedFeatures->push_back(TextureFilterType::Contrast);
-  //requestedFeatures->push_back(TextureFilterType::Busyness);
-  //requestedFeatures->push_back(TextureFilterType::Complexity);
-  //requestedFeatures->push_back(TextureFilterType::Strength);
-  //requestedFeatures->push_back(20);
-
-  featureFilter->SetNumberOfVoxels(m_currentNonZeroImageValues.size());
-  featureFilter->SetInput(matrixFilter->GetOutput());
-  featureFilter->SetSiMatrix(matrixFilter->GetSiMatrix());
-  featureFilter->Update();
-
-  auto Coarseness = featureFilter->GetCoarseness();
-  auto Contrast = featureFilter->GetContrast();
-  auto Business = featureFilter->GetBusyness();
-  auto Complexity = featureFilter->GetComplexity();
-  auto Strength = featureFilter->GetStrength();
-  std::cout << "\n Coarseness = " << Coarseness << std::endl;
-  std::cout << "\n Contrast = " << Contrast << std::endl;
-  std::cout << "\n Business = " << Business << std::endl;
-  std::cout << "\n Complexity = " << Complexity << std::endl;
-  std::cout << "\n Strength = " << Strength << std::endl;
-  */
-
-  //typename MatrixGenerator::OffsetVectorPointer newOffset = MatrixGenerator::OffsetVector::New();
-  //auto oldOffsets = matrixFilter->GetOffsets();
-  //auto oldOffsetsIterator = oldOffsets->Begin();
-  //while (oldOffsetsIterator != oldOffsets->End())
-  //{
-  //  bool continueOuterLoop = false;
-  //  typename MatrixGenerator::OffsetType offset = oldOffsetsIterator->Value();
-  //  for (size_t i = 0; i < TImage::ImageDimension; ++i)
-  //  {
-  //    //if (/*params.m_Direction == i + 2 &&*/)
-  //    if (offset[i] != 0)
-  //    {
-  //      continueOuterLoop = true;
-  //    }
-  //  }
-  //  oldOffsetsIterator++;
-  //  if (continueOuterLoop)
-  //    newOffset->push_back(offset);
-  //}
-  //matrixFilter->SetOffsets(newOffset);
-  //matrixFilter->SetInput(itkImage);
-  //matrixFilter->SetMaskImage(maskImage);
-  //matrixFilter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  //matrixFilter->SetNumberOfBinsPerAxis(m_Bins);
-
-  //matrixFilter->Update();
-
-  //unsigned long numberOfVoxels = 0;
-  //TConstIteratorType voxelCountIter(maskImage, maskImage->GetLargestPossibleRegion());
-  //while (!voxelCountIter.IsAtEnd())
-  //{
-  //  if (voxelCountIter.Get() > 0)
-  //    ++numberOfVoxels;
-  //  ++voxelCountIter;
-  //}
-
-  //featureFilter->SetInput(matrixFilter->GetOutput());
-  //featureFilter->SetSiMatrix(matrixFilter->GetSiMatrix());
-  //featureFilter->SetNumberOfVoxels(numberOfVoxels);
-  //featureFilter->Update();
-
-  //typedef short NeighbourhoodGreyLevelDifferenceFeatureName;
-  //typedef itk::VectorContainer<unsigned char, NeighbourhoodGreyLevelDifferenceFeatureName> FeatureNameVector;
-  //typedef typename FeatureNameVector::Pointer      FeatureNameVectorPointer;
-  //FeatureNameVectorPointer requestedFeatures = FeatureNameVector::New();
-
-  //requestedFeatures->push_back(FeatureCalculator::Coarseness);
-  //requestedFeatures->push_back(FeatureCalculator::Contrast);
-  //requestedFeatures->push_back(FeatureCalculator::Busyness);
-  //requestedFeatures->push_back(FeatureCalculator::Complexity);
-  //requestedFeatures->push_back(FeatureCalculator::Strength);
-
-  //typedef typename FeatureCalculator::NeighbourhoodGreyLevelDifferenceFeatureName
-  //  InternalNeighbourhoodGreyLevelDifferenceFeatureName;
-
-  //int numFeatures = requestedFeatures->size();
-  //double *features = new double[numFeatures];
-
-  //itk::VectorContainer< unsigned char, double >::Pointer featureMeans, featureStd;
-
-  //int /*offsetNum, */featureNum;
-  //typename FeatureNameVector::ConstIterator fnameIt;
-  //for (fnameIt = requestedFeatures->Begin(), featureNum = 0;
-  //  fnameIt != requestedFeatures->End(); fnameIt++, featureNum++)
-  //{
-  //  InternalNeighbourhoodGreyLevelDifferenceFeatureName tn = (InternalNeighbourhoodGreyLevelDifferenceFeatureName)fnameIt.Value();
-  //  double xx = featureFilter->GetFeature(tn);
-
-  //  features[featureNum] = xx;
-  //  featureMeans->push_back(xx);
-  //}
-
-
-  // can't directly set this->m_RequestedFeatures since it is const!
-
-  //typename FilterType::Pointer filter = FilterType::New();
-
-  //typename FilterType::OffsetVectorPointer newOffset = FilterType::OffsetVector::New();
-  //auto oldOffsets = filter->GetOffsets();
-  //auto oldOffsetsIterator = oldOffsets->Begin();
-  //while (oldOffsetsIterator != oldOffsets->End())
-  //{
-  //  bool continueOuterLoop = false;
-  //  typename FilterType::OffsetType offset = oldOffsetsIterator->Value();
-  //  for (size_t i = 0; i < TImage::ImageDimension; ++i)
-  //  {
-  //    if (/*params.m_Direction == i + 2 &&*/ offset[i] != 0)
-  //    {
-  //      continueOuterLoop = true;
-  //    }
-  //  }
-  //  oldOffsetsIterator++;
-  //  if (continueOuterLoop)
-  //    newOffset->push_back(offset);
-  //}
-  //filter->SetOffsets(newOffset);
-
-
-  //// All features are required
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-  //requestedFeatures->push_back(TextureFilterType::Coarseness);
-  //requestedFeatures->push_back(TextureFilterType::Contrast);
-  //requestedFeatures->push_back(TextureFilterType::Busyness);
-  //requestedFeatures->push_back(TextureFilterType::Complexity);
-  //requestedFeatures->push_back(TextureFilterType::Strength);
-
-  //typename MinMaxComputerType::Pointer minMaxComputer = MinMaxComputerType::New();
-  //minMaxComputer->SetImage(itkImage);
-  //minMaxComputer->Compute();
-
-  //auto duplicator_image = itk::ImageDuplicator< TImage >::New();
-  //auto duplicator_mask = itk::ImageDuplicator< TImage >::New();
-  //duplicator_image->SetInputImage(itkImage);
-  //duplicator_image->Update();
-  //duplicator_mask->SetInputImage(maskImage);
-  //duplicator_mask->Update();
-
-  //auto testimage = duplicator_image->GetOutput();
-  //auto testmask = duplicator_mask->GetOutput();
-  //filter->SetInput(testimage);
-  //filter->SetMaskImage(testmask);
-  //filter->SetRequestedFeatures(requestedFeatures);
-  ////int rangeOfPixels = m_Range;
-  //filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  //filter->SetNumberOfBinsPerAxis(m_Bins);
-
-  ////filter->SetDistanceValueMinMax(0, m_Range);
-
-  //filter->Update();
-
-  //auto featureMeans = featureFilter->GetFeatureMeans();
-  //auto featureStd = featureFilter->GetFeatureStandardDeviations();
-
-  //std::ostringstream  ss;
-  ////ss << rangeOfPixels;
-  //std::string strRange = ss.str();
-  //for (std::size_t i = 0; i < featureMeans->size(); ++i)
-  //{
-  //  switch (i)
-  //  {
-  //  case TextureFilterType::Coarseness:
-  //    featurevec["Coarsness"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Contrast:
-  //    featurevec["NeighbourContrast"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Busyness:
-  //    featurevec["Busyness"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Complexity:
-  //    featurevec["Complexity"] = featureMeans->ElementAt(i);
-  //    break;
-  //  case TextureFilterType::Strength:
-  //    featurevec["Strength"] = featureMeans->ElementAt(i);
-  //    break;
-  //  default:
-  //    break;
-  //  }
-  //}
-
 }
 
 
@@ -654,166 +391,7 @@ void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer 
   for (auto const& f : temp)
   {
     featurevec[f.first] = f.second;
-    //TBD - for debugging GLSZM features
-    //std::cout << "[DEBUG] FeatureExtraction.hxx - CalculateGLSZM - Feature '" << f.first << "' = " << f.second << "\n";
-    //TBD - for debugging GLSZM features
   }
-  //using FilterType = itk::Statistics::EnhancedScalarImageToSizeZoneFeaturesFilter< TImage >;
-  //typedef typename FilterType::SizeZoneFeaturesFilterType TextureFilterType;
-
-  //auto filter = FilterType::New();
-  //filter->SetInput(itkImage);
-  //filter->SetMaskImage(maskImage);
-  //filter->SetInsidePixelValue(1); //maskImage thrown into CalculateGLSZM filter should have already been converted to binary (0 for outside and 1 for inside) mask image, so set inside pixel value of maskImage to 1
-  //filter->SetNumberOfBinsPerAxis(m_Bins); //for quantization of grey levels
-  //filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider); //Set the min and max(inclusive) pixel value that will be used for feature calculations.Optional; for default value see above.
-  //// All features are required
-  //typename FilterType::FeatureNameVectorPointer requestedFeatures = FilterType::FeatureNameVector::New();
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelNonuniformityNormalized);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneNonuniformity);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneNonuniformityNormalized);
-  //requestedFeatures->push_back(TextureFilterType::LowGreyLevelZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::HighGreyLevelZoneEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneLowGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::SmallZoneHighGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneLowGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::LargeZoneHighGreyLevelEmphasis);
-  //requestedFeatures->push_back(TextureFilterType::ZonePercentage);
-  //requestedFeatures->push_back(TextureFilterType::GreyLevelVariance);
-  //requestedFeatures->push_back(TextureFilterType::SizeZoneVariance);
-  //requestedFeatures->push_back(TextureFilterType::ZoneEntropy);
-
-  //filter->SetRequestedFeatures(requestedFeatures);
-  //filter->Update();
-  ///*int rangeOfPixels = m_Range;
-  //if (rangeOfPixels < 2)
-  //rangeOfPixels = 256;
-
-  //if (params.m_UseCtRange)
-  //{
-  //filter->SetPixelValueMinMax((TPixel)(-1024.5),(TPixel)(3096.5));
-  //filter->SetNumberOfBinsPerAxis(3096.5+1024.5);
-  //} else*/
-  ////{
-  ////  filter->SetPixelValueMinMax(m_minimumToConsider, m_maximumToConsider);
-  ////  filter->SetNumberOfBinsPerAxis(m_Bins);
-  ////}
-
-  ////filter->SetDistanceValueMinMax(0, rangeOfPixels);
-
-  ////filter->Update();
-
-  //auto featureMeans = filter->GetFeatureMeans();
-  //auto featureStd = filter->GetFeatureStandardDeviations();
-
-  //std::cout << "\n" << std::endl;
-  //for (std::size_t i = 0; i < featureMeans->size(); ++i)
-  //{
-  //  switch (i)
-  //  {
-  //  case TextureFilterType::SmallZoneEmphasis:
-  //    featurevec["ZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneEmphasis:
-  //    featurevec["LZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelNonuniformity:
-  //    featurevec["GLN_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLN_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformity:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformity_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelNonuniformityNormalized:
-  //    featurevec["GLNNorm_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLNNorm_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformityNormalized:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelNonuniformityNormalized_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneNonuniformity:
-  //    featurevec["ZSN_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZSN_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformity:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformity_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneNonuniformityNormalized:
-  //    featurevec["ZSNNorm_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZSNNorm_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformityNormalized:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneNonuniformityNormalized_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LowGreyLevelZoneEmphasis:
-  //    featurevec["LGZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LGZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LowGreyLevelZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LowGreyLevelZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::HighGreyLevelZoneEmphasis:
-  //    featurevec["HGZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["HGZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|HighGreyLevelZoneEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|HighGreyLevelZoneEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SmallZoneLowGreyLevelEmphasis:
-  //    featurevec["SZLGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZLGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneLowGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneLowGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SmallZoneHighGreyLevelEmphasis:
-  //    featurevec["SZHGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZHGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SmallZoneHighGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SmallZoneHighGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneLowGreyLevelEmphasis:
-  //    featurevec["LZLGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZLGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneLowGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneLowGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::LargeZoneHighGreyLevelEmphasis:
-  //    featurevec["LZHGE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["LZHGE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|LargeZoneHighGreyLevelEmphasis:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|LargeZoneHighGreyLevelEmphasis_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::ZonePercentage:
-  //    featurevec["ZP_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZP_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|ZonePercentage:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|ZonePercentage_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::GreyLevelVariance:
-  //    featurevec["GLV_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["GLV_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|GreyLevelVariance:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|GreyLevelVariance_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::SizeZoneVariance:
-  //    featurevec["SZV_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["SZV_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|SizeZoneVariance:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|SizeZoneVariance_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  case TextureFilterType::ZoneEntropy:
-  //    featurevec["ZE_Mean"] = featureMeans->ElementAt(i);
-  //    featurevec["ZE_STD"] = featureStd->ElementAt(i);
-  //    //std::cout << "[" << i << "]|ZoneEntropy:" << featureMeans->ElementAt(i) << std::endl;
-  //    //std::cout << "[" << i << "]|ZoneEntropy_STD:" << featureStd->ElementAt(i) << std::endl;
-  //    break;
-  //  default:
-  //    break;
-  //  }
-  //}
 }
 
 
@@ -990,96 +568,6 @@ void FeatureExtraction< TImage >::CalculateHistogram(const typename TImage::Poin
   featurevec["MedianAbsoluteDeviation"] = histogramStatsCalculator.GetMedianAbsoluteDeviation();
   featurevec["CoefficientOfVariation"] = histogramStatsCalculator.GetCoefficientOfVariation();
   featurevec["QuartileCoefficientOfVariation"] = histogramStatsCalculator.GetQuartileCoefficientOfDispersion();
-  /// histogram calculation from ITK -- for texture feature pipeline ends
-
-  //for (size_t i = 0; i < histogram->GetSize()[0]; i++)
-  //{
-  //  featurevec["Bin_" + std::to_string(i) + "_Frequency"] = histogram->GetFrequency(i);
-  //  featurevec["Bin_" + std::to_string(i) + "_Max"] = histogram->GetBinMax(0, i);
-  //  featurevec["Bin_" + std::to_string(i) + "_Min"] = histogram->GetBinMin(0, i);
-  //}
-
-  //const float maxRescaleVal = 1000;
-  //typedef itk::RescaleIntensityImageFilter< TImage, TImage > RescaleFilterType;
-  //typename RescaleFilterType::Pointer rescaleFilter = RescaleFilterType::New();
-  //rescaleFilter->SetInput(image);
-  //rescaleFilter->SetOutputMinimum(0);
-  //rescaleFilter->SetOutputMaximum(maxRescaleVal);
-  //rescaleFilter->Update();
-
-  //std::vector<double> intensities;
-  //itk::ImageRegionConstIterator <TImage> imageIt(rescaleFilter->GetOutput(), rescaleFilter->GetOutput()->GetLargestPossibleRegion());
-  //itk::ImageRegionConstIterator <TImage> maskIt(mask, mask->GetLargestPossibleRegion());
-  //imageIt.GoToBegin();
-  //maskIt.GoToBegin();
-
-  //while (!imageIt.IsAtEnd())
-  //{
-  //  if (maskIt.Get() > 0)
-  //    intensities.push_back(std::round(imageIt.Get()));
-  //  ++imageIt;
-  //  ++maskIt;
-  //}
-
-  ////-------------------------------
-  //double interval = maxRescaleVal / m_Bins;
-  //double final_interval = (int)(interval * 100);
-  //final_interval = (double)final_interval / 100;
-
-
-  //std::vector<double> finalBins;
-  //std::vector<std::vector<double>> Ranges;
-  //double current_index = 0;
-  //for (int i = 0; i < m_Bins; i++)
-  //{
-  //  std::vector<double> onerange;
-  //  onerange.push_back(current_index);
-  //  current_index = current_index + final_interval;
-  //  onerange.push_back(current_index);
-  //  Ranges.push_back(onerange);
-
-  //  if (static_cast<int>(Ranges.size()) == m_Bins)
-  //    Ranges[Ranges.size() - 1][1] = maxRescaleVal;
-  //}
-  ////toadd the last one
-  //for (unsigned int j = 0; j < Ranges.size(); j++)
-  //{
-  //  std::vector<double> onerange = Ranges[j];
-  //  int counter = 0;
-  //  for (unsigned int i = 0; i < intensities.size(); i++)
-  //  {
-  //    if (onerange[0] == 0)
-  //    {
-  //      if (intensities[i] >= onerange[0] && intensities[i] <= onerange[1])
-  //        counter = counter + 1;
-  //    }
-  //    else
-  //    {
-  //      if (intensities[i] > onerange[0] && intensities[i] <= onerange[1])
-  //        counter = counter + 1;
-  //    }
-  //  }
-  //  finalBins.push_back(counter);
-  //}
-  //for (unsigned int j = 0; j < finalBins.size(); j++)
-  //{
-  //  finalBins[j] = (finalBins[j] * 100) / intensities.size();
-  //  featurevec["Bin_" + std::to_string(j)] = finalBins[j];
-  //  featurevec["BinEndIntensity_" + std::to_string(j)] = Ranges[j][1];
-  //}
-
-  //HistogramFeatures< TImage > histogramCalculator;
-  //histogramCalculator.SetInputImage(image);
-  //histogramCalculator.SetInputMask(mask);
-  //histogramCalculator.SetStartingIndex(m_currentLatticeStart);
-  //histogramCalculator.SetMinimum(min);
-  //histogramCalculator.SetMaximum(min);
-  //histogramCalculator.Update();
-  //auto temp = histogramCalculator.GetOutput();
-  //for (auto const &f : temp)
-  //{
-  //  featurevec[f.first] = f.second;
-  //}
 }
 
 
@@ -1234,7 +722,7 @@ void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImag
   featurevec["NinetiethPercentile"] = statisticsCalculatorToUse.GetNthPercentileElement(90);
   featurevec["InterQuartileRange"] = statisticsCalculatorToUse.GetInterQuartileRange();
   featurevec["MeanAbsoluteDeviation"] = statisticsCalculatorToUse.GetMeanAbsoluteDeviation();
-  //featurevec["RobustMeanAbsoluteDeviation1090"] = statisticsCalculatorToUse.GetRobustMeanAbsoluteDeviation(10, 90);
+  //featurevec["RobustMeanAbsoluteDeviation1090"] = statisticsCalculatorToUse.GetRobustMeanAbsoluteDeviation(10, 90); // commented because of IBSI
   featurevec["MedianAbsoluteDeviation"] = statisticsCalculatorToUse.GetMedianAbsoluteDeviation();
   featurevec["CoefficientOfVariation"] = statisticsCalculatorToUse.GetCoefficientOfVariation();
   featurevec["QuartileCoefficientOfVariation"] = statisticsCalculatorToUse.GetQuartileCoefficientOfDispersion();
@@ -1252,15 +740,6 @@ typename TImage::Pointer FeatureExtraction< TImage >::GetPatchedImage(const type
   extractor->SetInput(inputImage);
   extractor->SetExtractionRegion(region);
   extractor->Update();
-
-  //auto temp1 = extractor->GetOutput();
-
-  //auto roiExtractor = itk::RegionOfInterestImageFilter< TImage, TImage >::New();
-  //roiExtractor->SetRegionOfInterest(region);
-  //roiExtractor->SetInput(inputImage);
-  //roiExtractor->Update();
-
-  //auto temp2 = extractor->GetOutput();
 
   return extractor->GetOutput();
 }
@@ -2195,6 +1674,28 @@ void FeatureExtraction< TImage >::Update()
             // all the computation is happening in m_roiConstructor
           }
         }
+      }
+
+      /// sanity checks for required generic options
+      if (m_histogramBinningType < 0)
+      {
+        std::cerr << "Histogram binning type needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingResolution < 0)
+      {
+        std::cerr << "Resampling rate needs to be defined in the parameter file (use '0' to disable), please see default parameter file for example.\n";
+      }
+      if (m_QuantizationExtent.empty())
+      {
+        std::cerr << "Quantization extent needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingInterpolator_Image.empty())
+      {
+        std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
+      }
+      if (m_resamplingInterpolator_Mask.empty())
+      {
+        std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
       }
 
       // get the quantization properties, if any
@@ -3236,6 +2737,7 @@ void FeatureExtraction< TImage >::Update()
 
       if (!m_debug)
       {
+        ++progressBar;
         progressBar.display();
         progressBar.done();
         std::cout << "Finished calculating features, writing the output.\n";
@@ -3273,6 +2775,8 @@ void FeatureExtraction< TImage >::Update()
         }
         else
         {
+          currentPatientModalityROIFeatureFamilyFeature = cbica::stringReplace(currentPatientModalityROIFeatureFamilyFeature, m_patientID + "_", "");
+
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Max" + ",";
           m_trainingFile_features += currentMax + ",";
           m_trainingFile_featureNames += currentPatientModalityROIFeatureFamilyFeature + "Min" + ",";
@@ -3378,6 +2882,6 @@ void FeatureExtraction< TImage >::Update()
 
       auto t2 = std::chrono::high_resolution_clock::now();
       std::cout << "Total computation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " milliseconds\n";
-    }
-  }
-}
+    } // end imagesAreOkay check
+  } // end algorithmDone check
+} // end update function

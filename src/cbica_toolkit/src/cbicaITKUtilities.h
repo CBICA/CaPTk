@@ -17,6 +17,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 #include <algorithm>
 #include <functional>
 #include <cmath>
+#include <array>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -54,6 +55,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "cbicaITKImageInfo.h"
+//#include "cbicaITKSafeImageIO.h"
 
 #include "HausdorffDistance.h"
 
@@ -68,6 +70,7 @@ See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
+#include "itkStatisticsImageFilter.h"
 
 using ImageTypeFloat3D = itk::Image< float, 3 >;
 //unsigned int RmsCounter = 0;
@@ -377,7 +380,8 @@ namespace cbica
   inline bool ImageSanityCheck(
     const typename TImageType::Pointer image1, 
     const typename TImageType::Pointer image2,
-    const float nifti2dicomTolerance = 0.0)
+    const float nifti2dicomTolerance = 0.0,
+    const float nifti2dicomOriginTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -437,8 +441,21 @@ namespace cbica
       }
       if (origin_1[d] != origin_2[d])
       {
-        std::cerr << "Origin mismatch at dimension '" << d << "'\n";
-        return false;
+        auto percentageDifference = std::abs(origin_1[d] - origin_2[d]) * 100 / std::abs(origin_1[d]);
+        if (percentageDifference > nifti2dicomOriginTolerance)
+        {
+          std::cerr << "Origin mismatch > " << percentageDifference <<
+            percentageDifference << "%' in axis '" << d << "'.\n";
+
+          std::cout << "Origin for input 1:\n" << origin_1 << "\n" <<
+            "Origin for input 2:\n" << origin_2 << "\n";
+          return false;
+        }
+        else
+        {
+          std::cout << "Ignoring origin difference of '" <<
+            percentageDifference << "%' in axis '" << d << "'.\n";
+        }
       }
       if (spacing_1[d] != spacing_2[d])
       {
@@ -1717,7 +1734,7 @@ namespace cbica
     returnMap["Overlap_Overall"] = similarityFilter->GetTotalOverlap();
     //std::cout << "=== Entire Masked Area ===\n";
     returnMap["Jaccard_Overall"] = similarityFilter->GetUnionOverlap();
-    returnMap["DICE_Overall"] = similarityFilter->GetMeanOverlap();
+    returnMap["Dice_Overall"] = similarityFilter->GetMeanOverlap();
     returnMap["VolumeSimilarity_Overall"] = similarityFilter->GetVolumeSimilarity();
     returnMap["FalseNegativeError_Overall"] = similarityFilter->GetFalseNegativeError();
     returnMap["FalsePositiveError_Overall"] = similarityFilter->GetFalsePositiveError();
@@ -1731,7 +1748,7 @@ namespace cbica
         auto uniqueLabels_string = std::to_string(uniqueLabels[i]);
         returnMap["Overlap_Label" + uniqueLabels_string] = similarityFilter->GetTargetOverlap(uniqueLabels[i]);
         returnMap["Jaccard_Label" + uniqueLabels_string] = similarityFilter->GetUnionOverlap(uniqueLabels[i]);
-        returnMap["DICE_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
+        returnMap["Dice_Label" + uniqueLabels_string] = similarityFilter->GetMeanOverlap(uniqueLabels[i]);
         returnMap["VolumeSimilarity_Label" + uniqueLabels_string] = similarityFilter->GetVolumeSimilarity(uniqueLabels[i]);
         returnMap["FalseNegativeError_Label" + uniqueLabels_string] = similarityFilter->GetFalseNegativeError(uniqueLabels[i]);
         returnMap["FalsePositiveError_Label" + uniqueLabels_string] = similarityFilter->GetFalsePositiveError(uniqueLabels[i]);
@@ -1784,31 +1801,36 @@ namespace cbica
   \return Map of various statistics and corresponding values
   */
   template < typename TImageType = ImageTypeFloat3D >
-  std::map< std::string, double > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
+  std::map< std::string, std::map< std::string, double > > GetBraTSLabelStatistics(const typename TImageType::Pointer inputLabel_1,
     const typename TImageType::Pointer inputLabel_2)
   {
-    std::map< std::string, double > returnMap;
+    // return variable
+    std::map< std::string, // the label string
+      std::map< std::string, // the metric
+      double > > // the value
+      returnMap;
 
     auto uniqueLabels = GetUniqueValuesInImage< TImageType >(inputLabel_1);
     auto uniqueLabelsRef = GetUniqueValuesInImage< TImageType >(inputLabel_2);
 
-    // sanity check
-    if (uniqueLabels.size() != uniqueLabelsRef.size())
-    {
-      std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
-      return returnMap;
-    }
-    else
-    {
-      for (size_t i = 0; i < uniqueLabels.size(); i++)
-      {
-        if (uniqueLabels[i] != uniqueLabelsRef[i])
-        {
-          std::cerr << "The label values in input and reference image are not consistent.\n";
-          return returnMap;
-        }
-      }
-    }
+    ///// this is not needed as we need to generate stats for all the BraTS values regardless
+    //// sanity check
+    //if (uniqueLabels.size() != uniqueLabelsRef.size())
+    //{
+    //  std::cerr << "The number of unique labels in input and reference image are not consistent.\n";
+    //  return returnMap;
+    //}
+    //else
+    //{
+    //  for (size_t i = 0; i < uniqueLabels.size(); i++)
+    //  {
+    //    if (uniqueLabels[i] != uniqueLabelsRef[i])
+    //    {
+    //      std::cerr << "The label values in input and reference image are not consistent.\n";
+    //      return returnMap;
+    //    }
+    //  }
+    //}
 
     // remove background
     uniqueLabels.erase(uniqueLabels.begin());
@@ -1822,14 +1844,14 @@ namespace cbica
     std::vector< int > missingLabels, missingLabelsRef;
 
     // check brats labels and populate missing labels to 
-    for (size_t i = 0; i < uniqueLabels.size(); i++)
+    for (size_t i = 0; i < bratsValues.size(); i++)
     {
-      if (uniqueLabels[i] != bratsValues[i])
+      if (std::find(uniqueLabels.begin(), uniqueLabels.end(), bratsValues[i]) == uniqueLabels.end())
       {
         std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
         missingLabels.push_back(bratsValues[i]);
       }
-      if (uniqueLabelsRef[i] != bratsValues[i])
+      if (std::find(uniqueLabelsRef.begin(), uniqueLabelsRef.end(), bratsValues[i]) == uniqueLabelsRef.end())
       {
         std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
         missingLabelsRef.push_back(bratsValues[i]);
@@ -1905,31 +1927,168 @@ namespace cbica
     for (const auto &region : regionsToCompare_1)
     {
       auto labelString = region.first; // the label for stats
-      // get the images to compare up front
-      auto imageToCompare_1 = region.second;
-      auto imageToCompare_2 = regionsToCompare_2[labelString];
-
-      auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
-
-      similarityFilter->SetSourceImage(imageToCompare_1);
-      similarityFilter->SetTargetImage(imageToCompare_2);
-      similarityFilter->Update();
-
-      returnMap["Overlap_" + labelString] = similarityFilter->GetTotalOverlap();
-      returnMap["Jaccard_" + labelString] = similarityFilter->GetUnionOverlap();
-      returnMap["DICE_" + labelString] = similarityFilter->GetMeanOverlap();
-      returnMap["VolumeSimilarity_" + labelString] = similarityFilter->GetVolumeSimilarity();
-      returnMap["FalseNegativeError_" + labelString] = similarityFilter->GetFalseNegativeError();
-      returnMap["FalsePositiveError_" + labelString] = similarityFilter->GetFalsePositiveError();
-
-      auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
-
-      for (const auto &metric : temp_roc)
+      if (!labelString.empty())
       {
-        returnMap[metric.first + "_" + labelString] = metric.second;
-      }
+        // get the images to compare up front
+        auto imageToCompare_1 = region.second;
+        auto imageToCompare_2 = regionsToCompare_2[labelString];
 
-      returnMap["Hausdorff95_" + labelString] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+        // in case one of the labels is missing, just put something
+        auto stats_1 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_1->SetInput(imageToCompare_1);
+        stats_1->Update();
+        auto max_1 = stats_1->GetMaximum();
+        auto stats_2 = itk::StatisticsImageFilter< TImageType >::New();
+        stats_2->SetInput(imageToCompare_2);
+        stats_2->Update();
+        auto max_2 = stats_2->GetMaximum();
+
+        auto similarityFilter = itk::LabelOverlapMeasuresImageFilter< TImageType >::New();
+
+        similarityFilter->SetSourceImage(imageToCompare_1);
+        similarityFilter->SetTargetImage(imageToCompare_2);
+        similarityFilter->Update();
+
+        returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
+        returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
+        returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
+        if (std::isinf(returnMap[labelString]["Dice"]))
+        {
+          // this happens in the case where there is a label missing in both the reference and input annotations
+          returnMap[labelString]["Dice"] = 1;
+        }
+        returnMap[labelString]["VolumeSimilarity"] = similarityFilter->GetVolumeSimilarity();
+        returnMap[labelString]["FalseNegativeError"] = similarityFilter->GetFalseNegativeError();
+        returnMap[labelString]["FalsePositiveError"] = similarityFilter->GetFalsePositiveError();
+
+        auto temp_roc = GetSensitivityAndSpecificity< TImageType >(imageToCompare_1, imageToCompare_2);
+
+        for (const auto &metric : temp_roc)
+        {
+          returnMap[labelString][metric.first] = metric.second;
+        }
+
+        if ((max_1 == 0) && (max_2 == 0))
+        {
+          returnMap[labelString]["Sensitivity"] = 1;
+          returnMap[labelString]["Specificity"] = 1;
+        }
+        if (std::isnan(returnMap[labelString]["Sensitivity"]))
+        {
+          if (max_1 != max_2)
+          {
+            returnMap[labelString]["Sensitivity"] = 0;
+          }
+          else
+          {
+            returnMap[labelString]["Sensitivity"] = 1;
+          }
+        }
+        if (std::isinf(returnMap[labelString]["Sensitivity"]))
+        {
+          returnMap[labelString]["Sensitivity"] = 1;
+        }
+
+        /// not used till implementation gets standardized
+        //returnMap[labelString]["Hausdorff95"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.95);
+        //returnMap[labelString]["Hausdorff99"] = GetHausdorffDistance< TImageType >(imageToCompare_1, imageToCompare_2, 0.99);
+        bool hausdorffFound = true;
+        std::string hausdorffExe = cbica::getExecutablePath() + "/Hausdorff95"
+#if WIN32
+          + ".exe"
+#endif
+          ;
+        if (!cbica::isFile(hausdorffExe))
+        {
+          hausdorffExe = cbica::getExecutablePath() + "../hausdorff95/Hausdorff95"
+#if WIN32
+            + ".exe"
+#endif
+            ;
+          if (!cbica::isFile(hausdorffExe))
+          {
+            std::cerr << "Could not find Hausdorff95 executable, so not computing this metric.\n";
+            hausdorffFound = false;
+          }
+        }
+
+        if (hausdorffFound)
+        {
+          if ((max_1 == 0) || (max_2 == 0))
+          {
+            // this is the case where one of the labels is missing
+            returnMap[labelString]["Hausdorff95"] = NAN;
+          }
+          else
+          {
+            auto tempDir = cbica::createTmpDir();
+            auto file_1 = tempDir + "/mask_1.nii.gz";
+            auto file_2 = tempDir + "/mask_2.nii.gz";
+            auto writer = itk::ImageFileWriter< TImageType >::New();
+            writer->SetInput(imageToCompare_1);
+            writer->SetFileName(file_1);
+            try
+            {
+              writer->Write();
+            }
+            catch (itk::ExceptionObject &e)
+            {
+              std::cerr << "Error occurred while trying to write the image '" << file_1 << "': " << e.what() << "\n";
+            }
+            writer->SetInput(imageToCompare_2);
+            writer->SetFileName(file_2);
+            try
+            {
+              writer->Write();
+            }
+            catch (itk::ExceptionObject &e)
+            {
+              std::cerr << "Error occurred while trying to write the image '" << file_2 << "': " << e.what() << "\n";
+            }
+            std::array< char, 128 > buffer;
+            std::string result;
+            FILE *pPipe;
+#if WIN32
+#define POPEN _popen
+#define PCLOSE _pclose
+#else
+#define POPEN popen
+#define PCLOSE pclose
+#endif
+            pPipe = POPEN((hausdorffExe + " -gt " + file_1 + " -m " + file_2).c_str(), "r");
+            if (!pPipe)
+            {
+              std::cerr << "Couldn't start command.\n";
+            }
+            while (fgets(buffer.data(), 128, pPipe) != NULL)
+            {
+              result += buffer.data();
+            }
+            auto returnCode = PCLOSE(pPipe);
+            // remove "\n"
+            result.pop_back();
+            result.pop_back();
+            returnMap[labelString]["Hausdorff95"] = std::atof(result.c_str());
+            cbica::removeDirectoryRecursively(tempDir, true);
+          }
+          // in case a label is not defined, use the longest diagonal
+          if (std::isnan(returnMap[labelString]["Hausdorff95"]) || std::isinf(returnMap[labelString]["Hausdorff95"]))
+          {
+            // correct prediction for missing label
+            if ((max_1 == 0) && (max_2 == 0))
+            {
+              returnMap[labelString]["Hausdorff95"] = 0;
+            }
+            else
+            {
+              auto size = imageToCompare_1->GetLargestPossibleRegion().GetSize();
+              auto diag_plane_squared = std::pow(size[0], 2) + std::pow(size[1], 2);
+              auto diag_cube = std::sqrt(std::pow(size[2], 2) + diag_plane_squared);
+              returnMap[labelString]["Hausdorff95"] = diag_cube;
+            }
+          }
+        } // end hausdorff found
+      } // end labelString check
     }
 
     return returnMap;

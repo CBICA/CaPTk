@@ -19,12 +19,12 @@ See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
 
 #include "cbicaUtilities.h"
 #include "FeatureReductionClass.h"
-//#include "CaPTk.h"
+#include "itkExtractImageFilter.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
-#include "itkExtractImageFilter.h"
-#include "NiftiDataManager.h"
 #include "CaPTkUtils.h"
+#include "cbicaITKSafeImageIO.h"
+
 
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
@@ -75,11 +75,10 @@ public:
 
   //! Default destructor
   ~PerfusionDerivatives() {};
-  NiftiDataManager mNiftiLocalPtr;
 
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const double TE, const std::string outputdirectory);
+  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const std::string outputdirectory);
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end);
@@ -87,10 +86,8 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePH(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
-
-
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti, const double TE);
+  typename ImageType::Pointer CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template< class ImageType, class PerfusionImageType>
   typename ImageType::Pointer CalculateSignalRecovery(typename PerfusionImageType::Pointer perfImagePointerNifti);
@@ -102,40 +99,30 @@ public:
   std::vector<double> CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti);
 
   template<class ImageType, class PerfusionImageType >
-  bool CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
+  bool IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
 };
 
 template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionDerivatives::CalculateAveragePerfusionCurve(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
-  std::vector<double> AverageCurve;
-  ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
+  std::vector<double> AverageCurve(region.GetSize()[3],0);
+  typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> IteratorType;
+  IteratorType perfIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
+  perfIt.GoToBegin();
+  while (!perfIt.IsAtEnd())
   {
-    double volume_mean = 0;
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
-        {
-          typename ImageType::IndexType index3D;
-          index3D[0] = i;
-          index3D[1] = j;
-          index3D[2] = k;
-
-          typename PerfusionImageType::IndexType index4D;
-          index4D[0] = i;
-          index4D[1] = j;
-          index4D[2] = k;
-          index4D[3] = volumes;
-          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
-        }
-    AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
+    AverageCurve[perfIt.GetIndex()[3]]= AverageCurve[perfIt.GetIndex()[3]]+ perfIt.Get();
+    ++perfIt;
   }
+  int SizeOfOneVolume = region.GetSize()[0] * region.GetSize()[1] * region.GetSize()[2];
+  for(unsigned int index=0;index<AverageCurve.size();index++)
+    AverageCurve[index] = std::round(AverageCurve[index]/SizeOfOneVolume);
   return AverageCurve;
 }
 
 template<class ImageType, class PerfusionImageType >
-bool PerfusionDerivatives::CheckPerfusionQuality(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
+bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
 {
   std::vector<double> averagecurve = CalculateAveragePerfusionCurve<ImageType, PerfusionImageType>(perfImagePointerNifti);
   WriteCSVFiles(averagecurve, outputdirectory + "/AeragePerfusionCurve.csv");
@@ -154,13 +141,16 @@ bool PerfusionDerivatives::CheckPerfusionQuality(typename PerfusionImageType::Po
 
   if(index_min<=baseline_end || index_min>=recovery_start)
   {
-    std::cout << "Drop of the curve does not lie in between the baseline and the recovery signal." << std::endl;
+    std::string msg = "Drop of the curve does not lie in between the baseline and the recovery signal. Perfusion derivatives can not be calculated.";
+    std::cout << msg << std::endl;
+    logger.Write(msg);
     return false;
   }
+  return true;
 }
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, const double TE, const std::string outputdirectory)
+std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string perfusionFile, bool rcbv, bool psr, bool ph, const std::string outputdirectory)
 {
   std::vector<typename ImageType::Pointer> perfusionDerivatives;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -173,8 +163,11 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
   }
-  if (CheckPerfusionQuality<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
+  if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti, outputdirectory) == false)
+  {
+    logger.WriteError("Perfusion curve is not good quality.");
     return perfusionDerivatives;
+  }
   std::cout << "Perfusion curve validated!!!" << std::endl;
 
   perfusionDerivatives.push_back(NULL);
@@ -201,7 +194,7 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
       perfusionDerivatives[1] = this->CalculatePH<ImageType, PerfusionImageType>(SecondCopyImage);
 
     if (rcbv == true)
-      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti, TE);
+      perfusionDerivatives[2] = this->CalculateRCBV<ImageType, PerfusionImageType>(perfImagePointerNifti);
   }
   catch (const std::exception& e1)
   {
@@ -267,6 +260,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculateSignalRecovery(typena
           index4D[3] = k;
           sum = sum + perfImagePointerNifti->GetPixel(index4D);
         }
+        //total number of volumes is equal to the difference between the baseline_end and baseline_start, plus 1 
         A.GetPointer()->SetPixel(index3D, sum / (baseline_end-baseline_start+1));
         //---------------------------------------minimum vector------------------------------------
         std::vector<double> local_measures;
@@ -429,7 +423,7 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePH(typename Perfusion
 }
 
 template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti,double EchoTime)
+typename ImageType::Pointer PerfusionDerivatives::CalculateRCBV(typename PerfusionImageType::Pointer perfImagePointerNifti)
 {
 	typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
   //6th time-point is used here considering the fact that perfusion signal becomes stable at this point. might replace with percentage in future

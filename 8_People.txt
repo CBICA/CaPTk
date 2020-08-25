@@ -5,22 +5,22 @@
 
 ## Advisors:
 
-- [Christos Davatzikos](https://www.med.upenn.edu/apps/faculty/index.php/g275/p32990)
-- [Despina Kontos](https://www.med.upenn.edu/apps/faculty/index.php/g275/p8123294)
-- [Ragini Verma](https://www.med.upenn.edu/sbia/rverma.html)
-- [Yong Fan](https://www.med.upenn.edu/apps/faculty/index.php/g275/p4257219)
-- [Russell Taki Shinohara](https://www.med.upenn.edu/apps/faculty/index.php/g359/c1806/p8574254)
+- [Christos Davatzikos](https://www.med.upenn.edu/cbica/christos/)
+- [Despina Kontos](https://www.med.upenn.edu/cbica/cbig/despinak.html)
+- [Ragini Verma](https://www.med.upenn.edu/cbica/cbica/rverma/)
+- [Yong Fan](https://www.med.upenn.edu/cbica/abili/yfan.html)
+- [Russell Taki Shinohara](https://www.med.upenn.edu/apps/faculty/index.php/g275/p8574254)
 - [Aimilia Gastounioti](https://www.med.upenn.edu/sbia/aimiliag.html)
 - [Spyridon Bakas](https://www.med.upenn.edu/cbica/sbakas/)
 
 
 ## Developers:
 
-- [Sarthak Pati](https://www.med.upenn.edu/sbia/spati.html): v.0.0.1 - present
+- [Sarthak Pati](https://www.med.upenn.edu/cbica/aibil/spati.html): v.0.0.1 - present
 - [Saima Rathore](https://www.med.upenn.edu/sbia/srathore.html): v.0.0.1 - present
-- Ashish Singh: v.1.6.0 - present
+- [Ashish Singh](https://www.med.upenn.edu/cbica/ashish-singh.html): v.1.6.0 - present
 - Phuc Ngo: v.1.6.0 - present
-- Dimitrios Bounias: v.1.6.1 - present
+- Dimitrios Bounias: v.1.6.1 - 1.7.6
 - Alexander Getka: v.1.7.5 - present 
 - James Minock: v.1.7.0 - 1.7.2
 - Grayson Murphy: v.1.6.0 
@@ -36,10 +36,13 @@ More details are available from our repository's [Insights page](https://github.
 
 ## Collaborators:
 
-- [Mark Bergman](https://www.med.upenn.edu/sbia/mbergman.html)
-- [Hamed Akbari](https://www.med.upenn.edu/sbia/hakbari.html)
+- [Mark Bergman](https://www.med.upenn.edu/cbica/sbia/mbergman.html)
+- [Chiharu Sako](https://www.med.upenn.edu/cbica/aibil/sako.html)
+- Siddhesh P. Thakur
+- [Hamed Akbari](https://www.med.upenn.edu/cbica/aibil/hakbari.html)
 - [Aristeidis Sotiras](http://www.asotiras.com/)
-- [Rhea Chitalia](https://www.pennmedicine.org/departments-and-centers/department-of-radiology/radiology-research/labs-and-centers/biomedical-imaging-informatics/cbig-computational-breast-imaging-group/cbig-meet-our-team/rhea-chitalia-bse)
+- [Omid Haji Maghsoudi](https://www.med.upenn.edu/cbica/cbig/omid.html)
+- [Rhea Chitalia](https://www.med.upenn.edu/cbica/rhea-chitalia.html)
 
 Contact [software [at] cbica.upenn.edu](mailto:software@cbica.upenn.edu) for questions.
 */

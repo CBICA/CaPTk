@@ -552,7 +552,7 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(FeaturesOfAllSubjects, mean, stddevition);
   
   //write scaled features in a .csv file
-  WriteCSVFilesWithHorizontalAndVerticalHeaders(FeaturesOfAllSubjects, patient_ids, FeatureLabels, outputdirectory + "/ScaledFeatures.csv");
+  WriteCSVFilesWithHorizontalAndVerticalHeaders(ScaledTestingData, patient_ids, StringFeatureLabels, outputdirectory + "/ScaledFeatures.csv");
 
   //select model features
   VariableSizeMatrixType ModelSelectedFeatures = SelectModelFeatures(ScaledTestingData,selectedfeatures);
@@ -580,10 +580,15 @@ VectorDouble EGFRvIIIIndexPredictor::EGFRvIIIPredictionOnExistingModel(const std
       {
         std::map<CAPTK::ImageModalityType, std::string> currentsubject = qualifiedsubjects[i];
         results.push_back(-1*result[i]);
-        if(results[i]<0)
-            myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Wildtype \n";
+        if(std::isinf(results[i])==true)
+          myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Not determined \n";
         else
-          myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Mutant \n";
+        {
+          if (results[i] < 0)
+            myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Wildtype \n";
+          else
+            myfile << static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "," + std::to_string(results[i]) + ", Mutant \n";
+        }
       }
     }
     else if (cbica::fileExists(modeldirectory + "/EGFRvIII_SVM_Model.xml") == true)

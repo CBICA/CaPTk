@@ -63,6 +63,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "fSBRTNoduleDialog.h"
 #include "fSBRTAnalysisDialog.h"
 #include "fBiasCorrectionDialog.h"
+#include "fBraTSSegmentation.h"
 
 #include <atomic>
 
@@ -85,6 +86,7 @@ class Slicer;
 class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
+class SystemInformationDisplayWidget;
 
 #define USE_PROCESSDIALOG
 
@@ -262,8 +264,10 @@ private:
   fHistoMatcher histoMatchPanel;
   fDeepMedicNormalizer deepMedicNormPanel;
   fWhiteStripeObj whiteStripeNormalizer;
+  fBraTSSegmentation bratsPipelineDialog;
   fDirectionalityDialog directionalityEstimator;
   PreferencesDialog *preferenceDialog;
+  SystemInformationDisplayWidget *sysinfowidget;
   
 
   fDrawingPanel *drawingPanel;
@@ -291,6 +295,7 @@ private:
   QAction *help_forum;
   QAction *help_bugs;
   QAction *help_features;
+  QAction *help_systeminformation;
 
   //-------------actions-------------
 
@@ -310,6 +315,7 @@ private:
   QAction *actionSave_Images;
   QAction *actionAbout;
   QAction *actionExit;
+  QAction *actionModelLibrary;
 
   QAction *actionAppEGFR;
   QAction *actionAppRecurrence;
@@ -768,7 +774,7 @@ public slots:
   \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, const std::string inputdicomfilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -780,7 +786,7 @@ public slots:
   \param inputfile The input DSC-MRI image
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionMeasuresCalculation(const double TE, const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
 
   /**
   \brief Call the Diffusion Measures application with the inputs
@@ -855,6 +861,11 @@ public slots:
   \brief Call Histogram Matching module of ITK
   */
   void CallImageHistogramMatching(const std::string referenceImage, const std::string inputImageFile, const std::string outputImageFile);
+
+  /**
+  \brief Call BraTS Pipeline application
+  */
+  void CallBraTSPipeline(const std::string t1ceImage, const std::string t1Image, const std::string t2Image, const std::string flImage, const std::string outputDir);
 
   /**
   \brief Call Histogram Matching module of ITK
@@ -951,8 +962,16 @@ public slots:
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
-  //! Open the github issue tracker
-  void help_BugTracker();
+
+  /**
+  \brief open model library webpage
+  */
+  void OpenModelLibrary();
+
+  /**
+ \brief system information menu click 
+ */
+  void OnSystemInformationMenuClicked();
 
   /**
   \brief Get contextual help 
@@ -1431,6 +1450,9 @@ public slots:
   //! Preprocessing for mammogram preprocessing
   void ImageMamogramPreprocess();
 
+  //! BraTS Pipeline
+  void ImageBraTSPipeline();
+
   //! Preprocessing for bias correction
   void ImageBiasCorrection();
 
@@ -1541,7 +1563,7 @@ public:
   Fetalbrain mfetalbrain;
 
   fHelpDialog* mHelpDlg;
-  fHelpTutorial mHelpTutorial;
+  fHelpTutorial* mHelpTutorial;
 
   std::string t1cePath;
   std::string m_imagetype_string;

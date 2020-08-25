@@ -50,6 +50,11 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", oName);
+    auto temp = cbica::getFilenamePath(oName, false);
+    if (!cbica::isDir(temp))
+    {
+      cbica::createDir(temp);
+    }
   }
   if (parser.isPresent("l"))
   {

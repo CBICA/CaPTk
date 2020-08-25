@@ -22,12 +22,20 @@ fEGFRvIIIPredictor::fEGFRvIIIPredictor()
 
   disclaimerLabel->setText("You can find a pretrained model, based on a study at PENN, ");
   //rdExistingClassification->setEnabled(false);
-  //rdExistingClassification->setChecked(true);
-  rdCreateModel->setChecked(true);
-  NewModelRadioButtonChecked();
+  rdExistingClassification->setChecked(true); // force testing
+  rdExistingClassification->setVisible(false); // hide radio button
+
+  ExistingClassificationRadioButtonChecked();
   
-  //existingMaskDirectoryName->setEnabled(false);
-  //existingMasksButton->setEnabled(false);
+  // Explicitly disable training.
+  existingMaskDirectoryName->setEnabled(false);
+  existingMasksButton->setEnabled(false);
+  rdCreateModel->setEnabled(false);
+  existingMaskDirectoryName->setVisible(false);
+  existingMasksButton->setVisible(false);
+  rdCreateModel->setVisible(false);
+  trainingDirectoryLabel->setVisible(false);
+
 }
 fEGFRvIIIPredictor::~fEGFRvIIIPredictor()
 {
@@ -44,7 +52,7 @@ void fEGFRvIIIPredictor::ConfirmButtonPressed()
     svmModelFileName->setEnabled(true);
     testSubjectsDirectoryButton->setEnabled(true);
     testSubjectsDirectoryName->setEnabled(true);
- 
+
 	//--------------SVM model directory--------------------
     //if (svmModelFileName->text().isEmpty())
     //{
@@ -216,8 +224,8 @@ void fEGFRvIIIPredictor::CheckForDisclaimer()
     }
     else
     {
-      std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-      ShowMessage(dataMessage, this);
+      //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
+      //ShowMessage(dataMessage, this);
       return;
     }
   }

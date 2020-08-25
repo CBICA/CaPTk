@@ -56,7 +56,6 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  //parser.exampleUsage("");
   parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5", "Trains a new model based on the samples in inputDir");
   parser.addExampleUsage("-t 1 -i C:/input -m C:/model -o C:/output -m C:/modelDir -n 5", "Tests an existing model for inputs in 'C:/input' based on 'C:/modelDir' ");
   parser.addApplicationDescription("Perfusion PCA Training and Prediction application");
@@ -119,6 +118,7 @@ int main(int argc, char **argv)
       std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
     return EXIT_FAILURE;
   }
+
   std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
 
   if (QualifiedSubjects.size() == 0)
@@ -135,6 +135,19 @@ int main(int argc, char **argv)
     {
       std::cout << "The model directory does not exist:" << modelDirectoryName << std::endl;
       return EXIT_FAILURE;
+    }
+    if (!cbica::fileExists(modelDirectoryName +"/PCA_PERF.csv") || !cbica::fileExists(modelDirectoryName + "/Mean_PERF.csv"))
+    {
+      std::cout << "The model files PCA_PERF.csv and Mean_PERF.csv do not exist in the model directory:" <<  modelDirectoryName << std::endl;
+      return EXIT_FAILURE;
+    }
+    if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
+    {
+        if (!cbica::IsCompatible(modelDirectoryName + "/VERSION.yaml"))
+        {
+            std::cerr << "The version of model is incompatible with this version of CaPTk.\n";
+            return EXIT_FAILURE;
+        }
     }
     object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }

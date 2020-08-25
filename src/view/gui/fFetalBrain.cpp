@@ -80,7 +80,7 @@ void fFetalBrain::SelectOutputDirectory()
 {
   std::string root_directory;
   //int imagetype;
-  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
   if (directory.isNull())
     return;
   else
@@ -90,7 +90,7 @@ void fFetalBrain::OpenTestSubjectsDirectory()
 {
   std::string root_directory;
   //int imagetype;
-  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
   if (directory.isNull())
     return;
   else
@@ -100,7 +100,7 @@ void fFetalBrain::OpenTestSubjectsDirectory()
 
 std::string fFetalBrain::OpenTrainSubjectDirectory()
 {
-  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(mInputPathName.c_str()), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
   if (directory.isNull())
     return "";
   else

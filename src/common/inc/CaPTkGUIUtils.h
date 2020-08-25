@@ -105,7 +105,7 @@ inline QString getExistingDirectory(QWidget *parent, const QString inputPath)
 {
   QFileDialog fileDialog;
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  QString directory = fileDialog.getExistingDirectory(parent, "Open Directory", inputPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString directory = fileDialog.getExistingDirectory(parent, "Open Directory", inputPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   if (!directory.isNull())
   {
@@ -139,7 +139,7 @@ inline QString getExistingFile(QWidget *parent, const QString inputPath, const Q
 {
   QFileDialog fileDialog;
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  QString filename = fileDialog.getOpenFileName(parent, "Select File", inputPath, extensions, 0, QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  QString filename = fileDialog.getOpenFileName(parent, "Select File", inputPath, extensions, 0, QFileDialog::DontResolveSymlinks);
 
   if (!filename.isNull())
   {
@@ -177,7 +177,7 @@ inline QString getSaveFile(QWidget *parent, const QString inputPath, const QStri
 {
   QFileDialog fileDialog(parent, "Save File", inputPath, extensions);
   fileDialog.setWindowFlags(fileDialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  fileDialog.setOptions(QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
+  fileDialog.setOptions(QFileDialog::DontResolveSymlinks);
   fileDialog.selectFile(defaultFileName);
   fileDialog.setFileMode(QFileDialog::AnyFile);
   fileDialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -267,7 +267,7 @@ inline std::string getApplicationPath(std::string appName)
   individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/" + appName + "/");
   if (appName.find("deepMedic") != std::string::npos)
   {
-    individualAppDir = cbica::normPath(std::string(PROJECT_SOURCE_DIR) + "/src/applications/individualApps/deepmedic/");
+    individualAppDir = cbica::normPath(std::string(PROJECT_BINARY_DIR) + "/deepMedicInference/");
   }
   if (cbica::isFile(individualAppDir + "/" + appName_wrap + winExt))
   {

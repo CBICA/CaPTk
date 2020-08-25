@@ -192,15 +192,12 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
 
   VectorDouble returnVecScore;
   VectorDouble returnVecLabel;
-  //VariableSizeMatrixType returnMat;
-  //returnMat.SetSize(testingData.Rows(), 1);
-  //returnVec.resize(testingData.Rows());
-  cv::Mat testingDataMat = cv::Mat::zeros(testingData.Rows(), testingData.Cols() - 1, CV_32FC1), outputProbs;
+  cv::Mat testingDataMat = cv::Mat::zeros(testingData.Rows(), testingData.Cols(), CV_32FC1), outputProbs;
 
   // fast cv::Mat access
-  for (unsigned int i = 0; i < testingData.Rows(); ++i)
+  for (unsigned int i = 0; i < testingData.Rows(); i++)
   {
-    for (unsigned int j = 0; j < testingData.Cols(); ++j)
+    for (unsigned int j = 0; j < testingData.Cols(); j++)
     {
       testingDataMat.ptr< float >(i)[j] = testingData(i, j);
     }
@@ -220,6 +217,7 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
 
   returnVecScore.resize(testingDataMat.rows);
   returnVecLabel.resize(testingDataMat.rows);
+  //this segment of code iterates through all the test samples and assigns predicted scores
   cv::Mat predicted(1, 1, CV_32F);
   for (int i = 0; i < testingDataMat.rows; i++)
   {
@@ -227,6 +225,7 @@ inline VectorDouble testOpenCVSVM(const VariableSizeMatrixType &testingData, con
     svm->predict(sample, predicted, true/*cv::ml::StatModel::RAW_OUTPUT*/);
     returnVecScore[i] = predicted.ptr< float >(0)[0];
   }
+  //this segment of code iterates through all the test samples and assigns predicted labels
   for (int i = 0; i < testingDataMat.rows; i++)
   {
     cv::Mat sample = testingDataMat.row(i);

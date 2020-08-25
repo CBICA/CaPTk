@@ -9,6 +9,7 @@
 #include "CaPTkEnums.h"
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
+#include "cbicaUtilities.h"
 
 // For getting the total amount of installed ram
 #ifdef _WIN32
@@ -107,12 +108,14 @@ struct NonNativeApp
 \brief Guess Image Type
 
 \param str String to guess
+\param bool If true, check that the file exists (only succeeds for full paths) and exit if failed. If false, don't check.
 \return deduced type
 */
-inline int guessImageType(const std::string &fileName)
+inline int guessImageType(const std::string &fileName, bool checkFileExists = true)
 {
+	std::string basename = cbica::getFilenameBase(fileName, checkFileExists); 
   int ImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_UNDEFINED;
-  std::string fileName_wrap = fileName;
+  std::string fileName_wrap = basename;
   std::transform(fileName_wrap.begin(), fileName_wrap.end(), fileName_wrap.begin(), ::tolower);
   if ((fileName_wrap.find("_t1ce") != std::string::npos) || (fileName_wrap.find("_t1-gad") != std::string::npos) ||
     (fileName_wrap.find("_t1-ce") != std::string::npos) || (fileName_wrap.find("_t1-gd") != std::string::npos) ||
@@ -280,14 +283,14 @@ inline void WriteCSVFilesWithHorizontalAndVerticalHeaders(VariableSizeMatrixType
   std::ofstream myfile;
   myfile.open(filepath);
 
-  myfile << " ";
-  for(unsigned int col_index=0;col_index<vertical_ids.size();col_index++)
-      myfile << ","<<vertical_ids[col_index];
+  myfile << "Subject ID"<<","<< vertical_ids[0];
+  for (unsigned int col_index = 1; col_index < vertical_ids.size(); col_index++)
+    myfile << "," << vertical_ids[col_index];
   myfile << "\n";
   for (unsigned int row_index = 0; row_index < inputdata.Rows(); row_index++)
   {
-   myfile << horizontal_ids[row_index];
-    for (unsigned int col_index = 0; col_index < inputdata.Cols(); col_index++)
+     myfile << horizontal_ids[row_index];
+     for (unsigned int col_index = 0; col_index < inputdata.Cols(); col_index++)
        myfile << "," << std::to_string(inputdata[row_index][col_index]);
     myfile << "\n";
   }
@@ -348,14 +351,26 @@ inline void WriteCSVFiles(VectorVectorDouble inputdata, std::string filepath)
   myfile.close();
 }
 
-inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath)
+inline void WriteCSVFiles(VariableLengthVectorType inputdata, std::string filepath, bool vertical=false)
 {
   std::ofstream myfile;
   myfile.open(filepath);
-  for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
-    myfile << std::to_string(inputdata[index1]) << ",";
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
 
-  myfile << "\n";
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.Size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.Size() - 1)
+        myfile << "\n";
+    }
+  }
   myfile.close();
 }
 inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
@@ -368,13 +383,25 @@ inline void WriteCSVFiles(std::vector<int> inputdata, std::string filepath)
   myfile << "\n";
   myfile.close();
 }
-inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath)
+inline void WriteCSVFiles(std::vector<double> inputdata, std::string filepath,bool vertical=false)
 {
   std::ofstream myfile;
   myfile.open(filepath);
-  for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
-    myfile << std::to_string(inputdata[index1]) << ",";
+  if (vertical == false)
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+      myfile << std::to_string(inputdata[index1]) << ",";
 
-  myfile << "\n";
+    myfile << "\n";
+  }
+  else
+  {
+    for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+    {
+      myfile << std::to_string(inputdata[index1]) << ",";
+      if (index1 < inputdata.size() - 1)
+        myfile << "\n";
+    }
+  }
   myfile.close();
 }

@@ -1,24 +1,26 @@
 /*
-@licstart  The following is the entire license notice for the
-JavaScript code in this file.
+ @licstart  The following is the entire license notice for the JavaScript code in this file.
 
-Copyright (C) 1997-2019 by Dimitri van Heesch
+ The MIT License (MIT)
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of version 2 of the GNU General Public License as published by
-the Free Software Foundation
+ Copyright (C) 1997-2020 by Dimitri van Heesch
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ The above copyright notice and this permission notice shall be included in all copies or
+ substantial portions of the Software.
 
-@licend  The above is the entire license notice
-for the JavaScript code in this file
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ @licend  The above is the entire license notice for the JavaScript code in this file
 */
 var NAVTREE =
 [
@@ -31,11 +33,12 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md116", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md117", null ],
-        [ "Supporting Grant", "index.html#autotoc_md118", null ],
-        [ "Disclaimer", "index.html#autotoc_md119", null ],
-        [ "Contact", "index.html#autotoc_md120", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md136", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md137", null ],
+        [ "Citations", "index.html#autotoc_md138", null ],
+        [ "Supporting Grant", "index.html#autotoc_md139", null ],
+        [ "Disclaimer", "index.html#autotoc_md140", null ],
+        [ "Contact", "index.html#autotoc_md141", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
@@ -60,7 +63,7 @@ var NAVTREE =
       [ "Is there a minimum recommended screen resolution for running CaPTk?", "FAQ.html#gs_FAQ_6", null ],
       [ "Where can I find the CaPTk Docker Image?", "FAQ.html#gs_FAQ_7", null ],
       [ "How do I run the CaPTk Docker Image to show the interface?", "FAQ.html#gs_FAQ_8", null ],
-      [ "What if I am having an issue not listed here?", "FAQ.html#gs_FAQ_9", null ]
+      [ "Is there something wrong with Feature Extraction?", "FAQ.html#gs_FAQ_9", null ]
     ] ],
     [ "How To Guides", "How_To_Guides.html", "How_To_Guides" ],
     [ "Scientific Findings using CaPTk", "Science.html", [

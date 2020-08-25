@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 8 )
-SET( PROJECT_VERSION_PATCH 0.Alpha )
+SET( PROJECT_VERSION_PATCH 0.nonRelease )
 SET( PROJECT_VERSION_TWEAK ) 
 
 # check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
@@ -181,6 +181,7 @@ ADD_DEFINITIONS(-DLICENSE="${LICENSE_FILE}")
 ADD_DEFINITIONS(-DPROJECT_README="${README_FILE}")
 ADD_DEFINITIONS(-DREADME="${README_FILE}")
 ADD_DEFINITIONS(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}/")
+ADD_DEFINITIONS(-DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}/")
 ADD_DEFINITIONS(-DPROJECT_VARIANT="${${PROJECT_NAME}_Variant}")
 
 ### Building the documentation
@@ -698,16 +699,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
 
   SET(META_FILES_TO_INCLUDE "") # used for Apple package
   #IF( BUILD_DOCUMENTATION )
-    FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
-    FOREACH(docFiles ${ALL_DOC_FILES_BASE})
-      IF (APPLE)
+	IF (APPLE) 
+	  # TODO: Figure out how to set properties on files only present after configuration
+	  FILE(GLOB ALL_DOC_FILES_BASE "${PROJECT_BINARY_DIR}/docs_sources/html/*.*")
+      FOREACH(docFiles ${ALL_DOC_FILES_BASE})
         SET_SOURCE_FILES_PROPERTIES(${docFiles} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/share/doc)
         SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${docFiles})
-      ELSE()
-        INSTALL(FILES "${docFiles}" DESTINATION share/doc)
-      ENDIF()
-    ENDFOREACH()
-    #INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html DESTINATION share/doc )
+      ENDFOREACH()  
+	ELSE() # Windows or Linux
+      # Need to install the directory to pick up files that are not present at configure time (for CI/Azure)
+      INSTALL( DIRECTORY ${PROJECT_BINARY_DIR}/docs_sources/html/ DESTINATION share/doc )
+	ENDIF()
   #ENDIF()
 
   # ensure all licenses are in the package
@@ -792,14 +794,17 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
     FILE(GLOB_RECURSE DEEPMEDIC_CONFIGFILES "${DATA_DIR}/deepMedic/configFiles/*")
     FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR "${DATA_DIR}/deepMedic/saved_models/brainTumorSegmentation/*")
     FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_SKULL "${DATA_DIR}/deepMedic/saved_models/skullStripping/*")
+    FILE(GLOB_RECURSE DEEPMEDIC_SAVEDMODELS_SKULL_MA "${DATA_DIR}/deepMedic/saved_models/skullStripping_modalityAgnostic/*")
     
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_CONFIGFILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/configFiles )
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/brainTumorSegmentation )
     SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_SKULL} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/skullStripping )
+    SET_SOURCE_FILES_PROPERTIES( ${DEEPMEDIC_SAVEDMODELS_SKULL_MA} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/data/deepMedic/saved_models/skullStripping_modalityAgnostic )
     
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_CONFIGFILES})
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_BRAIN_TUMOR})
     SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_SKULL})
+    SET(META_FILES_TO_INCLUDE ${META_FILES_TO_INCLUDE} ${DEEPMEDIC_SAVEDMODELS_SKULL_MA})
     
   ELSE()
     INSTALL(DIRECTORY "${DATA_DIR}/deepMedic/configFiles" DESTINATION data/deepMedic)

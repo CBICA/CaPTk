@@ -625,8 +625,11 @@ namespace cbica
     {
       if (!fileExists(filename))
       {
-        std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
-        exit(EXIT_FAILURE);
+        if (!isDir(filename))
+        {
+          std::cerr << "[getFilenameBase()] Supplied file name'" << filename << "'wasn't found.\n";
+          exit(EXIT_FAILURE);
+        }
       }
     }
     std::string path, base, ext;
@@ -729,6 +732,7 @@ namespace cbica
 
   std::string getFullPath()
   {
+    std::string return_string;
 #if defined(_WIN32)
     //! Initialize pointers to file and user names
     char path[FILENAME_MAX];
@@ -747,12 +751,15 @@ namespace cbica
 #else
     //! Initialize pointers to file and user names
     char path[PATH_MAX];
-    if (::readlink("/proc/self/exe", path, sizeof(path) - 1) == -1)
-      //path = dirname(path);
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    if (count == -1)
       std::cerr << "[getFullPath()] Error during getting full path..";
+    std::string appPath = std::string(path, (count > 0) ? count : 0);
+    path[0] = '\0';
+    return appPath;
 #endif
 
-    std::string return_string = std::string(path);
+    return_string = std::string(path);
     path[0] = '\0';
 
     return return_string;

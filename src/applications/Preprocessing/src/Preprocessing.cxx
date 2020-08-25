@@ -361,7 +361,7 @@ int algorithmsRunner()
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        interimFiles_affineTransform = outputDir + "/affine_" + _inputFileTOFixedFileBase + _registrationMetrics + ".mat";
         affine_defaultNamedUsed = true;
       }
       else
@@ -370,8 +370,8 @@ int algorithmsRunner()
       }
       if (registrationDeformableTransformInput.empty())
       {
-        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_deformField = outputDir + "/deform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
         deformable_defaultNamedUsed = true;
       }
       else
@@ -398,7 +398,7 @@ int algorithmsRunner()
           commandToCall = greedyPathAndDim + " -a" +
             commonCommands +
             metricsCommand +
-            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + "-o " + interimFiles_affineTransform;
+            " -ia-image-centers -dof " + std::to_string(registrationRigidDof) + " -o " + interimFiles_affineTransform;
           ;
         }
         else
@@ -470,35 +470,39 @@ int algorithmsRunner()
           return EXIT_FAILURE;
         }
 
-        auto outputImageFileInv = outputImageFile;
+        // check if inverse field is present and then perform re-slicing, otherwise, skip
+        if (cbica::isFile(interimFiles_invDeformField))
         {
-          std::string path, base, ext;
-          cbica::splitFileName(outputImageFileInv, path, base, ext);
-          outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
-        }
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri NN -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
+          auto outputImageFileInv = outputImageFile;
+          {
+            std::string path, base, ext;
+            cbica::splitFileName(outputImageFileInv, path, base, ext);
+            outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
+          }
+          if (registrationSegmentationMoving)
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + registrationFixedImageFile +
+              " -rm " + inputImageFile +
+              " " + outputImageFileInv +
+              " -ri NN -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
+          else
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + registrationFixedImageFile +
+              " -rm " + inputImageFile +
+              " " + outputImageFileInv +
+              " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
 
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
-          return EXIT_FAILURE;
+          if (std::system(commandToCall.c_str()) != 0)
+          {
+            std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+            return EXIT_FAILURE;
+          }
         }
         break;
       }
@@ -669,8 +673,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("hb", "hMatchBins", cbica::Parameter::INTEGER, "1-1000", "Number of histogram bins for histogram matching", "Only used for histoMatching", "Defaults to " + std::to_string(histoMatchBins));
   parser.addOptionalParameter("hq", "hMatchQnts", cbica::Parameter::INTEGER, "1-1000", "Number of quantile values to match for histogram matching", "Only used for histoMatching", "Defaults to " + std::to_string(histoMatchQuantiles));
   parser.addOptionalParameter("zn", "zScoreNorm", cbica::Parameter::BOOLEAN, "N.A.", "Z-Score normalization");
-  parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::FLOAT, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
-  parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::FLOAT, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
+  parser.addOptionalParameter("zq", "zNormQuant", cbica::Parameter::STRING, "0-100", "The Lower-Upper Quantile range to remove", "Default: 5,95");
+  parser.addOptionalParameter("zc", "zNormCut", cbica::Parameter::STRING, "0-10", "The Lower-Upper Cut-off (multiple of stdDev) to remove", "Default: 3,3");
   parser.addOptionalParameter("n3", "n3BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N3 bias correction",
                               "Optional parameters: mask or bins, spline order, filter noise level, fitting levels, max iterations, full-width-at-half-maximum");
   parser.addOptionalParameter("n4", "n4BiasCorr", cbica::Parameter::STRING, "N.A.", "Runs the N4 bias correction",
@@ -680,7 +684,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(bias_otsuBins));
   parser.addOptionalParameter("nFL", "nFittingLevels", cbica::Parameter::INTEGER, "N.A.", "The number of fitting levels to use for bias correction", "Defaults to " + std::to_string(bias_fittingLevels));
   parser.addOptionalParameter("nMI", "nMaxIterations", cbica::Parameter::INTEGER, "N.A.", "The maximum number of iterations for bias correction (only works for N3)", "Defaults to " + std::to_string(bias_maxIterations));
-  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::INTEGER, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
+  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::FLOAT, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));

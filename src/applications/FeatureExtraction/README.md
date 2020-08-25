@@ -64,7 +64,6 @@ The ```Generic``` options in the parameter file control all options, which are:
 | Quantization_Type | FixedBinNumber (FBN): the bins are uniformly distributed across the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent';<br> FixedBinSize (FBS): bins are added in a fixed step between the minimum and maximum extent in the ROI/Image as defined under 'Quantization_Extent' the requested size is provided in 'Bins';<br> Equal: each bin holds an equal number of intensities |
 | SliceComputation | Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only |
 | NaN-Handling | Specify how to handle features with NaN values 'Remove' removes the feature from output - keep in mind this might cause issues with output file in multi-subject (i.e. Training/Batch) mode |
-| WholeImageBinning | Controls whether the entire image binning happens or just the defined region |
 
 ### Making your own parameter file
 
@@ -73,6 +72,10 @@ The ```Generic``` options in the parameter file control all options, which are:
 3. ```Column C```: Type, denotes what type of value it expects for the parameter
 4. ```Column D```: Range, lists of possible values for the parameter
 5. ```Column E```: Value of the specified parameter
+
+### Effect of Resampling
+
+Please see the following presentation: https://upenn.box.com/v/spacingsIssue
 
 ## Batch Processing
 
@@ -87,3 +90,21 @@ Calculating features (using the same parameter file) for a list of subjects (wit
 5. ```Column E```: SELECTED_ROI, is the value(s) in the label file that you want to use as ROI region, separated by "|" as delimiter
 6. ```Column F```: ROI, is the corresponding naming of the label(s) you chose in Column E
 7. [OPTIONAL] ```Column G```: OUTPUT, the optional output file, if you want each subject's output to be written into a different file
+
+## Frequently Asked Questions
+
+- What do the various parameters mean and how do I customize them?
+
+Take a look at the [sample parameter file](https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv) for details.
+
+- Why is preprocessing required?
+
+See [this presentation](https://upenn.box.com/v/spacingsIssue) for a detailed explanation.
+
+- Why do I see `#NAME` for some features?
+
+These would be NaNs and depending on how features have been extracted, these are completely normal.
+
+- Anything else?
+
+Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) 
