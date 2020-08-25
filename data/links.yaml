@@ -7,9 +7,6 @@ inputs:
     Data: https://github.com/CBICA/CaPTk/issues/new/choose
   Model Library:
     Data: https://www.cbica.upenn.edu/CaPTk_Model_Library
-  All:
-    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/All.zip
-    Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/All.zip
   EGFRvIIISVMIndex:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/EGFRvIIISVMIndex.zip
     Model: ftp://www.nitrc.org/home/groups/captk/downloads/models/1.8.0/EGFRvIIIIndexPredictor_PretrainedModel.zip
