@@ -1133,6 +1133,7 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
       ENDFOREACH()
 
       changeLibOmpDylib(${EXE_NAME} "greedy")
+	  changeLibOmpDylib(${EXE_NAME} "Utilities")
 
     ENDIF()
 
