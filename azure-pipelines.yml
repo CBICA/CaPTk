@@ -644,7 +644,11 @@ jobs:
         
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
         
+        # Debug using vsts' cache
+        cp CMakeCache.txt /Users/Shared/phuc-vsts-cmakecache.txt 
         make -j 2
+        
+         
         
         # Hacky trick to fix libomp search -- normally the build should do this, but it mysteriously fails on Utilities...
         install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib Utilities
