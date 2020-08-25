@@ -51,7 +51,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
           if ((filePath_lower.find("atlas") != std::string::npos || filePath_lower.find("jakob_label") != std::string::npos)
             && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
             atlasPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
-          else if ((filePath_lower.find("segmentation") != std::string::npos)
+          else if ((filePath_lower.find("segmentation") != std::string::npos || filePath_lower.find("label") != std::string::npos)
             && (extension == HDR_EXT || extension
             == NII_EXT || extension == NII_GZ_EXT))
             labelPath = subjectPath + "/SEGMENTATION" + "/" + files[i];
@@ -67,16 +67,18 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
       files = cbica::filesInDirectory(subjectPath + "/CONVENTIONAL", false);
       for (unsigned int i = 0; i < files.size(); i++)
       {
-        std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
+        std::string filePath = subjectPath + "/CONVENTIONAL" + "/" + files[i], filePath_lower;
         std::string extension = cbica::getFilenameExtension(filePath, false);
+        filePath_lower = filePath;
+        std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
 
-        if ((files[i].find("t1ce") != std::string::npos || files[i].find("T1CE") != std::string::npos || files[i].find("T1ce") != std::string::npos || files[i].find("T1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((filePath_lower.find("t1ce") != std::string::npos || filePath_lower.find("t1-gd") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1ceFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t1") != std::string::npos || files[i].find("T1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("t1") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t1FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("t2") != std::string::npos || files[i].find("T2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("t2") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
-        else if ((files[i].find("flair") != std::string::npos || files[i].find("FLAIR") != std::string::npos || files[i].find("Flair") != std::string::npos || files[i].find("T2-Flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("flair") != std::string::npos || filePath_lower.find("t2-flair") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           t2FlairFilePath = subjectPath + "/CONVENTIONAL" + "/" + files[i];
       }
     }
@@ -106,16 +108,18 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
       files = cbica::filesInDirectory(subjectPath + "/DTI", false);
       for (unsigned int i = 0; i < files.size(); i++)
       {
-        std::string filePath = subjectPath + "/DTI/" + files[i];
+        std::string filePath = subjectPath + "/DTI/" + files[i], filePath_lower;
         std::string extension = cbica::getFilenameExtension(filePath, false);
+        filePath_lower = filePath;
+        std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
 
-        if ((files[i].find("Axial") != std::string::npos || files[i].find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        if ((filePath_lower.find("axial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           axFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Fractional") != std::string::npos || files[i].find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("fractional") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           faFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Radial") != std::string::npos || files[i].find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("radial") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           radFilePath = subjectPath + "/DTI/" + files[i];
-        else if ((files[i].find("Trace") != std::string::npos || files[i].find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+        else if ((filePath_lower.find("trace") != std::string::npos) && (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
           trFilePath = subjectPath + "/DTI/" + files[i];
       }
     }
@@ -134,11 +138,9 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_FA] = faFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RAD] = radFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_TR] = trFilePath;
-
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PSR] = psrFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PH] = phFilePath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_RCBV] = rcbvFilePath;
-
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_ATLAS] = atlasPath;
     OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PARAMS] = parametersPath;
