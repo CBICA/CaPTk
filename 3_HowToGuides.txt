@@ -1372,6 +1372,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputMask.nii.gz -o C:/outputMask.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR -rm 1
 	\endverbatim
 - Image information
 	\verbatim
