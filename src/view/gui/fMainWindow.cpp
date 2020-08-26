@@ -1168,11 +1168,14 @@ void fMainWindow::help_Download(QAction* action)
     //}
 	QString basefilename = this->m_DownloadManager->saveFileName(QUrl(currentLink.c_str()));
 	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-		downloaddirpath + "/" + basefilename,
+	QString saveFileName = getSaveFile(this, 
+		downloaddirpath + "/" + basefilename,"",
 		tr("Files (*.zip)"));
+	//QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+	//	downloaddirpath + "/" + basefilename,
+	//	tr("Files (*.zip)"));
 
-	this->m_DownloadManager->SetFilename(fileName);
+	this->m_DownloadManager->SetFilename(saveFileName);
 	this->m_DownloadManager->doDownload(QUrl(currentLink.c_str()));
 	//bool status = this->m_DownloadManager->downloadStatus();
 	//std::string statusmsg;
