@@ -69,6 +69,7 @@
 #include "CaPTkDockWidget.h"
 #include "SystemInformationDisplayWidget.h"
 #include "SystemInformation.h"
+#include "DownloadManager.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -170,6 +171,8 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  this->m_DownloadManager = new DownloadManager();
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -1023,6 +1026,9 @@ fMainWindow::~fMainWindow()
   if (mHelpDlg)
     delete mHelpDlg;
 
+  if (this->m_DownloadManager)
+	  delete this->m_DownloadManager;
+
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
 }
@@ -1155,11 +1161,19 @@ void fMainWindow::help_Download(QAction* action)
   if (!currentLink.empty() && (currentLink != "N.A."))
   {
     cbica::Logging(loggerFile, currentLink);
-    if (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
+    //if (!openLink(currentLink))
+    //{
+    //  ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
+    //  return;
+    //}
+	this->m_DownloadManager->doDownload(QUrl(currentLink.c_str()));
+	bool status = this->m_DownloadManager->downloadStatus();
+	std::string statusmsg;
+	if (status)
+		statusmsg = "Download Successful.";
+	else
+		statusmsg = "Download Failed.";
+	ShowMessage(statusmsg.c_str());
   }
   else
   {

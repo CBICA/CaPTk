@@ -87,6 +87,7 @@ class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
 class SystemInformationDisplayWidget;
+class DownloadManager;
 
 #define USE_PROCESSDIALOG
 
@@ -385,6 +386,8 @@ private:
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
 
+  //download
+  DownloadManager* m_DownloadManager;
 public:
   //! Default constructor
   fMainWindow();
