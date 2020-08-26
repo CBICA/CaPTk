@@ -826,7 +826,7 @@ namespace cbica
       // get the default series description and add some information to make it unique
       std::string seriesDescription;
       itk::ExposeMetaData< std::string >(*dictArray->at(0), "0008|103e", seriesDescription);
-      seriesDescription += "_Processed-by-CaPTk";
+      seriesDescription += "_Processed-CaPTk";
 
       for (size_t i = 0; i < dictArray->size(); i++)
       {
