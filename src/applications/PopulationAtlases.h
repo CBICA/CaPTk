@@ -4,7 +4,7 @@
 \brief The header file containing the PopulationAtlases class, used to calculate spatial distribution atlases and features
 Library Dependencies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>

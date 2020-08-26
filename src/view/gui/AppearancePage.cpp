@@ -3,7 +3,7 @@
 
 \brief Definition of AppearancePage class
 
-https://www.med.upenn.edu/sbia/software/
+https://www.med.upenn.edu/cbica/captk/
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved.

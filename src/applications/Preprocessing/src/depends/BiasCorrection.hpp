@@ -3,7 +3,7 @@
 
 This file holds the declaration of the class cbicaBiasCorrection.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2020 University of Pennsylvania. All rights reserved. <br>

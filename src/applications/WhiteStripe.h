@@ -3,7 +3,7 @@
 
 \brief Implementation of the WhiteStripe Algorithm
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2017 University of Pennsylvania. All rights reserved. <br>
