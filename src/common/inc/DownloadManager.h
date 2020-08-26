@@ -74,6 +74,7 @@ public:
     bool saveToDisk(const QString &filename, QIODevice *data);
     static bool isHttpRedirect(QNetworkReply *reply);
 	bool downloadStatus();
+	void SetFilename(QString name);
 
 public slots:
     void execute();
@@ -83,6 +84,7 @@ public slots:
 private:
 
 	bool m_DownloadStatus = false;
+	QString m_FileName;
 };
 
 

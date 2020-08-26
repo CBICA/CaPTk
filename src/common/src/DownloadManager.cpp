@@ -68,6 +68,11 @@ bool DownloadManager::downloadStatus()
 	return this->m_DownloadStatus;
 }
 
+void DownloadManager::SetFilename(QString name)
+{
+	this->m_FileName = name;
+}
+
 void DownloadManager::execute()
 {
     QStringList args = QCoreApplication::instance()->arguments();
@@ -110,11 +115,12 @@ void DownloadManager::downloadFinished(QNetworkReply *reply)
         if (isHttpRedirect(reply)) {
             fputs("Request was redirected.\n", stderr);
         } else {
-            QString filename = saveFileName(url);
-            if (saveToDisk(filename, reply)) {
+            //QString filename = saveFileName(url);
+            //if (saveToDisk(filename, reply)) {
+			if (saveToDisk(this->m_FileName, reply)) {
 				this->m_DownloadStatus = true;
                 printf("Download of %s succeeded (saved to %s)\n",
-                       url.toEncoded().constData(), qPrintable(filename));
+                       url.toEncoded().constData(), qPrintable(this->m_FileName));
             }
         }
     }
