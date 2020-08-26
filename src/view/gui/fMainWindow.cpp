@@ -1167,12 +1167,12 @@ void fMainWindow::help_Download(QAction* action)
     //  return;
     //}
 	this->m_DownloadManager->doDownload(QUrl(currentLink.c_str()));
-	bool status = this->m_DownloadManager->downloadStatus();
-	std::string statusmsg;
-	if (status)
-		statusmsg = "Download Successful.";
-	else
-		statusmsg = "Download Failed.";
+	//bool status = this->m_DownloadManager->downloadStatus();
+	//std::string statusmsg;
+	//if (status)
+	//	statusmsg = "Download Successful.";
+	//else
+	//	statusmsg = "Download Failed.";
 	ShowMessage(statusmsg.c_str());
   }
   else
