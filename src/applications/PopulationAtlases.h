@@ -8,7 +8,7 @@ https://www.med.upenn.edu/sbia/software/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 
@@ -44,7 +44,7 @@ Reference:
 Reference:
 @article{Bilello.2016,
 title={Population-based MRI atlases of spatial distribution are specific to patient and tumor characteristics in glioblastoma},
-author={M.Bilello, H.Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.O’Rourke, M.Martinez-Lage, C.Davatzikosa},
+author={M.Bilello, H.Akbari, X. Da, J.M.Pisapia, S.Mohan, R.L.Wolf, D.M.Oï¿½Rourke, M.Martinez-Lage, C.Davatzikosa},
 journal={Neuroimage:Clinical},
 pages={34-40},
 year={2016}

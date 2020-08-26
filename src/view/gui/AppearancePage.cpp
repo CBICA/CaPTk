@@ -7,7 +7,7 @@ https://www.med.upenn.edu/sbia/software/
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved.
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #include "AppearancePage.h"
