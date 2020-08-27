@@ -6,7 +6,7 @@
 Library Dependecies: ITK 4.7+ <br>
 Header Dependencies: CAPTk.h, FeatureReductionClass.h, ApplicationBase.h
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
