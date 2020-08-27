@@ -639,6 +639,11 @@ jobs:
 
         cmake ../
         rm CMakeCache.txt
+        
+        # List off files 
+        ls -R ${PROJECT_BINARY_DIR}
+        ls -R $(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/
+        
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
         
@@ -647,7 +652,6 @@ jobs:
         # Debug using vsts' cache
         cp CMakeCache.txt /Users/Shared/latest-vsts-cmakecache.txt 
         make -j 2
-        
          
       displayName: 'Configure and compile CaPTk'
 
@@ -664,6 +668,7 @@ jobs:
         rm CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        
         
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
 
