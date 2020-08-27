@@ -920,6 +920,8 @@ fMainWindow::fMainWindow()
   connect(&biascorrectionPanel, SIGNAL(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)),
       this, SLOT(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)));
 
+  connect(this->m_DownloadManager, SIGNAL(progress(qint64, std::string, qint64)), this, SLOT(updateProgress(qint64, std::string, qint64)));
+
   AxialViewWidget->hide();
   CoronalViewWidget->hide();
   SaggitalViewWidget->hide();
@@ -1168,6 +1170,7 @@ void fMainWindow::help_Download(QAction* action)
     //}
 	QString basefilename = this->m_DownloadManager->saveFileName(QUrl(currentLink.c_str()));
 	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	//ShowMessage(QString(currentLink.c_str() + QString(" ") + downloaddirpath + "/" + basefilename).toStdString(),this);
 	QString saveFileName = getSaveFile(this, 
 		downloaddirpath + "/" + basefilename,"",
 		tr("Files (*.zip)"));
@@ -1175,8 +1178,8 @@ void fMainWindow::help_Download(QAction* action)
 	//	downloaddirpath + "/" + basefilename,
 	//	tr("Files (*.zip)"));
 
-	this->m_DownloadManager->SetFilename(saveFileName);
-	this->m_DownloadManager->doDownload(QUrl(currentLink.c_str()));
+	this->m_DownloadManager->setFilename(saveFileName);
+	this->m_DownloadManager->append(QUrl(currentLink.c_str()));
 	//bool status = this->m_DownloadManager->downloadStatus();
 	//std::string statusmsg;
 	//if (status)
@@ -9686,7 +9689,7 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
 }
 
-void fMainWindow::updateProgress(int progress, std::string message, int max)
+void fMainWindow::updateProgress(qint64 progress, std::string message, qint64 max)
 {
 #ifdef USE_PROCESSDIALOG
   m_progressBar->setMaximum(max);
