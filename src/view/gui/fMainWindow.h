@@ -1499,7 +1499,7 @@ public slots:
   void closeEvent(QCloseEvent * event);
 
   // Progress Update
-  void updateProgress(int progress, std::string message = "", int max = 100);
+  void updateProgress(qint64 progress, std::string message = "", qint64 max = 100);
 
   //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()
