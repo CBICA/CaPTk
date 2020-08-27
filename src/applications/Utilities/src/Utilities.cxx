@@ -18,6 +18,7 @@
 #include "itkCSVArray2DFileReader.h"
 #include "itkCSVNumericObjectFileWriter.h"
 #include "itkInvertIntensityImageFilter.h"
+#include "itkRoundImageFilter.h"
 
 #include "vtkAnatomicalOrientation.h"
 
@@ -76,7 +77,7 @@ float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, th
 float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
 int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false;
 
 std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
 
@@ -267,6 +268,15 @@ int algorithmsRunner()
   if (requestedAlgorithm == Resize)
   {
     auto outputImage = cbica::ResizeImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), resize, resamplingInterpolator);
+
+    // round if user has passed '-rm 1'
+    if (resamplingMasks)
+    {
+      auto rounder = itk::RoundImageFilter< TImageType, TImageType >::New();
+      rounder->SetInput(outputImage);
+      rounder->Update();
+      outputImage = rounder->GetOutput();
+    }
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resizing by a factor of " << resize << "% completed.\n";
@@ -308,6 +318,15 @@ int algorithmsRunner()
       }
     }
     auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
+
+    // round if user has passed '-rm 1'
+    if (resamplingMasks)
+    {
+      auto rounder = itk::RoundImageFilter< TImageType, TImageType >::New();
+      rounder->SetInput(outputImage);
+      rounder->Update();
+      outputImage = rounder->GetOutput();
+    }
     cbica::WriteImage< TImageType >(outputImage, outputImageFile);
 
     std::cout << "Resampled image to a resolution of '" << outputSpacing << "' using interpolator '" << resamplingInterpolator << "'.\n";
@@ -1172,9 +1191,10 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("o", "outputImage", cbica::Parameter::FILE, "NIfTI", "Output Image for processing");
   parser.addOptionalParameter("df", "dicomDirectory", cbica::Parameter::DIRECTORY, "none", "Absolute path of directory containing single dicom series");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "10-500", "Resize an image based on the resizing factor given", "Example: -r 150 resizes inputImage by 150%", "Defaults to 100, i.e., no resizing", "Resampling can be done on image with 100");
-  parser.addOptionalParameter("rr", "resizeResolution", cbica::Parameter::STRING, "0-10", "[Resample] Resolution of the voxels/pixels to change to", "Resize value needs to be 100", "Defaults to " + resamplingResolution_full, "Use '-rf' for a reference file");
-  parser.addOptionalParameter("rf", "resizeReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
-  parser.addOptionalParameter("ri", "resizeInterp", cbica::Parameter::STRING, "NEAREST:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR");
+  parser.addOptionalParameter("rr", "resampleResolution", cbica::Parameter::STRING, "0-10", "[Resample] Resolution of the voxels/pixels to change to", "Defaults to " + resamplingResolution_full, "Use '-rf' for a reference file");
+  parser.addOptionalParameter("rf", "resampleReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
+  parser.addOptionalParameter("ri", "resampleInterp", cbica::Parameter::STRING, "NEAREST:NEARESTLABEL:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR", "Use NEARESTLABEL for multi-label masks");
+  parser.addOptionalParameter("rm", "resampleMask", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Rounds the output of the resample, useful for resampling masks", "Defaults to '0'");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
@@ -1228,6 +1248,7 @@ int main(int argc, char** argv)
   parser.addExampleUsage("-i C:/test/ -o C:/output.nii.gz -e2j 1.5", "Join the extracted images into a single image with spacing in the new dimension as 1.5");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR", "Calculates an isotropic image from the input with spacing '1.0' in all dimensions using linear interpolation");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation");
+  parser.addExampleUsage("-i C:/test/inputMask.nii.gz -o C:/outputMask.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR -rm 1", "Calculates an anisotropic image from the input with spacing '1.0' in x, '2.0' in y and '3.0' in z using linear interpolation and then rounds the output");
   parser.addExampleUsage("-i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR", "Calculates an isotropic image from the input with spacing from the reference image using linear interpolation");
   parser.addExampleUsage("-i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz", "Calculates Total/Union/Mean Overlap (different DICE coefficients), Volume Similarity, False Positive/Negative Error for all labels");
   parser.addExampleUsage("-i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv -co 1 -cF volume -cFE .nii.gz -cP 0,1", "From specified input directory, spacing & size of files with names containing 'volume' with extension '.nii.gz' is collected recursively");
@@ -1325,6 +1346,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("ri", resamplingInterpolator);
     }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
+    }
   }
   else if (parser.isPresent("rr"))
   {
@@ -1334,6 +1359,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("ri", resamplingInterpolator);
     }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
+    }
   }
   else if (parser.isPresent("rf"))
   {
@@ -1342,6 +1371,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("ri"))
     {
       parser.getParameterValue("ri", resamplingInterpolator);
+    }
+    if (parser.isPresent("rm"))
+    {
+      parser.getParameterValue("rm", resamplingMasks);
     }
   }
   else if (parser.isPresent("s"))
