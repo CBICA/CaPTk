@@ -641,14 +641,10 @@ jobs:
         cmake ../
         rm CMakeCache.txt
         
-        # List off qt files 
-        ls -R ./qt
-        ls -R $(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/
         
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        #export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        
+
         echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
         
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
@@ -672,8 +668,7 @@ jobs:
         rm CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        #export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        
+  
         
         cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
 
