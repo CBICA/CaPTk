@@ -641,8 +641,8 @@ jobs:
         cmake ../
         rm CMakeCache.txt
         
-        # List off files 
-        ls -R .
+        # List off qt files 
+        ls -R ./qt
         ls -R $(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/
         
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
@@ -651,7 +651,7 @@ jobs:
         
         echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
         
-        cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" ../
+        cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
         
         # Debug using vsts' cache
         cp CMakeCache.txt /Users/Shared/latest-vsts-cmakecache.txt 
