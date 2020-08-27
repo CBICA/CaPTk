@@ -128,8 +128,8 @@ void DownloadManager::downloadFinished(QNetworkReply *reply)
     currentDownloads.removeAll(reply);
     reply->deleteLater();
 
-	if (currentDownloads.isEmpty())
-		this->deleteLater();
+//	if (currentDownloads.isEmpty())
+	//	this->deleteLater();
 
     //if (currentDownloads.isEmpty()) {
     //    // all downloads finished
