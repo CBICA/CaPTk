@@ -147,6 +147,9 @@ void DownloadManager::downloadFinished()
 		}
 	}
 
+	//reset progress to zero after finishing
+	emit progress(0,"Download Finished!",100);
+
 	currentDownload->deleteLater();
 	startNextDownload();
 }
