@@ -50,42 +50,46 @@
 #ifndef _DownloadManager_h_
 #define _DownloadManager_h_
 
-#include <QtCore>
 #include <QtNetwork>
+#include <QtCore>
 
-#include <cstdio>
-
-QT_BEGIN_NAMESPACE
-class QSslError;
-QT_END_NAMESPACE
-
-using namespace std;
-
-class DownloadManager: public QObject
+class DownloadManager : public QObject
 {
-    Q_OBJECT
-    QNetworkAccessManager manager;
-    QVector<QNetworkReply *> currentDownloads;
-
+	Q_OBJECT
 public:
-    DownloadManager();
-    void doDownload(const QUrl &url);
-    static QString saveFileName(const QUrl &url);
-    bool saveToDisk(const QString &filename, QIODevice *data);
-    static bool isHttpRedirect(QNetworkReply *reply);
-	bool downloadStatus();
-	void SetFilename(QString name);
+	explicit DownloadManager(QObject *parent = nullptr);
 
-public slots:
-    void execute();
-    void downloadFinished(QNetworkReply *reply);
-    void sslErrors(const QList<QSslError> &errors);
+	void append(const QUrl &url);
+	void append(const QStringList &urls);
+	static QString saveFileName(const QUrl &url);
+	void setFilename(const QString);
+
+signals:
+	void finished();
+	void progress(qint64 bytesReceived, std::string, qint64 bytesTotal);
+
+private slots:
+	void startNextDownload();
+	void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+	void downloadFinished();
+	void downloadReadyRead();
 
 private:
+	bool isHttpRedirect() const;
+	void reportRedirect();
+	bool isDownloadInProgress() const;
 
-	bool m_DownloadStatus = false;
-	QString m_FileName;
+	QNetworkAccessManager manager;
+	QQueue<QUrl> downloadQueue;
+	QQueue<QString> filesavename;
+	QNetworkReply *currentDownload = nullptr;
+	QFile output;
+	QElapsedTimer downloadTimer;
+	QString fname;
+
+	int downloadedCount = 0;
+	int totalCount = 0;
+	bool m_downloadInProgress;
 };
-
 
 #endif
