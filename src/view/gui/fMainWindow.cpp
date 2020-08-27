@@ -1187,7 +1187,6 @@ void fMainWindow::help_Download(QAction* action)
 	//else
 	//	statusmsg = "Download Failed.";
 	//ShowMessage(statusmsg.c_str());
-	this->updateProgress(0);
   }
   else
   {
