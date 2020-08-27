@@ -3,11 +3,11 @@
 
 \brief Implementation file for CmdParser class.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 #if (_WIN32)
@@ -418,7 +418,7 @@ namespace cbica
       "\n==========================================================================\n" <<
       "Contact: software@cbica.upenn.edu\n\n" <<
       "Copyright (c) " << cbica::getCurrentYear() << " University of Pennsylvania. All rights reserved.\n" <<
-      "See COPYING file or https://www.med.upenn.edu/sbia/software/license.html" <<
+      "See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html" <<
       "\n==========================================================================\n";
   }
 

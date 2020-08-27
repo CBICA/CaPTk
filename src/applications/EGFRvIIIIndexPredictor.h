@@ -4,11 +4,11 @@
 \brief The header file containing the SurvivaPredictor class, used to find Survival Prediction Index
 Library Dependencies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 
@@ -48,7 +48,7 @@ Reference:
 
 @article{akbari2018invivo,
 title={In vivo evaluation of EGFRvIII mutation in primary glioblastoma patients via complex multiparametric MRI signature},
-author={H.Akbari, S.Bakas, J.M.Pisapia, M.P.Nasrallah, M.Rozycki, M.Martinez-Lage, J.D.Morrissette, N.Dahmane, D.M.O’Rourke, C.Davatzikos},
+author={H.Akbari, S.Bakas, J.M.Pisapia, M.P.Nasrallah, M.Rozycki, M.Martinez-Lage, J.D.Morrissette, N.Dahmane, D.M.Oï¿½Rourke, C.Davatzikos},
 journal={Neuro-oncology},
 volume={20},
 number={8},
