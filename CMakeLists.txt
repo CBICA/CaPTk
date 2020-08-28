@@ -1126,13 +1126,14 @@ IF( NOT BUILD_DOCUMENTATION_ONLY )
         GET_FILENAME_COMPONENT( EXEC_IN_BIN ${EXEC} NAME_WE )
 
         IF (NOT EXEC_IN_BIN STREQUAL "BreastTexturePipeline")
-          # MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
+          MESSAGE( STATUS "[debug]EXEC_IN_BIN == ${EXEC_IN_BIN}")
           changeLibOmpDylib(${EXE_NAME} ${EXEC_IN_BIN})
         ENDIF ()
         
       ENDFOREACH()
 
       changeLibOmpDylib(${EXE_NAME} "greedy")
+	  changeLibOmpDylib(${EXE_NAME} "Utilities")
 
     ENDIF()
 
