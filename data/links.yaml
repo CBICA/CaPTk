@@ -40,6 +40,9 @@ inputs:
   PerfusionPCA:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData/1.8.0/PerfusionPCA.zip
     Model: N.A.
+  PerfusionAlignment:
+    Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PerfusionAlignment.zip
+    Model: N.A.
   PopulationAtlases:
     Data: ftp://www.nitrc.org/home/groups/captk/downloads/SampleData_1.6.0/PopulationAtlases.zip
     Model: N.A.
