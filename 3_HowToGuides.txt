@@ -657,7 +657,7 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 - Infiltration prediction on loaded subject.
 	-# Load the required images in CaPTk and correctly assign the modality label in the drop-down menu. 
 	-# Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).
-	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 	-# Select the "Output Directory" and click on "Confirm".
 	-# The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).
 
@@ -673,7 +673,7 @@ ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o
 \endverbatim
 
 	- Use existing model: 
-		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory", where the user wants to save the infiltration maps.
 		-# Click on 'Confirm'.
