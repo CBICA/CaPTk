@@ -703,7 +703,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
@@ -724,7 +724,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
       - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
       - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
+      - label_in_<b>atlas</b>_space.nii.gz (in same space as above images)
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_directory
 		-# Subject_ID1
