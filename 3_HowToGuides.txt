@@ -643,7 +643,8 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
       - my_<b>perf</b>usion_file.nii.gz
     -# SEGMENTATION
       - my_tumor_segmentation_<b>label</b>_file.nii.gz
-      - my_<b>near</b>_region_file.nii.gz (only for training a new model)
+    -# DRAWING
+	  - my_<b>near</b>_region_file.nii.gz (only for training a new model)
       - my_<b>far</b>_region_file.nii.gz (only for training a new model) 
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_Directory
