@@ -625,9 +625,8 @@ This application provides a probability map of deeply infiltrating tumor in the 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
--# (For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i
-nclude words in <b>BOLD</b> to be identified as respective required files.
+-# (For training only) Segmentation labels of the near-region and far-region within the Edema as two separate NIfTI (.nii.gz) files. Corresponding regions should be 1 (Label=1) in both the files.
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
     -# CONVENTIONAL
       - my_<b>t1</b>_file.nii.gz
@@ -666,7 +665,7 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory" where the trained model should be saved.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of model training (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
@@ -677,7 +676,7 @@ ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o
 		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory", where the user wants to save the infiltration maps.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of infiltration map calculations (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
