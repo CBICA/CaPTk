@@ -54,7 +54,6 @@ void DownloadManager::startNextDownload()
 	QUrl url = downloadQueue.dequeue();
 
 	this->fname = this->filesavename.dequeue();
-	qDebug() << " fname: " << this->fname;
 	output.setFileName(this->fname);
 	if (!output.open(QIODevice::WriteOnly)) 
 	{
