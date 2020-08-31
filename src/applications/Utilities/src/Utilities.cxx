@@ -857,7 +857,7 @@ int algorithmsRunner()
   else if (requestedAlgorithm == ConvertFormat)
   {
     auto inputExt = cbica::getFilenameExtension(inputImageFile);
-    auto outputExt = cbica::getFilenameExtension(outputImageFile);
+    auto outputExt = cbica::getFilenameExtension(outputImageFile, false);
 
     std::vector< std::string > fileFormatsToCheck = { ".jpg", ".jpeg", ".png" };
 
