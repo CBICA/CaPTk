@@ -866,7 +866,7 @@ int algorithmsRunner()
     if ((std::find(fileFormatsToCheck.begin(), fileFormatsToCheck.end(), inputExt) != fileFormatsToCheck.end()) ||
       (std::find(fileFormatsToCheck.begin(), fileFormatsToCheck.end(), outputExt) != fileFormatsToCheck.end()))
     {
-      using DefImageType = itk::Image< unsigned short, TImageType::ImageDimension >;
+      using DefImageType = itk::Image< unsigned char, TImageType::ImageDimension >;
       cbica::WriteImage< DefImageType >(cbica::ReadImage< DefImageType >(inputImageFile), outputImageFile);
     }
     else
