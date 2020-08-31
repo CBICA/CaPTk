@@ -19,8 +19,10 @@ SET( ${PROJECT_NAME}_SRCS
   ${PROJECT_SOURCE_DIR}/src/DownloadManager.cpp
 )
 
+Message(STATUS "caotk src dir:" ${CaPTk_SOURCE_DIR})
+
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
-  ${PROJECT_SOURCE_DIR}/src/cbica_toolkit/src
+  ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
   ${PROJECT_SOURCE_DIR}/src/applications/common_includes
 )
 
