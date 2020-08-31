@@ -44,7 +44,8 @@ void DownloadManager::setFilename(const QString name)
 
 void DownloadManager::startNextDownload()
 {
-	if (downloadQueue.isEmpty()) {
+	if (downloadQueue.isEmpty()) 
+	{
 		printf("%d/%d files downloaded successfully\n", downloadedCount, totalCount);
 		emit finished();
 		return;
@@ -52,13 +53,11 @@ void DownloadManager::startNextDownload()
 
 	QUrl url = downloadQueue.dequeue();
 
-	//QString filename = saveFileName(url);
-	//output.setFileName(filename);
-
 	this->fname = this->filesavename.dequeue();
 	qDebug() << " fname: " << this->fname;
 	output.setFileName(this->fname);
-	if (!output.open(QIODevice::WriteOnly)) {
+	if (!output.open(QIODevice::WriteOnly)) 
+	{
 		qDebug() << " could not open" << this->fname << " for writing";
 		fprintf(stderr, "Problem opening save file '%s' for download '%s': %s\n",
 			qPrintable(this->fname), url.toEncoded().constData(),
@@ -85,7 +84,6 @@ void DownloadManager::startNextDownload()
 
 void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-	//progressBar.setStatus(bytesReceived, bytesTotal);
 	QString basename = QFileInfo(this->fname).fileName();
 
 	// calculate the download speed
@@ -103,32 +101,33 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 		unit = "MB/s";
 	}
 
-	QString downloadspeed(QString::fromLatin1("%1 %2")
-		.arg(speed, 3, 'f', 1).arg(unit));
-	//QString downloadmsg = QString("Downloading: %1 of %2 at ").arg(downloadedCount).arg(totalCount) + downloadspeed;
+	//download message: Downloading: samplefile.zip at speed 2.1MB/s
+	QString downloadspeed(QString::fromLatin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
 	QString downloadmsg = QString("Downloading: %1 at ").arg(basename) + downloadspeed;
-	//progressBar.update();
-	qDebug() << "msg =" << downloadmsg;
+
+	//qDebug() << "msg =" << downloadmsg;
 	emit progress(bytesReceived, downloadmsg.toStdString(),bytesTotal);
 }
 
 void DownloadManager::downloadFinished()
 {
-	//progressBar.clear();
 	output.close();
 	this->m_downloadInProgress = false;
-	if (currentDownload->error()) {
+	if (currentDownload->error()) 
+	{
 		// download failed
 		fprintf(stderr, "Failed: %s\n", qPrintable(currentDownload->errorString()));
 		output.remove();
 	}
 	else {
 		// let's check if it was actually a redirect
-		if (isHttpRedirect()) {
+		if (isHttpRedirect()) 
+		{
 			reportRedirect();
 			output.remove();
 		}
-		else {
+		else 
+		{
 			printf("Succeeded.\n");
 			++downloadedCount;
 		}
