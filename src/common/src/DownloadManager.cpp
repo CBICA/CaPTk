@@ -1,8 +1,8 @@
 #include "DownloadManager.h"
 #include <QTextStream>
 #include <QDebug>
+#include "CaPTkDefines.h"
 #include "cbicaLogging.h"
-//#include <cstdio>
 
 using namespace std;
 
@@ -23,7 +23,7 @@ void DownloadManager::append(const QStringList &urls)
 
 void DownloadManager::append(const QUrl &url)
 {
-	if (downloadQueue.isEmpty() && !this->m_downloadInProgress)
+	if (downloadQueue.isEmpty() && !this->isDownloadInProgress())
 		QTimer::singleShot(0, this, &DownloadManager::startNextDownload);
 
 	downloadQueue.enqueue(url);
@@ -47,7 +47,6 @@ void DownloadManager::startNextDownload()
 {
 	if (downloadQueue.isEmpty()) 
 	{
-		printf("%d/%d files downloaded successfully\n", downloadedCount, totalCount);
 		emit finished();
 		return;
 	}
@@ -58,10 +57,9 @@ void DownloadManager::startNextDownload()
 	output.setFileName(this->fname);
 	if (!output.open(QIODevice::WriteOnly)) 
 	{
-		qDebug() << " could not open" << this->fname << " for writing";
-		fprintf(stderr, "Problem opening save file '%s' for download '%s': %s\n",
-			qPrintable(this->fname), url.toEncoded().constData(),
-			qPrintable(output.errorString()));
+		//log
+		QString errormsg = QString("Problem opening save file '%1' for download '%2': %3\n").arg(this->fname).arg(url.toEncoded().constData()).arg(output.errorString());
+		cbica::Logging(loggerFile, errormsg.toStdString());
 
 		startNextDownload();
 		return;                 // skip this download
@@ -77,8 +75,8 @@ void DownloadManager::startNextDownload()
 	connect(currentDownload, &QNetworkReply::readyRead,
 		this, &DownloadManager::downloadReadyRead);
 
-	// prepare the output
-	printf("Downloading %s...\n", url.toEncoded().constData());
+	// log
+	cbica::Logging(loggerFile, " Starting Download: " + std::string(url.toEncoded().constData()));
 	downloadTimer.start();
 }
 
@@ -105,7 +103,6 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 	QString downloadspeed(QString::fromLatin1("%1 %2").arg(speed, 3, 'f', 1).arg(unit));
 	QString downloadmsg = QString("Downloading: %1 at ").arg(basename) + downloadspeed;
 
-	//qDebug() << "msg =" << downloadmsg;
 	emit progress(bytesReceived, downloadmsg.toStdString(),bytesTotal);
 }
 
@@ -115,8 +112,14 @@ void DownloadManager::downloadFinished()
 	this->m_downloadInProgress = false;
 	if (currentDownload->error()) 
 	{
-		// download failed
-		fprintf(stderr, "Failed: %s\n", qPrintable(currentDownload->errorString()));
+		// download failed - log
+		QString errormsg = QString("Download Failed: %1").arg(currentDownload->errorString());
+		cbica::Logging(loggerFile, errormsg.toStdString());
+
+		//failed msg on GUI
+		emit progress(0, "Download Failed!", 100);
+
+		//remove failed output
 		output.remove();
 	}
 	else {
@@ -128,7 +131,7 @@ void DownloadManager::downloadFinished()
 		}
 		else 
 		{
-			printf("Succeeded.\n");
+			cbica::Logging(loggerFile, "Download succeeded.");
 			++downloadedCount;
 		}
 	}
@@ -137,6 +140,8 @@ void DownloadManager::downloadFinished()
 	emit progress(0,"Download Finished!",100);
 
 	currentDownload->deleteLater();
+
+	//start next
 	startNextDownload();
 }
 
@@ -156,9 +161,10 @@ void DownloadManager::reportRedirect()
 {
 	int statusCode = currentDownload->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	QUrl requestUrl = currentDownload->request().url();
-	QTextStream(stderr) << "Request: " << requestUrl.toDisplayString()
-		<< " was redirected with code: " << statusCode
-		<< '\n';
+
+	//log
+	QString requestmsg = QString("Request: %1 was redirected with code %2").arg(requestUrl.toDisplayString()).arg(statusCode);
+	cbica::Logging(loggerFile, requestmsg.toStdString());
 
 	QVariant target = currentDownload->attribute(QNetworkRequest::RedirectionTargetAttribute);
 	if (!target.isValid())
@@ -166,8 +172,11 @@ void DownloadManager::reportRedirect()
 	QUrl redirectUrl = target.toUrl();
 	if (redirectUrl.isRelative())
 		redirectUrl = requestUrl.resolved(redirectUrl);
-	QTextStream(stderr) << "Redirected to: " << redirectUrl.toDisplayString()
-		<< '\n';
+
+	//log
+	QString redirectmsg = QString("Redirected to: %1").arg(redirectUrl.toDisplayString());
+	cbica::Logging(loggerFile, redirectmsg.toStdString());
+
 }
 
 bool DownloadManager::isDownloadInProgress() const
