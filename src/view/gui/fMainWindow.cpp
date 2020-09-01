@@ -1177,7 +1177,7 @@ void fMainWindow::help_Download(QAction* action)
     cbica::Logging(loggerFile, currentLink);
 
 	//if it's a zip file i.e. it is a data/model
-	if (cbica::getFilenameExtension(currentLink) == ".zip")
+	if (QFileInfo(currentLink.c_str()).suffix() == "zip")
 		this->downloadFromURL(QUrl(currentLink.c_str()));
 	else
 		//if it is a webpage
