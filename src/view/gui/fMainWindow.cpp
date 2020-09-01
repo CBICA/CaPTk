@@ -1156,6 +1156,18 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
+void fMainWindow::downloadFromURL(QUrl url)
+{
+	QString basefilename = this->m_DownloadManager->saveFileName(url);
+	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	QString saveFileName = getSaveFile(this,
+		downloaddirpath + "/" + basefilename, "",
+		tr("Files (*.zip)"));
+
+	this->m_DownloadManager->setFilename(saveFileName);
+	this->m_DownloadManager->append(url);
+}
+
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
@@ -1168,25 +1180,26 @@ void fMainWindow::help_Download(QAction* action)
     //  ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
     //  return;
     //}
-	QString basefilename = this->m_DownloadManager->saveFileName(QUrl(currentLink.c_str()));
-	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-	//ShowMessage(QString(currentLink.c_str() + QString(" ") + downloaddirpath + "/" + basefilename).toStdString(),this);
-	QString saveFileName = getSaveFile(this, 
-		downloaddirpath + "/" + basefilename,"",
-		tr("Files (*.zip)"));
-	//QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-	//	downloaddirpath + "/" + basefilename,
+	this->downloadFromURL(QUrl(currentLink.c_str()));
+	//QString basefilename = this->m_DownloadManager->saveFileName(QUrl(currentLink.c_str()));
+	//QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	////ShowMessage(QString(currentLink.c_str() + QString(" ") + downloaddirpath + "/" + basefilename).toStdString(),this);
+	//QString saveFileName = getSaveFile(this, 
+	//	downloaddirpath + "/" + basefilename,"",
 	//	tr("Files (*.zip)"));
+	////QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+	////	downloaddirpath + "/" + basefilename,
+	////	tr("Files (*.zip)"));
 
-	this->m_DownloadManager->setFilename(saveFileName);
-	this->m_DownloadManager->append(QUrl(currentLink.c_str()));
-	//bool status = this->m_DownloadManager->downloadStatus();
-	//std::string statusmsg;
-	//if (status)
-	//	statusmsg = "Download Successful.";
-	//else
-	//	statusmsg = "Download Failed.";
-	//ShowMessage(statusmsg.c_str());
+	//this->m_DownloadManager->setFilename(saveFileName);
+	//this->m_DownloadManager->append(QUrl(currentLink.c_str()));
+	////bool status = this->m_DownloadManager->downloadStatus();
+	////std::string statusmsg;
+	////if (status)
+	////	statusmsg = "Download Successful.";
+	////else
+	////	statusmsg = "Download Failed.";
+	////ShowMessage(statusmsg.c_str());
   }
   else
   {
