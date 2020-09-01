@@ -962,6 +962,11 @@ public slots:
   }
 
   /**
+  \brief download data from given URL
+  */
+  void downloadFromURL(QUrl url);
+
+  /**
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
