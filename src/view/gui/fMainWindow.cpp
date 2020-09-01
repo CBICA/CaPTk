@@ -910,6 +910,7 @@ fMainWindow::fMainWindow()
   connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
+  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
   connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
