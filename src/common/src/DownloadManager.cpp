@@ -1,7 +1,8 @@
 #include "DownloadManager.h"
 #include <QTextStream>
 #include <QDebug>
-#include <cstdio>
+#include "cbicaLogging.h"
+//#include <cstdio>
 
 using namespace std;
 
