@@ -212,22 +212,6 @@ void fEGFRvIIIPredictor::CheckForDisclaimer()
 
   if (box->exec() == QMessageBox::Ok)
   {
-	  QUrl url(m_trainedModelLink.c_str());
-	  emit DownloadUrl(url);
-    //cbica::Logging(loggerFile, m_trainedModelLink);
-
-    ////ShowErrorMessage("Starting download, may take a while, depending on your net bandwidth", this, "Downloading...");
-
-    //if /*(std::system((link).c_str()) != 0)*/ (!openLink(m_trainedModelLink))
-    //{
-    //  ShowErrorMessage("CaPTk couldn't open the browser to download specified model.", this);
-    //  return;
-    //}
-    //else
-    //{
-    //  //std::string dataMessage = "Model has been saved to: " + captk_PretrainedFolder;
-    //  //ShowMessage(dataMessage, this);
-    //  return;
-    //}
+	  emit DownloadUrl(QUrl(m_trainedModelLink.c_str()));
   }
 }
