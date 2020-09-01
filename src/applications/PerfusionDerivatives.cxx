@@ -6,9 +6,9 @@ int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionDerivatives");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
-  parser.addRequiredParameter("p", "PSR", cbica::Parameter::STRING, "", "The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("pH", "peakHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
-  parser.addRequiredParameter("r", "ap-RCBV", cbica::Parameter::STRING, "", "Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("p", "PSR", cbica::Parameter::STRING, "", "The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("pH", "peakHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("r", "ap-RCBV", cbica::Parameter::STRING, "", "Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default))");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("PerfusionDerivatives -i AAAC_PreOp_perf_pp.nii.gz -e 1 -o <output dir> -p 1 -r 1");
