@@ -71,6 +71,9 @@ signals:
   void TrainNewSurvivalPredictionModel(const std::string inputdirectory, const std::string outputdirectory);
   void SurvivalPredictionOnExistingModel(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory);
   void SubjectBasedSurvivalEstimate(const std::string output, const std::string model, double age);
+
+  //signal to download from this url
+  void DownloadUrl(QUrl &);
 };
 
 
