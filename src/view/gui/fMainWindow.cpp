@@ -1175,34 +1175,17 @@ void fMainWindow::help_Download(QAction* action)
   if (!currentLink.empty() && (currentLink != "N.A."))
   {
     cbica::Logging(loggerFile, currentLink);
-    //if (!openLink(currentLink))
-    //{
-    //  ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-    //  return;
-    //}
-	this->downloadFromURL(QUrl(currentLink.c_str()));
-	//QString basefilename = this->m_DownloadManager->saveFileName(QUrl(currentLink.c_str()));
-	//QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-	////ShowMessage(QString(currentLink.c_str() + QString(" ") + downloaddirpath + "/" + basefilename).toStdString(),this);
-	//QString saveFileName = getSaveFile(this, 
-	//	downloaddirpath + "/" + basefilename,"",
-	//	tr("Files (*.zip)"));
-	////QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-	////	downloaddirpath + "/" + basefilename,
-	////	tr("Files (*.zip)"));
 
-	//this->m_DownloadManager->setFilename(saveFileName);
-	//this->m_DownloadManager->append(QUrl(currentLink.c_str()));
-	////bool status = this->m_DownloadManager->downloadStatus();
-	////std::string statusmsg;
-	////if (status)
-	////	statusmsg = "Download Successful.";
-	////else
-	////	statusmsg = "Download Failed.";
-	////ShowMessage(statusmsg.c_str());
+	//if it's a zip file i.e. it is a data/model
+	if (cbica::getFilenameExtension(currentLink) == ".zip")
+		this->downloadFromURL(QUrl(currentLink.c_str()));
+	else
+		//if it is a webpage
+		openLink(currentLink);
   }
   else
   {
+	  //bad link
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
