@@ -876,7 +876,7 @@ fMainWindow::fMainWindow()
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
 
   connect(&msubtypePanel, SIGNAL(MolecularSubtypePredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&msubtypePanel, SIGNAL(PrepareNewMolecularSubtypePredictionModel(const std::string, const std::string)), this, SLOT(CallForNewMolecularSubtypePredictionModelFromMain(const std::string, const std::string)));
@@ -1156,7 +1156,7 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
-void fMainWindow::downloadFromURL(QUrl url)
+void fMainWindow::downloadFromURL(QUrl &url)
 {
 	QString basefilename = this->m_DownloadManager->saveFileName(url);
 	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);

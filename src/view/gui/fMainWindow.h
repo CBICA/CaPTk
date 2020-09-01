@@ -964,7 +964,7 @@ public slots:
   /**
   \brief download data from given URL
   */
-  void downloadFromURL(QUrl url);
+  void downloadFromURL(QUrl &url);
 
   /**
   \brief Help for downloading Sample Data
