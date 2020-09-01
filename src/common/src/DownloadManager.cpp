@@ -169,6 +169,7 @@ void DownloadManager::reportRedirect()
 	QVariant target = currentDownload->attribute(QNetworkRequest::RedirectionTargetAttribute);
 	if (!target.isValid())
 		return;
+
 	QUrl redirectUrl = target.toUrl();
 	if (redirectUrl.isRelative())
 		redirectUrl = requestUrl.resolved(redirectUrl);
