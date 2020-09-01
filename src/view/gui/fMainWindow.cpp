@@ -866,6 +866,7 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
+  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
 
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
