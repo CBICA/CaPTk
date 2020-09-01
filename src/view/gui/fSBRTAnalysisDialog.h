@@ -97,6 +97,10 @@ public slots:
   */
   void OnCancelButtonClicked();
 
+signals:
+	//signal to download from this url
+	void DownloadUrl(QUrl &);
+
 };
 
 #endif
