@@ -132,12 +132,13 @@ void DownloadManager::downloadFinished()
 		else 
 		{
 			cbica::Logging(loggerFile, "Download succeeded.");
+
+			//reset progress to zero after finishing
+			emit progress(0, "Download succeeded!", 100);
+
 			++downloadedCount;
 		}
 	}
-
-	//reset progress to zero after finishing
-	emit progress(0,"Download Finished!",100);
 
 	currentDownload->deleteLater();
 
