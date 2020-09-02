@@ -1634,12 +1634,14 @@ int main(int argc, char** argv)
       using TImageType = itk::Image<float, 2>;
       using TOImageType = itk::Image<float, 3>;
       algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+      break;
     }
     case 3:
     {
       using TImageType = itk::Image<float, 3>;
       using TOImageType = itk::Image<float, 4>;
       algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+      break;
     }
     default:
       break;
