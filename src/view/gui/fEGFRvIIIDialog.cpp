@@ -1,5 +1,4 @@
 #include "fEGFRvIIIDialog.h"
-#include <QUrl>
 #include "CaPTkGUIUtils.h"
 #include "cbicaLogging.h"
 

@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fEGFRvIIIDialog.h"
+#include <QUrl>
 
 #define EXISTING_CLASSIFICATION 1
 #define TRAIN_MODEL 2
@@ -28,8 +29,6 @@
 
 \brief This class controls the elements in the recurrence dialog
 */
-
-class QUrl;
 
 class fEGFRvIIIPredictor : public QDialog, private Ui::fEGFRvIIIPredictor
 {
@@ -76,7 +75,7 @@ signals:
   void SubjectBasedSurvivalEstimate(const std::string output, const std::string model, double age);
 
   //signal to download from this url
-  void DownloadUrl(QUrl &);
+  void DownloadUrl(QUrl);
 };
 
 

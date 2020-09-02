@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fPseudoProgressionDialog.h"
+#include <QUrl>
 
 #define SUBJECT_CLASSIFICATION 0
 #define EXISTING_CLASSIFICATION 1
@@ -77,7 +78,7 @@ signals:
   void TrainNewPseudoModel(std::string directory, std::string outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistanceData);
 
   //signal to download from this url
-  void DownloadUrl(QUrl &);
+  void DownloadUrl(QUrl);
 };
 
 

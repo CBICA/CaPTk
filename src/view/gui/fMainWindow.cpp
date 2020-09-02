@@ -866,23 +866,23 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
-  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
-  connect(&pseudoPanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&pseudoPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&survivalPanel, SIGNAL(SurvivalPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForSurvivalPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&survivalPanel, SIGNAL(TrainNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
-  connect(&survivalPanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&survivalPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
-  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&msubtypePanel, SIGNAL(MolecularSubtypePredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&msubtypePanel, SIGNAL(PrepareNewMolecularSubtypePredictionModel(const std::string, const std::string)), this, SLOT(CallForNewMolecularSubtypePredictionModelFromMain(const std::string, const std::string)));
-  connect(&msubtypePanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&msubtypePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&skullStrippingPanel, SIGNAL(RunSkullStripping(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallImageSkullStripping(const std::string, const std::string, const std::string, const std::string)));
   connect(&dcmConverter, SIGNAL(RunDICOMConverter(const std::string, const std::string)), this, SLOT(CallDCM2NIfTIConversion(const std::string, const std::string)));
@@ -910,7 +910,7 @@ fMainWindow::fMainWindow()
   connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
-  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl &)), this, SLOT(downloadFromURL(QUrl &)));
+  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
   connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
@@ -1159,7 +1159,7 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
-void fMainWindow::downloadFromURL(QUrl &url)
+void fMainWindow::downloadFromURL(QUrl url)
 {
 	QString basefilename = this->m_DownloadManager->saveFileName(url);
 	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);

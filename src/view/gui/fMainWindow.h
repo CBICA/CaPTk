@@ -70,6 +70,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
+#include <QUrl>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -964,7 +965,7 @@ public slots:
   /**
   \brief download data from given URL
   */
-  void downloadFromURL(QUrl &url);
+  void downloadFromURL(QUrl url);
 
   /**
   \brief Help for downloading Sample Data

@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fSBRTAnalysisDialog.h"
+#include <QUrl>
 
 /**
 \class fSBRTAnalysisDialog
@@ -99,7 +100,7 @@ public slots:
 
 signals:
 	//signal to download from this url
-	void DownloadUrl(QUrl &);
+	void DownloadUrl(QUrl);
 
 };
 
