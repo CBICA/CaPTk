@@ -1305,12 +1305,12 @@ int main(int argc, char** argv)
 		  return EXIT_FAILURE;
 	  }
 
-	  //check if output path is a folder
-	  if (!cbica::isDir(outputFolderPath))
-	  {
-		  std::cerr << "Please pass the path to the output folder where you want to save the nifti file.\n";
-		  return EXIT_FAILURE;
-	  }
+	  ////check if output path is a folder // added for issue 1240, but breaks for simple dicom-to-nifti conversion
+	  //if (!cbica::isDir(outputFolderPath))
+	  //{
+		 // std::cerr << "Please pass the path to the output folder where you want to save the nifti file.\n";
+		 // return EXIT_FAILURE;
+	  //}
 
 	  // check if the Dicom input has been specified?
 	  if (parser.isPresent("i"))
