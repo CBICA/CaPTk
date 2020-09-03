@@ -464,7 +464,7 @@ int algorithmsRunner()
         cbica::copyFile(filesInDir[i], outputImageFile);
       }
     }
-    cbica::deleteDir(outputFolderPath);
+    cbica::removeDirectoryRecursively(outputFolderPath, true);
   }
 
 	//commented below as not sure about the use case for this
@@ -1320,13 +1320,15 @@ int main(int argc, char** argv)
 	  }
 
     // check if the user is requesting a file
-    if (cbica::getFilenameExtension(outputFolderPath, false) == ".nii.gz") 
+    auto outputExt = cbica::getFilenameExtension(outputFolderPath, false);
+    if ((outputExt == ".nii.gz") || (outputExt == ".nii"))
     {
       outputImageFile = outputFolderPath;
       outputFolderPath = cbica::createTemporaryDirectory();
     }
     else
     {
+      outputImageFile.clear();
       cbica::createDir(outputFolderPath); // this creates a directory if not present, otherwise does nothing
     }
 
