@@ -1320,7 +1320,7 @@ int main(int argc, char** argv)
 	  }
 
     // check if the user is requesting a file
-    if (cbica::getFilenameExtension(outputFolderPath) == ".nii.gz") 
+    if (cbica::getFilenameExtension(outputFolderPath, false) == ".nii.gz") 
     {
       outputImageFile = outputFolderPath;
       outputFolderPath = cbica::createTemporaryDirectory();
