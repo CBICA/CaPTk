@@ -70,6 +70,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
+#include <QUrl>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -87,6 +88,7 @@ class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
 class SystemInformationDisplayWidget;
+class DownloadManager;
 
 #define USE_PROCESSDIALOG
 
@@ -385,6 +387,8 @@ private:
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
 
+  //download
+  DownloadManager* m_DownloadManager;
 public:
   //! Default constructor
   fMainWindow();
@@ -959,6 +963,11 @@ public slots:
   }
 
   /**
+  \brief download data from given URL
+  */
+  void downloadFromURL(QUrl url);
+
+  /**
   \brief Help for downloading Sample Data
   */
   void help_Download(QAction* action);
@@ -1496,7 +1505,7 @@ public slots:
   void closeEvent(QCloseEvent * event);
 
   // Progress Update
-  void updateProgress(int progress, std::string message = "", int max = 100);
+  void updateProgress(qint64 progress, std::string message = "", qint64 max = 100);
 
   //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()

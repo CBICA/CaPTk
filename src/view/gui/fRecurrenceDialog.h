@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fRecurrenceDialog.h"
+#include <QUrl>
 
 #define SUBJECT_CLASSIFICATION 0
 #define EXISTING_CLASSIFICATION 1
@@ -75,6 +76,9 @@ signals:
   void SubjectBasedExistingRecurrenceEstimate(std::string outputdirectory, std::string modeldirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistanceData);
   void ExistingModelBasedRecurrenceEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistanceData);
   void TrainNewModel(std::string directory, std::string outputdirectory, bool cbT1Data, bool cbDTIData, bool cbPerfData, bool cbDistanceData);
+
+  //signal to download from this url
+  void DownloadUrl(QUrl);
 };
 
 
