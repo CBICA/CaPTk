@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fSBRTAnalysisDialog.h"
+#include <QUrl>
 
 /**
 \class fSBRTAnalysisDialog
@@ -96,6 +97,10 @@ public slots:
   \brief slot callback when 'Cancel' button on UI is clicked
   */
   void OnCancelButtonClicked();
+
+signals:
+	//signal to download from this url
+	void DownloadUrl(QUrl);
 
 };
 
