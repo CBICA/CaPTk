@@ -9030,24 +9030,18 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
   PerfusionAlignment objPerfusion;
 
-  std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
+  std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
     cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
   }
 
-  std::ofstream myfile;
-  myfile.open(outputFolder + "/original_curve.csv");
-  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
-    myfile << std::to_string(OriginalCurve[index1]) << "\n";
-  myfile.close();
-
-  myfile.open(outputFolder + "/revised_curve.csv");
-  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
-    myfile << std::to_string(RevisedCurve[index1]) << "\n";
-  myfile.close();
+  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
   QString msg;
   msg = "Aligned images have been saved at the specified location.";

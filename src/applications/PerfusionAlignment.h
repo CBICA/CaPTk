@@ -66,8 +66,14 @@ public:
   std::vector<double> GetInterpolatedCurve(std::vector<double> averagecurve, double timeinseconds, double totaltimeduration);
 
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
-  template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop, std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime);
+  template< class ImageType, class PerfusionImageType >
+  std::vector<typename ImageType::Pointer> Run(std::string perfusionFile,
+    std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop,
+    std::vector<double> & OriginalCurve,
+    std::vector<double> & InterpolatedCurve,
+    std::vector<double> & RevisedCurve,
+    std::vector<double> & TruncatedCurve,
+    const double timeresolution);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -84,7 +90,13 @@ public:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,std::vector<double> & OriginalCurve, std::vector<double> & RevisedCurve,const double echotime)
+std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, 
+  std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,
+  std::vector<double> & OriginalCurve, 
+  std::vector<double> & InterpolatedCurve,
+  std::vector<double> & RevisedCurve,
+  std::vector<double> & TruncatedCurve,
+  const double timeresolution)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -112,20 +124,14 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   {
     //get original curve
     typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, 0, 9); //values do not matter here
-    std::vector<double> averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
-    OriginalCurve = averagecurve;
-    //read dicom to get values of tags 
-    //std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
+    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
+
+                                                                                                                    //read dicom to get values of tags 
+                                                                                                                    //std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
     typename PerfusionImageType::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
 
-    ////get interpolated curve
+    //get interpolated curve
     //std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
-
-    //std::ofstream myfile;
-    //myfile.open("E:/original_curve.csv");
-    //for (unsigned int index1 = 0; index1 < averagecurve.size(); index1++)
-    //      myfile << std::to_string(averagecurve[index1])<< "\n";
-    //myfile.close();
 
     // Resize
     typename PerfusionImageType::SizeType inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
@@ -133,20 +139,17 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     outputSize[0] = inputSize[0];
     outputSize[1] = inputSize[1];
     outputSize[2] = inputSize[2];
-    //outputSize[3] = (std::stof(timeinseconds) * 2 / 1000) * region.GetSize()[3];
-    outputSize[3] = echotime * region.GetSize()[3];
+    outputSize[3] = timeresolution * region.GetSize()[3];
 
     typename PerfusionImageType::SpacingType outputSpacing;
     outputSpacing[0] = perfImagePointerNifti->GetSpacing()[0];
     outputSpacing[1] = perfImagePointerNifti->GetSpacing()[1];
     outputSpacing[2] = perfImagePointerNifti->GetSpacing()[2];
     outputSpacing[3] = perfImagePointerNifti->GetSpacing()[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
-    
 
     typedef itk::IdentityTransform<double, 4> TransformType;
     TransformType::Pointer _pTransform = TransformType::New();
     _pTransform->SetIdentity();
-
 
     typedef itk::ResampleImageFilter<PerfusionImageType, PerfusionImageType> ResampleImageFilterType;
     typename ResampleImageFilterType::Pointer resample = ResampleImageFilterType::New();
@@ -158,16 +161,18 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     resample->SetTransform(_pTransform);
     resample->UpdateLargestPossibleRegion();
 
-    averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, 0, 9); //values do not matter here
-    RevisedCurve = averagecurve;
-
-    typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resample->GetOutput(), MASK,maxcurve);
-    averagecurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample_normalized, MASK, 0, 9); //values do not matter here
-    RevisedCurve = averagecurve;
-
+    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, 0, 9); //values do not matter here
     double base, drop, maxcurve, mincurve;
-    GetParametersFromTheCurve(averagecurve, base, drop, maxcurve, mincurve);
-    std::cout << "base: " << base << " drop: " << drop << " min: " << mincurve << " max: " << maxcurve << std::endl;
+    GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
+    std::cout << "Curve characteristics after interpolation::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
+
+    typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, maxcurve);
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample_normalized, MASK, 0, 9); //values do not matter here
+    GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
+    std::cout << "Curve characteristics after base normalization::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
+
+    for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
+      TruncatedCurve.push_back(RevisedCurve[index]);
 
     //write the corresponding perfusion 3D images
     typename PerfusionImageType::RegionType region1 = resample->GetOutput()->GetLargestPossibleRegion();
@@ -181,7 +186,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     regionIndex[1] = 0;
     regionIndex[2] = 0;
 
-    for (int index = drop - pointsbeforedrop; index < drop + pointsafterdrop; index++)
+    for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
     {
       typename ImageType::Pointer NewImage = ImageType::New();
       NewImage->CopyInformation(t1ceImagePointer);
@@ -189,7 +194,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       NewImage->SetBufferedRegion(t1ceImagePointer->GetBufferedRegion());
       NewImage->Allocate();
       NewImage->FillBuffer(0);
-    
+
       regionIndex[3] = index;
       typename PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
       auto filter = itk::ExtractImageFilter< PerfusionImageType, ImageType >::New();
