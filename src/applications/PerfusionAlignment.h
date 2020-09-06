@@ -262,8 +262,6 @@ template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, int start, int end)
 {
   typename ImageType::Pointer outputImage = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
-
-  int no_of_slices = end - start + 1;
   ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
   for (unsigned int i = 0; i < region.GetSize()[0]; i++)
   {
@@ -287,7 +285,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           index4D[3] = l;
           local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
         }
-        double meanvalue = std::round(local_sum / no_of_slices);
+        double meanvalue = std::round(local_sum / region.GetSize()[3]);
 
         //calculate standard deviation
         double temp = 0.0;
@@ -301,7 +299,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           temp += (perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue)*(perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue);
         }
         double stddeve = std::sqrt(temp / (region.GetSize()[3] - 1));
-        if(stddeve>0)
+        if (stddeve>10)
           outputImage->SetPixel(index3D, 1);
         else
           outputImage->SetPixel(index3D, 0);
