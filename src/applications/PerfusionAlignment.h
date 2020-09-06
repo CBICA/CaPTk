@@ -352,22 +352,27 @@ void PerfusionAlignment::GetParametersFromTheCurve(std::vector<double> curve, do
   //CER = CER(Drop - 17:Drop + 36);
   //plot(CER);      hold on;
   //CERData(i, :) = CER;
-  float max = *max_element(curve.begin(), curve.end());
-  float min = *min_element(curve.begin(), curve.end());
 
-
-  for (int index = 0; index < curve.size(); index++)
-    CER.push_back((curve[index] * 100) / (((curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5) - min));
-
-  maxval = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
-  minval = min;
   base = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
+  maxval = *max_element(curve.begin(), curve.end());
+  for (unsigned int index = 0; index < curve.size(); index++)
+    if (curve[index] == 0)
+      curve[index] = maxval;
+  minval = *min_element(curve.begin(), curve.end());
+  drop = std::min_element(curve.begin(), curve.end()) - curve.begin();
 
-  double average_new_cer = (CER[3] + CER[4] + CER[5] + CER[6] + CER[7]) / 5;
-  for (int index = 0; index < CER.size(); index++)
-    CER[index] = CER[index] - average_new_cer + 300;
+  //for (int index = 0; index < curve.size(); index++)
+  //  CER.push_back((curve[index] * 100) / (((curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5) - min));
 
-  drop = std::min_element(CER.begin(), CER.end()) - CER.begin();
+  //maxval = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
+  //minval = min;
+  //base = (curve[3] + curve[4] + curve[5] + curve[6] + curve[7]) / 5;
+
+  //double average_new_cer = (CER[3] + CER[4] + CER[5] + CER[6] + CER[7]) / 5;
+  //for (int index = 0; index < CER.size(); index++)
+  //  CER[index] = CER[index] - average_new_cer + 300;
+
+  //drop = std::min_element(CER.begin(), CER.end()) - CER.begin();
 }
 template< class ImageType, class PerfusionImageType >
 typename PerfusionImageType::Pointer PerfusionAlignment::NormalizeBaselineValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, double max_value)
@@ -395,7 +400,7 @@ typename PerfusionImageType::Pointer PerfusionAlignment::NormalizeBaselineValue(
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = volumes;
-          
+
           double current_value = (perfImagePointerNifti.GetPointer()->GetPixel(index4D) - min_value) * base_value / (max_value - min_value);
           perfImagePointerNifti.GetPointer()->SetPixel(index4D, current_value);
         }
