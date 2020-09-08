@@ -5,11 +5,11 @@
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 
@@ -125,7 +125,7 @@ template<class ImageType, class PerfusionImageType >
 bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
 {
   std::vector<double> averagecurve = CalculateAveragePerfusionCurve<ImageType, PerfusionImageType>(perfImagePointerNifti);
-  WriteCSVFiles(averagecurve, outputdirectory + "/AeragePerfusionCurve.csv");
+  WriteCSVFiles(averagecurve, outputdirectory + "/AveragePerfusionCurve.csv");
   
   int baseline_start  = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * baseline_start_threshold/100;
   int baseline_end    = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * baseline_end_threshold/100;

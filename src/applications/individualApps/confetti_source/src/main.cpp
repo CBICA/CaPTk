@@ -89,7 +89,7 @@ inline void copyrightNotice()
     "\n==========================================================================\n" <<
     "Contact: software@cbica.upenn.edu\n\n" <<
     "Copyright (c) 2017 University of Pennsylvania. All rights reserved.\n" <<
-    "See COPYING file or https://www.med.upenn.edu/sbia/software/license.html" <<
+    "See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html" <<
     "\n==========================================================================\n";
 }
 void help()

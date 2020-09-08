@@ -7,7 +7,7 @@
 // Perelman School of Medicine
 // University of Pennsylvania
 // Contact details: software@cbica.upenn.edu
-// License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
+// License Agreement: https://www.med.upenn.edu/cbica/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
 #include "fDrawingPanel.h"

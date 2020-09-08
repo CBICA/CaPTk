@@ -10,7 +10,7 @@
 //
 // Contact details: software@cbica.upenn.edu
 //
-// License Agreement: https://www.med.upenn.edu/sbia/software/license.html
+// License Agreement: https://www.med.upenn.edu/cbica/captk/license.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef _fLungFieldDialog_h_
