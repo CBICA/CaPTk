@@ -856,7 +856,23 @@ int algorithmsRunner()
   }
   else if (requestedAlgorithm == ConvertFormat)
   {
-    cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    auto inputExt = cbica::getFilenameExtension(inputImageFile);
+    auto outputExt = cbica::getFilenameExtension(outputImageFile, false);
+
+    std::vector< std::string > fileFormatsToCheck = { ".jpg", ".jpeg", ".png" };
+
+    std::transform(inputExt.begin(), inputExt.end(), inputExt.begin(), ::tolower);
+    std::transform(outputExt.begin(), outputExt.end(), outputExt.begin(), ::tolower);
+    if ((std::find(fileFormatsToCheck.begin(), fileFormatsToCheck.end(), inputExt) != fileFormatsToCheck.end()) ||
+      (std::find(fileFormatsToCheck.begin(), fileFormatsToCheck.end(), outputExt) != fileFormatsToCheck.end()))
+    {
+      using DefImageType = itk::Image< unsigned char, TImageType::ImageDimension >;
+      cbica::WriteImage< DefImageType >(cbica::ReadImage< DefImageType >(inputImageFile), outputImageFile);
+    }
+    else
+    {
+      cbica::WriteImage< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), outputImageFile);
+    }
   }
   else if (requestedAlgorithm == Image2World)
   {
