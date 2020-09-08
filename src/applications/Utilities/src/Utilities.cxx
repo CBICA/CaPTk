@@ -453,6 +453,20 @@ int algorithmsRunner()
 		return EXIT_FAILURE;
 	}
 
+  // if the user has asked for a file, give them that file
+  if (!outputImageFile.empty())
+  {
+    auto filesInDir = cbica::filesInDirectory(outputFolderPath);
+    for (size_t i = 0; i < filesInDir.size(); i++)
+    {
+      if (cbica::getFilenameExtension(filesInDir[i]) == ".nii.gz")
+      {
+        cbica::copyFile(filesInDir[i], outputImageFile);
+      }
+    }
+    cbica::removeDirectoryRecursively(outputFolderPath, true);
+  }
+
 	//commented below as not sure about the use case for this
 
     //if (!targetImageFile.empty())
@@ -1222,7 +1236,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("tt", "testThresh", cbica::Parameter::FLOAT, "0-5", "Minimum threshold for pixels to be different", "Defaults to 0.0");
   parser.addOptionalParameter("cm", "createMask", cbica::Parameter::STRING, "N.A.", "Create a binary mask out of a provided (float) thresholds","Format: -cm lower,upper", "Output is 1 if value >= lower or <= upper", "Defaults to 1,Max");
   parser.addOptionalParameter("cv", "changeValue", cbica::Parameter::STRING, "N.A.", "Change the specified pixel/voxel value", "Format: -cv oldValue1xoldValue2,newValue1xnewValue2", "Can be used for multiple number of value changes", "Defaults to 3,4");
-  parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file");
+  parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file", "Pass a directory to '-o' if you want the JSON information");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
   parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
@@ -1305,12 +1319,18 @@ int main(int argc, char** argv)
 		  return EXIT_FAILURE;
 	  }
 
-	  //check if output path is a folder
-	  if (!cbica::isDir(outputFolderPath))
-	  {
-		  std::cerr << "Please pass the path to the output folder where you want to save the nifti file.\n";
-		  return EXIT_FAILURE;
-	  }
+    // check if the user is requesting a file
+    auto outputExt = cbica::getFilenameExtension(outputFolderPath, false);
+    if ((outputExt == ".nii.gz") || (outputExt == ".nii"))
+    {
+      outputImageFile = outputFolderPath;
+      outputFolderPath = cbica::createTemporaryDirectory();
+    }
+    else
+    {
+      outputImageFile.clear();
+      cbica::createDir(outputFolderPath); // this creates a directory if not present, otherwise does nothing
+    }
 
 	  // check if the Dicom input has been specified?
 	  if (parser.isPresent("i"))
@@ -1634,12 +1654,14 @@ int main(int argc, char** argv)
       using TImageType = itk::Image<float, 2>;
       using TOImageType = itk::Image<float, 3>;
       algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+      break;
     }
     case 3:
     {
       using TImageType = itk::Image<float, 3>;
       using TOImageType = itk::Image<float, 4>;
       algorithmsRunner_imageStack2join< TImageType, TOImageType >(imagesToJoin);
+      break;
     }
     default:
       break;

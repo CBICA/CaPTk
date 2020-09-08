@@ -625,11 +625,9 @@ This application provides a probability map of deeply infiltrating tumor in the 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
--# (For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i
-nclude words in <b>BOLD</b> to be identified as respective required files.
+-# (For training only) Segmentation labels of the near-region and far-region within the Edema as two separate NIfTI (.nii.gz) files. Corresponding regions should be 1 (Label=1) in both the files.
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
-    -# <b>features.csv</b>
     -# CONVENTIONAL
       - my_<b>t1</b>_file.nii.gz
       - my_<b>t2</b>_file.nii.gz
@@ -644,7 +642,8 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
       - my_<b>perf</b>usion_file.nii.gz
     -# SEGMENTATION
       - my_tumor_segmentation_<b>label</b>_file.nii.gz
-      - my_<b>near</b>_region_file.nii.gz (only for training a new model)
+    -# DRAWING
+	  - my_<b>near</b>_region_file.nii.gz (only for training a new model)
       - my_<b>far</b>_region_file.nii.gz (only for training a new model) 
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_Directory
@@ -657,7 +656,7 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 - Infiltration prediction on loaded subject.
 	-# Load the required images in CaPTk and correctly assign the modality label in the drop-down menu. 
 	-# Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).
-	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 	-# Select the "Output Directory" and click on "Confirm".
 	-# The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).
 
@@ -666,18 +665,18 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory" where the trained model should be saved.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of model training (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
 \endverbatim
 
 	- Use existing model: 
-		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory", where the user wants to save the infiltration maps.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of infiltration map calculations (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
@@ -704,7 +703,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
@@ -725,7 +724,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
       - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
       - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
+      - label_in_<b>atlas</b>_space.nii.gz (in same space as above images)
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_directory
 		-# Subject_ID1
@@ -1231,20 +1230,19 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
 	-# A single T1 post-contrast MRI scan.
-	-# The Echo Time corresponding to the given DSC-MRI scan.
-	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
-	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+	-# The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.
+	-# Number of time-points before and after the drop of the curve that we want our image to be aligned with. 
+	-# System should have atleast 32GB RAM for aligning perfusion curve. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
+	-# Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
-	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
-  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+	-# The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).
+  - This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -c C:/InputT1ceImage.nii.gz -b 15 -a 17 -t 2 -o C:/InputImage_output
 \endverbatim
 
 */

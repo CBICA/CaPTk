@@ -69,6 +69,7 @@
 #include "CaPTkDockWidget.h"
 #include "SystemInformationDisplayWidget.h"
 #include "SystemInformation.h"
+#include "DownloadManager.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -170,6 +171,8 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  this->m_DownloadManager = new DownloadManager();
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -863,21 +866,23 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
+  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
-
+  connect(&pseudoPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&survivalPanel, SIGNAL(SurvivalPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForSurvivalPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&survivalPanel, SIGNAL(TrainNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
+  connect(&survivalPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&msubtypePanel, SIGNAL(MolecularSubtypePredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&msubtypePanel, SIGNAL(PrepareNewMolecularSubtypePredictionModel(const std::string, const std::string)), this, SLOT(CallForNewMolecularSubtypePredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&msubtypePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&skullStrippingPanel, SIGNAL(RunSkullStripping(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallImageSkullStripping(const std::string, const std::string, const std::string, const std::string)));
   connect(&dcmConverter, SIGNAL(RunDICOMConverter(const std::string, const std::string)), this, SLOT(CallDCM2NIfTIConversion(const std::string, const std::string)));
@@ -905,6 +910,7 @@ fMainWindow::fMainWindow()
   connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
+  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
   connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
@@ -916,6 +922,8 @@ fMainWindow::fMainWindow()
 
   connect(&biascorrectionPanel, SIGNAL(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)),
       this, SLOT(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)));
+
+  connect(this->m_DownloadManager, SIGNAL(progress(qint64, std::string, qint64)), this, SLOT(updateProgress(qint64, std::string, qint64)));
 
   AxialViewWidget->hide();
   CoronalViewWidget->hide();
@@ -1022,6 +1030,9 @@ fMainWindow::~fMainWindow()
 
   if (mHelpDlg)
     delete mHelpDlg;
+
+  if (this->m_DownloadManager)
+	  delete this->m_DownloadManager;
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
@@ -1148,6 +1159,18 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
+void fMainWindow::downloadFromURL(QUrl url)
+{
+	QString basefilename = this->m_DownloadManager->saveFileName(url);
+	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	QString saveFileName = getSaveFile(this,
+		downloaddirpath + "/" + basefilename, "",
+		tr("Files (*.zip)"));
+
+	this->m_DownloadManager->setFilename(saveFileName);
+	this->m_DownloadManager->append(url);
+}
+
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
@@ -1155,14 +1178,17 @@ void fMainWindow::help_Download(QAction* action)
   if (!currentLink.empty() && (currentLink != "N.A."))
   {
     cbica::Logging(loggerFile, currentLink);
-    if (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
+
+	//if it's a zip file i.e. it is a data/model
+	if (QFileInfo(currentLink.c_str()).suffix() == "zip")
+		this->downloadFromURL(QUrl(currentLink.c_str()));
+	else
+		//if it is a webpage
+		openLink(currentLink);
   }
   else
   {
+	  //bad link
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
@@ -9004,24 +9030,18 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
   PerfusionAlignment objPerfusion;
 
-  std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
+  std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
     cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
   }
 
-  std::ofstream myfile;
-  myfile.open(outputFolder + "/original_curve.csv");
-  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
-    myfile << std::to_string(OriginalCurve[index1]) << "\n";
-  myfile.close();
-
-  myfile.open(outputFolder + "/revised_curve.csv");
-  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
-    myfile << std::to_string(RevisedCurve[index1]) << "\n";
-  myfile.close();
+  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
   QString msg;
   msg = "Aligned images have been saved at the specified location.";
@@ -9662,7 +9682,7 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
 }
 
-void fMainWindow::updateProgress(int progress, std::string message, int max)
+void fMainWindow::updateProgress(qint64 progress, std::string message, qint64 max)
 {
 #ifdef USE_PROCESSDIALOG
   m_progressBar->setMaximum(max);
