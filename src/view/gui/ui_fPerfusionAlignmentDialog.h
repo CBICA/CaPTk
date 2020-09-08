@@ -235,7 +235,7 @@ public:
     fPerfusionAlignmentDialog->setWindowTitle(QApplication::translate("fPerfusionAlignmentDialog", "Perfusion Derivatives", 0));
     inputBeforePointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points before drop", 0));
     inputAfterPointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points after drop", 0));
-    inputEchoTimeLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Echo time (seconds)", 0));
+    inputEchoTimeLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Time-resolution (seconds)", 0));
     inputImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "DSC-MRI Image", 0));
     inputT1ceImageLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "T1 PostContrast Image", 0));
 
