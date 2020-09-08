@@ -94,7 +94,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o
 /**  
 \page preprocessing_reg Image Co-registration
 This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].
-
+This tool is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 <b>REQUIREMENTS:</b>
 	-# A Target image.
   -# Up to 5 moving images
@@ -234,6 +234,8 @@ Reference:
 
 /**
 \page preprocessing_brats BraTS Pre-processing Pipeline
+
+This pipeline is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
 <b>REQUIREMENTS:</b>
 	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
@@ -1206,6 +1208,8 @@ References:
 \page Diffusion_Derivatives Miscellaneous: Diffusion Derivatives
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
+This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
+
 <b> REQUIREMENTS:</b>
   -# A single DW-MRI image
   -# Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]
@@ -1252,6 +1256,8 @@ ${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPe
 /**
 \page Perfusion_Derivatives Miscellaneous: Perfusion Derivatives
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
+
+This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
 The exact measurements comprise of the following:
 
