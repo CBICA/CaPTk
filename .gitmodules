@@ -4,3 +4,6 @@
 [submodule "src/applications/Preprocessing/greedy"]
 	path = src/applications/Preprocessing/greedy
 	url = https://github.com/CBICA/greedy.git
+[submodule "src/applications/Utilities/HausdorffCLI"]
+	path = src/applications/Utilities/HausdorffCLI
+	url = https://github.com/CBICA/HausdorffCLI.git
