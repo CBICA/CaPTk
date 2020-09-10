@@ -90,7 +90,12 @@ int main(int argc, char **argv)
     if (rcbvPresent==1)
       cbica::WriteImage<ImageTypeFloat3D>(perfusionDerivatives[2], outputDirectoryName + "/ap-RCBV.nii.gz");
     std::cout << "Perfusion derivatives written to the specified location." << std::endl;
+    std::cout << "Finished successfully.\n";
   }
-  std::cout << "Finished successfully.\n";
+  else
+  {
+    std::cerr << "No derivates were calculated.\n";
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }

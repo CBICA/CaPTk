@@ -1438,7 +1438,7 @@ int main(int argc, char** argv)
     requestedAlgorithm = OrientImage;
     if (parser.isPresent("bv"))
     {
-        parser.getParameterValue("bv", inputBvecFile);
+      parser.getParameterValue("bv", inputBvecFile);
     }
   }
   else if (parser.isPresent("tb"))
@@ -1840,30 +1840,15 @@ int main(int argc, char** argv)
   {
     using ImageType = itk::Image< float, 4 >;
 
-    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images
+    if (requestedAlgorithm == OrientImage) // this does not work for 2 or 4-D images, so need to convert
     {
       typedef vnl_matrix<double> MatrixType;
 
       using OrientationImageType = itk::Image< float, 3 >;
-      auto imageSize = inputImageInfo.GetImageSize();
 
       auto inputImage = cbica::ReadImage< ImageType >(inputImageFile); 
 
-      // set the sub-image properties
-      typename ImageType::IndexType regionIndex;
-      typename ImageType::SizeType regionSize;
-      regionSize[0] = imageSize[0];
-      regionSize[1] = imageSize[1];
-      regionSize[2] = imageSize[2];
-      regionSize[3] = 0;
-      regionIndex[0] = 0;
-      regionIndex[1] = 0;
-      regionIndex[2] = 0;
-      regionIndex[3] = 0;
-
-      std::vector<ImageType::Pointer> OnePatientperfusionImages;
-
-      auto joinFilter = itk::JoinSeriesImageFilter< OrientationImageType, ImageType >::New();
+      auto OnePatientperfusionImages = cbica::GetExtractedImages< ImageType, OrientationImageType >(inputImage);
 
       bool originalOrientationOutput = false;
       std::string originalOrientation;
@@ -1879,18 +1864,9 @@ int main(int argc, char** argv)
           return(EXIT_FAILURE);
       }
       // loop through time points
-      for (size_t i = 0; i < imageSize[3]; i++)
+      for (size_t i = 0; i < OnePatientperfusionImages.size(); i++)
       {
-        regionIndex[3] = i;
-        typename ImageType::RegionType desiredRegion(regionIndex, regionSize);
-        auto filter = itk::ExtractImageFilter< ImageType, OrientationImageType >::New();
-        filter->SetExtractionRegion(desiredRegion);
-        filter->SetInput(inputImage);
-        filter->SetDirectionCollapseToSubmatrix();
-        filter->Update();
-        auto CurrentTimePoint = filter->GetOutput();
-
-        auto output = cbica::GetImageOrientation< OrientationImageType >(CurrentTimePoint, orientationDesired);
+        auto output = cbica::GetImageOrientation< OrientationImageType >(OnePatientperfusionImages[i], orientationDesired);
         if (!originalOrientationOutput)
         {
           originalOrientation = output.first;
@@ -1898,48 +1874,47 @@ int main(int argc, char** argv)
           vtkOriginalOrientation.SetForAcronym(originalOrientation);
           originalOrientationOutput = true;
         }
-
-        joinFilter->SetInput(i, output.second);
+        OnePatientperfusionImages[i] = output.second;
       }
 
-      joinFilter->Update();
+      auto finalOutput = cbica::GetJoinedImage< OrientationImageType, ImageType >(OnePatientperfusionImages, inputImage->GetSpacing()[3]);
 
       std::string path, base, ext;
       cbica::splitFileName(outputImageFile, path, base, ext);
       if (ext != ".mha")
       {
         auto tempOutputFile = path + "/" + base + ".mha"; // this is done to ensure NIfTI IO issues are taken care of
-        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), tempOutputFile);
+        cbica::WriteImage< ImageType >(finalOutput, tempOutputFile);
         cbica::WriteImage< ImageType >(cbica::ReadImage< ImageType >(tempOutputFile), outputImageFile);
         std::remove(tempOutputFile.c_str());
       }
       else
       {
-        cbica::WriteImage< ImageType >(joinFilter->GetOutput(), outputImageFile);
+        cbica::WriteImage< ImageType >(finalOutput, outputImageFile);
       }
       std::cout << "Finished reorienting " + inputImageFile + " (" + originalOrientation + ") to "
           + outputImageFile + " (" + orientationDesired + ")" << std::endl;
       if (!inputBvecFile.empty())
       {
-          /* Bvec reorientation code is based on a set of python scripts from Drew Parker @ CBICA. 
-          See orientations_captk.py and test_las_to_lps.py in /CaPTk/deprecated/Utilities. */
-          std::cout << "Reorienting supplied bvec file to " + orientationDesired << std::endl;
-          std::string bvecOutputFile = path + "/" + base + ".bvec"; // same basename as output image
+        /* Bvec reorientation code is based on a set of python scripts from Drew Parker @ CBICA. 
+        See orientations_captk.py and test_las_to_lps.py in /CaPTk/deprecated/Utilities. */
+        std::cout << "Reorienting supplied bvec file to " + orientationDesired << std::endl;
+        std::string bvecOutputFile = path + "/" + base + ".bvec"; // same basename as output image
 
-          double transform[9] = { 0.0 };
-          vtkOriginalOrientation.GetTransformTo(vtkDesiredOrientation, transform);
-          MatrixType transformMatrix(3, 3, 9, transform);
-          MatrixType dataMatrix = ReadBvecFile(inputBvecFile);
-          MatrixType resultMatrix(dataMatrix); // same shape as data
-          resultMatrix = dataMatrix.transpose() * transformMatrix; // apply the transform
-          resultMatrix.inplace_transpose(); // transpose back to original shape
-          bool writeSucceeded = WriteBvecFile(resultMatrix, bvecOutputFile);
-          if (!writeSucceeded)
-          {
-              return EXIT_FAILURE;
-          }
-          std::cout << "Finished reorienting " + bvecOutputFile + " (" + originalOrientation + ") to "
-              + outputImageFile + " (" + orientationDesired + ")" << std::endl;
+        double transform[9] = { 0.0 };
+        vtkOriginalOrientation.GetTransformTo(vtkDesiredOrientation, transform);
+        MatrixType transformMatrix(3, 3, 9, transform);
+        MatrixType dataMatrix = ReadBvecFile(inputBvecFile);
+        MatrixType resultMatrix(dataMatrix); // same shape as data
+        resultMatrix = dataMatrix.transpose() * transformMatrix; // apply the transform
+        resultMatrix.inplace_transpose(); // transpose back to original shape
+        bool writeSucceeded = WriteBvecFile(resultMatrix, bvecOutputFile);
+        if (!writeSucceeded)
+        {
+          return EXIT_FAILURE;
+        }
+        std::cout << "Finished reorienting " + bvecOutputFile + " (" + originalOrientation + ") to "
+          + outputImageFile + " (" + orientationDesired + ")" << std::endl;
       }
       return EXIT_SUCCESS;
     }
