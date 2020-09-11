@@ -5,11 +5,11 @@
 
 Read and Write itk::Image data in a safe manner. Header-only
 
-https://www.cbica.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
-Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
+Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once
