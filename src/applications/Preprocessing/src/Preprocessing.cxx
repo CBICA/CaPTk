@@ -453,7 +453,7 @@ int algorithmsRunner()
         auto commonParams = " " + interimFiles_affineTransform;
         if (registrationJacobian)
         {
-          commonParams += " -rj " + interimFiles_jacobian
+          commonParams += " -rj " + interimFiles_jacobian;
         }
         commonParams += " -rm " + inputImageFile + " " + outputImageFile;
         if (registrationSegmentationMoving)
@@ -487,8 +487,8 @@ int algorithmsRunner()
           if (registrationSegmentationMoving)
           {
             commandToCall = greedyPathAndDim +
-              " -rf " + registrationFixedImageFile +
-              " -rm " + inputImageFile +
+              " -rf " + inputImageFile +
+              " -rm " + registrationFixedImageFile +
               " " + outputImageFileInv +
               " -ri NN -r " + interimFiles_invDeformField +
               " " + interimFiles_affineTransform + ",-1";
@@ -496,8 +496,8 @@ int algorithmsRunner()
           else
           {
             commandToCall = greedyPathAndDim +
-              " -rf " + registrationFixedImageFile +
-              " -rm " + inputImageFile +
+              " -rf " + inputImageFile +
+              " -rm " + registrationFixedImageFile +
               " " + outputImageFileInv +
               " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
               " " + interimFiles_affineTransform + ",-1";
