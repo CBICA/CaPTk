@@ -450,23 +450,23 @@ int algorithmsRunner()
           }
         }
 
+        auto commonParams = " " + interimFiles_affineTransform;
+        if (registrationJacobian)
+        {
+          commonParams += " -rj " + interimFiles_jacobian
+        }
+        commonParams += " -rm " + inputImageFile + " " + outputImageFile;
         if (registrationSegmentationMoving)
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LABEL 0.2vox -r " + interimFiles_deformField +
-            " " + interimFiles_affineTransform + " -rj " + interimFiles_jacobian +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
+            " -ri LABEL 0.2vox -r " + interimFiles_deformField + commonParams;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LINEAR -r " + interimFiles_deformField +
-            " " + interimFiles_affineTransform + " -rj " + interimFiles_jacobian +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
+            " -ri LINEAR -r " + interimFiles_deformField + commonParams;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -547,6 +547,10 @@ int algorithmsRunner()
         if (affine_defaultNamedUsed)
         {
           std::remove(interimFiles_affineTransform.c_str());
+          if (!interimFiles_jacobian.empty())
+          {
+            std::remove(interimFiles_jacobian.c_str());
+          }
         }
         if (deformable_defaultNamedUsed)
         {
@@ -755,6 +759,7 @@ int main(int argc, char** argv)
     if (extension.empty())
     {
       outputDir = outputImageFile;
+      outputImageFile = cbica::normPath(outputDir + "/output.nii.gz");
     }
     else if ((extension == ".nii.gz") || (extension == ".nii")) // definitely a file is requested as output
     {
