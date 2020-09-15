@@ -74,9 +74,10 @@ public:
   QRadioButton *mRBFKernel;
   QRadioButton *mSVMFFS;
   QRadioButton *mESFS;
+  QRadioButton *mResubstitution;
+  QRadioButton *mFiveFold;
 
   QRadioButton *mCrossValidation;
-  QRadioButton *mSplitTrainTest;
   QRadioButton *mSplitTrain;
   QRadioButton *mSplitTest;
 
@@ -88,20 +89,24 @@ public:
   QFrame *configurationFrame;
 
   QGroupBox	*classifierGroupBox;
+  QGroupBox	*paramsGroupBox;
   QGroupBox	*fsGroupBox;
 
   QGroupBox	*configurationGroupBox;
   QGridLayout *classifierGridLayout;
+  QGridLayout *paramsGridLayout;
   QGridLayout *fsGridLayout;
   QGridLayout *configurationGridLayout;
 
   QLabel		*cvLabel;
-  QLabel		*ttLabel;
   QLineEdit	*cvValue;
-  QLineEdit	*ttValue;
 
   QLabel    *mSplitModelDirectoryLabel;
   QLineEdit	*mSplitModelDirectory;
+
+  QLabel *parametersLabel;
+  QCheckBox *mOptimization;
+  QLabel *crossvalidationLabel;
 
   void setupUi(QDialog *fTrainingSimulator)
   {
@@ -171,6 +176,31 @@ public:
     classifierGridLayout->addWidget(mLinearKernel, 0, 0, 1, 1);
     classifierGridLayout->addWidget(mRBFKernel, 0, 1, 1, 1);
 
+    paramsGroupBox = new QGroupBox(fTrainingSimulator);
+    paramsGroupBox->setTitle(QString::fromStdString("Parameters"));
+    paramsGridLayout = new QGridLayout(paramsGroupBox);
+    paramsGridLayout->setObjectName(QString::fromUtf8("paramsGridLayout"));
+
+    parametersLabel = new QLabel(paramsGroupBox);
+    sizePolicy.setHeightForWidth(parametersLabel->sizePolicy().hasHeightForWidth());
+    parametersLabel->setSizePolicy(sizePolicy);
+    mOptimization = new QCheckBox("Yes/No");
+    mOptimization->setEnabled(true);
+
+
+    crossvalidationLabel = new QLabel(paramsGroupBox);
+    sizePolicy.setHeightForWidth(crossvalidationLabel->sizePolicy().hasHeightForWidth());
+    crossvalidationLabel->setSizePolicy(sizePolicy);
+    mResubstitution = new QRadioButton("Resubstitution");
+    mResubstitution->setEnabled(true);
+    mFiveFold = new QRadioButton("5-fold");
+    mFiveFold->setEnabled(true);
+    paramsGridLayout->addWidget(parametersLabel, 0, 0, 1, 1); 
+    paramsGridLayout->addWidget(crossvalidationLabel, 0, 2, 1, 1); 
+    paramsGridLayout->addWidget(mOptimization, 1, 0, 1, 1);
+    paramsGridLayout->addWidget(mResubstitution, 1, 2, 1, 1);
+    paramsGridLayout->addWidget(mFiveFold, 1,3, 1, 1);
+
     fsGroupBox = new QGroupBox(fTrainingSimulator);
     fsGroupBox->setTitle(QString::fromStdString("Feature selection"));
     fsGridLayout = new QGridLayout(fsGroupBox);
@@ -189,17 +219,12 @@ public:
     cvLabel = new QLabel(configurationGroupBox);
     sizePolicy.setHeightForWidth(cvLabel->sizePolicy().hasHeightForWidth());
     cvLabel->setSizePolicy(sizePolicy);
-    ttLabel = new QLabel(configurationGroupBox);
-    sizePolicy.setHeightForWidth(ttLabel->sizePolicy().hasHeightForWidth());
-    ttLabel->setSizePolicy(sizePolicy);
     mSplitModelDirectoryLabel = new QLabel(configurationGroupBox);
     sizePolicy.setHeightForWidth(mSplitModelDirectoryLabel->sizePolicy().hasHeightForWidth());
     mSplitModelDirectoryLabel->setSizePolicy(sizePolicy);
 
     mCrossValidation = new QRadioButton("CrossValidation");
     mCrossValidation->setEnabled(true);
-    mSplitTrainTest = new QRadioButton("Split TrainTest");
-    mSplitTrainTest->setEnabled(true);
     mSplitTrain = new QRadioButton("Split Train");
     mSplitTrain->setEnabled(true);
     mSplitTest = new QRadioButton("Split Test");
@@ -210,11 +235,6 @@ public:
     sizePolicy.setHeightForWidth(cvValue->sizePolicy().hasHeightForWidth());
     cvValue->setSizePolicy(sizePolicy);
     cvValue->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-    ttValue = new QLineEdit("");
-    ttValue->setObjectName(QString::fromUtf8("ttValue"));
-    sizePolicy.setHeightForWidth(ttValue->sizePolicy().hasHeightForWidth());
-    ttValue->setSizePolicy(sizePolicy);
-    ttValue->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
     mSplitModelDirectory = new QLineEdit("");
     mSplitModelDirectory->setObjectName(QString::fromUtf8("mSplitModelDirectory"));
@@ -229,10 +249,6 @@ public:
     configurationGridLayout->addWidget(mCrossValidation, 0, 0, 1, 1);
     configurationGridLayout->addWidget(cvLabel, 0, 1, 1, 1);
     configurationGridLayout->addWidget(cvValue, 0, 2, 1, 1);
-
-    configurationGridLayout->addWidget(mSplitTrainTest, 1,0, 1, 1);
-    configurationGridLayout->addWidget(ttLabel, 1,1, 1, 1);
-    configurationGridLayout->addWidget(ttValue, 1, 2, 1, 1);
 
     configurationGridLayout->addWidget(mSplitTrain, 2,0, 1, 1);
     configurationGridLayout->addWidget(mSplitTest, 3,0, 1, 1);
@@ -298,10 +314,11 @@ public:
 
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
     gridLayout->addWidget(classifierGroupBox, 2, 0, 1, 2);
-    gridLayout->addWidget(fsGroupBox, 3, 0, 1, 2);
-    gridLayout->addWidget(configurationGroupBox, 4, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 5, 0, 1, 2);
-    gridLayout->addWidget(confirmGroupBox, 6, 0, 1, 2);
+    gridLayout->addWidget(paramsGroupBox, 3, 0, 1, 2);
+    gridLayout->addWidget(fsGroupBox, 4, 0, 1, 2);
+    gridLayout->addWidget(configurationGroupBox, 5, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 6, 0, 1, 2);
+    gridLayout->addWidget(confirmGroupBox, 7, 0, 1, 2);
 
     retranslateUi(fTrainingSimulator);
 
@@ -317,10 +334,9 @@ public:
     inputFeaturesLabel->setText(QApplication::translate("fTrainingSimulator", "Features File:", 0));
     inputTargetLabel->setText(QApplication::translate("fTrainingSimulator", "Target File:", 0));
     cvLabel->setText(QApplication::translate("fTrainingSimulator", "No. of folds:", 0));
-    ttLabel->setText(QApplication::translate("fTrainingSimulator", "No. of training samples:", 0));
     mSplitModelDirectoryLabel->setText(QApplication::translate("fTrainingSimulator", "Model directory:", 0));
-
-
+    parametersLabel->setText(QApplication::translate("fTrainingSimulator", "Classifier's parameters", 0));
+    crossvalidationLabel->setText(QApplication::translate("fTrainingSimulator", "Cross-validation", 0));
 
   } // retranslateUi
 };
