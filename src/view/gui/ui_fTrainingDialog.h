@@ -177,7 +177,7 @@ public:
     classifierGridLayout->addWidget(mRBFKernel, 0, 1, 1, 1);
 
     paramsGroupBox = new QGroupBox(fTrainingSimulator);
-    paramsGroupBox->setTitle(QString::fromStdString("Parameters"));
+    paramsGroupBox->setTitle(QString::fromStdString("Parameter Optimization/Cross-validation"));
     paramsGridLayout = new QGridLayout(paramsGroupBox);
     paramsGridLayout->setObjectName(QString::fromUtf8("paramsGridLayout"));
 
@@ -335,7 +335,7 @@ public:
     inputTargetLabel->setText(QApplication::translate("fTrainingSimulator", "Target File:", 0));
     cvLabel->setText(QApplication::translate("fTrainingSimulator", "No. of folds:", 0));
     mSplitModelDirectoryLabel->setText(QApplication::translate("fTrainingSimulator", "Model directory:", 0));
-    parametersLabel->setText(QApplication::translate("fTrainingSimulator", "Classifier's parameters", 0));
+    parametersLabel->setText(QApplication::translate("fTrainingSimulator", "Optimize classifier's parameters", 0));
     crossvalidationLabel->setText(QApplication::translate("fTrainingSimulator", "Cross-validation", 0));
 
   } // retranslateUi
