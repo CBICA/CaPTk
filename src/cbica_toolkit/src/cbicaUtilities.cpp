@@ -63,6 +63,7 @@ static const char  cSeparator = '/';
 #include <stdexcept>
 #include <algorithm>
 #include <string>
+#include <array>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -1233,6 +1234,29 @@ namespace cbica
     } // end dirs-loop
 
     return returnVector;
+  }
+
+  std::string getStdoutFromCommand(const std::string command)
+  {
+  std::array<char, 256> buffer;
+  std::string result;
+#ifdef WIN32
+#define PCLOSE _pclose
+#define POPEN _popen
+#else
+#define PCLOSE pclose
+#define POPEN popen
+#endif
+  std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);
+  if (!pipe) 
+  {
+    throw std::runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
+  {
+    result += buffer.data();
+  }
+  return result;
   }
 
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
