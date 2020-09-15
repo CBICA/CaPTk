@@ -3,13 +3,13 @@
 
 \brief Some basic utility functions.
 
-Dependecies: ITK (module_review, module_skullstrip enabled), OpenMP
+Dependencies: ITK (module_review, module_skullstrip enabled), OpenMP
 
-https://www.cbica.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
-Copyright (c) 2015 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
+Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once

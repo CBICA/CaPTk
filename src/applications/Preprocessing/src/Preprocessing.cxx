@@ -743,7 +743,21 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
-    outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+    auto extension = cbica::getFilenameExtension(outputImageFile, false);
+    // if an output directory is passed, assume that there won't be any extension
+    if (extension.empty())
+    {
+      outputDir = outputImageFile;
+    }
+    else if ((extension == ".nii.gz") || (extension == ".nii")) // definitely a file is requested as output
+    {
+      outputDir = cbica::getFilenamePath(outputImageFile, false);
+    }
+    else // populate further corner cases using if-else here
+    {
+      outputDir = cbica::getFilenamePath(outputImageFile, false);
+    }
     cbica::createDir(outputDir);
   }
 
