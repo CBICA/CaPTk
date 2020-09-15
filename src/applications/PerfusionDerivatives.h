@@ -100,6 +100,9 @@ public:
 
   template<class ImageType, class PerfusionImageType >
   bool IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
+
+  template< class ImageType, class PerfusionImageType >
+  bool InputContainsNegativeValues(typename PerfusionImageType::Pointer perfImagePointerNifti);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -162,6 +165,11 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
   {
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
+  }
+  if (this->InputContainsNegativeValues<ImageType, PerfusionImageType>(perfImagePointerNifti))
+  {
+	  logger.WriteError("Input Image contains negative values");
+	  return perfusionDerivatives;
   }
   if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti, outputdirectory) == false)
   {
@@ -787,4 +795,31 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePerfusionVolumeMean(t
 	return outputImage;
 }
 
+template< class ImageType, class PerfusionImageType >
+bool PerfusionDerivatives::InputContainsNegativeValues(typename PerfusionImageType::Pointer perfImagePointerNifti)
+{
+	//typename ImageType::Pointer PH = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
+	typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> PIteratorType;
+	PIteratorType pIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
+	//IteratorType bIt(B, B->GetLargestPossibleRegion());
+	//IteratorType phIt(PH, PH->GetLargestPossibleRegion());
+
+	pIt.GoToBegin();
+	//bIt.GoToBegin();
+	//phIt.GoToBegin();
+	bool hasNegativeValue = false;
+	while (!pIt.IsAtEnd())
+	{
+		//phIt.Set(std::abs(aIt.Get() - bIt.Get()));
+		if (pIt.Value() < 0.0)
+		{
+			hasNegativeValue = true;
+			break;
+		}
+		++pIt;
+		//++bIt;
+		//++phIt;
+	}
+	return hasNegativeValue;
+}
 #endif
