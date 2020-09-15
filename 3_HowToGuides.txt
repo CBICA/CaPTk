@@ -1266,7 +1266,7 @@ The exact measurements comprise of the following:
 <b>Note</b>: The ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
-  -# A single DSC-MRI image
+  -# A single DSC-MRI image with non negative values.
   -# System should have atleast 32GB RAM for calculating perfusion derivatives
 
 <b> USAGE:</b>
