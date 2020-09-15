@@ -8992,7 +8992,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected. Please make sure that the input image does not contain negative values. Please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }
