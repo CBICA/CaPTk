@@ -594,6 +594,14 @@ namespace cbica
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath = true);
 
   /**
+  \brief Read output of given command from std::system
+
+  \param command The command that will be run on std::systm
+  \return String of the buffer output
+  */ 
+  std::string getStdoutFromCommand(const std::string command);
+
+  /**
   \brief Find all files inside a directory
 
   \param dirName The directory to do the search in
