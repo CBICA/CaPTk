@@ -140,56 +140,20 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
-    std::cout << "Curve characteristics after interpolation::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
+    std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
     typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resampledPerfusion, MASK, maxcurve);
     RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample_normalized, MASK, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
-    std::cout << "Curve characteristics after base normalization::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
-
-    for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
-      TruncatedCurve.push_back(RevisedCurve[index]);
-
-    //write the corresponding perfusion 3D images
-    typename PerfusionImageType::RegionType region1 = resampledPerfusion->GetLargestPossibleRegion();
-    typename PerfusionImageType::IndexType regionIndex;
-    typename PerfusionImageType::SizeType regionSize;
-    regionSize[0] = region1.GetSize()[0];
-    regionSize[1] = region1.GetSize()[1];
-    regionSize[2] = region1.GetSize()[2];
-    regionSize[3] = 0;
-    regionIndex[0] = 0;
-    regionIndex[1] = 0;
-    regionIndex[2] = 0;
+    std::cout << "Curve characteristics after base normalization::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
     {
-      typename ImageType::Pointer NewImage = ImageType::New();
-      NewImage->CopyInformation(t1ceImagePointer);
-      NewImage->SetRequestedRegion(t1ceImagePointer->GetLargestPossibleRegion());
-      NewImage->SetBufferedRegion(t1ceImagePointer->GetBufferedRegion());
-      NewImage->Allocate();
-      NewImage->FillBuffer(0);
+      auto NewImage = perfusionImageVolumes[index];
+      NewImage->DisconnectPipeline();
 
-      regionIndex[3] = index;
-      typename PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
-      auto filter = itk::ExtractImageFilter< PerfusionImageType, ImageType >::New();
-      filter->SetExtractionRegion(desiredRegion);
-      filter->SetInput(resampledPerfusion);
-      filter->SetDirectionCollapseToIdentity();
-      filter->Update();
-      typename ImageType::Pointer CurrentTimePoint = filter->GetOutput();
-
-      itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
-      itk::ImageRegionIteratorWithIndex <ImageType> newIt(NewImage, NewImage->GetLargestPossibleRegion());
-      imageIt.GoToBegin(); newIt.GoToBegin();
-      while (!imageIt.IsAtEnd())
-      {
-        newIt.Set(imageIt.Get());
-        ++imageIt;
-        ++newIt;
-      }
       PerfusionAlignment.push_back(NewImage);
+      TruncatedCurve.push_back(RevisedCurve[index]);
     }
   }
   catch (const std::exception& e1)
