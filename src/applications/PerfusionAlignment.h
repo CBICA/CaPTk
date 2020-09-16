@@ -88,6 +88,10 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end);
 
+  //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
+  template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
+  std::pair< typename ImageType::Pointer, std::vector<double> > CalculatePerfusionVolumeStdAndMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end);
+
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -118,8 +122,11 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   try
   {
     //get original curve
+    std::cout << "Calculating mean and std-dev from perfusion image.\n";
     typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9); //values do not matter here
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
+
+    auto temp_both = CalculatePerfusionVolumeStdAndMean< ImageType, PerfusionImageType >(perfImagePointerNifti, t1ceImagePointer, 0, 9);
 
                                                                                                                     //read dicom to get values of tags 
                                                                                                                     //std::string timeinseconds = ReadMetaDataTags(dicomFile, "0018|0080");
@@ -127,7 +134,8 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
 
     //get interpolated curve
     //std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
-
+    
+    std::cout << "Started resampling.\n";
     // Resize
     auto inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
     auto outputSize = inputSize;
@@ -219,6 +227,7 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
           index3D[1] = j;
           index3D[2] = k;
 
+          auto temp = ImagePointerMask.GetPointer()->GetPixel(index3D);
           if (ImagePointerMask.GetPointer()->GetPixel(index3D) == 0)
             continue;
 
@@ -233,6 +242,73 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
     AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
   }
   return AverageCurve;
+}
+
+template< class ImageType, class PerfusionImageType >
+std::pair< typename ImageType::Pointer, std::vector<double> > 
+PerfusionAlignment::CalculatePerfusionVolumeStdAndMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end)
+{
+  std::vector<double> AverageCurve;
+  auto outputImage = firstVolume;
+  outputImage->DisconnectPipeline();
+  auto size = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+  for (unsigned int volumes = 0; volumes < size[3]; volumes++)
+  {
+    double volume_mean = 0;
+    for (unsigned int i = 0; i < size[0]; i++)
+    {
+      for (unsigned int j = 0; j < size[1]; j++)
+      {
+        for (unsigned int k = 0; k < size[2]; k++)
+        {
+          typename ImageType::IndexType index3D;
+          index3D[0] = i;
+          index3D[1] = j;
+          index3D[2] = k;
+
+          //calculate mean values
+          double local_sum = 0;
+          for (int l = 0; l < size[3]; l++)
+          {
+            typename PerfusionImageType::IndexType index4D;
+            index4D[0] = i;
+            index4D[1] = j;
+            index4D[2] = k;
+            index4D[3] = l;
+            local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+          } // end l-loop
+          double meanvalue = std::round(local_sum / size[3]);
+
+          //calculate standard deviation
+          double temp = 0.0;
+          for (int l = 0; l < size[3]; l++)
+          {
+            typename PerfusionImageType::IndexType index4D;
+            index4D[0] = i;
+            index4D[1] = j;
+            index4D[2] = k;
+            index4D[3] = l;
+            temp += (perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue)*(perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue);
+          } // end l-loop
+
+          double stdDev = std::sqrt(temp / (size[3] - 1));
+          if (stdDev > 10)
+            outputImage->SetPixel(index3D, 1);
+          else
+            outputImage->SetPixel(index3D, 0);
+
+          typename PerfusionImageType::IndexType index4D_temp;
+          index4D_temp[0] = i;
+          index4D_temp[1] = j;
+          index4D_temp[2] = k;
+          index4D_temp[3] = volumes;
+          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D_temp);
+        } // end k-loop
+      } // end j-loop
+    } // end i-
+    AverageCurve.push_back(std::round(volume_mean / size[3]));
+  } // end volume-loop
+  return std::make_pair(outputImage, AverageCurve);
 }
 
 template< class ImageType, class PerfusionImageType >
