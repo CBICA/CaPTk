@@ -1234,7 +1234,6 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single T1 post-contrast MRI scan.
 	-# The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.
 	-# Number of time-points before and after the drop of the curve that we want our image to be aligned with. 
 	-# System should have atleast 32GB RAM for aligning perfusion curve. 
