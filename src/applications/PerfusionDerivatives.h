@@ -76,6 +76,25 @@ public:
   //! Default destructor
   ~PerfusionDerivatives() {};
 
+  void SetBaselineStartPercentage(double start)
+  {
+	  this->baseline_start_threshold = start;
+  }
+
+  void SetBaselineEndPercentage(double end)
+  {
+	  this->baseline_end_threshold = end;
+  }
+
+  void SetRecoveryStartPercentage(double start)
+  {
+	  this->recovery_start_threshold = start;
+  }
+
+  void SetRecoveryEndPercentage(double end)
+  {
+	  this->recovery_end_threshold = end;
+  }
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const std::string outputdirectory);
