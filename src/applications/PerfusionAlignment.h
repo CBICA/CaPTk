@@ -23,6 +23,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkExtractImageFilter.h"
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
+#include "cbicaITKUtilities.h"
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
@@ -68,7 +69,7 @@ public:
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType, class PerfusionImageType >
   std::vector<typename ImageType::Pointer> Run(std::string perfusionFile,
-    std::string t1ceFile, int pointsbeforedrop, int pointsafterdrop,
+    int pointsbeforedrop, int pointsafterdrop,
     std::vector<double> & OriginalCurve,
     std::vector<double> & InterpolatedCurve,
     std::vector<double> & RevisedCurve,
@@ -91,7 +92,7 @@ public:
 
 template< class ImageType, class PerfusionImageType >
 std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, 
-  std::string t1ceFile, int pointsbeforedrop,int pointsafterdrop,
+  int pointsbeforedrop,int pointsafterdrop,
   std::vector<double> & OriginalCurve, 
   std::vector<double> & InterpolatedCurve,
   std::vector<double> & RevisedCurve,
@@ -100,7 +101,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
-  typename ImageType::Pointer t1ceImagePointer;
+
   try
   {
     perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(perfusionFile);
@@ -110,15 +111,9 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return PerfusionAlignment;
   }
-  try
-  {
-    t1ceImagePointer = cbica::ReadImage< ImageType >(t1ceFile);
-  }
-  catch (const std::exception& e1)
-  {
-    logger.WriteError("Unable to open the given T1 post-contrast enhanced image file. Error code : " + std::string(e1.what()));
-    return PerfusionAlignment;
-  }
+
+  auto perfusionImageVolumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(perfImagePointerNifti);
+  auto t1ceImagePointer = perfusionImageVolumes[0];
 
   try
   {
@@ -161,12 +156,14 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     resample->SetTransform(_pTransform);
     resample->UpdateLargestPossibleRegion();
 
-    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, 0, 9); //values do not matter here
+    auto resampledPerfusion = resample->GetOutput();
+
+    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
 
-    typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resample->GetOutput(), MASK, maxcurve);
+    typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resampledPerfusion, MASK, maxcurve);
     RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample_normalized, MASK, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base normalization::: base= " << base << " drop= " << drop << " min= " << mincurve << " max= " << maxcurve << std::endl;
@@ -175,7 +172,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       TruncatedCurve.push_back(RevisedCurve[index]);
 
     //write the corresponding perfusion 3D images
-    typename PerfusionImageType::RegionType region1 = resample->GetOutput()->GetLargestPossibleRegion();
+    typename PerfusionImageType::RegionType region1 = resampledPerfusion->GetLargestPossibleRegion();
     typename PerfusionImageType::IndexType regionIndex;
     typename PerfusionImageType::SizeType regionSize;
     regionSize[0] = region1.GetSize()[0];
@@ -199,7 +196,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       typename PerfusionImageType::RegionType desiredRegion(regionIndex, regionSize);
       auto filter = itk::ExtractImageFilter< PerfusionImageType, ImageType >::New();
       filter->SetExtractionRegion(desiredRegion);
-      filter->SetInput(resample->GetOutput());
+      filter->SetInput(resampledPerfusion);
       filter->SetDirectionCollapseToIdentity();
       filter->Update();
       typename ImageType::Pointer CurrentTimePoint = filter->GetOutput();
