@@ -70,11 +70,14 @@ int main(int argc, char **argv)
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop,pointsafterdrop,OriginalCurve,InterpolatedCurve, RevisedCurve,TruncatedCurve, timeresolution);
   //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>("//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_perf_LPS_r_SSFinal.nii.gz", "W:/perf/MSh_PERF_AX-1001_echo1_I000001.dcm", "//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_t1ce_LPS_r_SSFinal.nii.gz", 17, 40);
-  for (int index = 0; index < PerfusionAlignment.size(); index++)
-  {
-    std::cout << "Writing time-point: " << index+1 << "/" << PerfusionAlignment.size() << std::endl;
-    cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputDirectoryName + std::to_string(index+1+pointsbeforedrop) + ".nii.gz");
-  }
+  //for (int index = 0; index < PerfusionAlignment.size(); index++)
+  //{
+  //  std::cout << "Writing time-point: " << index+1 << "/" << PerfusionAlignment.size() << std::endl;
+  //  cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputDirectoryName + std::to_string(index+1+pointsbeforedrop) + ".nii.gz");
+  //}
+
+  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputDirectoryName + "/perfusionAlignedImage.nii.gz");
   
   WriteCSVFiles(OriginalCurve, outputDirectoryName + "/original_curve.csv");
   WriteCSVFiles(InterpolatedCurve, outputDirectoryName + "/interpolated_curve.csv");
