@@ -121,10 +121,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
     typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9); //values do not matter here
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
-                                            
-    //get interpolated curve
-    //std::vector<double> interpolatedcurve = GetInterpolatedCurve(averagecurve,std::stof(timeinseconds),totaltimeduration);
-    
+
     std::cout << "Started resampling.\n";
     // Resize
     auto inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
