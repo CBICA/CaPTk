@@ -321,12 +321,12 @@ typename PerfusionImageType::Pointer PerfusionAlignment::NormalizeBaselineValue(
   double min_value = 0;
   double base_value = 300;
   typename ImageType::Pointer outputImage = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti)[0];
-  ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  auto size = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+  for (unsigned int volumes = 0; volumes < size[3]; volumes++)
   {
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
+    for (unsigned int i = 0; i < size[0]; i++)
+      for (unsigned int j = 0; j < size[1]; j++)
+        for (unsigned int k = 0; k < size[2]; k++)
         {
           typename ImageType::IndexType index3D;
           index3D[0] = i;
