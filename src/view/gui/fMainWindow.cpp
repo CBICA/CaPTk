@@ -9020,18 +9020,13 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
     return;
   }
-  if (!cbica::isFile(inputt1cefilename))
-  {
-    ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
-    return;
-  }
 
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
   for (int index = 0; index < PerfusionAlignment.size(); index++)
   {
     std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
