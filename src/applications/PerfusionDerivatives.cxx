@@ -2,6 +2,11 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 
+bool IsWithinRange(float v)
+{
+	return 0.0 <= v && v <= 100.0;
+}
+
 int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionDerivatives");
@@ -37,7 +42,7 @@ int main(int argc, char **argv)
   bool rstValid = false;
   bool retValid = false;
 
-  auto IsValid = [](float v){ return 0.0 <= v && v <= 100.0; };
+  //auto IsValid = [](float v){ return 0.0 <= v && v <= 100.0; };
 
   std::string inputFileName, outputDirectoryName;
 
@@ -73,7 +78,7 @@ int main(int argc, char **argv)
   if (parser.isPresent("bs"))
   {
 	  parser.getParameterValue("bs", bst);
-	  bstValid = IsValid(bst);
+	  bstValid = IsWithinRange(bst);
 	  if (!bstValid)
 	  {
 		  std::cout << "Baseline start threshold value must be between 0 and 100";
@@ -83,7 +88,7 @@ int main(int argc, char **argv)
   if (parser.isPresent("be"))
   {
 	  parser.getParameterValue("be", bet);
-	  betValid = IsValid(bet);
+	  betValid = IsWithinRange(bet);
 	  if (!betValid)
 	  {
 		  std::cout << "Baseline end threshold value must be between 0 and 100";
@@ -93,7 +98,7 @@ int main(int argc, char **argv)
   if (parser.isPresent("rs"))
   {
 	  parser.getParameterValue("rs", rst);
-	  rstValid = IsValid(rst);
+	  rstValid = IsWithinRange(rst);
 	  if (!rstValid)
 	  {
 		  std::cout << "Recovery start threshold value must be between 0 and 100";
@@ -103,7 +108,7 @@ int main(int argc, char **argv)
   if (parser.isPresent("re"))
   {
 	  parser.getParameterValue("re", ret);
-	  retValid = IsValid(ret);
+	  retValid = IsWithinRange(ret);
 	  if (!retValid)
 	  {
 		  std::cout << "Recovery end threshold value must be between 0 and 100";
