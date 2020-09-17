@@ -9028,17 +9028,24 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
 
-  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
-  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
+  if (!PerfusionAlignment.empty())
+  {
+    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+    cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
 
-  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
-  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
-  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
-  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+    WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+    WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+    WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+    WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
-  QString msg;
-  msg = "Aligned images have been saved at the specified location.";
-  ShowMessage(msg.toStdString(), this);
+    QString msg;
+    msg = "Aligned images have been saved at the specified location.";
+    ShowMessage(msg.toStdString(), this);
+  }
+  else
+  {
+    ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
+  }
 }
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int confType, int folds)
