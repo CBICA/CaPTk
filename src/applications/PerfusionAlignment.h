@@ -144,6 +144,17 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base normalization::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
+    if ((drop - pointsbeforedrop) <= 0)
+    {
+      std::cerr << "Drop has been estimated at '" << drop << "' but time-points before drop is given as '" << pointsbeforedrop << "', which is not possible.\n";
+      return PerfusionAlignment;
+    }
+    if ((drop + pointsafterdrop) >= perfusionImageVolumes.size())
+    {
+      std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points are '" << perfusionImageVolumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
+      return PerfusionAlignment;
+    }
+
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
     {
       auto NewImage = perfusionImageVolumes[index];
