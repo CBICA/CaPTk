@@ -1236,13 +1236,13 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 	-# A single DSC-MRI scan. 
 	-# The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.
 	-# Number of time-points before and after the drop of the curve that we want our image to be aligned with. 
-	-# System should have atleast 32GB RAM for aligning perfusion curve. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
 	-# Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.
 	-# Press "Confirm" button.
 	-# The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).
+	-# Outupt folder will contain the alighned perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.
   - This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
 ${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -c C:/InputT1ceImage.nii.gz -b 15 -a 17 -t 2 -o C:/InputImage_output
