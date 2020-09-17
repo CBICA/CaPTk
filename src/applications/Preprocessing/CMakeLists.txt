@@ -71,6 +71,7 @@ SET(GREEDY_HEADERS
 # Define greedy library files
 SET(GREEDY_SRCS
   greedy/src/lddmm_data.cxx
+  greedy/src/lddmm_sparse.cxx
   greedy/src/GreedyAPI.cxx
   greedy/src/GreedyParameters.cxx
   greedy/src/MultiImageRegistrationHelper.cxx
