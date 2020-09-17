@@ -94,7 +94,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    std::cerr << "No derivates were calculated.\n";
+    std::cerr << "No derivates were calculated. Please make sure that the input image does not contain negative values.\n";
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
