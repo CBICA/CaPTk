@@ -76,16 +76,24 @@ int main(int argc, char **argv)
   //  cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputDirectoryName + std::to_string(index+1+pointsbeforedrop) + ".nii.gz");
   //}
 
-  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
-  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputDirectoryName + "/perfusionAlignedImage.nii.gz");
-  
-  WriteCSVFiles(OriginalCurve, outputDirectoryName + "/original_curve.csv");
-  WriteCSVFiles(InterpolatedCurve, outputDirectoryName + "/interpolated_curve.csv");
-  WriteCSVFiles(RevisedCurve, outputDirectoryName + "/revised_curve.csv");
-  WriteCSVFiles(TruncatedCurve, outputDirectoryName + "/truncated_curve.csv");
+  if (!PerfusionAlignment.empty())
+  {
+    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+    cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputDirectoryName + "/perfusionAlignedImage.nii.gz");
 
-  std::cout << "Finished successfully.\n";
-  std::cout << "\nPress any key to continue............\n";
+    WriteCSVFiles(OriginalCurve, outputDirectoryName + "/original_curve.csv");
+    WriteCSVFiles(InterpolatedCurve, outputDirectoryName + "/interpolated_curve.csv");
+    WriteCSVFiles(RevisedCurve, outputDirectoryName + "/revised_curve.csv");
+    WriteCSVFiles(TruncatedCurve, outputDirectoryName + "/truncated_curve.csv");
+
+    std::cout << "Finished successfully.\n";
+    std::cout << "\nPress any key to continue............\n";
+  }
+  else
+  {
+    std::cerr << "Something went wrong and CaPTk could not align the perfusion signal correctly. Please see prior messages for details.\n";
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }
