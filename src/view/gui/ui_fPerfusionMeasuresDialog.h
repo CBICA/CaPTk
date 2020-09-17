@@ -66,6 +66,18 @@ public:
   QCheckBox* m_rcbv;
   QCheckBox* m_ph;
 
+  QDoubleSpinBox* m_baselineStart;
+  QDoubleSpinBox* m_baselineEnd;
+  QDoubleSpinBox* m_recoveryStart;
+  QDoubleSpinBox* m_recoveryEnd;
+
+  QLabel* m_baselineStartLabel;
+  QLabel* m_baselineEndLabel;
+  QLabel* m_recoveryStartLabel;
+  QLabel* m_recoveryEndLabel;
+
+  QFrame* m_line;
+
   QHBoxLayout * horizontalLayout;
 
   void setupUi(QDialog *fPerfusionEstimator)
@@ -125,9 +137,24 @@ public:
     m_ph = new QCheckBox("Peak Height");
     m_ph->setEnabled(true);
 
+	m_line = new QFrame(inputGroupBox);
+	m_line->setObjectName(QStringLiteral("line"));
+	m_line->setFrameShape(QFrame::VLine);
+	m_line->setFrameShadow(QFrame::Sunken);
+
+	m_baselineStart = new QDoubleSpinBox(inputGroupBox);
+	m_baselineEnd = new QDoubleSpinBox(inputGroupBox);
+	m_recoveryStart = new QDoubleSpinBox(inputGroupBox);
+	m_recoveryEnd = new QDoubleSpinBox(inputGroupBox);
+
+	m_baselineStartLabel = new QLabel(inputGroupBox);
+	m_baselineEndLabel = new QLabel(inputGroupBox);
+	m_recoveryStartLabel = new QLabel(inputGroupBox);
+	m_recoveryEndLabel = new QLabel(inputGroupBox);
+
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
-    inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
-    inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
+    inputGridLayout->addWidget(inputImageName, 0, 2, 2, 1);
+    inputGridLayout->addWidget(inputImageButton, 0, 3, 1, 1);
 
     inputGridLayout->addWidget(inputEchoLabel, 1, 0, 1, 1);
     inputGridLayout->addWidget(inputEchoName, 1, 1, 1, 1);
@@ -139,6 +166,17 @@ public:
     inputGridLayout->addWidget(m_rcbv, 3, 0, 1, 1);
     inputGridLayout->addWidget(m_ph, 4, 0, 1, 1);
     inputGridLayout->addWidget(m_psr, 5, 0, 1, 1);
+
+	inputGridLayout->addWidget(m_line, 1, 1, 5, 1); //line
+	inputGridLayout->addWidget(m_baselineStartLabel, 2, 2, 1, 1); //BS
+	inputGridLayout->addWidget(m_baselineEndLabel, 3, 2, 1, 1); //BE
+	inputGridLayout->addWidget(m_recoveryStartLabel, 4, 2, 1, 1); //RS
+	inputGridLayout->addWidget(m_recoveryEndLabel, 5, 2, 1, 1); //RE
+
+	inputGridLayout->addWidget(m_baselineStart, 2, 3, 1, 1);
+	inputGridLayout->addWidget(m_baselineEnd, 3, 3, 1, 1);
+	inputGridLayout->addWidget(m_recoveryStart, 4, 3, 1, 1);
+	inputGridLayout->addWidget(m_recoveryEnd, 5, 3, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionEstimator);
@@ -212,7 +250,7 @@ public:
 
     confirmButton->setText(QApplication::translate("fPerfusionEstimator", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPerfusionEstimator", "Cancel", 0));
-    m_rcbv->setText(QApplication::translate("fPerfusionEstimator", "Automatically-extracted proxy to Relative Cerebral Blood Volume (ap-rCBV)", 0));
+    m_rcbv->setText(QApplication::translate("fPerfusionEstimator", "Automatically-extracted proxy to \nRelative Cerebral Blood Volume (ap-rCBV)", 0));
     m_psr->setText(QApplication::translate("fPerfusionEstimator", "Percent Signal Recovery (PSR)", 0));
     m_ph->setText(QApplication::translate("fPerfusionEstimator", "Peak Height (PH)", 0));
   } // retranslateUi
