@@ -2,10 +2,19 @@
 #include "cbicaUtilities.h"
 #include "cbicaCmdParser.h"
 
+bool IsWithinRange(float v)
+{
+	return 0.0 <= v && v <= 100.0;
+}
+
 int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionDerivatives");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
+  parser.addOptionalParameter("bs", "baseline start", cbica::Parameter::FLOAT, "", "The baseline start threshold percentage (range[0-100], Default = 0)");
+  parser.addOptionalParameter("be", "baseline end", cbica::Parameter::FLOAT, "", "The baseline end threshold percentage (range[0-100], Default = 20)");
+  parser.addOptionalParameter("rs", "recovery start", cbica::Parameter::FLOAT, "", "The recovery start threshold percentage (range[0-100], Default = 66)");
+  parser.addOptionalParameter("re", "recovery end", cbica::Parameter::FLOAT, "", "The recovery end threshold percentage (range[0-100], Default = 88)");
   parser.addOptionalParameter("p", "PSR", cbica::Parameter::STRING, "", "The Percent Signal Recovery image (1=YES, 0=NO, 1 (Default))");
   parser.addOptionalParameter("pH", "peakHeight", cbica::Parameter::STRING, "", "The Peak Height image (1=YES, 0=NO, 1 (Default))");
   parser.addOptionalParameter("r", "ap-RCBV", cbica::Parameter::STRING, "", "Automatially-extracted proxy to reletive cerebral volume image (1=YES, 0=NO, 1 (Default))");
@@ -25,6 +34,15 @@ int main(int argc, char **argv)
   int psrPresent = 1;
   int phPresent = 1;
   int rcbvPresent = 1;
+
+  float bst,bet,rst,ret;
+
+  bool bstValid = false;
+  bool betValid = false;
+  bool rstValid = false;
+  bool retValid = false;
+
+  //auto IsValid = [](float v){ return 0.0 <= v && v <= 100.0; };
 
   std::string inputFileName, outputDirectoryName;
 
@@ -56,6 +74,48 @@ int main(int argc, char **argv)
   {
     outputDirectoryName = argv[tempPosition + 1];
   }
+
+  if (parser.isPresent("bs"))
+  {
+	  parser.getParameterValue("bs", bst);
+	  bstValid = IsWithinRange(bst);
+	  if (!bstValid)
+	  {
+		  std::cout << "Baseline start threshold value must be between 0 and 100";
+		  return EXIT_FAILURE;
+	  }
+  }
+  if (parser.isPresent("be"))
+  {
+	  parser.getParameterValue("be", bet);
+	  betValid = IsWithinRange(bet);
+	  if (!betValid)
+	  {
+		  std::cout << "Baseline end threshold value must be between 0 and 100";
+		  return EXIT_FAILURE;
+	  }
+  }
+  if (parser.isPresent("rs"))
+  {
+	  parser.getParameterValue("rs", rst);
+	  rstValid = IsWithinRange(rst);
+	  if (!rstValid)
+	  {
+		  std::cout << "Recovery start threshold value must be between 0 and 100";
+		  return EXIT_FAILURE;
+	  }
+  }
+  if (parser.isPresent("re"))
+  {
+	  parser.getParameterValue("re", ret);
+	  retValid = IsWithinRange(ret);
+	  if (!retValid)
+	  {
+		  std::cout << "Recovery end threshold value must be between 0 and 100";
+		  return EXIT_FAILURE;
+	  }
+  }
+
   std::cout << "Input File:" << inputFileName << std::endl;
   std::cout << "Output Directory:" << outputDirectoryName << std::endl;
 
@@ -78,6 +138,14 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   PerfusionDerivatives objPerfusion;
+  if (bstValid)
+	  objPerfusion.SetBaselineStartPercentage(bst);
+  if (betValid)
+	  objPerfusion.SetBaselineEndPercentage(bet);
+  if (rstValid)
+	  objPerfusion.SetRecoveryStartPercentage(rst);
+  if (retValid)
+	  objPerfusion.SetRecoveryEndPercentage(ret);
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, rcbvPresent, psrPresent, phPresent, outputDirectoryName);
 
   //write perfusion derivatives
