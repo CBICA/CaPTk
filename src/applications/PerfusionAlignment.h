@@ -133,7 +133,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     outputSpacing[3] = inputSpacing[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
 
     auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, outputSize);
-    auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
+    //auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
 
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
     double base, drop, maxcurve, mincurve;
@@ -145,20 +145,22 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base normalization::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
+    auto resample_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resample_normalized);
+
     if ((drop - pointsbeforedrop) <= 0)
     {
       std::cerr << "Drop has been estimated at '" << drop << "' but time-points before drop is given as '" << pointsbeforedrop << "', which is not possible.\n";
       return PerfusionAlignment;
     }
-    if ((drop + pointsafterdrop) >= resampledPerfusion_volumes.size())
+    if ((drop + pointsafterdrop) >= resample_normalized_volumes.size())
     {
-      std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << resampledPerfusion_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
+      std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << resample_normalized_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
       return PerfusionAlignment;
     }
 
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
     {
-      auto NewImage = resampledPerfusion_volumes[index];
+      auto NewImage = resample_normalized_volumes[index];
       NewImage->DisconnectPipeline();
 
       PerfusionAlignment.push_back(NewImage);
