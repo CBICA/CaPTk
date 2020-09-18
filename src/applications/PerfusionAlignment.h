@@ -21,6 +21,9 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "CaPTkDefines.h"
 #include "CaPTkUtils.h"
 #include "itkExtractImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
+#include "itkRescaleIntensityImageFilter.h"
+#include "itkInvertIntensityImageFilter.h"
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -133,34 +136,51 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     outputSpacing[3] = inputSpacing[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
 
     auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, outputSize);
-    //auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
+    auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
 
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    typename PerfusionImageType::Pointer resample_normalized = NormalizeBaselineValue<ImageType, PerfusionImageType>(resampledPerfusion, MASK, maxcurve);
-    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resample_normalized, MASK, 0, 9); //values do not matter here
+    auto thresholder = itk::OtsuThresholdImageFilter< PerfusionImageType, PerfusionImageType >::New();
+    thresholder->SetInput(resampledPerfusion);
+    thresholder->SetOutsideValue(1);
+    thresholder->SetInsideValue(0);
+    thresholder->Update();
+    auto mask = thresholder->GetOutput();
+
+    auto masker = itk::MaskImageFilter< PerfusionImageType, PerfusionImageType >::New();
+    masker->SetInput(resampledPerfusion);
+    masker->SetMaskImage(mask);
+    masker->Update();
+
+    auto rescaler = itk::RescaleIntensityImageFilter< PerfusionImageType, PerfusionImageType >::New();
+    rescaler->SetInput(resampledPerfusion);
+    rescaler->SetOutputMaximum(300);
+    rescaler->SetOutputMinimum(0);
+    rescaler->Update();
+
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(rescaler->GetOutput(), MASK, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base normalization::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    auto resample_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resample_normalized);
+    auto resample_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(rescaler->GetOutput());
 
     if ((drop - pointsbeforedrop) <= 0)
     {
       std::cerr << "Drop has been estimated at '" << drop << "' but time-points before drop is given as '" << pointsbeforedrop << "', which is not possible.\n";
       return PerfusionAlignment;
     }
-    if ((drop + pointsafterdrop) >= resample_normalized_volumes.size())
+    if ((drop + pointsafterdrop) >= resampledPerfusion_volumes.size())
     {
-      std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << resample_normalized_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
+      std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << resampledPerfusion_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
       return PerfusionAlignment;
     }
 
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
     {
-      auto NewImage = resample_normalized_volumes[index];
+      auto NewImage = resampledPerfusion_volumes[index];
       NewImage->DisconnectPipeline();
 
       PerfusionAlignment.push_back(NewImage);
@@ -172,6 +192,9 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     logger.WriteError("Unable to perform perfusion alignment. Error code : " + std::string(e1.what()));
     return PerfusionAlignment;
   }
+
+  auto joinedImage = cbica::GetJoinedImage< ImageType, PerfusionImageType >(PerfusionAlignment);
+
   return PerfusionAlignment;
 }
 
