@@ -818,7 +818,12 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds);
+  void CallTrainingSimulation(const std::string featuresfile, 
+    const std::string targetfile, 
+    const std::string outputFolder, 
+    const std::string modeldirectory, 
+    int classifier, int conf, int folds, 
+    int featureselectionType, int optimizationType, int crossvalidationType);
 
   /**
   \brief Call the PCA calculation application with the inputs
