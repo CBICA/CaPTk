@@ -20,18 +20,14 @@ fTrainingSimulator::fTrainingSimulator()
   connect(mSplitModelDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectSplitModelDirectory()));
 
   connect(mCrossValidation, SIGNAL(toggled(bool)), this, SLOT(CrossValidationRadioButtonChecked()));
-  connect(mSplitTrainTest, SIGNAL(toggled(bool)), this, SLOT(TrainTestRadioButtonChecked()));
   connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(TrainRadioButtonChecked()));
   connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(TestRadioButtonChecked()));
 
-  ttLabel->setEnabled(false);
   cvLabel->setEnabled(false);
   mSplitModelDirectoryLabel->setEnabled(false);
-  ttValue->setEnabled(false);
   cvValue->setEnabled(false);
   mSplitModelDirectory->setEnabled(false);
   mSplitModelDirectoryButton->setEnabled(false);
-
 }
 fTrainingSimulator::~fTrainingSimulator()
 {
@@ -42,21 +38,6 @@ void fTrainingSimulator::CrossValidationRadioButtonChecked()
   {
     cvLabel->setEnabled(true);
     cvValue->setEnabled(true);
-    ttLabel->setEnabled(false);
-    mSplitModelDirectoryLabel->setEnabled(false);
-    ttValue->setEnabled(false);
-    mSplitModelDirectory->setEnabled(false);
-    mSplitModelDirectoryButton->setEnabled(false);
-  }
-}
-void fTrainingSimulator::SplitTrainTestRadioButtonChecked()
-{
-  if (mSplitTrainTest->isChecked())
-  {
-    cvLabel->setEnabled(false);
-    cvValue->setEnabled(false);
-    ttLabel->setEnabled(true);
-    ttValue->setEnabled(true);
     mSplitModelDirectoryLabel->setEnabled(false);
     mSplitModelDirectory->setEnabled(false);
     mSplitModelDirectoryButton->setEnabled(false);
@@ -68,8 +49,6 @@ void fTrainingSimulator::SplitTrainRadioButtonChecked()
   {
     cvLabel->setEnabled(false);
     cvValue->setEnabled(false);
-    ttLabel->setEnabled(false);
-    ttValue->setEnabled(false);
     mSplitModelDirectoryLabel->setEnabled(false);
     mSplitModelDirectory->setEnabled(false);
     mSplitModelDirectoryButton->setEnabled(false);
@@ -81,8 +60,6 @@ void fTrainingSimulator::SplitTestRadioButtonChecked()
   {
     cvLabel->setEnabled(false);
     cvValue->setEnabled(false);
-    ttLabel->setEnabled(false);
-    ttValue->setEnabled(false);
     mSplitModelDirectoryLabel->setEnabled(true);
     mSplitModelDirectory->setEnabled(true);
     mSplitModelDirectoryButton->setEnabled(true);
@@ -111,16 +88,14 @@ void fTrainingSimulator::ConfirmButtonPressed()
   }
 
   if (mCrossValidation->isChecked() == false &&
-      mSplitTrainTest->isChecked() == false &&
       mSplitTrain->isChecked() == false &&
       mSplitTest->isChecked() == false)
   {
-    ShowErrorMessage("Please select at least one of the given four options: CrossValidation, TrainTest, Train only, and Test only.");
+    ShowErrorMessage("Please select at least one of the given three options: CrossValidation, Train only, and Test only.");
     return;
   }
 
   if (mSplitTrain->isChecked() == true |
-    mSplitTrainTest->isChecked() == true |
     mCrossValidation->isChecked() == true)
   {
     //error checks applied to the three configurations
@@ -139,15 +114,21 @@ void fTrainingSimulator::ConfirmButtonPressed()
       ShowErrorMessage("Please select at least one of the given two classifiers: Linear, RBF.");
       return;
     }
+    if (mSVMFFS->isChecked() == false && mESFS->isChecked() == false)
+    {
+      ShowErrorMessage("Please select at least one of the given two feature selection methods: SVM forward feature selection, Effect size feature selection.");
+      return;
+    }
+    if (mResubstitution->isChecked() == false && mFiveFold->isChecked() == false)
+    {
+      ShowErrorMessage("Please select at least one of the given two cross-validation options: Resubstitution, 5-fold.");
+      return;
+    }
+
     //error checks applied to the individual configurations
     if (mCrossValidation->isChecked() == true && cvValue->text().isEmpty())
     {
       ShowErrorMessage("Please select the # of folds.");
-      return;
-    }
-    if (mSplitTrainTest->isChecked() == true && ttValue->text().isEmpty())
-    {
-      ShowErrorMessage("Please select the size of training dataset.");
       return;
     }
   }
@@ -165,37 +146,50 @@ void fTrainingSimulator::ConfirmButtonPressed()
     }
   }
 
-  int classifier=0;
-  int configuration=0;
-  int folds=0;
+  int classifierType = 1;
+  int featureselectionType = 1;
+  int optimizationType = 0;
+  int crossvalidationType = 1;
+  int foldType = 10;
+  int confType = 1;
+
   std::string modelpath ="";
 
   if (mLinearKernel->isChecked())
-    classifier = 1;
+    classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_LINEAR;
   else
-    classifier = 2;
+    classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF;
+
+  if (mSVMFFS->isChecked())
+    featureselectionType = CAPTK::FeatureSelectionType::FS_TYPE_FFS;
+  else
+    featureselectionType = CAPTK::FeatureSelectionType::FS_TYPE_ES;
+
+  if (mResubstitution->isChecked())
+    crossvalidationType = CAPTK::CrossValidationType::CV_TYPE_RESUBSTITUTION;
+  else
+    crossvalidationType = CAPTK::CrossValidationType::CV_TYPE_FiveFold;
+
+  if (mOptimization->isChecked())
+    optimizationType = CAPTK::OptimizationType::OPT_TYPE_ON;
+  else
+    optimizationType = CAPTK::OptimizationType::OPT_TYPE_OFF;
 
   if (mCrossValidation->isChecked())
   {
-    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV;
-    folds = cvValue->text().toInt();
-  }
-  else if (mSplitTrainTest->isChecked())
-  {
-    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE;
-    folds = ttValue->text().toInt();
+    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV;
+    foldType = cvValue->text().toInt();
   }
   else if (mSplitTrain->isChecked())
   {
-    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
+    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
   }
   else
   {
-    configuration = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
+    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
     modelpath = mSplitModelDirectory->text().toStdString();
   }
-
-  emit RunTrainingSimulation(mInputFeaturesName.toStdString(), mInputTargetName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifier, configuration, folds);
+  emit RunTrainingSimulation(mInputFeaturesName.toStdString(), mInputTargetName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifierType, confType, foldType, featureselectionType, optimizationType,crossvalidationType);
   this->close();
 }
 
