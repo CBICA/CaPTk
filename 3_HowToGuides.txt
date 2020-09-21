@@ -1267,6 +1267,10 @@ The exact measurements comprise of the following:
 <b> REQUIREMENTS:</b>
   -# A single DSC-MRI image with non negative values.
   -# System should have atleast 32GB RAM for calculating perfusion derivatives
+  -# [OPTIONAL] The baseline start threshold percentage (range[0-100], Default = 0)
+  -# [OPTIONAL] The baseline end threshold percentage (range[0-100], Default = 20)
+  -# [OPTIONAL] The recovery start threshold percentage (range[0-100], Default = 66)
+  -# [OPTIONAL] The recovery end threshold percentage (range[0-100], Default = 88)
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".

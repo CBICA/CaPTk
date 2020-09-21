@@ -896,7 +896,7 @@ fMainWindow::fMainWindow()
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int, int , int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int,int , int,int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string,  const std::string)));
@@ -9048,14 +9048,15 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int confType, int folds)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, 
+  const std::string targetfilename, 
+  const std::string outputFolder, 
+  const std::string modeldirectory, 
+  int classifier, int confType, int folds, 
+  int featureselectionType, int optimizationType, int crossvalidationType)
 {
-  int defaultfeatureselectiontype = 3;
-  int defaultoptimizationtype = 0;
-  int defaultcvtype = 1;
-
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,featureselectionType, optimizationType,crossvalidationType))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
