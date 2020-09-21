@@ -202,20 +202,19 @@ template< class ImageType, class PerfusionImageType >
 std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end)
 {
   std::vector<double> AverageCurve;
-	ImageTypeFloat4D::RegionType region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int volumes = 0; volumes < region.GetSize()[3]; volumes++)
+  auto perfusionImageSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+  for (unsigned int volumes = 0; volumes < perfusionImageSize[3]; volumes++)
   {
     double volume_mean = 0;
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
-      for (unsigned int j = 0; j < region.GetSize()[1]; j++)
-        for (unsigned int k = 0; k < region.GetSize()[2]; k++)
+    for (unsigned int i = 0; i < perfusionImageSize[0]; i++)
+      for (unsigned int j = 0; j < perfusionImageSize[1]; j++)
+        for (unsigned int k = 0; k < perfusionImageSize[2]; k++)
         {
           typename ImageType::IndexType index3D;
           index3D[0] = i;
           index3D[1] = j;
           index3D[2] = k;
 
-          auto temp = ImagePointerMask.GetPointer()->GetPixel(index3D);
           if (ImagePointerMask.GetPointer()->GetPixel(index3D) == 0)
             continue;
 
@@ -226,8 +225,8 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
           index4D[3] = volumes;
           volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
         }
-    std::cout << volumes <<" : "<<std::round(volume_mean / region.GetSize()[3]) << std::endl;
-    AverageCurve.push_back(std::round(volume_mean / region.GetSize()[3]));
+    std::cout << volumes << " : " << std::round(volume_mean / perfusionImageSize[3]) << std::endl;
+    AverageCurve.push_back(std::round(volume_mean / perfusionImageSize[3]));
   }
   return AverageCurve;
 }
@@ -235,14 +234,13 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
 template< class ImageType, class PerfusionImageType >
 typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end)
 {
-  auto outputImage = firstVolume;
-  outputImage->DisconnectPipeline();
-  auto region = perfImagePointerNifti->GetLargestPossibleRegion();
-  for (unsigned int i = 0; i < region.GetSize()[0]; i++)
+  typename ImageType::Pointer outputImage = firstVolume;
+  auto perfusionImageSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
+  for (unsigned int i = 0; i < perfusionImageSize[0]; i++)
   {
-    for (unsigned int j = 0; j < region.GetSize()[1]; j++)
+    for (unsigned int j = 0; j < perfusionImageSize[1]; j++)
     {
-      for (unsigned int k = 0; k < region.GetSize()[2]; k++)
+      for (unsigned int k = 0; k < perfusionImageSize[2]; k++)
       {
         typename ImageType::IndexType index3D;
         index3D[0] = i;
@@ -251,7 +249,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
 
         //calculate mean values
         double local_sum = 0;
-        for (int l = 0; l < region.GetSize()[3]; l++)
+        for (int l = 0; l < perfusionImageSize[3]; l++)
         {
           typename PerfusionImageType::IndexType index4D;
           index4D[0] = i;
@@ -260,21 +258,22 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           index4D[3] = l;
           local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
         }
-        double meanvalue = std::round(local_sum / region.GetSize()[3]);
+        double meanvalue = std::round(local_sum / perfusionImageSize[3]);
 
         //calculate standard deviation
         double temp = 0.0;
-        for (int l = 0; l < region.GetSize()[3]; l++)
+        for (int l = 0; l < perfusionImageSize[3]; l++)
         {
           typename PerfusionImageType::IndexType index4D;
           index4D[0] = i;
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = l;
-          temp += (perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue)*(perfImagePointerNifti.GetPointer()->GetPixel(index4D) - meanvalue);
+          auto currentVoxel = perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+          temp += (currentVoxel - meanvalue)*(currentVoxel - meanvalue);
         }
-        double stddeve = std::sqrt(temp / (region.GetSize()[3] - 1));
-        if (stddeve>10)
+        double stddeve = std::sqrt(temp / (perfusionImageSize[3] - 1));
+        if (stddeve > 10)
           outputImage->SetPixel(index3D, 1);
         else
           outputImage->SetPixel(index3D, 0);
