@@ -288,9 +288,44 @@ ADD_TEST(NAME SurvivalPredictorHelpTest COMMAND SurvivalPredictor -h )
 ADD_TEST(NAME SurvivalPredictorVersionTest COMMAND SurvivalPredictor -v )
 
 # Training Module Tests
+# Adding several tests for several configurations of the Training Module per Saima's MATLAB script.
 
-ADD_TEST(NAME TrainingModuleTest5Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 )
-ADD_TEST(NAME TrainingModuleTest10Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 10 )
+# Simple test cases kept here as an example
+#ADD_TEST(NAME TrainingModuleTest5Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 5 )
+#ADD_TEST(NAME TrainingModuleTest10Folds COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -c 1 -o ${TESTING_OUTPUT_DIR}/training/ -k 10 )
+
+# Try each configuration of TrainingModule
+foreach(featureselection_value RANGE 1 2 )
+	foreach(classifier_value RANGE 1 2 )
+		foreach(optimization_value RANGE 1 2 )
+			foreach(crossvalidation_value RANGE 1 2 )
+				# Split Train
+				set(splittrainoutput_dir ${TESTING_OUTPUT_DIR}/training/SplitTrain/feature-selection${featureselection_value}/classifier${classifier_value}/optimization${optimization_value}/crossvalidation${crossvalidation_value}/ )
+				FILE(MAKE_DIRECTORY ${splittrainoutput_dir})
+				set(test_name_splittrain TrainingModuleSplitTrainWithFS${featureselection_value}Classifier${classifier_value}Opt${optimization_value}CV${crossvalidation_value} )
+				ADD_TEST(NAME ${test_name_splittrain} COMMAND TrainingModule -n 2 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -s ${featureselection_value} -c ${classifier_value} -p ${optimization_value} -r ${crossvalidation_value} -o ${splittrainoutput_dir} )
+				
+				# Split Test, using output of Split Train above as model 
+				set(splittestoutput_dir ${TESTING_OUTPUT_DIR}/training/SplitTest/feature-selection${featureselection_value}/classifier${classifier_value}/optimization${optimization_value}/crossvalidation${crossvalidation_value}/ )
+				FILE(MAKE_DIRECTORY ${splittestoutput_dir})
+				set(test_name_splittest TrainingModuleSplitTestWithFS${featureselection_value}Classifier${classifier_value}Opt${optimization_value}CV${crossvalidation_value} )
+				ADD_TEST(NAME ${test_name_splittest} COMMAND TrainingModule -n 3 -o ${splittestoutput_dir} -f ${TESTING_DATA_DIR}/training/features2.csv -m ${splittrainoutput_dir} )
+				
+				# Cross-validation
+				foreach(fold_value RANGE 5 10 )
+					set(crossvalidationoutput_dir ${TESTING_OUTPUT_DIR}/training/CrossValidation/feature-selection${featureselection_value}/classifier${classifier_value}/optimization${optimization_value}/crossvalidation${crossvalidation_value}/${fold_value}-folds/ )
+					FILE(MAKE_DIRECTORY ${crossvalidationoutput_dir})
+					set(test_name_crossvalidation TrainingModule${fold_value}FoldCrossValidationWithFS${featureselection_value}Classifier${classifier_value}Opt${optimization_value}CV${crossvalidation_value} )
+					ADD_TEST(NAME ${test_name_crossvalidation} COMMAND TrainingModule -n 1 -f ${TESTING_DATA_DIR}/training/features2.csv -l ${TESTING_DATA_DIR}/training/labels2.csv -s ${featureselection_value} -c ${classifier_value} -p ${optimization_value} -r ${crossvalidation_value} -k ${fold_value} -o ${crossvalidationoutput_dir} )
+					
+				endforeach()
+			endforeach()
+		endforeach()
+	endforeach()
+endforeach()
+
+
+
 
 ADD_TEST(NAME TrainingModuleHelpTest COMMAND TrainingModule -h )
 ADD_TEST(NAME TrainingModuleVersionTest COMMAND TrainingModule -v )
@@ -307,6 +342,7 @@ ADD_TEST(NAME WhiteStripeT1Test COMMAND WhiteStripe -t1=0 -i ${TESTING_DATA_DIR}
 
 ADD_TEST(NAME WhiteStripeHelpTest COMMAND WhiteStripe -h )
 ADD_TEST(NAME WhiteStripeVersionTest COMMAND WhiteStripe -v )
+
 
 ##
 
