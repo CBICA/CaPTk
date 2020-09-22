@@ -161,7 +161,6 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       }
     }
     resampledPerfusion = cbica::GetJoinedImage< ImageType, PerfusionImageType >(resampledPerfusion_volumes);
-    cbica::WriteImage< PerfusionImageType >(resampledPerfusion, "C:/Users/sarth/Downloads/test_perfusion/1/perfusionAlignedImage_full.nii.gz");
 
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
 
