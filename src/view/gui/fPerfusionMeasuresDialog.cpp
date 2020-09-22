@@ -12,6 +12,16 @@ fPerfusionEstimator::fPerfusionEstimator()
   //this->setModal(true); // this is a pre-processing routine and therefore should be modal
   this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+  m_baselineStart->setValue(0);
+  m_baselineEnd->setValue(20);
+  m_recoveryStart->setValue(66);
+  m_recoveryEnd->setValue(88);
+
+  m_baselineStartLabel->setText("Baseline Start Threshold %");
+  m_baselineEndLabel->setText("Baseline End Threshold %");
+  m_recoveryStartLabel->setText("Recovery Start Threshold %");
+  m_recoveryEndLabel->setText("Recovery End Threshold %");
+
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
