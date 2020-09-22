@@ -363,6 +363,10 @@ void PerfusionAlignment::GetParametersFromTheCurve(std::vector<double> curve, do
 template< class PerfusionImageType >
 typename PerfusionImageType::Pointer PerfusionAlignment::NormalizeBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value)
 {
+  // this needs to be something similar to z-scoring, instead of 0-mean and 1/-1 std-dev, mean should be 300 and std-dev should be such that there are no negative values
+  // don't include the region of tumor for the shifting
+  // but the overall baseline adjustment needs to be applied to full image (size of tumor is directly proportional to size of drop)
+  // this baseline adjustment needs to be an option to the user
   double min_value = 0;
   double base_value = 300;
   auto outputImage = cbica::CreateImage< PerfusionImageType >(perfImagePointerNifti);
