@@ -227,6 +227,7 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
           nonzero_counter++;
         }
     std::cout << volumes << " : " << std::round(volume_mean / nonzero_counter) << std::endl; 
+    // std::cout << volumes << " : " << std::round(volume_mean / perfusionImageSize[3]) << std::endl; // original implementation
     AverageCurve.push_back(std::round(volume_mean / nonzero_counter));
   }
   return AverageCurve;
