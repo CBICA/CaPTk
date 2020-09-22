@@ -23,7 +23,6 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkExtractImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
 #include "itkRescaleIntensityImageFilter.h"
-#include "itkInvertIntensityImageFilter.h"
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -124,7 +123,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
     typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9); //values do not matter here
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
-
+    
     std::cout << "Started resampling.\n";
     // Resize
     auto inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
@@ -206,6 +205,7 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
   for (unsigned int volumes = 0; volumes < perfusionImageSize[3]; volumes++)
   {
     double volume_mean = 0;
+    size_t nonzero_counter = 0;
     for (unsigned int i = 0; i < perfusionImageSize[0]; i++)
       for (unsigned int j = 0; j < perfusionImageSize[1]; j++)
         for (unsigned int k = 0; k < perfusionImageSize[2]; k++)
@@ -223,10 +223,11 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = volumes;
-          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D); // should this be only for non-zero pixels? if not, this should be done via itk::StatisticsImageFilter
+          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D); 
+          nonzero_counter++;
         }
-    std::cout << volumes << " : " << std::round(volume_mean / perfusionImageSize[3]) << std::endl;  // why divide by the number of volumes instead of the number of voxels
-    AverageCurve.push_back(std::round(volume_mean / perfusionImageSize[3]));  // why divide by the number of volumes instead of the number of voxels
+    std::cout << volumes << " : " << std::round(volume_mean / nonzero_counter) << std::endl; 
+    AverageCurve.push_back(std::round(volume_mean / nonzero_counter));
   }
   return AverageCurve;
 }
@@ -247,7 +248,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
         index3D[1] = j;
         index3D[2] = k;
 
-        //calculate mean values
+        // calculate mean values along time-scale
         double local_sum = 0;
         for (int l = 0; l < perfusionImageSize[3]; l++)
         {
@@ -256,11 +257,11 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = l;
-          local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D); // should this be only for non-zero pixels? if not, this should be done via itk::StatisticsImageFilter
+          local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
         }
-        double meanvalue = std::round(local_sum / perfusionImageSize[3]); // why divide by the number of volumes instead of the number of voxels
+        auto meanOnTimeScale = std::round(local_sum / perfusionImageSize[3]);
 
-        //calculate standard deviation
+        // calculate standard deviation
         double temp = 0.0;
         for (int l = 0; l < perfusionImageSize[3]; l++)
         {
@@ -270,7 +271,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           index4D[2] = k;
           index4D[3] = l;
           auto currentVoxel = perfImagePointerNifti.GetPointer()->GetPixel(index4D);
-          temp += (currentVoxel - meanvalue)*(currentVoxel - meanvalue);
+          temp += (currentVoxel - meanOnTimeScale)*(currentVoxel - meanOnTimeScale);
         }
         double stddeve = std::sqrt(temp / (perfusionImageSize[3] - 1));
         if (stddeve > 10)
