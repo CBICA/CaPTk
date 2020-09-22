@@ -223,10 +223,10 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = volumes;
-          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+          volume_mean = volume_mean + perfImagePointerNifti.GetPointer()->GetPixel(index4D); // should this be only for non-zero pixels? if not, this should be done via itk::StatisticsImageFilter
         }
-    std::cout << volumes << " : " << std::round(volume_mean / perfusionImageSize[3]) << std::endl;
-    AverageCurve.push_back(std::round(volume_mean / perfusionImageSize[3]));
+    std::cout << volumes << " : " << std::round(volume_mean / perfusionImageSize[3]) << std::endl;  // why divide by the number of volumes instead of the number of voxels
+    AverageCurve.push_back(std::round(volume_mean / perfusionImageSize[3]));  // why divide by the number of volumes instead of the number of voxels
   }
   return AverageCurve;
 }
@@ -256,9 +256,9 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           index4D[1] = j;
           index4D[2] = k;
           index4D[3] = l;
-          local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D);
+          local_sum = local_sum + perfImagePointerNifti.GetPointer()->GetPixel(index4D); // should this be only for non-zero pixels? if not, this should be done via itk::StatisticsImageFilter
         }
-        double meanvalue = std::round(local_sum / perfusionImageSize[3]);
+        double meanvalue = std::round(local_sum / perfusionImageSize[3]); // why divide by the number of volumes instead of the number of voxels
 
         //calculate standard deviation
         double temp = 0.0;
