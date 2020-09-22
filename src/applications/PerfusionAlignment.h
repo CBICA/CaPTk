@@ -91,6 +91,8 @@ public:
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end);
 
+  //! This function fixes the last zero number in the resample function
+  std::vector< double > FixLastZeroInCurve(std::vector<double>);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -159,12 +161,12 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
     auto rescaledImage = NormalizeBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, maxcurve);
+    auto resample_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(rescaledImage);
 
     RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(rescaledImage, MASK, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base normalization::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    auto resample_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(rescaledImage);
 
     if ((drop - pointsbeforedrop) <= 0)
     {
