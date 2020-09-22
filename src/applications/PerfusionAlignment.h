@@ -24,6 +24,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
+#include "itkStatisticsImageFilter.h"
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -90,9 +91,6 @@ public:
   //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end);
-
-  //! This function fixes the last zero number in the resample function
-  std::vector< double > FixLastZeroInCurve(std::vector<double>);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -153,6 +151,17 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     masker->Update();
     resampledPerfusion = masker->GetOutput();
     resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
+    {
+      auto stats = itk::StatisticsImageFilter< ImageType >::New();
+      stats->SetInput(resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 1]);
+      stats->Update();
+      if ((stats->GetMaximum() == 0) && (stats->GetMinimum() == 0)) // somehow, the final resampled volume becomes zero - comes from ITK
+      {
+        resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 1] = resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 2];
+      }
+    }
+    resampledPerfusion = cbica::GetJoinedImage< ImageType, PerfusionImageType >(resampledPerfusion_volumes);
+    cbica::WriteImage< PerfusionImageType >(resampledPerfusion, "C:/Users/sarth/Downloads/test_perfusion/1/perfusionAlignedImage_full.nii.gz");
 
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
 
