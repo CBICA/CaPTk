@@ -59,12 +59,7 @@ int main(int argc, char **argv)
     std::cout << "The input file does not exist:" << inputFileName << std::endl;
     return EXIT_FAILURE;
   }
-  if (!cbica::directoryExists(outputDirectoryName))
-  {
-    if (!cbica::createDirectory(outputDirectoryName))
-      std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
-    return EXIT_FAILURE;
-  }
+  cbica::createDirectory(outputDirectoryName);
   
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
