@@ -1848,12 +1848,12 @@ namespace cbica
     {
       if (std::find(uniqueLabels.begin(), uniqueLabels.end(), bratsValues[i]) == uniqueLabels.end())
       {
-        std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
+        // std::cerr << "Missing BraTS label in Label_1: " << bratsValues[i] << "\n";
         missingLabels.push_back(bratsValues[i]);
       }
       if (std::find(uniqueLabelsRef.begin(), uniqueLabelsRef.end(), bratsValues[i]) == uniqueLabelsRef.end())
       {
-        std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
+        // std::cerr << "Missing BraTS label in Label_2: " << bratsValues[i] << "\n";
         missingLabelsRef.push_back(bratsValues[i]);
       }
     }
