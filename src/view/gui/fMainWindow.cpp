@@ -7599,7 +7599,11 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-  perfalignPanel.exec();
+	QString text = "This application is a work-in-progress and new features will come out in future releases, which can be downloaded from <a href=\"https://www.nitrc.org/frs/?group_id=1059\">here";
+	QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+	msgBox.exec();
+
+    perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
