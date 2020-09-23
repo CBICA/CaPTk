@@ -41,19 +41,16 @@ public:
   }
 
   QString mInputPathName;
-  QString mInputT1cePathName;
   QString mOutputPathName;
-
 
   public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
   void SelectOutputImage();
   void SelectInputImage();
-  void SelectT1ceInputImage();
 
 signals:
-  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, const std::string inputt1cefile, std::string outputFolder);
+  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, std::string outputFolder);
 };
 
 

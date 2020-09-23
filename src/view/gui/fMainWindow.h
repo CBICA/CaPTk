@@ -774,11 +774,9 @@ public slots:
   \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
   \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
   \param inputfilename The input perfusion image file name
-  \param inputt1cefilename The input T1-Gd file name
-  \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
