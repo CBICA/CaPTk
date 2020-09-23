@@ -7599,7 +7599,9 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-	QString text = "This application is a work-in-progress and new features will come out in future releases, which can be downloaded from <a href=\"https://www.nitrc.org/frs/?group_id=1059\">here";
+	QString text = "We are actively working on the incorporation of cost-function tumor masking for the \
+alignment of individual subject perfusion curves, towards producing a more refined and robust \
+alignment result. We expect this to be completed, validated, and released in our next patch release, expected in Q4 2020.";
 	QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
 	msgBox.exec();
 
