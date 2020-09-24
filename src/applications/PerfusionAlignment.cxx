@@ -76,13 +76,16 @@ int main(int argc, char **argv)
 
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
+  ImageTypeFloat3D::Pointer calculatedMask;
   std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = 
-    objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling, stdDev, baseline);
+    objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, calculatedMask, timeresolution, dropscaling, stdDev, baseline);
 
   if (!PerfusionAlignment.empty())
   {
     auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
     cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputDirectoryName + "/perfusionAlignedImage.nii.gz");
+
+    cbica::WriteImage< ImageTypeFloat3D >(calculatedMask, outputDirectoryName + "/calculatedMask.nii.gz");
 
     WriteCSVFiles(OriginalCurve, outputDirectoryName + "/original_curve.csv");
     WriteCSVFiles(InterpolatedCurve, outputDirectoryName + "/interpolated_curve.csv");

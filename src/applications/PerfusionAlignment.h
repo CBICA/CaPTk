@@ -78,6 +78,7 @@ public:
     std::vector<double> & InterpolatedCurve,
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
+    typename ImageType::Pointer maskImage,
     const double timeresolution,
     const bool dropscaling, const float stdDev, const float baseline);
 
@@ -108,6 +109,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   std::vector<double> & InterpolatedCurve,
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
+  typename ImageType::Pointer maskImage,
   const double timeresolution,
   const bool dropscaling,
   const float stdDev, const float baseline)
@@ -132,8 +134,9 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   {
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
-    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
-    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
+    maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
+    maskImage->DisconnectPipeline();
+    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage, 0, 9); //values do not matter here
     
     std::cout << "Started resampling.\n";
     // Resize
@@ -150,7 +153,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     std::vector< typename ImageType::Pointer > mask_volumes(resampledPerfusion_volumes.size());
     for (size_t i = 0; i < mask_volumes.size(); i++)
     {
-      mask_volumes[i] = MASK;
+      mask_volumes[i] = maskImage;
       mask_volumes[i]->DisconnectPipeline();
     }
     auto mask_4d = cbica::GetJoinedImage< ImageType, PerfusionImageType >(mask_volumes, resampledPerfusion->GetSpacing()[3]);
@@ -171,7 +174,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       }
     }
     resampledPerfusion = cbica::GetJoinedImage< ImageType, PerfusionImageType >(resampledPerfusion_volumes);
-    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
+    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage, 0, 9); //values do not matter here
 
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
@@ -180,7 +183,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     if (dropscaling)
     {
       resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
-      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
+      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage, 0, 9); //values do not matter here
       GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
       std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
     }
@@ -188,7 +191,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
 
-    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, MASK, 0, 9); //values do not matter here
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base shifting::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
