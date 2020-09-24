@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t", "time-domain resolution", cbica::Parameter::FLOAT, "", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
-  parser.addOptionalParameter("s", "drop-scaling", cbica::Parameter::INTEGER, "", "Whether to scale the value of the drop of the curve? 1=yes, 0=no, default=0.");
+  parser.addOptionalParameter("s", "drop-scaling", cbica::Parameter::INTEGER, "", "Whether to scale the value of the drop for the curve? 1=yes, 0=no, default=0.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
   parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -c AAAC_PreOp_t1ce_pp.nii.gz -b 15 -a 17 -t 2 -o <output dir>", "Aligns the perfusion signal of the input image based on the time points");
