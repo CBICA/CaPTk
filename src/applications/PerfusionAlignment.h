@@ -79,7 +79,7 @@ public:
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
     const double timeresolution,
-    const bool dropscaling);
+    const bool dropscaling, const float stdDev, const float baseline);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -87,7 +87,7 @@ public:
 
   //This function shifts the baseline value of DSC-MRI curves
   template< class PerfusionImageType >
-  typename PerfusionImageType::Pointer ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value);
+  typename PerfusionImageType::Pointer ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, float baseLine);
 
   //This function scales the drop value of DSC-MRI curves
   template< class PerfusionImageType >
@@ -95,7 +95,10 @@ public:
 
   //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end);
+  typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end, float stdDev_threshold);
+
+private:
+  bool m_negativesDetected = false;
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -106,7 +109,8 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
   const double timeresolution,
-  const bool dropscaling)
+  const bool dropscaling,
+  const float stdDev, const float baseline)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -128,7 +132,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   {
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
-    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9); //values do not matter here
+    typename ImageType::Pointer MASK = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, MASK, 0, 9); //values do not matter here
     
     std::cout << "Started resampling.\n";
@@ -180,8 +184,9 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
       GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
       std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
     }
-    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base);
+    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, baseline);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
+
 
     RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, MASK, 0, 9); //values do not matter here
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
@@ -196,6 +201,11 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     {
       std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << shifted_normalized_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
       return PerfusionAlignment;
+    }
+
+    if (m_negativesDetected)
+    {
+      std::cerr << "WARNING: There are negative values in the shifted image, which might lead to erroneous results during downstream analyses.\n";
     }
 
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
@@ -253,7 +263,7 @@ std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename Pe
 }
 
 template< class ImageType, class PerfusionImageType >
-typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end)
+typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end, float stdDev_threshold)
 {
   typename ImageType::Pointer outputImage = firstVolume;
   auto perfusionImageSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
@@ -294,7 +304,7 @@ typename ImageType::Pointer PerfusionAlignment::CalculatePerfusionVolumeStd(type
           temp += (currentVoxel - meanOnTimeScale)*(currentVoxel - meanOnTimeScale);
         }
         double stddeve = std::sqrt(temp / (perfusionImageSize[3] - 1));
-        if (stddeve > 10)
+        if (stddeve > stdDev_threshold)
           outputImage->SetPixel(index3D, 1);
         else
           outputImage->SetPixel(index3D, 0);
@@ -367,9 +377,8 @@ void PerfusionAlignment::GetParametersFromTheCurve(std::vector<double> curve, do
   //drop = std::min_element(CER.begin(), CER.end()) - CER.begin();
 }
 template< class PerfusionImageType >
-typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average)
+typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average, float baseLine)
 {
-  double base_value = 300;
   auto outputImage = cbica::CreateImage< PerfusionImageType >(perfImagePointerNifti);
   itk::ImageRegionConstIterator< PerfusionImageType > inputImageIterator(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion()),
     inputMaskIterator(ImagePointerMask, ImagePointerMask->GetLargestPossibleRegion());
@@ -383,7 +392,14 @@ typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNo
       inputImageIterator.SetIndex(currentIndex);
       outputImageIterator.SetIndex(currentIndex);
 
-      auto output_value = (inputImageIterator.Get() - base_average) + base_value;
+      auto output_value = (inputImageIterator.Get() - base_average) + baseLine;
+      if (!m_negativesDetected)
+      {
+        if (output_value < 0)
+        {
+          m_negativesDetected = true;
+        }
+      }
       outputImageIterator.Set(output_value);
     }
   }
