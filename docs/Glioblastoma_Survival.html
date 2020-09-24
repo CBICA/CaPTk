@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -65,7 +65,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Survival.html',''); initR
 <p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
 <li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)</li>
-<li>Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)</li>
+<li>Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.</li>
 <li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients.</li>
 <li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
 <li>Subject_ID<ol type="a">
@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Survival.html',''); initR
 </li>
 <li>SEGMENTATION<ul>
 <li>label_<b>segmentation</b>_file.nii.gz (in same space as above images)</li>
-<li>label_in_<b>atlas</b>_space.nii.gz (in common atlas space)</li>
+<li>label_in_<b>atlas</b>_space.nii.gz (in same space as above images)</li>
 </ul>
 </li>
 </ol>

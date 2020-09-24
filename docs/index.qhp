@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Beta" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md136" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md137" />
@@ -42,11 +42,13 @@
         <section title="What if I am having issues with the Linux Installer?" ref="FAQ.html#gs_FAQ_5">
           <section title="FUSE Issues" ref="FAQ.html#gs_FAQ_5_1" />
           <section title="GLIBCXX or GLIBC Issues" ref="FAQ.html#gs_FAQ_5_2" />
+          <section title="CXXABI issues" ref="FAQ.html#gs_FAQ_5_3" />
         </section>
         <section title="Is there a minimum recommended screen resolution for running CaPTk?" ref="FAQ.html#gs_FAQ_6" />
         <section title="Where can I find the CaPTk Docker Image?" ref="FAQ.html#gs_FAQ_7" />
         <section title="How do I run the CaPTk Docker Image to show the interface?" ref="FAQ.html#gs_FAQ_8" />
         <section title="Is there something wrong with Feature Extraction?" ref="FAQ.html#gs_FAQ_9" />
+        <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_10" />
       </section>
       <section title="How To Guides" ref="How_To_Guides.html">
         <section title="Preprocessing" ref="ht_Preprocessing.html">
@@ -70,7 +72,7 @@
           <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
           <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
           <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-          <section title="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
+          <section title="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
           <section title="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
@@ -83,7 +85,7 @@
           <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
           <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
           <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-          <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+          <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
           <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
         </section>
         <section title="Utilities (CLI only)" ref="ht_utilities.html" />
@@ -183,7 +185,7 @@
       <keyword name="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" id="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
       <keyword name="Brain Cancer: Glioblastoma Survival Prediction Index" id="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
       <keyword name="Brain Cancer: Glioblastoma EGFRvIII SVM Index" id="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-      <keyword name="Brain Cancer: Pseudoprogression Infiltration Index" id="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
+      <keyword name="Brain Cancer: Pseudo-Progression Estimator" id="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
       <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Miscellaneous: Directionality Estimator" id="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
@@ -194,7 +196,7 @@
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
       <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
       <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-      <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+      <keyword name="Miscellaneous: Perfusion PCA Volume Extraction" id="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Utilities (CLI only)" id="Utilities (CLI only)" ref="ht_utilities.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />
