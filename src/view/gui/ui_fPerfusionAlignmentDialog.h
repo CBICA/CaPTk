@@ -43,7 +43,13 @@ public:
 
   QLabel *inputEchoTimeLabel;
   QLineEdit *inputEchoTimeName;
-  
+
+  QLabel *inputStdDevLabel;
+  QLineEdit *inputStdDevLine;
+
+  QLabel *inputBaselineLabel;
+  QLineEdit *inputBaselineLine;
+
   QLabel *inputScalingLabel;
   QCheckBox *inputScalingCheckBox;
 
@@ -133,7 +139,25 @@ public:
     inputEchoTimeName->setSizePolicy(sizePolicy);
     inputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
     inputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
-    
+
+    inputStdDevLabel = new QLabel(inputGroupBox);
+    inputStdDevLabel->setText("Standard Deviation for masking");
+    inputStdDevLine = new QLineEdit("10");
+    inputStdDevLine->setObjectName(QString::fromUtf8("inputEchoTimeName"));
+    sizePolicy.setHeightForWidth(inputStdDevLine->sizePolicy().hasHeightForWidth());
+    inputStdDevLine->setSizePolicy(sizePolicy);
+    inputStdDevLine->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputStdDevLine->setValidator(new QIntValidator(0, 100, inputGroupBox));
+
+    inputBaselineLabel = new QLabel(inputGroupBox);
+    inputBaselineLabel->setText("Baseline value for shifting");
+    inputBaselineLine = new QLineEdit("300");
+    inputBaselineLine->setObjectName(QString::fromUtf8("inputEchoTimeName"));
+    sizePolicy.setHeightForWidth(inputBaselineLine->sizePolicy().hasHeightForWidth());
+    inputBaselineLine->setSizePolicy(sizePolicy);
+    inputBaselineLine->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputBaselineLine->setValidator(new QIntValidator(0, 20000, inputGroupBox));
+
     inputScalingLabel = new QLabel("Scale drop value");
     inputScalingCheckBox = new QCheckBox("");
     inputScalingCheckBox->setChecked(false);
@@ -150,8 +174,12 @@ public:
 
     inputGridLayout->addWidget(inputEchoTimeLabel, 3, 0, 1, 1);
     inputGridLayout->addWidget(inputEchoTimeName, 3, 1, 1, 1);
-    inputGridLayout->addWidget(inputScalingLabel, 4, 0, 1, 1);
-    inputGridLayout->addWidget(inputScalingCheckBox, 4, 1, 1, 1);
+    inputGridLayout->addWidget(inputStdDevLabel, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputStdDevLine, 4, 1, 1, 1);
+    inputGridLayout->addWidget(inputBaselineLabel, 5, 0, 1, 1);
+    inputGridLayout->addWidget(inputBaselineLine, 5, 1, 1, 1);
+    inputGridLayout->addWidget(inputScalingLabel, 6, 0, 1, 1);
+    inputGridLayout->addWidget(inputScalingCheckBox, 6, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
