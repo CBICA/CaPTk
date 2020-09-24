@@ -407,9 +407,8 @@ typename PerfusionImageType::Pointer PerfusionAlignment::ScaleDropValue(typename
       inputImageIterator.SetIndex(currentIndex);
       outputImageIterator.SetIndex(currentIndex);
 
-      auto currentImageValue = inputImageIterator.Get();
-      auto current_value = (inputImageIterator.Get() *multiplier)/(base_average-min_curve);
-      outputImageIterator.Set(current_value);
+      auto output_value = (inputImageIterator.Get() * multiplier) / (base_average - min_curve);
+      outputImageIterator.Set(output_value);
     }
   }
   return outputImage;
