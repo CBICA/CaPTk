@@ -4,15 +4,22 @@
 
 int main(int argc, char **argv)
 {
+  int tempPosition;
+  int pointsbeforedrop, pointsafterdrop;
+  bool dropscaling = 0;
+  double timeresolution;
+  float baseline = 300, stdDev = 10;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
-  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DSC-MRI image.");
-  parser.addRequiredParameter("b", "time-points before drop", cbica::Parameter::STRING, "", "The number of time-points before the drop.");
-  parser.addRequiredParameter("a", "time-points after drop", cbica::Parameter::STRING, "", "The number of time-points after the drop.");
-  parser.addRequiredParameter("t", "time-domain resolution", cbica::Parameter::FLOAT, "", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
+  parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "File with read access", "The input DSC-MRI image.");
+  parser.addRequiredParameter("b", "timePointsBeforeDrop", cbica::Parameter::STRING, "0-100", "The number of time-points before the drop.");
+  parser.addRequiredParameter("a", "timePointsAfterDrop", cbica::Parameter::STRING, "0-100", "The number of time-points after the drop.");
+  parser.addRequiredParameter("t", "timeDomainResolution", cbica::Parameter::FLOAT, "0.01-100", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
 
-  parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
-  parser.addOptionalParameter("s", "drop-scaling", cbica::Parameter::BOOLEAN, "", "Whether to scale the value of the drop for the curve? 1=yes, 0=no, default=0.");
-  parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
+  parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "Directory with write access", "The output directory.");
+  parser.addOptionalParameter("d", "dropScaling", cbica::Parameter::BOOLEAN, "0-1", "Whether to scale the value of the drop for the curve? 1=yes, 0=no; defaults to '0'");
+  parser.addOptionalParameter("s", "stdDev", cbica::Parameter::FLOAT, "0-100", "The standard deviation threshold of time series signal above which the", "location is considered to part of brain");
+  parser.addOptionalParameter("bl", "baseLine", cbica::Parameter::FLOAT, "0-1000", "The value of the baseline to which the output gets scaled", "Defaults to " + std::to_string(baseline));
+  parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated", "Defaults to " + std::to_string(stdDev));
   //parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
   parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -c AAAC_PreOp_t1ce_pp.nii.gz -b 15 -a 17 -t 2 -o <output dir>", "Aligns the perfusion signal of the input image based on the time points");
   parser.addApplicationDescription("Perfusion Alignment of the input based based on specified time points");
@@ -21,10 +28,6 @@ int main(int argc, char **argv)
   cbica::Logging logger;
   std::string loggerFile;
   bool loggerRequested = false;
-  int tempPosition;
-  int pointsbeforedrop, pointsafterdrop;
-  bool dropscaling = 0;
-  double timeresolution;
   std::string inputFileName, inputDicomName, outputDirectoryName, inputt1ceName;
 
   if (parser.compareParameter("L", tempPosition))
@@ -51,9 +54,17 @@ int main(int argc, char **argv)
   if (parser.compareParameter("a", tempPosition))
     pointsafterdrop = atoi(argv[tempPosition + 1]);
 
+  if (parser.isPresent("d"))
+  {
+    parser.getParameterValue("d", dropscaling);
+  }
   if (parser.isPresent("s"))
   {
-    parser.getParameterValue("s", dropscaling);
+    parser.getParameterValue("s", stdDev);
+  }
+  if (parser.isPresent("bl"))
+  {
+    parser.getParameterValue("bl", baseline);
   }
 
   if (!cbica::isFile(inputFileName))
@@ -65,7 +76,8 @@ int main(int argc, char **argv)
 
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = 
+    objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling, stdDev, baseline);
 
   if (!PerfusionAlignment.empty())
   {
