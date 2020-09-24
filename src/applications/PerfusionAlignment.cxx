@@ -76,9 +76,11 @@ int main(int argc, char **argv)
 
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  ImageTypeFloat3D::Pointer calculatedMask;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = 
-    objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, calculatedMask, timeresolution, dropscaling, stdDev, baseline);
+  //std::vector<typename ImageTypeFloat3D::Pointer>  = 
+  auto output =  objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling, stdDev, baseline);
+
+  auto PerfusionAlignment = output.first;
+  auto calculatedMask = output.second;
 
   if (!PerfusionAlignment.empty())
   {
