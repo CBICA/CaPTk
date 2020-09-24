@@ -94,7 +94,8 @@ public:
 
     inputImageButton = new QPushButton(inputGroupBox);
     inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
-    inputImageButton->setText(QString("Browse"));
+    inputImageButton->setText("...");
+    inputImageButton->setToolTip("Browse and select file");
     
     inputBeforePointsLabel = new QLabel(inputGroupBox);
     sizePolicy.setHeightForWidth(inputBeforePointsLabel->sizePolicy().hasHeightForWidth());
