@@ -9026,7 +9026,7 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve,TruncatedCurve, echotime,0);//the last parameter needs to be taken from the GUI (should be 0/1)
 
   if (!PerfusionAlignment.empty())
   {

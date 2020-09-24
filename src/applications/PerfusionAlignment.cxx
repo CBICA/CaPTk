@@ -11,6 +11,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t", "time-domain resolution", cbica::Parameter::FLOAT, "", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
+  parser.addOptionalParameter("s", "drop-scaling", cbica::Parameter::INTEGER, "", "Whether to scale the value of the drop of the curve? 1=yes, 0=no, default=0.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
   parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -c AAAC_PreOp_t1ce_pp.nii.gz -b 15 -a 17 -t 2 -o <output dir>", "Aligns the perfusion signal of the input image based on the time points");
@@ -22,6 +23,7 @@ int main(int argc, char **argv)
   bool loggerRequested = false;
   int tempPosition;
   int pointsbeforedrop, pointsafterdrop;
+  int dropscaling = 0;
   double timeresolution;
   std::string inputFileName, inputDicomName, outputDirectoryName,inputt1ceName;
 
@@ -49,6 +51,9 @@ int main(int argc, char **argv)
   if (parser.compareParameter("a", tempPosition))
     pointsafterdrop = atoi(argv[tempPosition + 1]);
 
+  if (parser.compareParameter("s", tempPosition))
+    dropscaling = atoi(argv[tempPosition + 1]);
+
   // std::cout << "Input File:" << inputFileName << std::endl;
   // std::cout << "Output Directory:" << outputDirectoryName << std::endl;
   // cbica::Logging(loggerFile, "Input directory name: " + inputFileName + "\n");
@@ -63,7 +68,7 @@ int main(int argc, char **argv)
   
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop,pointsafterdrop,OriginalCurve,InterpolatedCurve, RevisedCurve,TruncatedCurve, timeresolution);
+  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop,pointsafterdrop,OriginalCurve,InterpolatedCurve, RevisedCurve,TruncatedCurve, timeresolution,dropscaling);
   //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>("//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_perf_LPS_r_SSFinal.nii.gz", "W:/perf/MSh_PERF_AX-1001_echo1_I000001.dcm", "//cbica-cifs/hasun/comp_space/180815_Henry_Ford/Protocols/5_SSFinal/2/2/2_t1ce_LPS_r_SSFinal.nii.gz", 17, 40);
   //for (int index = 0; index < PerfusionAlignment.size(); index++)
   //{
