@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   int pointsbeforedrop, pointsafterdrop;
   bool dropscaling = 0;
   double timeresolution;
-  std::string inputFileName, inputDicomName, outputDirectoryName,inputt1ceName;
+  std::string inputFileName, inputDicomName, outputDirectoryName, inputt1ceName;
 
   if (parser.compareParameter("L", tempPosition))
   {
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   // std::cout << "Input File:" << inputFileName << std::endl;
   // std::cout << "Output Directory:" << outputDirectoryName << std::endl;
   // cbica::Logging(loggerFile, "Input directory name: " + inputFileName + "\n");
-	// cbica::Logging(loggerFile, "Output directory name: " + outputDirectoryName + "\n");
+  // cbica::Logging(loggerFile, "Output directory name: " + outputDirectoryName + "\n");
 
   if (!cbica::isFile(inputFileName))
   {
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
   cbica::createDirectory(outputDirectoryName);
-  
+
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling);
