@@ -72,13 +72,12 @@ public:
 
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType, class PerfusionImageType >
-  std::vector<typename ImageType::Pointer> Run(std::string perfusionFile,
+  std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > Run(std::string perfusionFile,
     int pointsbeforedrop, int pointsafterdrop,
     std::vector<double> & OriginalCurve,
     std::vector<double> & InterpolatedCurve,
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
-    typename ImageType::Pointer maskImage,
     const double timeresolution,
     const bool dropscaling, const float stdDev, const float baseline);
 
@@ -103,19 +102,20 @@ private:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string perfusionFile, 
+std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > PerfusionAlignment::Run(std::string perfusionFile,
   int pointsbeforedrop,int pointsafterdrop,
   std::vector<double> & OriginalCurve, 
   std::vector<double> & InterpolatedCurve,
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
-  typename ImageType::Pointer maskImage,
   const double timeresolution,
   const bool dropscaling,
   const float stdDev, const float baseline)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
+
+  auto maskImage = typename ImageType::New();
 
   try
   {
@@ -124,7 +124,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   catch (const std::exception& e1)
   {
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
-    return PerfusionAlignment;
+    return std::make_pair(PerfusionAlignment, maskImage);
   }
 
   auto perfusionImageVolumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(perfImagePointerNifti);
@@ -135,7 +135,6 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
     maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
-    maskImage->DisconnectPipeline();
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage, 0, 9); //values do not matter here
     
     std::cout << "Started resampling.\n";
@@ -198,12 +197,12 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     if ((drop - pointsbeforedrop) <= 0)
     {
       std::cerr << "Drop has been estimated at '" << drop << "' but time-points before drop is given as '" << pointsbeforedrop << "', which is not possible.\n";
-      return PerfusionAlignment;
+      return std::make_pair(PerfusionAlignment, maskImage);
     }
     if ((drop + pointsafterdrop) >= shifted_normalized_volumes.size())
     {
       std::cerr << "Drop has been estimated at '" << drop << "' and total number of time-points after resampling are '" << shifted_normalized_volumes.size() << "' but time-points after drop is given as '" << pointsafterdrop << "', which is not possible.\n";
-      return PerfusionAlignment;
+      return std::make_pair(PerfusionAlignment, maskImage);
     }
 
     if (m_negativesDetected)
@@ -223,12 +222,10 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   catch (const std::exception& e1)
   {
     logger.WriteError("Unable to perform perfusion alignment. Error code : " + std::string(e1.what()));
-    return PerfusionAlignment;
+    return std::make_pair(PerfusionAlignment, maskImage);
   }
 
-  auto joinedImage = cbica::GetJoinedImage< ImageType, PerfusionImageType >(PerfusionAlignment);
-
-  return PerfusionAlignment;
+  return std::make_pair(PerfusionAlignment, maskImage);
 }
 
 template< class ImageType, class PerfusionImageType >
