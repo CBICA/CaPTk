@@ -79,7 +79,7 @@ public:
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
     const double timeresolution,
-    const int dropscaling);
+    const bool dropscaling);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -106,7 +106,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
   const double timeresolution,
-  const int dropscaling)
+  const bool dropscaling)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -173,7 +173,7 @@ std::vector<typename ImageType::Pointer> PerfusionAlignment::Run(std::string per
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    if (dropscaling == 1)
+    if (dropscaling)
     {
       resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
       RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, MASK, 0, 9); //values do not matter here
