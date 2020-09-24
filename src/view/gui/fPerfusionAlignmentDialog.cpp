@@ -48,7 +48,7 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the output folder.");
     return;
   }
-  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), mInputPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), inputScalingCheckBox->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }
