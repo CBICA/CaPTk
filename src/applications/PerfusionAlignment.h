@@ -207,7 +207,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
 
     if (m_negativesDetected)
     {
-      std::cerr << "WARNING: There are negative values in the shifted image, which might lead to erroneous results during downstream analyses.\n";
+      std::cerr << "WARNING: There are negative values in the shifted image, which might lead to erroneous results during downstream analyses; please check the baseline value.\n";
     }
 
     for (unsigned int index = drop - pointsbeforedrop; index <= drop + pointsafterdrop; index++)
