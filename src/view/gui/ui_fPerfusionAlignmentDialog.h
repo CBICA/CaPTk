@@ -113,12 +113,14 @@ public:
     sizePolicy.setHeightForWidth(inputBeforePointsName->sizePolicy().hasHeightForWidth());
     inputBeforePointsName->setSizePolicy(sizePolicy);
     inputBeforePointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputBeforePointsName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
     inputAfterPointsName = new QLineEdit("");
     inputAfterPointsName->setObjectName(QString::fromUtf8("inputAfterPointsName"));
     sizePolicy.setHeightForWidth(inputAfterPointsName->sizePolicy().hasHeightForWidth());
     inputAfterPointsName->setSizePolicy(sizePolicy);
     inputAfterPointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputAfterPointsName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
 
     inputEchoTimeName = new QLineEdit("");
@@ -126,6 +128,7 @@ public:
     sizePolicy.setHeightForWidth(inputEchoTimeName->sizePolicy().hasHeightForWidth());
     inputEchoTimeName->setSizePolicy(sizePolicy);
     inputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
