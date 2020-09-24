@@ -112,14 +112,14 @@ public:
     sizePolicy.setHeightForWidth(inputEchoTimeLabel->sizePolicy().hasHeightForWidth());
     inputEchoTimeLabel->setSizePolicy(sizePolicy);
     
-    inputBeforePointsName = new QLineEdit("");
+    inputBeforePointsName = new QLineEdit("5");
     inputBeforePointsName->setObjectName(QString::fromUtf8("inputBeforePointsName"));
     sizePolicy.setHeightForWidth(inputBeforePointsName->sizePolicy().hasHeightForWidth());
     inputBeforePointsName->setSizePolicy(sizePolicy);
     inputBeforePointsName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
     inputBeforePointsName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
-    inputAfterPointsName = new QLineEdit("");
+    inputAfterPointsName = new QLineEdit("15");
     inputAfterPointsName->setObjectName(QString::fromUtf8("inputAfterPointsName"));
     sizePolicy.setHeightForWidth(inputAfterPointsName->sizePolicy().hasHeightForWidth());
     inputAfterPointsName->setSizePolicy(sizePolicy);
@@ -127,7 +127,7 @@ public:
     inputAfterPointsName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
 
-    inputEchoTimeName = new QLineEdit("");
+    inputEchoTimeName = new QLineEdit("2");
     inputEchoTimeName->setObjectName(QString::fromUtf8("inputEchoTimeName"));
     sizePolicy.setHeightForWidth(inputEchoTimeName->sizePolicy().hasHeightForWidth());
     inputEchoTimeName->setSizePolicy(sizePolicy);
