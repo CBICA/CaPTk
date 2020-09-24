@@ -383,9 +383,8 @@ typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNo
       inputImageIterator.SetIndex(currentIndex);
       outputImageIterator.SetIndex(currentIndex);
 
-      auto currentImageValue = inputImageIterator.Get();
-      auto current_value = (inputImageIterator.Get() - base_average) +base_value;
-      outputImageIterator.Set(current_value);
+      auto output_value = (inputImageIterator.Get() - base_average) + base_value;
+      outputImageIterator.Set(output_value);
     }
   }
   return outputImage;
