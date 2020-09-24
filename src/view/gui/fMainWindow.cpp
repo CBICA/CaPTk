@@ -8984,6 +8984,14 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
     ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
+
+  auto tester = cbica::ImageInfo(inputfilename);
+  if (tester.GetImageDimensions() != 4)
+  {
+    ShowErrorMessage("Perfusion derivatives requires a perfusion (i.e., 4D image) as input");
+    return;
+  }
+
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
