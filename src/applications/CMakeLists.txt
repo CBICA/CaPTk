@@ -693,7 +693,6 @@ IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
 ENDIF()
 
 #Install
-MESSAGE( STATUS "Installing pre-compiled dcm2niix" )
 SET( DCM2NIIX_EXE "" )
 IF (WIN32)
   FILE(GLOB allFiles ${SOURCE_APPLICATIONS_PATH}/dcm2niix/*.*)
