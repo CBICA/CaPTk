@@ -43,7 +43,8 @@ public:
 
   QLabel *inputEchoTimeLabel;
   QLineEdit *inputEchoTimeName;
-
+  
+  QLabel *inputScalingLabel;
   QCheckBox *inputScalingCheckBox;
 
 
@@ -132,8 +133,9 @@ public:
     inputEchoTimeName->setSizePolicy(sizePolicy);
     inputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
     inputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
-
-    inputScalingCheckBox = new QCheckBox("Scale drop value");
+    
+    inputScalingLabel = new QLabel("Scale drop value");
+    inputScalingCheckBox = new QCheckBox("");
     inputScalingCheckBox->setChecked(false);
 
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
@@ -148,7 +150,8 @@ public:
 
     inputGridLayout->addWidget(inputEchoTimeLabel, 3, 0, 1, 1);
     inputGridLayout->addWidget(inputEchoTimeName, 3, 1, 1, 1);
-    inputGridLayout->addWidget(inputScalingCheckBox, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputScalingLabel, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputScalingCheckBox, 4, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
