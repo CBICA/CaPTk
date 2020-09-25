@@ -2784,7 +2784,7 @@ void FeatureExtraction< TImage >::Update()
             case COLLAGE:
             {
               // this is a special case, where a pre-compiled python binary is called for every image/mask
-              if (allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
+              if (!allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
               { // start lattice check
                 auto temp = m_Features.find(FeatureFamilyString[f]);
                 if (temp != m_Features.end())
