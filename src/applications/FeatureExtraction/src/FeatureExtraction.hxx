@@ -365,7 +365,7 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
 template< class TImage >
 void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointer itkImage,
-  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
+  const typename TImage::Pointer maskImage, std::map<std::string, double>& featurevec)
 {
   // this is a special case where the features are extracted via a python executable
   auto collage_cli = cbica::getExecutablePath() + "/collageradiomics"

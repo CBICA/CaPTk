@@ -664,7 +664,7 @@ private:
   \param maskImage The mask specifying the roi
   \param featurevec - map of Individual feature name and their value
   */
-  void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
+  void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate NGTDM features
