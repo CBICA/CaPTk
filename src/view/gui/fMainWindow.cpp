@@ -7599,13 +7599,14 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-	QString text = "We are actively working on the incorporation of cost-function tumor masking for the \
-alignment of individual subject perfusion curves, towards producing a more refined and robust \
-alignment result. We expect this to be completed, validated, and released in our next patch release, expected in Q4 2020.";
+	QString text = "This functionality has been removed from this CaPTk release, and we are actively testing an \
+optimized robust implementation that would enable generalization in multi - institutional data.We expect this \
+to be released in our next patch release, expected in Q4 2020.";
 	QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
 	msgBox.exec();
 
-    perfalignPanel.exec();
+	//disabled for v1.8.0 - should be reenabled for the next release
+    //perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
