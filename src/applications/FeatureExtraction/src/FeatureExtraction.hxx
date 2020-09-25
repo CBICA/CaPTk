@@ -380,17 +380,36 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
   auto tempDir = cbica::createTemporaryDirectory();
   auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
   auto inputMask = cbica::normPath(tempDir + "/inputMask.nii.gz");
+  auto outputCSV = cbica::normPath(tempDir + "/output_collage.csv");
 
+  // write input images to temp dir
   cbica::WriteImage< TImage >(itkImage, inputImage);
   cbica::WriteImage< TImage >(maskImage, inputMask);
 
-
-
-  auto temp = ngtdmCalculator.GetOutput();
-  for (auto const& f : temp)
+  // construct the command and call it
+  auto command = collage_cli + " -i " + inputImage + " -m " + inputMask + " -s " + std::to_string(m_Radius); +" -b " + std::to_string(m_Bins) + " -o " + outputCSV;
+  if (std::system(command.c_str()) != 0)
   {
-    featurevec[f.first] = f.second;
+    std::cerr << "Something went wrong while running COLLAGE, please see logs for more details.\n";
+    return;
   }
+
+  // read contents of output file and populate collage features
+  std::ifstream file(outputCSV);
+  std::map< std::string, float > featureNamesAndValues;
+  std::string line = "";
+  // Iterate through each line and split the content using delimeter
+  while (getline(file, line))
+  {
+    if (line.find("FeatureName") == std::string::npos)
+    {
+      auto temp = cbica::stringSplit(line, ",");
+      auto featureName = cbica::replaceString(temp[0], "Collage", "");
+      featurevec[featureName] = std::atof(temp[1].c_str());
+    }
+  }
+  file.close();
+  cbica::removeDirectoryRecursively(tempDir); // delete the directory
 }
 
 
@@ -2789,17 +2808,17 @@ void FeatureExtraction< TImage >::Update()
 
                         if (!writeFeatureMapsAndLattice && m_SliceComputation)
                         {
-                          CalculateCOLLAGE(urrentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                             "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(urrentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
                             "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(urrentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
                             "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
