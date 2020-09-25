@@ -392,10 +392,15 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
   cbica::WriteImage< TImage >(maskImage, inputMask);
 
   // construct the command and call it
-  auto command = collage_cli + " -i " + inputImage + " -m " + inputMask + " -s " + std::to_string(m_Radius); +" -b " + std::to_string(m_Bins) + " -o " + outputCSV;
-  if (std::system(command.c_str()) != 0)
+  auto command = collage_cli + " -i " + inputImage + " -m " + inputMask + " -s " + std::to_string(m_Radius) + " -b " + std::to_string(m_Bins) + " -o " + outputCSV;
+  auto console_output = cbica::getStdoutFromCommand(command);
+  if (!cbica::isFile(outputCSV))
   {
-    std::cerr << "Something went wrong while running COLLAGE, please see logs for more details.\n";
+    auto outputLog = cbica::normPath(tempDir + "/collage_output.log");
+    std::ofstream out(outputLog);
+    out << console_output;
+    out.close();
+    std::cerr << "Something went wrong while running COLLAGE, please see log file at '" << outputLog << "' for more details.\n";
     return;
   }
 
@@ -414,7 +419,7 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
     }
   }
   file.close();
-  cbica::removeDirectoryRecursively(tempDir); // delete the directory
+  cbica::removeDirectoryRecursively(tempDir, true); // delete the directory
 }
 
 
@@ -1731,6 +1736,18 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
+      // get the quantization properties, if any
+      {
+        auto temp = m_Features.find(FeatureFamilyString[Generic]);
+        if (temp != m_Features.end())
+        {
+          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+          {
+            SetFeatureParam(FeatureFamilyString[Generic]);
+          }
+        }
+      }
+
       /// sanity checks for required generic options
       if (m_histogramBinningType < 0)
       {
@@ -1751,18 +1768,6 @@ void FeatureExtraction< TImage >::Update()
       if (m_resamplingInterpolator_Mask.empty())
       {
         std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
-      }
-
-      // get the quantization properties, if any
-      {
-        auto temp = m_Features.find(FeatureFamilyString[Generic]);
-        if (temp != m_Features.end())
-        {
-          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
-          {
-            SetFeatureParam(FeatureFamilyString[Generic]);
-          }
-        }
       }
 
       if (m_resamplingResolution > 0)
