@@ -2784,74 +2784,76 @@ void FeatureExtraction< TImage >::Update()
             case COLLAGE:
             {
               // this is a special case, where a pre-compiled python binary is called for every image/mask
-              //std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
-              auto temp = m_Features.find(FeatureFamilyString[f]);
-              if (temp != m_Features.end())
-              {
-                if (std::get<0>(temp->second))
+              if (allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
+              { // start lattice check
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
                 {
-                  auto tempT1 = std::chrono::high_resolution_clock::now();
-
-                  std::get<2>(temp->second) = m_modality[i];
-                  std::get<3>(temp->second) = allROIs[j].label;
-
-                  for (size_t r = 0; r < m_Radius_range.size(); r++)
+                  if (std::get<0>(temp->second))
                   {
-                    m_Radius = m_Radius_range[r];
-                    auto m_Radius_string = std::to_string(m_Radius);
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
 
-                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
-                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
 
-                    for (size_t b = 0; b < m_Bins_range.size(); b++)
+                    for (size_t r = 0; r < m_Radius_range.size(); r++)
                     {
-                      m_Bins = m_Bins_range[b];
-                      auto m_Bins_string = std::to_string(m_Bins);
-                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
-                      if (TImage::ImageDimension == 3)
-                      {
-                        std::string currentFeatureFamily = FeatureFamilyString[f];
-                        CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
-                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
-                          ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                      m_Radius = m_Radius_range[r];
+                      auto m_Radius_string = std::to_string(m_Radius);
 
-                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                      auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                      //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                      for (size_t b = 0; b < m_Bins_range.size(); b++)
+                      {
+                        m_Bins = m_Bins_range[b];
+                        auto m_Bins_string = std::to_string(m_Bins);
+                        std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                        if (TImage::ImageDimension == 3)
                         {
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
-                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
-                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          std::string currentFeatureFamily = FeatureFamilyString[f];
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                            "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
-                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
-                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
-                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                          if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                          {
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                              "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
-                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
-                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
-                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                              "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                              "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                          }
                         }
-                      }
-                      else
-                      {
-                        CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
-                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
-                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
-                          ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice);
-                      }
-                    } // end bin-loop
-                  } // end radius-loop
+                        else
+                        {
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                            "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                        }
+                      } // end bin-loop
+                    } // end radius-loop
 
-                  if (m_debug)
-                  {
-                    auto tempT2 = std::chrono::high_resolution_clock::now();
-                    m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
                   }
                 }
-              }
-              break;
+                break;
+              } // end lattice check
             }
             default: // undefined Feature
               break;
