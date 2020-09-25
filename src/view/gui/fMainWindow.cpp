@@ -7599,7 +7599,13 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-  perfalignPanel.exec();
+  QString text = "This functionality has been removed from this CaPTk release, \
+and we are actively testing an optimized robust implementation that would enable \
+generalization in multi-institutional data. We expect this to be released in our \
+next patch release, expected in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
@@ -9041,26 +9047,26 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, echotime, dropscaling);
+  //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, echotime, dropscaling);
 
-  if (!PerfusionAlignment.empty())
-  {
-    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
-    cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
+  //if (!PerfusionAlignment.empty())
+  //{
+  //  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+  //  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
 
-    WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
-    WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
-    WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
-    WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+  //  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+  //  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+  //  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+  //  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
-    QString msg;
-    msg = "Aligned images have been saved at the specified location.";
-    ShowMessage(msg.toStdString(), this);
-  }
-  else
-  {
-    ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
-  }
+  //  QString msg;
+  //  msg = "Aligned images have been saved at the specified location.";
+  //  ShowMessage(msg.toStdString(), this);
+  //}
+  //else
+  //{
+  //  ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
+  //}
 }
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, 
