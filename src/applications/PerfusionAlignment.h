@@ -115,7 +115,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
 
-  auto maskImage = typename ImageType::New();
+  typename ImageType::Pointer maskImage = ImageType::New();
 
   try
   {
