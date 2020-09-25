@@ -2848,7 +2848,7 @@ void FeatureExtraction< TImage >::Update()
                     if (m_debug)
                     {
                       auto tempT2 = std::chrono::high_resolution_clock::now();
-                      m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                      m_logger.Write("Collage Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
                     }
                   }
                 }
