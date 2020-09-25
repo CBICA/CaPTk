@@ -1257,17 +1257,20 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 
 This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
-The exact measurements comprise of the following:
+The extracted measurements comprise of the following:
 
 -# An automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV)
 -# Peak Height (PH)
--# Percent Signal Recovery (PSR)
+-# Percentage Signal Recovery (PSR)
+
+By default, all calculations use the average of the first 20% of timepoints as baseline, and the average of 66-88% timepoints as recovery. The timepoint with the maximum intensity drop on the average curve must fall between the baseline and recovery time ranges. Optional percentage time ranges can be applied in the CLI if the default needs to be changed.
 
 <b>Note</b>: The ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
   -# A single DSC-MRI image with non negative values.
-  -# System should have atleast 32GB RAM for calculating perfusion derivatives
+  -# System should have at least 32GB RAM for calculating perfusion derivatives
+  -# Output directory
   -# [OPTIONAL] The baseline start threshold percentage (range[0-100], Default = 0)
   -# [OPTIONAL] The baseline end threshold percentage (range[0-100], Default = 20)
   -# [OPTIONAL] The recovery start threshold percentage (range[0-100], Default = 66)
@@ -1275,11 +1278,11 @@ The exact measurements comprise of the following:
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted and the output directory.
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/OutputDir
 \endverbatim
 
 --------
