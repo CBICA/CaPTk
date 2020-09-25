@@ -254,6 +254,71 @@ jobs:
         make test
         rm -rf testing
       displayName: 'Performing the Tests'
+            
+    - bash: |
+        cd bin
+        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        pkgname="_Installer"
+        pkgname="$version$pkgname"
+        rm -rf *.pkg
+        rm -rf install_manifest.txt
+        make package
+        
+        # print dir tree for debug
+        ls -R _CPack_Packages
+        pkgpath=""
+        if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
+        
+        # Try patching Utilities as late as possible. Seems to be necessary for Utilities specifically.
+        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $pkgpath/Contents/Resources/bin/Utilities
+        
+        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
+        productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+        xml='<?xml version="1.0" encoding="utf-8"?>
+        <installer-gui-script minSpecVersion="1">
+            <title>CaPTk_'"$version"'</title>
+            <license file="Combined.txt"></license>
+            <pkg-ref id="com.cbica.captk"/>
+            <options customize="never" require-scripts="false"/>
+            <choices-outline>
+                <line choice="default">
+                    <line choice="com.cbica.captk"/>
+                </line>
+            </choices-outline>
+            <choice id="default"/>
+            <choice id="com.cbica.captk" visible="false">
+                <pkg-ref id="com.cbica.captk"/>
+            </choice>
+            <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+        </installer-gui-script>'
+        echo $xml > "./distribution.xml"
+        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+        mv *_Installer* $(Build.ArtifactStagingDirectory)
+      displayName: 'Package CaPTk (.dmg and .pkg)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(Build.DefinitionName)_installer_macOS'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: cbicaNITRC
+        sourceFolder: $(Build.ArtifactStagingDirectory)
+        contents: '*_Installer.*'
+        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        cleanTargetFolder: false
+        overwrite: true
+        continueOnError: true
+      displayName: Uploading to NITRC
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 - job: 'Windows_SelfHost_Windows_7'
   displayName: "Self-hosted agent on Windows 7"
