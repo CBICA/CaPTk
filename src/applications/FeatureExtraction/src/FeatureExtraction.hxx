@@ -375,6 +375,11 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
 
 #endif
     ;
+  if (!cbica::isFile(collage_cli))
+  {
+    std::cerr << "Could not find the Collage CLI, so cannot extract collage features.\n";
+    return;
+  }
   //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
   auto tempDir = cbica::createTemporaryDirectory();
