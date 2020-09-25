@@ -139,7 +139,7 @@ enum FeatureFamily
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
 { "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "NGLDM", "LBP",
-"Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
+"Collage", "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
 \brief FeatureExtraction Class -The main class structure enclosing all the feature calculations functions.
