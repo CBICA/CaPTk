@@ -364,6 +364,37 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
 
 template< class TImage >
+void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointer itkImage,
+  const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
+{
+  // this is a special case where the features are extracted via a python executable
+  auto collage_cli = cbica::getExecutablePath() + "/collageradiomics"
+#ifdef _WIN32
+    + ".exe"
+#else
+
+#endif
+    ;
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
+
+  auto tempDir = cbica::createTemporaryDirectory();
+  auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
+  auto inputMask = cbica::normPath(tempDir + "/inputMask.nii.gz");
+
+  cbica::WriteImage< TImage >(itkImage, inputImage);
+  cbica::WriteImage< TImage >(maskImage, inputMask);
+
+
+
+  auto temp = ngtdmCalculator.GetOutput();
+  for (auto const& f : temp)
+  {
+    featurevec[f.first] = f.second;
+  }
+}
+
+
+template< class TImage >
 void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   GLSZMFeatures< TImage > glszmCalculator;
@@ -2716,6 +2747,78 @@ void FeatureExtraction< TImage >::Update()
                   {
                     auto tempT2 = std::chrono::high_resolution_clock::now();
                     m_logger.Write("LBP Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                  }
+                }
+              }
+              break;
+            }
+            case COLLAGE:
+            {
+              // this is a special case, where a pre-compiled python binary is called for every image/mask
+              //std::cout << "[DEBUG] FeatureExtraction.hxx::case NGTDM" << std::endl;
+              auto temp = m_Features.find(FeatureFamilyString[f]);
+              if (temp != m_Features.end())
+              {
+                if (std::get<0>(temp->second))
+                {
+                  auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                  std::get<2>(temp->second) = m_modality[i];
+                  std::get<3>(temp->second) = allROIs[j].label;
+
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
+                  {
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
+
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
+                    {
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[0], offsets[1], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[1], offsets[2], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateNGTDM(currentInputImage_patch, currentMask_patch_axisImages[2], offsets[3], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateNGTDM(currentInputImage_patch, currentMask_patch, offsets[0], std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string + ";OffsetType=" + m_offsetSelect, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
+
+                  if (m_debug)
+                  {
+                    auto tempT2 = std::chrono::high_resolution_clock::now();
+                    m_logger.Write("NGTDM Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
                   }
                 }
               }

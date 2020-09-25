@@ -127,6 +127,7 @@ enum FeatureFamily
   NGTDM,
   NGLDM,
   LBP,
+  COLLAGE,
   Lattice,
   FractalDimension,
   Gabor,
@@ -655,6 +656,15 @@ private:
   \param featurevec - map of Individual feature name and their value
   */
   void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
+
+  /**
+  \brief Calculate COLLAGE features
+
+  \param itkImage The input image
+  \param maskImage The mask specifying the roi
+  \param featurevec - map of Individual feature name and their value
+  */
+  void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate NGTDM features
