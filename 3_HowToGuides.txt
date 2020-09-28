@@ -406,13 +406,14 @@ Multi-institutional Performance Evaluation of Deep Learning Methods and Robust M
 <b>REQUIREMENTS:</b>
   -# An image or a set of co-registered images.
   -# An ROI file containing various labels, for which features will be extracted.
+	-# NOTE: CaPTk also extracts CoLlAGe features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/).
  
 <b>USAGE:</b>
   -# Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.
   -# In the "Customization" section, you can select one of the preset of features to extract from the drop-down menu:
     - <b>Custom</b>: allows the manual selection & customization of specific features.
-    - <b>Custom_Lattice</b>: allows the manual selection & customization of specific features using a lattice-based strategy for feature extraction [1]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.
-    - <b>Lung_SBRT</b>: enables the extraction of features that are used in [2].
+    - <b>Custom_Lattice</b>: allows the manual selection & customization of specific features using a lattice-based strategy for feature extraction [2]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.
+    - <b>Lung_SBRT</b>: enables the extraction of features that are used in [3].
   -# For the "Custom" and "Custom_lattice" presets, and once specific features are selected, you can use the <b>Advanced</b> button (in "Customization") to parameterize further the individual selected features.
   -# In the <b>Image Selection</b> section, you can select the radio button of "<b>Selected Image</b>" or "<b>All Images</b>" to extract features for either the visualized image or all the images loaded in CaPTk, respectively.
   -# In the <b>Mask Selection</b> section, you have the option to define the label number(s) for which you want to extract features. Note that when more than one label number is entered the 'pipe' symbol should be used as a separator, i.e. |. Equivalently, text labels should be provided corresponding to each label number, again separated by a 'pipe'.
@@ -443,6 +444,7 @@ The above command extracts features defined in the parameter file defined in "-p
 
 References:
 
+-# P.Prasanna, P.Tiwari, A.Madabhushi, "Co-occurrence of Local Anisotropic Gradient Orientations (CoLlAGe): A new radiomics descriptor", Nature Scientific Reports, 2016.
 -# Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
 -# H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
 
