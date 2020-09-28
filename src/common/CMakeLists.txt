@@ -19,11 +19,6 @@ SET( ${PROJECT_NAME}_SRCS
   ${PROJECT_SOURCE_DIR}/src/DownloadManager.cpp
 )
 
-<<<<<<< HEAD
-=======
-#Message(STATUS "captk src dir:" ${CaPTk_SOURCE_DIR})
-
->>>>>>> 114dbbacad29fa6e09d1c4ddab0cdcaf6b7d98a1
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/inc
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src
   ${PROJECT_SOURCE_DIR}/src/applications/common_includes
