@@ -1234,19 +1234,19 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single T1 post-contrast MRI scan.
 	-# The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.
 	-# Number of time-points before and after the drop of the curve that we want our image to be aligned with. 
-	-# System should have atleast 32GB RAM for aligning perfusion curve. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
 	-# Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.
+	-# Specify the optional drop-scaling (-d in the command line) and standard-deviation threshold (-s in the command line) parameters
 	-# Press "Confirm" button.
 	-# The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).
+	-# Outupt folder will contain the alighned perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.
   - This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -c C:/InputT1ceImage.nii.gz -b 15 -a 17 -t 2 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -b 15 -a 17 -t 2 -s 10 -d 1 -o C:/InputImage_output
 \endverbatim
 
 */
@@ -1257,17 +1257,20 @@ This application extracts various measurements from a Dynamic-Susceptibility Con
 
 This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
-The exact measurements comprise of the following:
+The extracted measurements comprise of the following:
 
 -# An automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV)
 -# Peak Height (PH)
--# Percent Signal Recovery (PSR)
+-# Percentage Signal Recovery (PSR)
+
+By default, all calculations use the average of the first 20% of timepoints as baseline, and the average of 66-88% timepoints as recovery. The timepoint with the maximum intensity drop on the average curve must fall between the baseline and recovery time ranges. Optional percentage time ranges can be applied in the CLI if the default needs to be changed.
 
 <b>Note</b>: The ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
   -# A single DSC-MRI image with non negative values.
-  -# System should have atleast 32GB RAM for calculating perfusion derivatives
+  -# System should have at least 32GB RAM for calculating perfusion derivatives
+  -# Output directory
   -# [OPTIONAL] The baseline start threshold percentage (range[0-100], Default = 0)
   -# [OPTIONAL] The baseline end threshold percentage (range[0-100], Default = 20)
   -# [OPTIONAL] The recovery start threshold percentage (range[0-100], Default = 66)
@@ -1275,11 +1278,11 @@ The exact measurements comprise of the following:
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted and the output directory.
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/OutputDir
 \endverbatim
 
 --------
