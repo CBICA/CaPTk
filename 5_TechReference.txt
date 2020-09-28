@@ -132,7 +132,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
     </tr>
     <tr>
-      <td align="center">Edge<br>Eenhancing<br>Index
+      <td align="center">Edge<br>Enhancing<br>Index
       <td>
       <td>Normalizing factor
       <td>&eta
