@@ -14,7 +14,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 <b>NOTE:</b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
 
-*/
+*----
 
 /**
 \page tr_FeatureExtraction Feature Extraction
@@ -132,15 +132,26 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
     </tr>
     <tr>
+      <td align="center">Edge<br>Enhancing<br>Index
+      <td>
+      <td>Normalizing factor
+      <td>\f$ \eta \f$
+      <td>5 
+      <td>
+      The edge-enhancing index of an image I is defined as:
+        <ul> 
+          <li>E(I) = \f$ (\frac{\lambda_{1}-\lambda_{2}}{\lambda_{1}+\lambda_{2}+\eta})^2 \f$
+        </ul>
+      where \f$ \lambda_{1} \f$ and \f$ \lambda_{2} (\lambda_{1}>\lambda_{2}) \f$ are eigenvalues of the diffusion tension matrix of Image (I) and \f$ \eta \f$ is a normalizing factor. Available only on 2D.
+    </tr>
+    <tr>
       <td align="center">Local Binary<br>Pattern (LBP)
       <td>
       <td>Radius <br>Neighborhood
-      <td>N.A. <br>2:4:8
-      <td>N.A. <br>8
+      <td>1 <br>2:4:8
+      <td>1 <br>8
       <td>
-        <ul>
-          <li>The LBP codes are computed using N sampling points on a  circle of radius R and using mapping table.
-        </ul>
+          The pixel-wise LBP codes are computed using N number of neighbors on a circle of radius R around each pixel and using a rotation invariant implementation. The output value corresponds to the mean of the LBP map.
     </tr>
     <tr>
       <td align="center">Grey Level<br>Co-occurrence<br>Matrix<br> (GLCM)
@@ -272,6 +283,60 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
     </tr>
     <tr>
+      <td align="center">Gabor Wavelets
+      <td> 
+        <ul>
+          <li> Mean 
+          <li> Standard deviation 
+          <li> Variance 
+          <li> Maximum
+          <li>Sum
+        </ul>
+      </td>
+      <td>
+        Radius<br>
+        Direction<br>
+        Level<br>
+        Gamma<br>
+        Fmax
+      </td>
+      <td>
+      N.A.
+      </td>
+      <td>
+        1 <br>
+        N.A. <br>
+        4 <br>
+        \f$ \sqrt{2} \f$ <br>
+        0.25
+      </td>
+      <td>
+      For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
+      The \f$ \gamma \f$ parameter determines the spatial aspect ratio, and the levels parameter determines the number of levels to perform wavelet decomposition.
+      Features are extracted for each resulting image generated for each direction and level.
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Power Spectrum
+      <td>
+      Beta 
+      </td>
+      <td>
+      Center
+      </td>
+      <td>
+      N.A.
+      </td>
+      <td>
+      center of image
+      </td>
+      <td>
+      A discrete fourier transform is applied to each image to decompose the information in the image into signals with varying frequencies. The power spectrum is computed for each signal.
+      Plotting the relation between spatial frequency and average power, the slope of a line fit to this relation is calculated.
+      </td>
+
+    </tr>
+    <tr>
       <td align="center">Lattice<br>-based
       <td>
         <ul>
@@ -306,7 +371,8 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
       </td>
       <td>
-        Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
+        When activated, this option performs feature calculation on multiple local square (for 2D images) or cubic (for 3D images) regions defined by a lattice virtually overlaid on the image.
+        <br>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
       </td>
     </tr>
 </table>
