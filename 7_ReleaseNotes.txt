@@ -19,10 +19,11 @@
   - Recurrence fixes
   - Pseudoprogression fixes
 - Generic GUI bug fixes and improvements 
-- Added apply mask functionaity from drawing panel
+- Added apply mask functionality from drawing panel
 - Headers added to csv features files for multiple applications
 - Fixed application font mismatch on GUI
-- Fixed mask opacity change functionaity from comparison mode
+- Fixed mask opacity change functionality from comparison mode
+- Added Collage radiomic features to Feature Extraction module
 - Documentation updates
 
 For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
