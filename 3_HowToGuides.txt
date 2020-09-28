@@ -406,7 +406,7 @@ Multi-institutional Performance Evaluation of Deep Learning Methods and Robust M
 <b>REQUIREMENTS:</b>
   -# An image or a set of co-registered images.
   -# An ROI file containing various labels, for which features will be extracted.
-	-# NOTE: CaPTk also extracts CoLlAGe features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/).
+	-# NOTE: CaPTk also extracts COLLAGE features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/).
  
 <b>USAGE:</b>
   -# Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.

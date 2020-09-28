@@ -317,6 +317,8 @@ The parameterization of the <b>lattice-based strategy</b> for feature extraction
 - The grid spacing representing the distance between consecutive lattice points (Default: 6.3mm). 
 - The size of the local region centered at each lattice point (Default: 6.3mm).
 
+For documentation related [COLLAGE features](https://github.com/radxtools/collageradiomics/), please see https://collageradiomics.readthedocs.io/en/latest/#
+
 */
 
 /**
