@@ -10,7 +10,7 @@
 //
 // Contact details: software@cbica.upenn.edu
 //
-// License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
+// License Agreement: https://www.med.upenn.edu/cbica/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef ui_fSBRTNoduleDialog_H

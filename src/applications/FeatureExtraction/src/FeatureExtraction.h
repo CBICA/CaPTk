@@ -3,11 +3,11 @@
 
 This file holds the declaration of the class FeatureExtraction.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 */
 #pragma once
 
@@ -127,6 +127,7 @@ enum FeatureFamily
   NGTDM,
   NGLDM,
   LBP,
+  COLLAGE,
   Lattice,
   FractalDimension,
   Gabor,
@@ -138,7 +139,7 @@ enum FeatureFamily
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
 { "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "NGLDM", "LBP",
-"Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
+"Collage", "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
 \brief FeatureExtraction Class -The main class structure enclosing all the feature calculations functions.
@@ -655,6 +656,15 @@ private:
   \param featurevec - map of Individual feature name and their value
   */
   void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
+
+  /**
+  \brief Calculate COLLAGE features
+
+  \param itkImage The input image
+  \param maskImage The mask specifying the roi
+  \param featurevec - map of Individual feature name and their value
+  */
+  void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map< std::string, double >& featurevec);
 
   /**
   \brief Calculate NGTDM features

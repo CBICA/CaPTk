@@ -3,11 +3,11 @@
 
 \brief Declaration of the WhiteStripe GUI class
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2017 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 

@@ -10,7 +10,7 @@
 //
 // Contact details: software@cbica.upenn.edu
 //
-// License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
+// License Agreement: https://www.med.upenn.edu/cbica/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef _fEGFRvIIIPredictor_h_
@@ -19,6 +19,7 @@
 
 //#include "CAPTk.h"
 #include "ui_fEGFRvIIIDialog.h"
+#include <QUrl>
 
 #define EXISTING_CLASSIFICATION 1
 #define TRAIN_MODEL 2
@@ -28,6 +29,7 @@
 
 \brief This class controls the elements in the recurrence dialog
 */
+
 class fEGFRvIIIPredictor : public QDialog, private Ui::fEGFRvIIIPredictor
 {
   Q_OBJECT
@@ -71,6 +73,9 @@ signals:
   void PrepareNewEGFRvIIIPredictionModel(const std::string inputdirectory, const std::string outputdirectory);
   void EGFRvIIIPredictionOnExistingModel(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory);
   void SubjectBasedSurvivalEstimate(const std::string output, const std::string model, double age);
+
+  //signal to download from this url
+  void DownloadUrl(QUrl);
 };
 
 

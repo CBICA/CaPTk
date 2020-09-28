@@ -25,6 +25,8 @@ CaPTk has been designed as a modular platform, currently incorporating component
 
 The components of interaction and pre-processing are available for all integrated applications giving a researcher (whether clinical or computational) a single point of entry and exit for all their tasks.
 
+Several CaPTk algorithms and tools can be used from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/).
+
 The following sections give a high-level overview of CaPTk, with the intention of familiarizing a new user with the platform functionalities and interface.
 
 \tableofcontents
