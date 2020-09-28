@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0</span>
+   &#160;<span id="projectnumber">1.8.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -64,13 +64,14 @@ $(document).ready(function(){initNavTree('ht_FeatureExtraction.html',''); initRe
 <div class="textblock"><p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>An image or a set of co-registered images.</li>
 <li>An ROI file containing various labels, for which features will be extracted.</li>
+<li>NOTE: CaPTk also extracts COLLAGE features [1] using the <a href="https://github.com/radxtools/collageradiomics/">Python implementation</a>.</li>
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.</li>
 <li>In the "Customization" section, you can select one of the preset of features to extract from the drop-down menu:<ul>
 <li><b>Custom</b>: allows the manual selection &amp; customization of specific features.</li>
-<li><b>Custom_Lattice</b>: allows the manual selection &amp; customization of specific features using a lattice-based strategy for feature extraction [1]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.</li>
-<li><b>Lung_SBRT</b>: enables the extraction of features that are used in [2].</li>
+<li><b>Custom_Lattice</b>: allows the manual selection &amp; customization of specific features using a lattice-based strategy for feature extraction [2]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.</li>
+<li><b>Lung_SBRT</b>: enables the extraction of features that are used in [3].</li>
 </ul>
 </li>
 <li>For the "Custom" and "Custom_lattice" presets, and once specific features are selected, you can use the <b>Advanced</b> button (in "Customization") to parameterize further the individual selected features.</li>
@@ -97,6 +98,7 @@ $(document).ready(function(){initNavTree('ht_FeatureExtraction.html',''); initRe
 <hr  />
 <p>References:</p>
 <ol type="1">
+<li>P.Prasanna, P.Tiwari, A.Madabhushi, "Co-occurrence of Local Anisotropic Gradient Orientations (CoLlAGe): A new radiomics descriptor", Nature Scientific Reports, 2016.</li>
 <li>Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.</li>
 <li>H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.</li>
 </ol>

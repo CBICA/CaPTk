@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0</span>
+   &#160;<span id="projectnumber">1.8.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -64,19 +64,19 @@ $(document).ready(function(){initNavTree('Perfusion_Alignment.html',''); initRes
 <div class="textblock"><p>This application does perfusion alignment of the input Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.</p>
 <p><b> REQUIREMENTS:</b></p><ol type="1">
 <li>A single DSC-MRI scan.</li>
-<li>A single T1 post-contrast MRI scan.</li>
 <li>The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.</li>
 <li>Number of time-points before and after the drop of the curve that we want our image to be aligned with.</li>
-<li>System should have atleast 32GB RAM for aligning perfusion curve.</li>
 </ol>
 <p><b> USAGE:</b></p><ol type="1">
 <li>Launch the application from "Applications" -&gt; "Perfusion Alignment".</li>
 <li>Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.</li>
+<li>Specify the optional drop-scaling (-d in the command line) and standard-deviation threshold (-s in the command line) parameters</li>
 <li>Press "Confirm" button.</li>
 <li>The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).</li>
+<li>Outupt folder will contain the alighned perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.</li>
 </ol>
 <ul>
-<li>This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -c C:/InputT1ceImage.nii.gz -b 15 -a 17 -t 2 -o C:/InputImage_output
+<li>This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -b 15 -a 17 -t 2 -s 10 -d 1 -o C:/InputImage_output
 </pre> </li>
 </ul>
 </div></div><!-- contents -->
