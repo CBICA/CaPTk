@@ -2,11 +2,11 @@
 //
 //brief Implementation of fMainWindow class
 //
-//https://www.med.upenn.edu/sbia/software/ <br>
+//https://www.med.upenn.edu/cbica/captk/ <br>
 //software@cbica.upenn.edu
 //
 //Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-//See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+//See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 //
 //*/
 /////
@@ -69,6 +69,7 @@
 #include "CaPTkDockWidget.h"
 #include "SystemInformationDisplayWidget.h"
 #include "SystemInformation.h"
+#include "DownloadManager.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -170,6 +171,8 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  this->m_DownloadManager = new DownloadManager();
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -383,11 +386,15 @@ fMainWindow::fMainWindow()
   std::string breastAppList = "";
 
 #ifndef __APPLE__
-  breastAppList = " librasingle librabatch breastSegment texturePipeline";
+  breastAppList = " librasingle librabatch texturePipeline";
 #endif
 
   auto lungAppList = " LungField Nodule Analysis";
   std::string segAppList = " itksnap GeodesicSegmentation GeodesicTrainingSegmentation deepmedic_tumor deepmedic_brain";
+
+#ifndef __APPLE__
+  segAppList += " breastSegment";
+#endif
   std::string miscAppList = " DirectionalityEstimate DiffusionDerivatives PerfusionPCA PerfusionDerivatives PerfusionAlignment TrainingModule";
   
   std::string preProcessingAlgos = " DCM2NIfTI BiasCorrect-N3 Denoise-SUSAN GreedyRegistration HistogramMatching ZScoringNormalizer deepmedic_brain BraTSPipeline";
@@ -417,7 +424,7 @@ fMainWindow::fMainWindow()
   menuDeepLearning->addSeparator();
   temp = populateStringListInMenu(" ", this, menuDeepLearning, "Training", false);
 
-  menuDownload->addAction("All");
+  // menuDownload->addAction("All");
   for (const auto &currentActionAndName : vectorOfGBMApps)
   {
     if (currentActionAndName.name != "Glioblastoma")
@@ -605,7 +612,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma PseudoProgression Infiltration Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-Progression Estimator"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
@@ -656,11 +663,6 @@ fMainWindow::fMainWindow()
     {
       vectorOfBreastApps[i].action->setText("  Breast Density Estimator (LIBRA) BatchMode"); //TBD set at source
       connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationLIBRABatch()));
-    }
-    else if (vectorOfBreastApps[i].name.find("breastSegment") != std::string::npos)
-    {
-      vectorOfBreastApps[i].action->setText("  Breast Segmentation"); //TBD set at source
-      connect(vectorOfBreastApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
     else if (vectorOfBreastApps[i].name.find("texturePipeline") != std::string::npos)
     {
@@ -714,6 +716,11 @@ fMainWindow::fMainWindow()
     {
       vectorOfSegmentationApps[i].action->setText("  Skull Stripping (DeepLearning)"); // TBD set at source
       connect(vectorOfSegmentationApps[i].action, &QAction::triggered, this, [this] { ApplicationDeepMedicSegmentation(fDeepMedicDialog::SkullStripping); });
+    }
+    else if (vectorOfSegmentationApps[i].name.find("breastSegment") != std::string::npos)
+    {
+      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation in FFDM"); //TBD set at source
+      connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
   }
 
@@ -859,21 +866,23 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
+  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
-
+  connect(&pseudoPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&survivalPanel, SIGNAL(SurvivalPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForSurvivalPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&survivalPanel, SIGNAL(TrainNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
+  connect(&survivalPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&msubtypePanel, SIGNAL(MolecularSubtypePredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&msubtypePanel, SIGNAL(PrepareNewMolecularSubtypePredictionModel(const std::string, const std::string)), this, SLOT(CallForNewMolecularSubtypePredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&msubtypePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&skullStrippingPanel, SIGNAL(RunSkullStripping(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallImageSkullStripping(const std::string, const std::string, const std::string, const std::string)));
   connect(&dcmConverter, SIGNAL(RunDICOMConverter(const std::string, const std::string)), this, SLOT(CallDCM2NIfTIConversion(const std::string, const std::string)));
@@ -887,10 +896,10 @@ fMainWindow::fMainWindow()
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int, int , int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int,int , int,int)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const double, const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, int, int, bool, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, int, int, bool, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -901,6 +910,7 @@ fMainWindow::fMainWindow()
   connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
+  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
   connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
@@ -912,6 +922,8 @@ fMainWindow::fMainWindow()
 
   connect(&biascorrectionPanel, SIGNAL(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)),
       this, SLOT(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)));
+
+  connect(this->m_DownloadManager, SIGNAL(progress(qint64, std::string, qint64)), this, SLOT(updateProgress(qint64, std::string, qint64)));
 
   AxialViewWidget->hide();
   CoronalViewWidget->hide();
@@ -1018,6 +1030,9 @@ fMainWindow::~fMainWindow()
 
   if (mHelpDlg)
     delete mHelpDlg;
+
+  if (this->m_DownloadManager)
+	  delete this->m_DownloadManager;
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
@@ -1144,6 +1159,18 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
+void fMainWindow::downloadFromURL(QUrl url)
+{
+	QString basefilename = this->m_DownloadManager->saveFileName(url);
+	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	QString saveFileName = getSaveFile(this,
+		downloaddirpath + "/" + basefilename, "",
+		tr("Files (*.zip)"));
+
+	this->m_DownloadManager->setFilename(saveFileName);
+	this->m_DownloadManager->append(url);
+}
+
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
@@ -1151,14 +1178,17 @@ void fMainWindow::help_Download(QAction* action)
   if (!currentLink.empty() && (currentLink != "N.A."))
   {
     cbica::Logging(loggerFile, currentLink);
-    if (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
+
+	//if it's a zip file i.e. it is a data/model
+	if (QFileInfo(currentLink.c_str()).suffix() == "zip")
+		this->downloadFromURL(QUrl(currentLink.c_str()));
+	else
+		//if it is a webpage
+		openLink(currentLink);
   }
   else
   {
+	  //bad link
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
@@ -1240,9 +1270,12 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
     ImageType::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
 
+    auto originalOrientation = mSlicerManagers[index]->mOrientation;
+    auto reorientedImage = cbica::GetImageOrientation< ImageTypeFloat3D >(convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage), originalOrientation);
+
     if (mSlicerManagers[index]->GetPreset() == PRESET_THRESHOLD)
     {
-      auto img = convertVtkToItk<ImageTypeFloat3D::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+      auto img = reorientedImage.second;
       double threshold = mSlicerManagers[index]->mThreshold;
       //
       auto duplicator = itk::ImageDuplicator< ImageTypeFloat3D >::New();
@@ -1277,7 +1310,7 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
     }
     else
     {
-      auto img = convertVtkToItk< ImageType::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+      auto img = reorientedImage.second;
 
       auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
       infoChanger->SetInput(img);
@@ -1293,7 +1326,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       if (InputPixelType == "short")
       {
         using ImageTypeToWrite = itk::Image<short, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1307,7 +1343,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned short")
       {
         using ImageTypeToWrite = itk::Image<unsigned short, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1321,7 +1360,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "char")
       {
         using ImageTypeToWrite = itk::Image<char, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1335,7 +1377,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned char")
       {
         using ImageTypeToWrite = itk::Image<unsigned char, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1349,7 +1394,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "int")
       {
         using ImageTypeToWrite = itk::Image<int, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1363,7 +1411,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "unsigned int")
       {
         using ImageTypeToWrite = itk::Image<unsigned int, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1377,7 +1428,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "double")
       {
         using ImageTypeToWrite = itk::Image<double, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1391,7 +1445,10 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
       else if (InputPixelType == "float")
       {
         using ImageTypeToWrite = itk::Image<float, ImageTypeFloat3D::ImageDimension>;
-        auto img = convertVtkToItk<ImageTypeToWrite::PixelType, ImageTypeFloat3D::ImageDimension>(mSlicerManagers[index]->mImage);
+        auto caster = itk::CastImageFilter< ImageTypeFloat3D, ImageTypeToWrite >::New();
+        caster->SetInput(reorientedImage.second);
+        caster->Update();
+        auto img = caster->GetOutput();
         auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeToWrite >::New();
         infoChanger->SetInput(img);
         infoChanger->ChangeDirectionOn();
@@ -1767,7 +1824,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
       imageManager->SetOriginalDirection(currentImage->GetDirection());
       imageManager->SetOriginalOrigin(currentImage->GetOrigin());
-      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(fname));
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname)); // defaults to RAI
+      imageManager->SetOriginalOrientation(tempImage.first);
+      currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(tempImage.second);
       imageManager->SetImage(currentImage);
       imageManager->mImageSubType = guessImageType(fname);
     }
@@ -6128,12 +6187,20 @@ void fMainWindow::ApplicationLIBRASingle()
 
 void fMainWindow::ApplicationConfetti()
 {
+#if WIN32
   std::string scriptToCall = m_allNonNativeApps["confetti"];
    
   if (startExternalProcess(scriptToCall.c_str(), QStringList()) != 0)
   {
     ShowErrorMessage("Confetti failed to execute. Please check installation requirements and retry.", this);
   }
+#else
+	QMessageBox box(this);
+	box.setIcon(QMessageBox::Information);
+	box.addButton(QMessageBox::Ok);
+	box.setText("Confetti is available for <a href='https://github.com/CBICA/CaPTk#downloads'>Windows</a> only!");
+	box.exec();
+#endif
 }
 
 void fMainWindow::ApplicationSBRTLungField()
@@ -7402,92 +7469,54 @@ void fMainWindow::CallBiasCorrection(const std::string correctionType, QString s
     auto currentImage = mSlicerManagers[index]->mITKImage;
     auto maskImg = getMaskImage();
 
-    BiasCorrection biasCorrector;
+    auto tempDir = cbica::createTemporaryDirectory();
+    // saving to temp file and calling the CLI to avoid GUI orientation-fix weirdness
+    auto tempFilename = tempDir + "/TEMP_CAPTK_BIASCORRECTION.nii.gz";
+    SaveImage_withFile(index, QString::fromStdString(tempFilename));
 
-    if (currentImage->GetLargestPossibleRegion().GetSize()[2] == 1)
+    QString executableExt = "";
+#ifdef _WIN32
+    executableExt = ".exe";
+#endif
+    QString preprocessingExecutablePath = QApplication::applicationDirPath();
+    preprocessingExecutablePath += "/";
+#ifdef __APPLE__
+    preprocessingExecutablePath += "../Resources/bin/";
+#endif
+    preprocessingExecutablePath += "Preprocessing";
+    preprocessingExecutablePath += executableExt;
+
+    QStringList argsToBiasCorrection;
+    argsToBiasCorrection.append("-i " + QString::fromStdString(cbica::normPath(tempFilename)));
+    argsToBiasCorrection.append("-o " + saveFileName);
+    argsToBiasCorrection.append("-nS " + QString::number(bias_splineOrder));
+    argsToBiasCorrection.append("-nF " + QString::number(bias_filterNoise));
+    argsToBiasCorrection.append("-nB " + QString::number(bias_otsuBins));
+    argsToBiasCorrection.append("-nFL " + QString::number(bias_fittingLevels));
+    argsToBiasCorrection.append("-nMI " + QString::number(bias_maxIterations));
+    argsToBiasCorrection.append("-nFWHM " + QString::number(bias_fwhm));
+    argsToBiasCorrection.append("-" + QString::fromStdString(correctionType).toLower()); // note no space between - and type
+
+    updateProgress(5, "Bias correction in process");
+    int biascorrection_result = startExternalProcess(preprocessingExecutablePath, argsToBiasCorrection);
+    
+    if (biascorrection_result != 0 )
     {
-      // this is actually a 2D image which has been loaded as a 3D image with a single slize in z-direction
-      cbica::Logging(loggerFile, "2D Image detected, doing conversion and then passing into FE module");
-      using ImageTypeFloat2D = itk::Image< float, 2 >;
-      ImageTypeFloat2D::Pointer image_2d;
-
-      ImageTypeFloat3D::IndexType regionIndex;
-      regionIndex.Fill(0);
-      auto regionSize = currentImage->GetLargestPossibleRegion().GetSize();
-      regionSize[2] = 0; // only 2D image is needed
-      auto extractor = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
-      ImageTypeFloat3D::RegionType desiredRegion(regionIndex, regionSize);
-      extractor->SetExtractionRegion(desiredRegion);
-      extractor->SetInput(currentImage);
-      extractor->SetDirectionCollapseToIdentity();
-      extractor->Update();
-      image_2d = extractor->GetOutput();
-      image_2d->DisconnectPipeline();
-
-      auto extractor_mask = itk::ExtractImageFilter< ImageTypeFloat3D, ImageTypeFloat2D >::New();
-      extractor_mask->SetExtractionRegion(desiredRegion);
-      extractor_mask->SetInput(maskImg);
-      extractor_mask->SetDirectionCollapseToIdentity();
-      extractor_mask->Update();
-      auto mask2D = extractor_mask->GetOutput();
-      //mask2D->DisconnectPipeline();
-
-      updateProgress(5, "Bias correction in process");
-
-      auto outputImage = biasCorrector.Run<ImageTypeFloat2D>(correctionType,
-        image_2d,
-        bias_splineOrder,
-        bias_maxIterations,
-        bias_fittingLevels,
-        bias_filterNoise,
-        bias_fwhm,
-        bias_otsuBins);
-
-      if (outputImage.IsNotNull())
-      {
-        updateProgress(80, "Saving file");
-        cbica::WriteImage< ImageTypeFloat2D >(outputImage, saveFileName_string);
-        if (cbica::fileExists(saveFileName_string))
-        {
-          updateProgress(90, "Displaying output");
-          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
-        }
-        updateProgress(0, "Bias correction finished");
-      }
-      else
-      {
         updateProgress(0, "Error in Bias correction!");
-      }
+    }
+    else if (!cbica::fileExists(saveFileName_string))
+    {
+        updateProgress(0, "Error saving Bias Correction output!");
     }
     else
     {
-      updateProgress(5, "Bias correction in process");
-
-      ImageTypeFloat3D::Pointer outputImage = biasCorrector.Run<ImageTypeFloat3D>(correctionType,
-        currentImage,
-        bias_splineOrder,
-        bias_maxIterations,
-        bias_fittingLevels,
-        bias_filterNoise,
-        bias_fwhm,
-        bias_otsuBins);
-
-      if (outputImage.IsNotNull())
-      {
-        updateProgress(80, "Saving file");
-        cbica::WriteImage< ImageTypeFloat3D >(outputImage, saveFileName_string);
-        if (cbica::fileExists(saveFileName_string))
-        {
-          updateProgress(90, "Displaying output");
-          LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
-        }
+        updateProgress(90, "Displaying output");
+        LoadSlicerImages(saveFileName_string, CAPTK::ImageExtension::NIfTI);
         updateProgress(0, "Bias correction finished");
-      }
-      else
-      {
-        updateProgress(0, "Error in Bias correction!");
-      }
     }
+   
+    cbica::removeDir(tempDir);
+
   }
 }
 void fMainWindow::ImageRegistration()
@@ -7570,7 +7599,13 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-  perfalignPanel.exec();
+  QString text = "This functionality has been removed from this CaPTk release, \
+and we are actively testing an optimized robust implementation that would enable \
+generalization in multi-institutional data. We expect this to be released in our \
+next patch release, expected in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
@@ -7990,40 +8025,24 @@ void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, bool loadA
 
 void fMainWindow::CallDCM2NIfTIConversion(const std::string inputDir, const std::string outputDir)
 {
-  // first pass on our own stuff
-  auto filesInDir = cbica::filesInDirectory(inputDir);
-  auto readDicomImage = cbica::ReadImage< ImageTypeFloat3D >(inputDir);
+	bool writeSuccess = false;
 
-  bool writeSuccess = false;
+	std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -o " + outputDir + " -z y " + inputDir;
 
-  if (!readDicomImage)
-  {
-    std::string fullCommandToRun = cbica::normPath(dcmConverter.m_exe.toStdString()) + " -a Y -r N -o " + outputDir + " " + inputDir;
+	if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
+	{
+		ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
+		return;
+	}
+	else
+	{
+		writeSuccess = true;
+	}
 
-    if (startExternalProcess(fullCommandToRun.c_str(), QStringList()) != 0)
-    {
-      ShowErrorMessage("Couldn't convert the DICOM with the default parameters; please use command line functionality");
-      return;
-    }
-    else
-    {
-      writeSuccess = true;
-    }
-  }
-  else
-  {
-    // adding a timestamp to the file to make it unique
-    auto timeStamp = cbica::getCurrentLocalDateAndTime();
-    timeStamp = cbica::replaceString(timeStamp, ":", "");
-    timeStamp = cbica::replaceString(timeStamp, ",", "");
-    cbica::WriteImage< ImageTypeFloat3D >(readDicomImage, outputDir + "/dicom2nifti_" + timeStamp + ".nii.gz");
-    writeSuccess = true;
-  }
-
-  if (writeSuccess)
-  {
-    ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
-  }
+	if (writeSuccess)
+	{
+		ShowMessage("Saved in:\n\n " + outputDir, this, "DICOM Conversion Success");
+	}
 }
 
 void fMainWindow::CallImageSkullStripping(const std::string referenceAtlas, const std::string referenceMask,
@@ -8971,6 +8990,14 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
     ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
+
+  auto tester = cbica::ImageInfo(inputfilename);
+  if (tester.GetImageDimensions() != 4)
+  {
+    ShowErrorMessage("Perfusion derivatives requires a perfusion (i.e., 4D image) as input");
+    return;
+  }
+
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
@@ -8979,7 +9006,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected. Please make sure that the input image does not contain negative values. Please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }
@@ -9000,16 +9027,18 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, bool dropscaling, const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
     ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
     return;
   }
-  if (!cbica::isFile(inputt1cefilename))
+
+  auto tester = cbica::ImageInfo(inputfilename);
+  if (tester.GetImageDimensions() != 4)
   {
-    ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Perfusion alignment requires a perfusion (i.e., 4D image) as input");
     return;
   }
 
@@ -9017,38 +9046,38 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
   PerfusionAlignment objPerfusion;
 
-  std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
-  for (int index = 0; index < PerfusionAlignment.size(); index++)
-  {
-    std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
-    cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
-  }
+  std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
+  //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, echotime, dropscaling);
 
-  std::ofstream myfile;
-  myfile.open(outputFolder + "/original_curve.csv");
-  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
-    myfile << std::to_string(OriginalCurve[index1]) << "\n";
-  myfile.close();
+  //if (!PerfusionAlignment.empty())
+  //{
+  //  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+  //  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
 
-  myfile.open(outputFolder + "/revised_curve.csv");
-  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
-    myfile << std::to_string(RevisedCurve[index1]) << "\n";
-  myfile.close();
+  //  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+  //  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+  //  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+  //  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
-  QString msg;
-  msg = "Aligned images have been saved at the specified location.";
-  ShowMessage(msg.toStdString(), this);
+  //  QString msg;
+  //  msg = "Aligned images have been saved at the specified location.";
+  //  ShowMessage(msg.toStdString(), this);
+  //}
+  //else
+  //{
+  //  ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
+  //}
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int confType, int folds)
+void fMainWindow::CallTrainingSimulation(const std::string featurefilename, 
+  const std::string targetfilename, 
+  const std::string outputFolder, 
+  const std::string modeldirectory, 
+  int classifier, int confType, int folds, 
+  int featureselectionType, int optimizationType, int crossvalidationType)
 {
-  int defaultfeatureselectiontype = 3;
-  int defaultoptimizationtype = 0;
-  int defaultcvtype = 1;
-
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
+  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,featureselectionType, optimizationType,crossvalidationType))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9675,7 +9704,7 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
 }
 
-void fMainWindow::updateProgress(int progress, std::string message, int max)
+void fMainWindow::updateProgress(qint64 progress, std::string message, qint64 max)
 {
 #ifdef USE_PROCESSDIALOG
   m_progressBar->setMaximum(max);

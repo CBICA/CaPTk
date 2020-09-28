@@ -14,7 +14,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 <b>NOTE:</b> The visualization of images is based on the physical coordinate system of each image (i.e., the origin and direction information from within the image file is used for rendering). In practice, use of a consistent coordinate framework results in images with different origins to appear misaligned (shifted) when compared to other neuro-imaging software packages that do rendering based on the Cartesian coordinate information in the image.
 
-*/
+*----
 
 /**
 \page tr_FeatureExtraction Feature Extraction
@@ -23,7 +23,7 @@ Training videos can be accessed in our <a href="https://www.youtube.com/channel/
 
 The Feature Extraction module ships with a set of pre-configured parameter files for 3D and 2D images (there are different extraction paradigms). The idea behind providing these configurations for users to have a template to start with and then customize the feature extraction based on their dataset(s). 
 
-During invocation from the CLI, the appropriate file should be passed after the <b>-p</b> parameter. 
+During invocation from the CLI, the appropriate file should be passed after the <b>-p</b> parameter.
 
 See the subsequent sections for details.
 
@@ -281,6 +281,60 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
           <li>Long Zone High Grey-Level Emphasis (LZHGE) =\f$ \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \f$ 
         </ul> 
         All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.
+    </tr>
+    <tr>
+      <td align="center">Gabor Wavelets
+      <td> 
+        <ul>
+          <li> Mean 
+          <li> Standard deviation 
+          <li> Variance 
+          <li> Maximum
+          <li>Sum
+        </ul>
+      </td>
+      <td>
+        Radius<br>
+        Direction<br>
+        Level<br>
+        Gamma<br>
+        Fmax
+      </td>
+      <td>
+      N.A.
+      </td>
+      <td>
+        1 <br>
+        N.A. <br>
+        4 <br>
+        \f$ \sqrt{2} \f$ <br>
+        0.25
+      </td>
+      <td>
+      For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. 
+      The \f$ \gamma \f$ parameter determines the spatial aspect ratio, and the levels parameter determines the number of levels to perform wavelet decomposition.
+      Features are extracted for each resulting image generated for each direction and level.
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Power Spectrum
+      <td>
+      Beta 
+      </td>
+      <td>
+      Center
+      </td>
+      <td>
+      N.A.
+      </td>
+      <td>
+      center of image
+      </td>
+      <td>
+      A discrete fourier transform is applied to each image to decompose the information in the image into signals with varying frequencies. The power spectrum is computed for each signal.
+      Plotting the relation between spatial frequency and average power, the slope of a line fit to this relation is calculated.
+      </td>
+
     </tr>
     <tr>
       <td align="center">Lattice<br>-based

@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0.nonRelease.20200825.a5181652</span>
    </div>
   </td>
  </tr>
@@ -465,6 +465,32 @@ Long Zone Low Grey-Level Emphasis (LZLGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}
 Long Zone High Grey-Level Emphasis (LZHGE) = \( \frac{1}{n_r}\sum_{i}^{M}\sum_{j}^{N}p(i,j) \cdot i^2 \cdot j^2 \) </li>
 </ul>
 All features are estimated within the ROI in an image, considering 26-connected neighboring voxels in the 3D volume.  </td></tr>
+<tr>
+<td align="center">Gabor Wavelets </td><td><ul>
+<li>
+Mean </li>
+<li>
+Standard deviation </li>
+<li>
+Variance </li>
+<li>
+Maximum </li>
+<li>
+Sum </li>
+</ul>
+</td><td>Radius<br  />
+ Direction<br  />
+ Level<br  />
+ Gamma<br  />
+ Fmax  </td><td>N.A.  </td><td>1 <br  />
+ N.A. <br  />
+ 4 <br  />
+ \( \sqrt{2} \) <br  />
+ 0.25  </td><td>For a given image, gabor filters are created for the number of directions specificed, with maximum sinusoid frequency determined by F_max. The \( \gamma \) parameter determines the spatial aspect ratio, and the levels parameter determines the number of levels to perform wavelet decomposition. Features are extracted for each resulting image generated for each direction and level.   </td></tr>
+<tr>
+<td align="center">Power Spectrum </td><td>Beta  </td><td>Center  </td><td>N.A.  </td><td>center of image  </td><td><p class="starttd">A discrete fourier transform is applied to each image to decompose the information in the image into signals with varying frequencies. The power spectrum is computed for each signal. Plotting the relation between spatial frequency and average power, the slope of a line fit to this relation is calculated. </p>
+<p class="endtd"></p>
+</td></tr>
 <tr>
 <td align="center">Lattice<br  />
 -based </td><td><ul>

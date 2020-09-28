@@ -5,11 +5,11 @@
 
 Extracts basic information from any image (like dimensions, spacing, pixel type, etc.).
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once

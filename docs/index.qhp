@@ -5,14 +5,14 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.Beta" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200825.a5181652" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md136" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md137" />
-          <section title="Citations" ref="index.html#autotoc_md138" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md139" />
-          <section title="Disclaimer" ref="index.html#autotoc_md140" />
-          <section title="Contact" ref="index.html#autotoc_md141" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md137" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md138" />
+          <section title="Citations" ref="index.html#autotoc_md139" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md140" />
+          <section title="Disclaimer" ref="index.html#autotoc_md141" />
+          <section title="Contact" ref="index.html#autotoc_md142" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -42,11 +42,13 @@
         <section title="What if I am having issues with the Linux Installer?" ref="FAQ.html#gs_FAQ_5">
           <section title="FUSE Issues" ref="FAQ.html#gs_FAQ_5_1" />
           <section title="GLIBCXX or GLIBC Issues" ref="FAQ.html#gs_FAQ_5_2" />
+          <section title="CXXABI issues" ref="FAQ.html#gs_FAQ_5_3" />
         </section>
         <section title="Is there a minimum recommended screen resolution for running CaPTk?" ref="FAQ.html#gs_FAQ_6" />
         <section title="Where can I find the CaPTk Docker Image?" ref="FAQ.html#gs_FAQ_7" />
         <section title="How do I run the CaPTk Docker Image to show the interface?" ref="FAQ.html#gs_FAQ_8" />
         <section title="Is there something wrong with Feature Extraction?" ref="FAQ.html#gs_FAQ_9" />
+        <section title="What if I am having an issue not listed here?" ref="FAQ.html#gs_FAQ_10" />
       </section>
       <section title="How To Guides" ref="How_To_Guides.html">
         <section title="Preprocessing" ref="ht_Preprocessing.html">
@@ -70,7 +72,7 @@
           <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
           <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
           <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-          <section title="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
+          <section title="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
           <section title="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
@@ -83,7 +85,7 @@
           <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
           <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
           <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-          <section title="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+          <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
           <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
         </section>
         <section title="Utilities (CLI only)" ref="ht_utilities.html" />
@@ -115,45 +117,45 @@
         </section>
       </section>
       <section title="Download Instructions" ref="Download.html">
-        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md98" />
+        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md99" />
       </section>
-      <section title="License" ref="Download.html#autotoc_md100" />
+      <section title="License" ref="Download.html#autotoc_md101" />
     </section>
   </section>
   <section title="Installation Instructions" ref="Installation.html">
-    <section title="Windows" ref="Installation.html#autotoc_md104" />
-    <section title="Linux" ref="Installation.html#autotoc_md105" />
-    <section title="macOS" ref="Installation.html#autotoc_md106" />
+    <section title="Windows" ref="Installation.html#autotoc_md105" />
+    <section title="Linux" ref="Installation.html#autotoc_md106" />
+    <section title="macOS" ref="Installation.html#autotoc_md107" />
   </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md110" />
-  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md111">
-    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md112" />
-    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md113" />
-    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md114" />
-    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md115" />
-    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md116" />
-    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md117" />
-    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md118" />
-    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md119" />
-    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md120" />
-    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md121" />
-    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md122" />
-    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md123" />
-    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md124" />
-    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md125" />
-    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md126" />
-    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md127" />
-    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md128" />
-    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md129" />
+  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md111" />
+  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md112">
+    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md113" />
+    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md114" />
+    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md115" />
+    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md116" />
+    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md117" />
+    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md118" />
+    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md119" />
+    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md120" />
+    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md121" />
+    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md122" />
+    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md123" />
+    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md124" />
+    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md125" />
+    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md126" />
+    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md127" />
+    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md128" />
+    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md129" />
+    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md130" />
   </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md133" />
-<section title="Developers:" ref="People.html#autotoc_md134" />
-<section title="Collaborators:" ref="People.html#autotoc_md135" />
+<section title="Advisors:" ref="People.html#autotoc_md134" />
+<section title="Developers:" ref="People.html#autotoc_md135" />
+<section title="Collaborators:" ref="People.html#autotoc_md136" />
 </section>
 </section>
 </section>
@@ -183,7 +185,7 @@
       <keyword name="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" id="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
       <keyword name="Brain Cancer: Glioblastoma Survival Prediction Index" id="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
       <keyword name="Brain Cancer: Glioblastoma EGFRvIII SVM Index" id="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-      <keyword name="Brain Cancer: Pseudoprogression Infiltration Index" id="Brain Cancer: Pseudoprogression Infiltration Index" ref="Glioblastoma_Pseudoprogression.html" />
+      <keyword name="Brain Cancer: Pseudo-Progression Estimator" id="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
       <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Miscellaneous: Directionality Estimator" id="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
@@ -194,7 +196,7 @@
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
       <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
       <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-      <keyword name="Miscellaneous: PCA Volume Extraction" id="Miscellaneous: PCA Volume Extraction" ref="PCA_Extraction.html" />
+      <keyword name="Miscellaneous: Perfusion PCA Volume Extraction" id="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Utilities (CLI only)" id="Utilities (CLI only)" ref="ht_utilities.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />

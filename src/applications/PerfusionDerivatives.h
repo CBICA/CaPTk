@@ -5,11 +5,11 @@
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 
@@ -76,6 +76,25 @@ public:
   //! Default destructor
   ~PerfusionDerivatives() {};
 
+  void SetBaselineStartPercentage(double start)
+  {
+	  this->baseline_start_threshold = start;
+  }
+
+  void SetBaselineEndPercentage(double end)
+  {
+	  this->baseline_end_threshold = end;
+  }
+
+  void SetRecoveryStartPercentage(double start)
+  {
+	  this->recovery_start_threshold = start;
+  }
+
+  void SetRecoveryEndPercentage(double end)
+  {
+	  this->recovery_end_threshold = end;
+  }
 
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   std::vector<typename ImageType::Pointer> Run(std::string perfImagePointerNifti, bool rcbv, bool psr, bool ph, const std::string outputdirectory);
@@ -100,6 +119,9 @@ public:
 
   template<class ImageType, class PerfusionImageType >
   bool IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti, const std::string outputdirectory);
+
+  template< class ImageType, class PerfusionImageType >
+  bool InputContainsNegativeValues(typename PerfusionImageType::Pointer perfImagePointerNifti);
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -125,7 +147,7 @@ template<class ImageType, class PerfusionImageType >
 bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::Pointer perfImagePointerNifti,const std::string outputdirectory)
 {
   std::vector<double> averagecurve = CalculateAveragePerfusionCurve<ImageType, PerfusionImageType>(perfImagePointerNifti);
-  WriteCSVFiles(averagecurve, outputdirectory + "/AeragePerfusionCurve.csv");
+  WriteCSVFiles(averagecurve, outputdirectory + "/AveragePerfusionCurve.csv");
   
   int baseline_start  = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * baseline_start_threshold/100;
   int baseline_end    = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3] * baseline_end_threshold/100;
@@ -141,7 +163,9 @@ bool PerfusionDerivatives::IsPerfusionQualityGood(typename PerfusionImageType::P
 
   if(index_min<=baseline_end || index_min>=recovery_start)
   {
-    std::cout << "Drop of the curve does not lie in between the baseline and the recovery signal." << std::endl;
+    std::string msg = "Drop of the curve does not lie in between the baseline and the recovery signal. Perfusion derivatives can not be calculated.";
+    std::cout << msg << std::endl;
+    logger.Write(msg);
     return false;
   }
   return true;
@@ -161,8 +185,16 @@ std::vector<typename ImageType::Pointer> PerfusionDerivatives::Run(std::string p
     logger.WriteError("Unable to open the given DSC-MRI file. Error code : " + std::string(e1.what()));
     return perfusionDerivatives;
   }
-  if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti,outputdirectory) == false)
+  if (this->InputContainsNegativeValues<ImageType, PerfusionImageType>(perfImagePointerNifti))
+  {
+	  logger.WriteError("Cannot proceed with Perfusion Derivatives calculation, input image contains negative values.");
+	  return perfusionDerivatives;
+  }
+  if (IsPerfusionQualityGood<ImageType, PerfusionImageType>(perfImagePointerNifti, outputdirectory) == false)
+  {
+    logger.WriteError("Perfusion curve is not good quality.");
     return perfusionDerivatives;
+  }
   std::cout << "Perfusion curve validated!!!" << std::endl;
 
   perfusionDerivatives.push_back(NULL);
@@ -780,6 +812,27 @@ typename ImageType::Pointer PerfusionDerivatives::CalculatePerfusionVolumeMean(t
 				outputImage->SetPixel(index3D, value);
 			}
 	return outputImage;
+}
+
+template< class ImageType, class PerfusionImageType >
+bool PerfusionDerivatives::InputContainsNegativeValues(typename PerfusionImageType::Pointer perfImagePointerNifti)
+{
+	typedef itk::ImageRegionIteratorWithIndex <PerfusionImageType> PIteratorType;
+	PIteratorType pIt(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion());
+	
+	bool hasNegativeValue = false;
+	pIt.GoToBegin();
+
+	while (!pIt.IsAtEnd())
+	{
+		if (pIt.Value() < 0.0)
+		{
+			hasNegativeValue = true;
+			break;
+		}
+		++pIt;
+	}
+	return hasNegativeValue;
 }
 
 #endif

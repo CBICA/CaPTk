@@ -3,11 +3,11 @@
 
 \brief Declaration of SlicerManager class
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 
@@ -97,6 +97,12 @@ public:
     mDirection = direction;
   }
 
+  //! Set the original direction (since we are setting directions to identity) 
+  inline void SetOriginalOrientation(const std::string orientation)
+  {
+    mOrientation = orientation;
+  }
+
   //! Set new 4D image 
   void SetPerfImage(ImageTypeFloat4D::Pointer image);
 
@@ -144,6 +150,12 @@ public:
   int GetNumberOfSlicers()
   {
     return mSlicers.size();
+  }
+
+  //! Get the total number of Slicers
+  std::string GetOriginalOrientation()
+  {
+    return mOrientation;
   }
 
   //! Get the vtkImage
@@ -373,7 +385,7 @@ public:
   std::vector<vtkSmartPointer<Slicer> > mSlicers;
 
   int mPreset;
-  std::string mPathFileName;
+  std::string mPathFileName, mOrientation;
   int mImageType;
   int mImageSubType;
   std::string mFileName;

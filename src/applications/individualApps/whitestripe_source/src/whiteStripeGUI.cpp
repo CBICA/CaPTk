@@ -282,7 +282,7 @@ void WhiteStripeGUI::displayAboutAct()
 {
   string version = string("WhiteStripe version: ") + WHITESTRIPE_VERSION;
   QMessageBox::information(this, tr(version.c_str()),
-    tr("Contact: software@cbica.upenn.edu\n Copyright (c) 2017 University of Pennsylvania. All rights reserved.\n See COPYING file or https://www.med.upenn.edu/sbia/software/license.html")
+    tr("Contact: software@cbica.upenn.edu\n Copyright (c) 2017 University of Pennsylvania. All rights reserved.\n See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html")
     );
 }
 void WhiteStripeGUI::unloadImage()

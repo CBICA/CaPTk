@@ -24,7 +24,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
   - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
   - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
-  - [Brain Cancer: Pseudoprogression/TrueProgression Index](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Pseudo-Progression/TrueProgression Estimator](Glioblastoma_Pseudoprogression.html)
   - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
   - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
   - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
@@ -94,7 +94,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o
 /**  
 \page preprocessing_reg Image Co-registration
 This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].
-
+This tool is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 <b>REQUIREMENTS:</b>
 	-# A Target image.
   -# Up to 5 moving images
@@ -234,6 +234,8 @@ Reference:
 
 /**
 \page preprocessing_brats BraTS Pre-processing Pipeline
+
+This pipeline is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
 <b>REQUIREMENTS:</b>
 	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
@@ -456,7 +458,7 @@ Contains the following applications:
 - \subpage Glioblastoma_Atlas "Brain Cancer: Population Atlas"
 - \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
 - \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
-- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudoprogression Infiltration Index"
+- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudo-Progression Estimator"
 - \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Survival Prediction Index"
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
@@ -625,11 +627,9 @@ This application provides a probability map of deeply infiltrating tumor in the 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
 -# Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)
--# (For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i
-nclude words in <b>BOLD</b> to be identified as respective required files.
+-# (For training only) Segmentation labels of the near-region and far-region within the Edema as two separate NIfTI (.nii.gz) files. Corresponding regions should be 1 (Label=1) in both the files.
+-# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
-    -# <b>features.csv</b>
     -# CONVENTIONAL
       - my_<b>t1</b>_file.nii.gz
       - my_<b>t2</b>_file.nii.gz
@@ -644,7 +644,8 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
       - my_<b>perf</b>usion_file.nii.gz
     -# SEGMENTATION
       - my_tumor_segmentation_<b>label</b>_file.nii.gz
-      - my_<b>near</b>_region_file.nii.gz (only for training a new model)
+    -# DRAWING
+	  - my_<b>near</b>_region_file.nii.gz (only for training a new model)
       - my_<b>far</b>_region_file.nii.gz (only for training a new model) 
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_Directory
@@ -657,7 +658,7 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 - Infiltration prediction on loaded subject.
 	-# Load the required images in CaPTk and correctly assign the modality label in the drop-down menu. 
 	-# Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).
-	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+	-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 	-# Select the "Output Directory" and click on "Confirm".
 	-# The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).
 
@@ -666,18 +667,18 @@ nclude words in <b>BOLD</b> to be identified as respective required files.
 		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory" where the trained model should be saved.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of model training (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
 \endverbatim
 
 	- Use existing model: 
-		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip
+		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip
 		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory", where the user wants to save the infiltration maps.
 		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).
+		-# A pop-up window will confirm the completion of infiltration map calculations (~2*NoOfSubjects minutes).
 		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
 \verbatim
 ${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
@@ -704,7 +705,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
 <b>REQUIREMENTS:</b>
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+-# Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
@@ -725,7 +726,7 @@ This application provides the survival prediction index (SPI) of <i>de novo</i> 
       - my_<b>ph</b>_file.nii.gz
     -# SEGMENTATION
       - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
+      - label_in_<b>atlas</b>_space.nii.gz (in same space as above images)
 -# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
 	- Input_directory
 		-# Subject_ID1
@@ -824,7 +825,7 @@ References:
 
 
 /**
-\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudoprogression Infiltration Index
+\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudo-Progression Estimator
 This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
 
 <b>REQUIREMENTS:</b>
@@ -859,7 +860,7 @@ This application provides an estimate of the pseudo-progression after radiothera
 
 <b>USAGE:</b>
 
-- Pseudoprogression assessment on a batch of subjects.
+- Pseudo-Progression estimation on a batch of subjects.
 	- Train a new model: 
 		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
 		-# Select the "Output Directory" where the trained model should be saved.
@@ -1060,7 +1061,7 @@ The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a so
 	- <Image-Analyzed-Filename>_Windowed_Original.jpg: In the Result_Images sub-directory, the analyzed image window-leveled to between the 5th and 95th percentile of the intensity values of the pixels within the breast region is also provided with out the breast density segmentation overlay for comparison purposes.
 	- <Image-Analyzed>_density_imagesc.jpg: In the Result_Images sub-directory, the image clusters (grouped by colors) generated by the Fuzzy C-Means stage of the LIBRA algorithm is provided.
 	- <Image-Analyzed>_intensity_histogram.jpg: In the Result_Images sub-directory, the breast intensity histogram (z-scored) and FCM-cluster centers are plotted in this image.
-  - Please see the LIBRA manual for more details: https://www.med.upenn.edu/sbia/libra.html
+  - Please see the LIBRA manual for more details, please see the software manual: https://upenn.box.com/v/manual-libra104
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/libra.bat --input C:/inputDICOMDir --output C:/outputDir # windows
@@ -1206,6 +1207,8 @@ References:
 \page Diffusion_Derivatives Miscellaneous: Diffusion Derivatives
 This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
 
+This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
+
 <b> REQUIREMENTS:</b>
   -# A single DW-MRI image
   -# Its accompanying BVec and BVal files [Note: these files should be calculated by 'dcm2nii' or any other appropriate software.]
@@ -1231,20 +1234,19 @@ This application does perfusion alignment of the input Dynamic-Susceptibility Co
 
 <b> REQUIREMENTS:</b>
 	-# A single DSC-MRI scan. 
-	-# A single dicom slice from the original DICOM corresponding to the DSC-MRI scan. 
-	-# A single T1 post-contrast MRI scan.
-	-# The Echo Time corresponding to the given DSC-MRI scan.
-	-# Number of time-points before and after the standard perfusion curve that we want our image to be aligned with. 
-	-# System should have atleast 32GB RAM for calculating perfusion derivatives. 
+	-# The time-resolution (time-interval in seconds between the two volumes) of the given DSC-MRI scan.
+	-# Number of time-points before and after the drop of the curve that we want our image to be aligned with. 
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Alignment".
-	-# Specify the input DSC-MRI image, T1 post-contrast image, one dicom slide, "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), number of time-points before and after drop of the perfusion curve, and the output directory.
+	-# Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.
+	-# Specify the optional drop-scaling (-d in the command line) and standard-deviation threshold (-s in the command line) parameters
 	-# Press "Confirm" button.
-	-# The aligned perfusion images will be saved at the specified location (~5 minutes).
-  - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
+	-# The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).
+	-# Outupt folder will contain the alighned perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.
+  - This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: 
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -d C:/InputImage_originalDicom/singleSlice.dcm -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -b 15 -a 17 -t 2 -s 10 -d 1 -o C:/InputImage_output
 \endverbatim
 
 */
@@ -1253,25 +1255,34 @@ ${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPe
 \page Perfusion_Derivatives Miscellaneous: Perfusion Derivatives
 This application extracts various measurements from a Dynamic-Susceptibility Contrast-enhanced (DSC) MRI scan.
 
-The exact measurements comprise of the following:
+This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
+
+The extracted measurements comprise of the following:
 
 -# An automatically-extracted proxy to relative Cerebral Blood Volume (ap-rCBV)
 -# Peak Height (PH)
--# Percent Signal Recovery (PSR)
+-# Percentage Signal Recovery (PSR)
+
+By default, all calculations use the average of the first 20% of timepoints as baseline, and the average of 66-88% timepoints as recovery. The timepoint with the maximum intensity drop on the average curve must fall between the baseline and recovery time ranges. Optional percentage time ranges can be applied in the CLI if the default needs to be changed.
 
 <b>Note</b>: The ap-rCBV measurement is not expected to be identical to the clinically extracted rCBV measurement.
 
 <b> REQUIREMENTS:</b>
-  -# A single DSC-MRI image
-  -# System should have atleast 32GB RAM for calculating perfusion derivatives
+  -# A single DSC-MRI image with non negative values.
+  -# System should have at least 32GB RAM for calculating perfusion derivatives
+  -# Output directory
+  -# [OPTIONAL] The baseline start threshold percentage (range[0-100], Default = 0)
+  -# [OPTIONAL] The baseline end threshold percentage (range[0-100], Default = 20)
+  -# [OPTIONAL] The recovery start threshold percentage (range[0-100], Default = 66)
+  -# [OPTIONAL] The recovery end threshold percentage (range[0-100], Default = 88)
 
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Perfusion Derivatives".
-	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted, the "Echo Time" of the loaded scan in seconds (45 milliseconds = 0.045 seconds), and the output directory.
+	-# Specify the input DSC-MRI image, the perfusion measurements (i.e., ap-rCBV, PH, PSR) to be extracted and the output directory.
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/InputImage_output
+${CaPTk_InstallDir}/bin/PerfusionDerivatives.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -p 1 -r 1 -o C:/OutputDir
 \endverbatim
 
 --------
@@ -1372,6 +1383,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputMask.nii.gz -o C:/outputMask.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR -rm 1
 	\endverbatim
 - Image information
 	\verbatim

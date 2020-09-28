@@ -47,7 +47,7 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
   registrationTypeInt, registrationRigidDof = 12;
-bool registrationIntermediate = false, registrationSegmentationMoving = false;
+bool registrationIntermediate = false, registrationSegmentationMoving = false, registrationJacobian = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95,
   bias_fwhm = BiasCorrection::default_fwhm, rescaleLower = 0, rescaleUpper = 1000,
   ssSigma = 0.5, ssIntensityThreshold = 80,
@@ -351,7 +351,7 @@ int algorithmsRunner()
       }
       auto inputFile_base = cbica::getFilenameBase(inputImageFile);
       auto fixedFile_base = cbica::getFilenameBase(registrationFixedImageFile);
-      std::string interimFiles_affineTransform, interimFiles_deformField, interimFiles_invDeformField;
+      std::string interimFiles_affineTransform, interimFiles_deformField, interimFiles_invDeformField, interimFiles_jacobian;
       auto const _registrationMetrics = "_" + registrationMetrics;
       auto const _registrationMetricsNII = _registrationMetrics + ".nii.gz";
       auto const _fixedFileTOInputFileBase = fixedFile_base + "TO" + inputFile_base;
@@ -361,7 +361,7 @@ int algorithmsRunner()
       // populate default names for intermediate files
       if (registrationAffineTransformInput.empty())
       {
-        interimFiles_affineTransform = outputDir + "/affine_" + _fixedFileTOInputFileBase + _registrationMetrics + ".mat";
+        interimFiles_affineTransform = outputDir + "/affine_" + _inputFileTOFixedFileBase + _registrationMetrics + ".mat";
         affine_defaultNamedUsed = true;
       }
       else
@@ -370,8 +370,8 @@ int algorithmsRunner()
       }
       if (registrationDeformableTransformInput.empty())
       {
-        interimFiles_deformField = outputDir + "/deform_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
-        interimFiles_invDeformField = outputDir + "/deformInv_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_deformField = outputDir + "/deform_" + _inputFileTOFixedFileBase + _registrationMetricsNII;
+        interimFiles_invDeformField = outputDir + "/deformInv_" + _fixedFileTOInputFileBase + _registrationMetricsNII;
         deformable_defaultNamedUsed = true;
       }
       else
@@ -380,6 +380,11 @@ int algorithmsRunner()
         std::string path, base, ext;
         cbica::splitFileName(registrationDeformableTransformInput, path, base, ext);
         interimFiles_invDeformField = path + "/" + base + "-Inv.nii.gz";
+      }
+
+      if (registrationJacobian)
+      {
+        interimFiles_jacobian = outputDir + "/jacobian.nii.gz";
       }
 
       std::string commandToCall;
@@ -425,7 +430,7 @@ int algorithmsRunner()
       {
       case RegistrationTypeEnum::Deformable:
       {
-        if (!cbica::fileExists(interimFiles_deformField) || cbica::fileExists(interimFiles_invDeformField))
+        if (!cbica::fileExists(interimFiles_deformField) || !cbica::fileExists(interimFiles_invDeformField))
         {
           if (debugMode)
           {
@@ -445,23 +450,23 @@ int algorithmsRunner()
           }
         }
 
+        auto commonParams = " " + interimFiles_affineTransform;
+        if (registrationJacobian)
+        {
+          commonParams += " -rj " + interimFiles_jacobian;
+        }
+        commonParams += " -rm " + inputImageFile + " " + outputImageFile;
         if (registrationSegmentationMoving)
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LABEL 0.2vox -r " + interimFiles_deformField +
-            " " + interimFiles_affineTransform +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
+            " -ri LABEL 0.2vox -r " + interimFiles_deformField + commonParams;
         }
         else
         {
           commandToCall = greedyPathAndDim +
             " -rf " + registrationFixedImageFile +
-            " -ri LINEAR -r " + interimFiles_deformField +
-            " " + interimFiles_affineTransform +
-            " -rm " + inputImageFile +
-            " " + outputImageFile;
+            " -ri LINEAR -r " + interimFiles_deformField + commonParams;
         }
 
         if (std::system(commandToCall.c_str()) != 0)
@@ -470,35 +475,39 @@ int algorithmsRunner()
           return EXIT_FAILURE;
         }
 
-        auto outputImageFileInv = outputImageFile;
+        // check if inverse field is present and then perform re-slicing, otherwise, skip
+        if (cbica::isFile(interimFiles_invDeformField))
         {
-          std::string path, base, ext;
-          cbica::splitFileName(outputImageFileInv, path, base, ext);
-          outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
-        }
-        if (registrationSegmentationMoving)
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri NN -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
-        else
-        {
-          commandToCall = greedyPathAndDim +
-            " -rf " + registrationFixedImageFile +
-            " -rm " + inputImageFile +
-            " " + outputImageFileInv +
-            " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
-            " " + interimFiles_affineTransform + ",-1";
-        }
+          auto outputImageFileInv = outputImageFile;
+          {
+            std::string path, base, ext;
+            cbica::splitFileName(outputImageFileInv, path, base, ext);
+            outputImageFileInv = cbica::normPath(path + "/" + base + "_inv" + ext);
+          }
+          if (registrationSegmentationMoving)
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + inputImageFile +
+              " -rm " + registrationFixedImageFile +
+              " " + outputImageFileInv +
+              " -ri NN -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
+          else
+          {
+            commandToCall = greedyPathAndDim +
+              " -rf " + inputImageFile +
+              " -rm " + registrationFixedImageFile +
+              " " + outputImageFileInv +
+              " -ri LABEL 0.2vox -r " + interimFiles_invDeformField +
+              " " + interimFiles_affineTransform + ",-1";
+          }
 
-        if (std::system(commandToCall.c_str()) != 0)
-        {
-          std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
-          return EXIT_FAILURE;
+          if (std::system(commandToCall.c_str()) != 0)
+          {
+            std::cerr << "Something went wrong when calling Greedy Reslice Deform-Inverse.\n";
+            return EXIT_FAILURE;
+          }
         }
         break;
       }
@@ -538,6 +547,10 @@ int algorithmsRunner()
         if (affine_defaultNamedUsed)
         {
           std::remove(interimFiles_affineTransform.c_str());
+          if (!interimFiles_jacobian.empty())
+          {
+            std::remove(interimFiles_jacobian.c_str());
+          }
         }
         if (deformable_defaultNamedUsed)
         {
@@ -680,7 +693,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("nB", "nBiasBins", cbica::Parameter::INTEGER, "N.A.", "If no mask is specified, N3/N4 bias correction makes one using Otsu", "This parameter specifies the number of histogram bins for Otsu", "Defaults to " + std::to_string(bias_otsuBins));
   parser.addOptionalParameter("nFL", "nFittingLevels", cbica::Parameter::INTEGER, "N.A.", "The number of fitting levels to use for bias correction", "Defaults to " + std::to_string(bias_fittingLevels));
   parser.addOptionalParameter("nMI", "nMaxIterations", cbica::Parameter::INTEGER, "N.A.", "The maximum number of iterations for bias correction (only works for N3)", "Defaults to " + std::to_string(bias_maxIterations));
-  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::INTEGER, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
+  parser.addOptionalParameter("nFWHM", "nFullWidthHalfMaximum", cbica::Parameter::FLOAT, "N.A.", "Set the full-width-at-half-maximum value for bias correction", "Defaults to " + std::to_string(bias_fwhm));
   parser.addOptionalParameter("ss", "susanSmooth", cbica::Parameter::STRING, "N.A.", "Susan smoothing of an image");
   parser.addOptionalParameter("ssS", "susanSigma", cbica::Parameter::FLOAT, "N.A.", "Susan smoothing Sigma", "Defaults to " + std::to_string(ssSigma));
   parser.addOptionalParameter("ssR", "susanRadius", cbica::Parameter::INTEGER, "N.A.", "Susan smoothing Radius", "Defaults to " + std::to_string(ssRadius));
@@ -692,6 +705,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rNI", "regNoIters", cbica::Parameter::STRING, "N1,N2,N3", "The number of iterations per level of multi-res", "Defaults to " + registrationIterations);
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
+  parser.addOptionalParameter("rJC", "regJacobian", cbica::Parameter::BOOLEAN, "0 or 1", "Whether Jacobian will be generated or not");
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
@@ -739,7 +753,22 @@ int main(int argc, char** argv)
   if (parser.isPresent("o"))
   {
     parser.getParameterValue("o", outputImageFile);
-    outputDir = cbica::getFilenamePath(outputImageFile, false);
+
+    auto extension = cbica::getFilenameExtension(outputImageFile, false);
+    // if an output directory is passed, assume that there won't be any extension
+    if (extension.empty())
+    {
+      outputDir = outputImageFile;
+      outputImageFile = cbica::normPath(outputDir + "/output.nii.gz");
+    }
+    else if ((extension == ".nii.gz") || (extension == ".nii")) // definitely a file is requested as output
+    {
+      outputDir = cbica::getFilenamePath(outputImageFile, false);
+    }
+    else // populate further corner cases using if-else here
+    {
+      outputDir = cbica::getFilenamePath(outputImageFile, false);
+    }
     cbica::createDir(outputDir);
   }
 
@@ -940,6 +969,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("rSg"))
     {
       parser.getParameterValue("rSg", registrationSegmentationMoving);
+    }
+    if (parser.isPresent("rJC"))
+    {
+      parser.getParameterValue("rJC", registrationJacobian);
     }
     if (parser.isPresent("rIA"))
     {
