@@ -65,7 +65,8 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 <li>Resizing <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear</pre></li>
 <li>Resampling <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR</pre></li>
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputMask.nii.gz -o C:/outputMask.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR -rm 1</pre></li>
 <li>Image information <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -inf
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
 <li>Unique values in image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un</pre></li>

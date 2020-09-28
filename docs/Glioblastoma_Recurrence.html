@@ -65,10 +65,9 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 <p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
 <li>Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
-<li>(For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)</li>
-<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i nclude words in <b>BOLD</b> to be identified as respective required files.<ul>
+<li>(For training only) Segmentation labels of the near-region and far-region within the Edema as two separate NIfTI (.nii.gz) files. Corresponding regions should be 1 (Label=1) in both the files.</li>
+<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
 <li>Subject_ID<ol type="a">
-<li><b>features.csv</b></li>
 <li>CONVENTIONAL<ul>
 <li>my_<b>t1</b>_file.nii.gz</li>
 <li>my_<b>t2</b>_file.nii.gz</li>
@@ -89,11 +88,16 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 </li>
 <li>SEGMENTATION<ul>
 <li>my_tumor_segmentation_<b>label</b>_file.nii.gz</li>
-<li>my_<b>near</b>_region_file.nii.gz (only for training a new model)</li>
+</ul>
+</li>
+<li>DRAWING</li>
+</ol>
+<ul>
+<li>my_<b>near</b>_region_file.nii.gz (only for training a new model)<ul>
 <li>my_<b>far</b>_region_file.nii.gz (only for training a new model)</li>
 </ul>
 </li>
-</ol>
+</ul>
 </li>
 </ul>
 </li>
@@ -112,7 +116,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 <li>Infiltration prediction on loaded subject.<ol type="1">
 <li>Load the required images in CaPTk and correctly assign the modality label in the drop-down menu.</li>
 <li>Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).</li>
-<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
+<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip</a></li>
 <li>Select the "Output Directory" and click on "Confirm".</li>
 <li>The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).</li>
 </ol>
@@ -122,7 +126,7 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 <li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
 <li>Select the "Output Directory" where the trained model should be saved.</li>
 <li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
+<li>A pop-up window will confirm the completion of model training (~2*NoOfSubjects minutes).</li>
 </ol>
 <ul>
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around. <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
@@ -130,11 +134,11 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 </ul>
 </li>
 <li>Use existing model:<ol type="1">
-<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
+<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/RecurrenceEstimator_Model.zip</a></li>
 <li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
 <li>Select the "Output Directory", where the user wants to save the infiltration maps.</li>
 <li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).</li>
+<li>A pop-up window will confirm the completion of infiltration map calculations (~2*NoOfSubjects minutes).</li>
 </ol>
 <ul>
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
