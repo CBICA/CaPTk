@@ -26,18 +26,18 @@ int main(int argc, char *argv[])
 
   parser.addOptionalParameter("l", "label", cbica::Parameter::STRING, "", "The input file having target labels (*.csv).");
   parser.addOptionalParameter("c", "classifier", cbica::Parameter::INTEGER, "", "The SVM kernel to be used in developing model (1=Linear, 2=RBF).");
-  parser.addOptionalParameter("s", "feature selection", cbica::Parameter::INTEGER, "", "The feature selection method to be used in developing model (1=EffectSize, 2=Correlation, 3=SVM FFS, 4=SVM RFE).");
-  parser.addOptionalParameter("n", "configuration", cbica::Parameter::INTEGER, "", "The Configuration type, Cross-validation (n=1), Split Train-Test (n=2), Train only (n=3), and Test only (n=4).");
-  parser.addOptionalParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Cross-validation (5/10) and the size of training set for TrainTest (k<n).");
-  parser.addOptionalParameter("p", "hyperparameteroptimization", cbica::Parameter::INTEGER, "", "Whether parameters of the classifier need to be optimized or not during feature selection (1=yes, 0 =No)");
+  parser.addOptionalParameter("s", "feature selection", cbica::Parameter::INTEGER, "", "The feature selection method to be used in developing model (1=EffectSize, 2=SVM FFS).");
+  parser.addOptionalParameter("n", "configuration", cbica::Parameter::INTEGER, "", "The Configuration type, Cross-validation (n=1), Train only (n=2), and Test only (n=3).");
+  parser.addOptionalParameter("k", "configuration parameters", cbica::Parameter::INTEGER, "", "The number of folds for Cross-validation (5/10).");
+  parser.addOptionalParameter("p", "hyperparameteroptimization", cbica::Parameter::INTEGER, "", "Whether parameters of the classifier need to be optimized or not during feature selection (1=yes, 2 =No)");
   parser.addOptionalParameter("r", "internalcrossvalidation", cbica::Parameter::INTEGER, "", "Internal cross-validation during feature selection (1=resubstitution, 2=5-fold)");
 
-  parser.addOptionalParameter("m", "output", cbica::Parameter::STRING, "", "The model direcory (needed only when n=4)");
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The model direcory (needed only when n=3)");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("TrainingModule -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5");
-  parser.addExampleUsage(" -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5", 
+  parser.addExampleUsage(" -f features2.csv -l labels2.csv -c 1 -s 1 -o <output dir> -k 5", 
     "Trains a new Linear SVM model based on the input features in 'feature2.csv' and corresponding labels in 'labels2.csv' with cross-validation of 5");
-  parser.addApplicationDescription("Molecular Subtype Training and Prediction application");
+  parser.addApplicationDescription("Training Module");
 
   // parameters to get from the command line
   cbica::Logging logger;
@@ -125,7 +125,6 @@ int main(int argc, char *argv[])
   std::cout << "Calling function" << std::endl;
 
   if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN |
-    confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE |
     confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {
     if (inputLabelsFile == "")
@@ -147,7 +146,5 @@ int main(int argc, char *argv[])
   else
     std::cout << "Encountered an error!!!\n";
 
-  //int a;
-  //std::cin >> a;
   return EXIT_SUCCESS;
 }

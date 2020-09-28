@@ -5,11 +5,11 @@
 
 Read and Write itk::Image data in a safe manner. Header-only
 
-https://www.cbica.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
-Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
+Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once
@@ -826,7 +826,7 @@ namespace cbica
       // get the default series description and add some information to make it unique
       std::string seriesDescription;
       itk::ExposeMetaData< std::string >(*dictArray->at(0), "0008|103e", seriesDescription);
-      seriesDescription += ": Processed_CaPTk";
+      seriesDescription += "_Processed-CaPTk";
 
       for (size_t i = 0; i < dictArray->size(); i++)
       {

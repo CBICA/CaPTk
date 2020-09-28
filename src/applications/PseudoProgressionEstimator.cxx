@@ -20,7 +20,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
     std::string t1FilePath = "";
     std::string t2FilePath = "";
     std::string t2FlairFilePath = "";
-
     std::string axFilePath = "";
     std::string faFilePath = "";
     std::string radFilePath = "";
@@ -30,7 +29,6 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  LoadQualifiedSubje
     std::string rcbvFilePath = "";
     std::string perfFilePath = "";
     std::string featuresFilePath = "";
-
     std::string labelPath = "";
     std::string atlasPath = "";
 

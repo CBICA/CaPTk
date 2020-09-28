@@ -3,11 +3,11 @@
 
 \brief Declaration of fMainWindow class
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 
@@ -70,6 +70,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
+#include <QUrl>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -87,6 +88,7 @@ class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
 class SystemInformationDisplayWidget;
+class DownloadManager;
 
 #define USE_PROCESSDIALOG
 
@@ -385,6 +387,8 @@ private:
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
 
+  //download
+  DownloadManager* m_DownloadManager;
 public:
   //! Default constructor
   fMainWindow();
@@ -769,12 +773,11 @@ public slots:
   \param echotime The echo time of the input Perfusion image
   \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
   \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
+  \param dropscaling Whether to scale the drop or not
   \param inputfilename The input perfusion image file name
-  \param inputt1cefilename The input T1-Gd file name
-  \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, bool dropscaling, const std::string inputfilename, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -814,7 +817,12 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds);
+  void CallTrainingSimulation(const std::string featuresfile, 
+    const std::string targetfile, 
+    const std::string outputFolder, 
+    const std::string modeldirectory, 
+    int classifier, int conf, int folds, 
+    int featureselectionType, int optimizationType, int crossvalidationType);
 
   /**
   \brief Call the PCA calculation application with the inputs
@@ -957,6 +965,11 @@ public slots:
   {
     m_skipTutorialOnNextRun = flag;
   }
+
+  /**
+  \brief download data from given URL
+  */
+  void downloadFromURL(QUrl url);
 
   /**
   \brief Help for downloading Sample Data
@@ -1496,7 +1509,7 @@ public slots:
   void closeEvent(QCloseEvent * event);
 
   // Progress Update
-  void updateProgress(int progress, std::string message = "", int max = 100);
+  void updateProgress(qint64 progress, std::string message = "", qint64 max = 100);
 
   //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()

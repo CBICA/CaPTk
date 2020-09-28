@@ -3,11 +3,11 @@
 
 This file holds the declaration of the class FeatureExtraction.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 */
 #pragma once
 
@@ -127,6 +127,7 @@ enum FeatureFamily
   NGTDM,
   NGLDM,
   LBP,
+  COLLAGE,
   Lattice,
   FractalDimension,
   Gabor,
@@ -138,7 +139,7 @@ enum FeatureFamily
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
 { "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "NGLDM", "LBP",
-"Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
+"Collage", "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
 \brief FeatureExtraction Class -The main class structure enclosing all the feature calculations functions.
@@ -657,6 +658,15 @@ private:
   void CalculateNGLDM(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, OffsetVectorPointer offset, std::map< std::string, double >& featurevec);
 
   /**
+  \brief Calculate COLLAGE features
+
+  \param itkImage The input image
+  \param maskImage The mask specifying the roi
+  \param featurevec - map of Individual feature name and their value
+  */
+  void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map< std::string, double >& featurevec);
+
+  /**
   \brief Calculate NGTDM features
 
   \param itkImage The input image
@@ -785,12 +795,12 @@ private:
   float m_Radius_float = 0.0, m_Range = 0, 
     m_Bins_min = std::numeric_limits<float>::max(); //! the starting index of the histogram binning
   std::string m_Axis, m_offsetSelect; //! these are string based parameters
-  int m_histogramBinningType = HistogramBinningType::FixedBinNumber; //! type of quantization happening, either FBN/FBS/Equal
-  std::string m_QuantizationExtent = "ROI"; //! extent of quantization happening, either ROI-based or Image-based
+  int m_histogramBinningType = -1; //! type of quantization happening, either FBN/FBS/Equal
+  std::string m_QuantizationExtent; //! extent of quantization happening, either ROI-based or Image-based
   std::string m_initializedTimestamp; //! timestamp to append to all results - keeps outputs in sync with current process
-  float m_resamplingResolution = 0.0; //! resolution to resample the images and mask to before doing any kind of computation
-  std::string m_resamplingInterpolator_Image = "Linear", //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
-    m_resamplingInterpolator_Mask = "Nearest";
+  float m_resamplingResolution = -1.0; //! resolution to resample the images and mask to before doing any kind of computation
+  std::string m_resamplingInterpolator_Image, //! type of interpolator to use if resampling is happening, ignored if m_resamplingResolution = 0
+    m_resamplingInterpolator_Mask;
 
   bool m_SliceComputation = false; //! Controls whether non-Intensity features are calculated along the slice with the largest area along the 3 axes: valid for 3D images only
 

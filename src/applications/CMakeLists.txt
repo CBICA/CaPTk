@@ -54,7 +54,6 @@ ADD_SUBDIRECTORY( FeatureExtraction )
 ADD_SUBDIRECTORY( GeodesicTraining )
 ADD_SUBDIRECTORY( Preprocessing )
 ADD_SUBDIRECTORY( Utilities )
-#ADD_SUBDIRECTORY( PerfusionAlignment )
 IF (NOT APPLE)
   ADD_SUBDIRECTORY( BreastTexturePipeline )
 ENDIF()
@@ -331,7 +330,11 @@ FOREACH(subdir ${SUBDIRECTORIES})
           MESSAGE( STATUS "Downloading pre-compiled deepMedicInference" )
           FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
           IF(NOT STATUS_CODE EQUAL 0)
-            MESSAGE(FATAL_ERROR "Failed to download Precompiled deepMedicInference. Status=${STATUS_CODE}")
+            SET( DOWNLOAD_LINK "https://github.com/CBICA/precompiledBinaries/blob/master/${PLATFORM_STRING}/deepMedicInference_${PLATFORM_STRING}.zip" )
+            FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+            IF(NOT STATUS_CODE EQUAL 0)
+              MESSAGE(FATAL_ERROR "Failed to download Precompiled DeepMedic. Status=${STATUS_CODE}")
+            ENDIF()
           ENDIF()
         ENDIF()
       ENDIF()
@@ -638,7 +641,79 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
 ENDFOREACH()
 
+#dcm2niix: Start 
+#downloads to: [captk bin folder]
+#extracts to: [captk bin folder]/dcm2niix
+#copies to: [captk src folder]/src/applications/individualsApps/dcm2niix
+#installs to: [bin folder]
 
+#make dir
+IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/dcm2niix" )
+  FILE(MAKE_DIRECTORY ${SOURCE_APPLICATIONS_PATH}/dcm2niix)
+ENDIF()
+
+#specify download link
+SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/dcm2niix_${PLATFORM_STRING}.zip" )
+SET( FILENAME_TO_EXTRACT "dcm2niix_${PLATFORM_STRING}")
+SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
+
+SET( DOWNLOADED_APPS_DIR ${PROJECT_BINARY_DIR}/dcm2niix )
+
+IF( NOT EXISTS "${DOWNLOADED_APPS_DIR}" )
+
+  IF( NOT EXISTS "${FILE_TO_EXTRACT}" )
+
+	# do not re-download if file exists
+	IF(NOT EXISTS ${FILE_TO_EXTRACT})
+#Download from url
+	  MESSAGE( STATUS "Downloading pre-compiled dcm2niix" )
+	  FILE(DOWNLOAD "${DOWNLOAD_LINK}" "${FILE_TO_EXTRACT}" TIMEOUT 1000000 STATUS STATUS_CODE SHOW_PROGRESS)
+	  IF(NOT STATUS_CODE EQUAL 0)
+		MESSAGE(FATAL_ERROR "Failed to download Precompiled dcm2niix. Status=${STATUS_CODE}")
+	  ENDIF()
+	ENDIF()
+  ENDIF()
+
+  FILE(MAKE_DIRECTORY ${DOWNLOADED_APPS_DIR})
+
+#Extract
+  MESSAGE( STATUS "Extracting pre-compiled dcm2niix" )
+  IF( EXISTS "${FILE_TO_EXTRACT}" )
+	EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E tar xfz ${FILE_TO_EXTRACT}
+	  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/dcm2niix
+	  RESULT_VARIABLE RESULT_CODE)
+
+	IF(NOT RESULT_CODE EQUAL 0) #if extraction fails
+	  MESSAGE( WARNING "Extracting the pre-compiled dcm2niix failed" )
+	ELSE() # if extraction succeeds
+	  MESSAGE( STATUS "Extraction succeeded. Now copying to ${SOURCE_APPLICATIONS_PATH}/dcm2niix")
+	  FILE(GLOB allFiles ${PROJECT_BINARY_DIR}/dcm2niix/dcm2niix_${PLATFORM_STRING}/* )
+#Copy
+	  FILE( COPY ${allFiles} 
+		DESTINATION ${SOURCE_APPLICATIONS_PATH}/dcm2niix )
+	ENDIF()
+  ENDIF()
+ENDIF()
+
+#Install
+SET( DCM2NIIX_EXE "" )
+IF (WIN32)
+  FILE(GLOB allFiles ${SOURCE_APPLICATIONS_PATH}/dcm2niix/*.*)
+  SET( DCM2NIIX_EXE ${allFiles} )
+ELSE ()
+  SET( DCM2NIIX_EXE "${SOURCE_APPLICATIONS_PATH}/dcm2niix/dcm2niix" )
+ENDIF()
+
+IF (APPLE)
+  SET(CAPTK_MACOSX_BUNDLE_FILES ${CAPTK_MACOSX_BUNDLE_FILES} ${DCM2NIIX_EXE})
+ELSE()
+  INSTALL(FILES ${DCM2NIIX_EXE}
+	DESTINATION bin
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
+ENDIF()
+#dcm2niix: End 
+	 
 SET( CAPTK_APP_LIST ${CAPTK_APP_LIST} CACHE STRING "Available Code-level Applications" FORCE)
 #SET( CAPTK_BRAIN_APPS ${CAPTK_BRAIN_APPS} CACHE STRING "Available Brain Applications" FORCE )
 #SET( CAPTK_BREAST_APPS ${CAPTK_BREAST_APPS} CACHE STRING "Available Breast Applications" FORCE )

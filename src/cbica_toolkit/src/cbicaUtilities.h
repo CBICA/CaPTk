@@ -5,11 +5,11 @@
 
 This needs c++11 flag enabled in gcc < 5.
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once
@@ -592,6 +592,14 @@ namespace cbica
   \param returnFullPath Return full path or not
   */
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath = true);
+
+  /**
+  \brief Read output of given command from std::system
+
+  \param command The command that will be run on std::systm
+  \return String of the buffer output
+  */ 
+  std::string getStdoutFromCommand(const std::string command);
 
   /**
   \brief Find all files inside a directory
