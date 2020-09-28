@@ -1092,6 +1092,11 @@ This application extracts radiomic features related to breast cancer risk, as de
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch <b>Breast Texture Feature Extraction</b> using the 'Applications -> [Breast Cancer] Texture Pipeline' menu option.
 	-# Specify the output directory. 
+
+<b>OUTPUT:</b>
+- output.csv: CSV file with the extracted radiomic features.
+- featureMap/: Folder of feature maps, one for each radiomic feature, reflecting the spatial feature distributions within the breast.
+
   - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
