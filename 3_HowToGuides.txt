@@ -1121,7 +1121,7 @@ This application uses LIBRA [1] to extract the breast region in the loaded image
 <b>USAGE:</b>
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
-	-# Output is loaded automatically. 
+	-# Output, i.e., breast mask, is loaded automatically. 
 
 --------
 
