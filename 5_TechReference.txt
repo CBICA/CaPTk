@@ -135,14 +135,14 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
       <td align="center">Edge<br>Enhancing<br>Index
       <td>
       <td>Normalizing factor
-      <td>&eta
+      <td>\f$ \eta \f$
       <td>5 
       <td>
       The edge-enhancing index of an image I is defined as:
         <ul> 
-          <li>E(I) = \f$  (\frac{&lambda_{1}-&lambda_{2}}{&lambda_{1}+&lambda_{2}+&eta})^2 \f$
+          <li>E(I) = \f$ (\frac{\lambda_{1}-\lambda_{2}}{\lambda_{1}+\lambda_{2}+\eta})^2 \f$
         </ul>
-      where &lambda_{1} and &lambda_{2} (&lambda_{1}>&lambda_{2}) are eigenvalues of the diffusion tension matrix of I and &eta is a normalizing factor. Available only on 2D.
+      where \f$ \lambda_{1} \f$ and \f$ \lambda_{2} (\lambda_{1}>\lambda_{2}) \f$ are eigenvalues of the diffusion tension matrix of Image (I) and \f$ \eta \f$ is a normalizing factor. Available only on 2D.
     </tr>
     <tr>
       <td align="center">Local Binary<br>Pattern (LBP)
@@ -371,7 +371,7 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
         </ul>
       </td>
       <td>
-        When activated, this option performs feature calculation on multiple local square (for 2D images) or cubic (for 3D images) regions defined by on a lattice virtually overlaid on the image.
+        When activated, this option performs feature calculation on multiple local square (for 2D images) or cubic (for 3D images) regions defined by a lattice virtually overlaid on the image.
         <br>Please see <b>${CaPTk_InstallDir}/data/features/2_params_default_lattice.csv</b> for detailed descriptions.
       </td>
     </tr>
