@@ -1082,7 +1082,7 @@ References:
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
-This application extracts radiomic features related to breast cancer risk, as described in the paper [1]. It is based upon [LIBRA](BreastCancer_LIBRA.html) for segmentation of the breast and the lattice-based mode of <a href="ht_FeatureExtraction">Feature Extraction</a> backend to perform radiomic feature calculations.
+This application extracts radiomic features related to breast cancer risk, as described in the paper [1]. It is based upon [LIBRA](BreastCancer_LIBRA.html) for segmentation of the breast and the lattice-based mode of <a href="ht_FeatureExtraction.html">Feature Extraction</a> backend to perform radiomic feature calculations.
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
