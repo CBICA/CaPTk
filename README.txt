@@ -11,6 +11,7 @@ The package leverages the value of quantitative imaging analytics along with mac
 -# Computational neuro-oncology of brain gliomas for precision diagnostics, prediction of outcome and subsequent treatment planning.
 -# Prediction of treatment response for breast and lung cancer.
 -# Risk assessment for breast cancer.
+-# BraTS computations: [Preprocessing](preprocessing_brats.html) and [Metric calculations](preprocessing_brats.html)
 
 CaPTk is developed and maintained by the Center for Biomedical Image Computing and Analytics (CBICA - https://www.cbica.upenn.edu) at the University of Pennsylvania, and draws upon research from several groups within the Center and beyond. 
 
