@@ -239,7 +239,7 @@ Reference:
 This pipeline is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
 <b>REQUIREMENTS:</b>
-	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
+	-# 4 structural MRI images (T1, T1CE, T2, FLAIR), preferably in NIfTI format
 
 <b>USAGE:</b>
 
