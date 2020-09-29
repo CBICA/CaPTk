@@ -33,12 +33,12 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md137", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md138", null ],
-        [ "Citations", "index.html#autotoc_md139", null ],
-        [ "Supporting Grant", "index.html#autotoc_md140", null ],
-        [ "Disclaimer", "index.html#autotoc_md141", null ],
-        [ "Contact", "index.html#autotoc_md142", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md139", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md140", null ],
+        [ "Citations", "index.html#autotoc_md141", null ],
+        [ "Supporting Grant", "index.html#autotoc_md142", null ],
+        [ "Disclaimer", "index.html#autotoc_md143", null ],
+        [ "Contact", "index.html#autotoc_md144", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
@@ -85,7 +85,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"BreastCancer_LIBRA.html"
+"BraTS_Metrics.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -5,14 +5,14 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0.nonRelease.20200928.37d82f2c" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md137" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md138" />
-          <section title="Citations" ref="index.html#autotoc_md139" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md140" />
-          <section title="Disclaimer" ref="index.html#autotoc_md141" />
-          <section title="Contact" ref="index.html#autotoc_md142" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md139" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md140" />
+          <section title="Citations" ref="index.html#autotoc_md141" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md142" />
+          <section title="Disclaimer" ref="index.html#autotoc_md143" />
+          <section title="Contact" ref="index.html#autotoc_md144" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -88,7 +88,9 @@
           <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
           <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
         </section>
-        <section title="Utilities (CLI only)" ref="ht_utilities.html" />
+        <section title="Utilities (CLI only)" ref="ht_utilities.html">
+          <section title="BraTS Similarity Metrics Computation (CLI Only)" ref="BraTS_Metrics.html" />
+        </section>
       </section>
       <section title="Scientific Findings using CaPTk" ref="Science.html">
         <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
@@ -117,45 +119,45 @@
         </section>
       </section>
       <section title="Download Instructions" ref="Download.html">
-        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md99" />
+        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md101" />
       </section>
-      <section title="License" ref="Download.html#autotoc_md101" />
+      <section title="License" ref="Download.html#autotoc_md103" />
     </section>
   </section>
   <section title="Installation Instructions" ref="Installation.html">
-    <section title="Windows" ref="Installation.html#autotoc_md105" />
-    <section title="Linux" ref="Installation.html#autotoc_md106" />
-    <section title="macOS" ref="Installation.html#autotoc_md107" />
+    <section title="Windows" ref="Installation.html#autotoc_md107" />
+    <section title="Linux" ref="Installation.html#autotoc_md108" />
+    <section title="macOS" ref="Installation.html#autotoc_md109" />
   </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md111" />
-  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md112">
-    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md113" />
-    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md114" />
-    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md115" />
-    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md116" />
-    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md117" />
-    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md118" />
-    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md119" />
-    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md120" />
-    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md121" />
-    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md122" />
-    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md123" />
-    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md124" />
-    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md125" />
-    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md126" />
-    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md127" />
-    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md128" />
-    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md129" />
-    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md130" />
+  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md113" />
+  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md114">
+    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md115" />
+    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md116" />
+    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md117" />
+    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md118" />
+    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md119" />
+    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md120" />
+    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md121" />
+    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md122" />
+    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md123" />
+    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md124" />
+    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md125" />
+    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md126" />
+    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md127" />
+    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md128" />
+    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md129" />
+    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md130" />
+    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md131" />
+    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md132" />
   </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md134" />
-<section title="Developers:" ref="People.html#autotoc_md135" />
-<section title="Collaborators:" ref="People.html#autotoc_md136" />
+<section title="Advisors:" ref="People.html#autotoc_md136" />
+<section title="Developers:" ref="People.html#autotoc_md137" />
+<section title="Collaborators:" ref="People.html#autotoc_md138" />
 </section>
 </section>
 </section>
@@ -199,6 +201,7 @@
       <keyword name="Miscellaneous: Perfusion PCA Volume Extraction" id="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Utilities (CLI only)" id="Utilities (CLI only)" ref="ht_utilities.html" />
+      <keyword name="BraTS Similarity Metrics Computation (CLI Only)" id="BraTS Similarity Metrics Computation (CLI Only)" ref="BraTS_Metrics.html" />
       <keyword name="Scientific Findings using CaPTk" id="Scientific Findings using CaPTk" ref="Science.html" />
       <keyword name="Technical Reference" id="Technical Reference" ref="Technical_Reference.html" />
       <keyword name="Feature Extraction" id="Feature Extraction" ref="tr_FeatureExtraction.html" />
@@ -264,6 +267,7 @@
       <file>PCA_Extraction.html</file>
       <file>Training_Module.html</file>
       <file>ht_utilities.html</file>
+      <file>BraTS_Metrics.html</file>
       <file>Science.html</file>
       <file>Technical_Reference.html</file>
       <file>tr_FeatureExtraction.html</file>
