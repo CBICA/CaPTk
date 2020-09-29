@@ -38,6 +38,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Miscellaneous: Perfusion Derivatives](Perfusion_Derivatives.html)
   - [Miscellaneous: Principal Component Images Extraction](PCA_Extraction.html)
 - \subpage ht_utilities "Utilities (CLI only)": Collection of helper utilities such as resampling, thresholding, image information, casting, label statistics, and more.
+	- [BraTS Metrics Computation](BraTS_Metrics.html)
 
 Notes:
 
@@ -238,7 +239,7 @@ Reference:
 This pipeline is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
 <b>REQUIREMENTS:</b>
-	-# 4 structural MRI images (T1, T1CE, T2, FLAIR)
+	-# 4 structural MRI images (T1, T1CE, T2, FLAIR), preferably in NIfTI format
 
 <b>USAGE:</b>
 
@@ -406,13 +407,14 @@ Multi-institutional Performance Evaluation of Deep Learning Methods and Robust M
 <b>REQUIREMENTS:</b>
   -# An image or a set of co-registered images.
   -# An ROI file containing various labels, for which features will be extracted.
+	-# NOTE: CaPTk also extracts COLLAGE features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/).
  
 <b>USAGE:</b>
   -# Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.
   -# In the "Customization" section, you can select one of the preset of features to extract from the drop-down menu:
     - <b>Custom</b>: allows the manual selection & customization of specific features.
-    - <b>Custom_Lattice</b>: allows the manual selection & customization of specific features using a lattice-based strategy for feature extraction [1]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.
-    - <b>Lung_SBRT</b>: enables the extraction of features that are used in [2].
+    - <b>Custom_Lattice</b>: allows the manual selection & customization of specific features using a lattice-based strategy for feature extraction [2]. A regular lattice is virtually overlaid on the ROI and features are computed on local square (for 2D images) or cubic (for 3D images) regions centered on each lattice point. The final feature estimates are then calculated as summary statistics of the corresponding feature measurements across all regions defined by the lattice. The parameterization of the lattice is described in the <a href="tr_Apps.html#appsFeatures">Technical Reference</a> section.
+    - <b>Lung_SBRT</b>: enables the extraction of features that are used in [3].
   -# For the "Custom" and "Custom_lattice" presets, and once specific features are selected, you can use the <b>Advanced</b> button (in "Customization") to parameterize further the individual selected features.
   -# In the <b>Image Selection</b> section, you can select the radio button of "<b>Selected Image</b>" or "<b>All Images</b>" to extract features for either the visualized image or all the images loaded in CaPTk, respectively.
   -# In the <b>Mask Selection</b> section, you have the option to define the label number(s) for which you want to extract features. Note that when more than one label number is entered the 'pipe' symbol should be used as a separator, i.e. |. Equivalently, text labels should be provided corresponding to each label number, again separated by a 'pipe'.
@@ -443,6 +445,7 @@ The above command extracts features defined in the parameter file defined in "-p
 
 References:
 
+-# P.Prasanna, P.Tiwari, A.Madabhushi, "Co-occurrence of Local Anisotropic Gradient Orientations (CoLlAGe): A new radiomics descriptor", Nature Scientific Reports, 2016.
 -# Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
 -# H.Li, M.Galperin-Aizenberg, D.Pryma, C.Simone, Y.Fan, "Predicting treatment response and survival of early-stage non-small cell lung cancer patients treated with stereotactic body radiation therapy using unsupervised two-way clustering of radiomic features", Int. Workshop on Pulmonary Imaging, 2017.
 
@@ -1030,11 +1033,11 @@ References:
 
 /**
 \page BreastCancer_LIBRA Breast Cancer: Breast Density Estimation (LIBRA)
-The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density segmentation in full-field digital mammography (FFDM) [1]. LIBRA is available in single and batch mode. 
+The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a software application for fully-automated breast density evaluation in full-field digital mammography (FFDM) [1]. Besides breast density estimates, LIBRA also provides breast segmentation masks which indicate the dense (i.e., fibroglandular) versus fatty tissue regions of the breast. LIBRA is available in single and batch mode. 
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
 	- For single mode: Each image stored in a separate folder.
 	- For batch mode: All images stored in a single folder.
 	
@@ -1042,13 +1045,13 @@ The Laboratory for Individualized Breast Radiodensity Assessment (LIBRA) is a so
 - Single mode:
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> LIBRA_SingleImage' menu option.
-	-# LIBRA is executed and the segmentation mask is automatically loaded back to CaPTk. 
+	-# LIBRA is executed and the breast segmentation mask is automatically loaded back to CaPTk. 
 	-# LIBRA outputs (described in the Outputs section below) are automatically saved in a temp folder under the CaPTk directory.
 - Batch mode:
 	-# Launch LIBRA using the 'Applications -> LIBRA_BatchMode' menu option.
 	-# The user is prompted to select the folder which contains the images for analysis.
-	-# The user is then prompted to select an output folder where the density scores and density segmentation images .jpg files will be stored. Note: If the folder already exists and contains density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.
-	-# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the density segmentation outline which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.
+	-# The user is then prompted to select an output folder where the breast density estimates and segmentation images will be stored. Note: If the folder already exists and contains breast density estimates (e.g., from a previous run of LIBRA), it will append the new results to the results file.
+	-# Lastly, the user will be asked whether they wish to store a processing log file and intermediate graphics in addition to the breast segmentation masks which may be on interest for publication or visualization purposes, and are further described in the Outputs section below.
 	-# LIBRA will then begin processing all the FFDM images; the progress of the software can be monitored via the related command-prompt window that opens when LIBRA starts running. When analysis is complete, a prompt appears asking the user if they want to open the results folder and if they want to perform additional analyses.
 
 <b>OUTPUT:</b>
@@ -1082,17 +1085,22 @@ References:
 /**
 \page BreastCancer_texture Breast Cancer: Texture Feature Extraction
 
-This application extracts the Texture Features as described in the paper [1]. It uses [LIBRA](BreastCancer_LIBRA.html) for segmentation and the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the feature computation.
+This application extracts radiomic features related to breast cancer risk, as described in the paper [1]. It is based upon [LIBRA](BreastCancer_LIBRA.html) for segmentation of the breast and the lattice-based mode of <a href="ht_FeatureExtraction.html">Feature Extraction</a> backend to perform radiomic feature calculations.
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
-	- Each image stored in a separate folder.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
+	- Each image stored in a separate folder (required only in GUI).
 	
 <b>USAGE:</b>
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch <b>Breast Texture Feature Extraction</b> using the 'Applications -> [Breast Cancer] Texture Pipeline' menu option.
 	-# Specify the output directory. 
+
+<b>OUTPUT:</b>
+- output.csv: CSV file with the extracted radiomic features.
+- featureMap/: Folder of feature maps, one for each radiomic feature, reflecting the spatial feature distributions within the breast.
+
   - This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
@@ -1102,7 +1110,7 @@ ${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/ou
 
 References:
 
--# B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012, DOI:10.1118/1.4736530
+-# Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.
 
 --------
 
@@ -1112,17 +1120,17 @@ References:
 /**
 \page BreastCancer_breastSegmentation Breast Cancer: Breast Segmentation
 
-This application uses LIBRA [1] to extract the breast region in the loaded image and is only availabe via the GUI (the [Breast Texture Pipeline](BreastCancer_texture.html) can be used to generate a mask and perform radiomic analysis via the command line). 
+This application uses LIBRA [1] to extract the breast region in the loaded image and is only availabe via the GUI (the [Breast Texture Feature Extraction](BreastCancer_texture.html) can be used to generate a mask and perform radiomic analysis via the command line). 
 
 <b>REQUIREMENTS:</b>
 	- Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.
-	- FFDM vendors currently supported: GE Healthcare and Hologic.
+	- FFDM vendors currently supported: Hologic and GE Healthcare.
 	- Each image stored in a separate folder.
 	
 <b>USAGE:</b>
 	-# Load the FFDM image using the 'File -> Load -> Images' menu option.
 	-# Launch LIBRA using the 'Applications -> Breast Segmentation' menu option.
-	-# Output is loaded automatically. 
+	-# Output, i.e., breast mask, is loaded automatically. 
 
 --------
 
@@ -1373,6 +1381,8 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 /**
 \page ht_utilities Utilities (CLI only)
 
+- \subpage BraTS_Metrics "BraTS Similarity Metrics Computation"
+
 This is a command line executable containing the following functionalities (with corresponding examples):
 - Resizing
 	\verbatim
@@ -1484,4 +1494,33 @@ For a full list of available applications and examples, please use the command:
 \verbatim
 ${CaPTk_InstallDir}/bin/Utilities -h
 \endverbatim
+*/
+
+
+/**
+\page BraTS_Metrics BraTS Similarity Metrics Computation (CLI Only)
+This algorithm calculates the similarity metrics used for the Brain Tumor Segmentation (BraTS) challenge [1-5]
+
+<b>REQUIREMENTS:</b>
+	- Segmentation on which statistics are to be generated for comparision
+	- Ground truth or reference of the segmentation
+
+<b>USAGE:</b>
+	- This application is only available as with a stand-alone CLI:
+\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputSegmentation.nii.gz -lsb C:/referenceSegmentation.nii.gz
+\endverbatim
+
+--------
+
+References:
+
+-# B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694
+-# S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI: 10.1038/sdata.2017.117
+-# S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)
+-# S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al., "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-GBM collection", The Cancer Imaging Archive, 2017. DOI: 10.7937/K9/TCIA.2017.KLXWJJ1Q
+-# S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al., "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-LGG collection", The Cancer Imaging Archive, 2017. DOI: 10.7937/K9/TCIA.2017.GJQ7R0EF
+
+--------
+
 */

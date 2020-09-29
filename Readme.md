@@ -36,16 +36,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 By downloading CaPTk, you agree to our [License](./LICENSE). You can review Installation Instructions [here](https://cbica.github.io/CaPTk/Installation.html).
 
-## Latest Stable (1.7.6)
-
-| Platform (x64) | Link                                             |
-|:--------------:|:------------------------------------------------:|
-| Windows        | https://www.nitrc.org/frs/downloadlink.php/11652 |
-| Linux          | https://www.nitrc.org/frs/downloadlink.php/11651 |
-| macOS          | https://www.nitrc.org/frs/downloadlink.php/11650 |
-| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
-
-## Test Build (1.8.0.Beta)
+## Latest Stable (1.8.0)
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|

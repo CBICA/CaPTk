@@ -220,6 +220,11 @@
     <filename>ht_utilities.html</filename>
   </compound>
   <compound kind="page">
+    <name>BraTS_Metrics</name>
+    <title>BraTS Similarity Metrics Computation (CLI Only)</title>
+    <filename>BraTS_Metrics.html</filename>
+  </compound>
+  <compound kind="page">
     <name>Science</name>
     <title>Scientific Findings using CaPTk</title>
     <filename>Science.html</filename>

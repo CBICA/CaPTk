@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.18"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Denoise-SUSAN (ITK filter)</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): BraTS Similarity Metrics Computation (CLI Only)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -52,34 +52,35 @@
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('preprocessing_susan.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('BraTS_Metrics.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Denoise-SUSAN (ITK filter) </div>  </div>
+<div class="title">BraTS Similarity Metrics Computation (CLI Only) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This tool smooths an image already loaded in CaPTk, to remove any high frequency intensity variations (i.e., noise), using the SUSAN algorithm [1].</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>An image loaded in CaPTk.</li>
-</ol>
-<p><b>USAGE:</b></p><ol type="1">
-<li>Load an image in CaPTk.</li>
-<li>Launch the tool using the 'Preprocessing' -&gt; 'Denoise-SUSAN' menu option.</li>
-<li>Specify the output filename.</li>
-<li>Click on 'Save'.</li>
-<li>The output image is saved in the specified folder and automatically loaded in CaPTk.</li>
-<li>This can also be used from the command line: <pre class="fragment">${CaPTk_InstallDir}/bin/Preprocessing.exe -i C:/test/image.nii.gz -o C:/test/image_smooth.nii.gz -ss
+<div class="textblock"><p>This algorithm calculates the similarity metrics used for the Brain Tumor Segmentation (BraTS) challenge [1-5]</p>
+<p><b>REQUIREMENTS:</b></p><ul>
+<li>Segmentation on which statistics are to be generated for comparision</li>
+<li>Ground truth or reference of the segmentation</li>
+</ul>
+<p><b>USAGE:</b></p><ul>
+<li>This application is only available as with a stand-alone CLI: <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputSegmentation.nii.gz -lsb C:/referenceSegmentation.nii.gz
 </pre></li>
+</ul>
+<hr  />
+<p>References:</p>
+<ol type="1">
+<li>B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694</li>
+<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI: 10.1038/sdata.2017.117</li>
+<li>S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)</li>
+<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al., "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-GBM collection", The Cancer Imaging Archive, 2017. DOI: 10.7937/K9/TCIA.2017.KLXWJJ1Q</li>
+<li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. Kirby, et al., "Segmentation Labels and Radiomic Features for the Pre-operative Scans of the TCGA-LGG collection", The Cancer Imaging Archive, 2017. DOI: 10.7937/K9/TCIA.2017.GJQ7R0EF</li>
 </ol>
 <hr  />
-<p>Reference:</p>
-<ol type="1">
-<li>S.M.Smith, J.M.Brady. "SUSAN-A new approach to low level image processing", International Journal of Computer Vision. 23(1):45-78, 1997, DOI:10.1023/A:1007963824710 </li>
-</ol>
-</div></div><!-- contents -->
+ </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
