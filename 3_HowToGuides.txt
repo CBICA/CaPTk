@@ -24,7 +24,7 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
   - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
   - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
-  - [Brain Cancer: Pseudo-Progression/TrueProgression Estimator](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Glioblastoma Pseudo-progression Index](Glioblastoma_Pseudoprogression.html)
   - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
   - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
   - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
@@ -461,7 +461,7 @@ Contains the following applications:
 - \subpage Glioblastoma_Atlas "Brain Cancer: Population Atlas"
 - \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
 - \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
-- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudo-Progression Estimator"
+- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Glioblastoma Pseudo-progression Index"
 - \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Overall Survival Prediction"
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
@@ -769,75 +769,9 @@ References:
 
 
 /**
-\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudo-Progression Estimator
-This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
+\page Glioblastoma_Pseudoprogression Glioblastoma Pseudo-progression Index
 
-<b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
--# Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
-  - SubjectID
-  	-# <b>features.csv</b> (training only)
-    -# CONVENTIONAL 
-      - my_<b>t1</b>_file.nii.gz
-      - my_<b>t2</b>_file.nii.gz
-      - my_<b>t1ce</b>_file.nii.gz
-      - my_<b>flair</b>_file.nii.gz
-    -# DTI
-      - my_<b>axial</b>_file.nii.gz
-      - my_<b>fractional</b>_file.nii.gz
-      - my_<b>radial</b>_file.nii.gz
-      - my_<b>trace</b>_file.nii.gz
-    -# PERFUSION
-      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)
-      - my_<b>ph</b>_file.nii.gz
-      - my_<b>psr</b>_file.nii.gz
-      - my_<b>rcbv</b>_file.nii.gz
-    -# SEGMENTATION
-      - my_<b>segmentation</b>_file.nii.gz
--# The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows.
-	- Input_Folder
-		-# Subject_ID1
-		-# Subject_ID2
-		-# ...
-		-# Subject_IDn
-
-<b>USAGE:</b>
-
-- Pseudo-Progression estimation on a batch of subjects.
-	- Train a new model: 
-		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
-		-# Select the "Output Directory" where the trained model should be saved.
-		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
-		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. 
-\verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
-\endverbatim
-
-	- Use existing model: 
-		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip
-		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
-		-# Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively. 
-		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
-		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
-\verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
-\endverbatim
-
-<b>RESULT INTERPRETATION:</b>
-- 1st column: Distance to hyperplane that classifies pseudo-progression versus the rest
-- 2nd column: Distance to hyperplane that classifies true-progression versus the rest
-
---------
-
-References:
-
--# H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.
-
---------
+This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.
 
 */
   
