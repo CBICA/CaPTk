@@ -10294,8 +10294,8 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
 
 void fMainWindow::CallForNewMolecularSubtypePredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory)
 {
+#ifdef BUILD_MSUBTYPE
   std::vector<double> finalresult;
-
 
   if (inputdirectory.empty())
   {
@@ -10347,6 +10347,7 @@ void fMainWindow::CallForNewMolecularSubtypePredictionModelFromMain(const std::s
   {
     ShowMessage("A Molecular Subtype Prediction model has been prepared and saved. \n\nInput Directory = " + inputdirectory + "\nOutput Directory = " + outputdirectory, this);
   }
+#endif
 }
 
 bool fMainWindow::isMaskDefined()
