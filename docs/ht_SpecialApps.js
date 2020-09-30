@@ -5,7 +5,7 @@ var ht_SpecialApps =
     [ "Brain Cancer: Confetti", "Glioblastoma_Confetti.html", null ],
     [ "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)", "Glioblastoma_Recurrence.html", null ],
     [ "Brain Cancer: Pseudo-Progression Estimator", "Glioblastoma_Pseudoprogression.html", null ],
-    [ "Brain Cancer: Glioblastoma Survival Prediction Index", "Glioblastoma_Survival.html", null ],
+    [ "Glioblastoma Overall Survival Prediction", "Glioblastoma_Survival.html", null ],
     [ "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)", "Glioblastoma_PHI.html", null ],
     [ "Brain Cancer: Glioblastoma EGFRvIII SVM Index", "Glioblastoma_EGFRvIII.html", null ],
     [ "Brain Cancer: Glioblastoma Molecular Subtype Prediction", "Glioblastoma_Molecular.html", null ],
