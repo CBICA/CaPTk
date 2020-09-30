@@ -6852,14 +6852,14 @@ void fMainWindow::ApplicationImagingSubtype()
 }
 #endif
 
-#ifdef BUILD_MSUBTYPE
 void fMainWindow::ApplicationMolecularSubtype()
 {
+#ifdef BUILD_MSUBTYPE
   msubtypePanel.SetCurrentImagePath(mInputPathName);
   msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
-}
 #endif
+}
 
 
 #ifdef BUILD_SURVIVAL
@@ -10198,6 +10198,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 
 void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
+#ifdef BUILD_MSUBTYPE
   if (modeldirectory == "")
   {
     ShowErrorMessage("Please provide path of a directory having SVM model");
@@ -10290,6 +10291,7 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     msg = msg + "Input Directory = " + QString::fromStdString(inputdirectory) + "\nOutput Directory = " + QString::fromStdString(outputdirectory) + "\nModel Directory = " + QString::fromStdString(modeldirectory);
   }
   ShowMessage(msg.toStdString(), this);
+#endif
 }
 
 void fMainWindow::CallForNewMolecularSubtypePredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory)
