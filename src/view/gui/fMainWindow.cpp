@@ -612,7 +612,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-Progression Estimator"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-progression Index"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
@@ -6673,11 +6673,12 @@ void fMainWindow::ApplicationRecurrence()
 #ifdef BUILD_PSEUDOPROGRESSION
 void fMainWindow::ApplicationPseudoProgression()
 {
-  {
-    pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
-    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
-    pseudoPanel.exec();
-  }
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+  //pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
+  //pseudoPanel.exec();
 }
 #endif
 
