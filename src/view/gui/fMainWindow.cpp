@@ -6665,11 +6665,15 @@ void fMainWindow::ApplicationEGFR()
 #ifdef BUILD_RECURRENCE
 void fMainWindow::ApplicationRecurrence()
 {
-  {
-    recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
-    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
-    recurrencePanel.exec();
-  }
+  QString text = "This functionality has been removed from this CaPTk release, \
+and we are actively testing an optimized robust implementation that would enable \
+generalization in multi-institutional data. We expect this to be released in our \
+next patch release, expected in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+  //recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
+  //recurrencePanel.exec();
 }
 #endif
 
@@ -7599,7 +7603,13 @@ void fMainWindow::ApplicationPCA()
   //  ShowErrorMessage(msg, this);
   //}
 
-  pcaPanel.exec();
+  QString text = "This functionality has been removed from this CaPTk release, \
+and we are actively testing an optimized robust implementation that would enable \
+generalization in multi-institutional data. We expect this to be released in our \
+next patch release, expected in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //pcaPanel.exec();
 }
 void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 {
