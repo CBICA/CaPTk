@@ -462,7 +462,7 @@ Contains the following applications:
 - \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
 - \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
 - \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudo-Progression Estimator"
-- \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Survival Prediction Index"
+- \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Overall Survival Prediction"
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
 - \subpage Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
@@ -702,68 +702,9 @@ References:
 */
   
 /**
-\page Glioblastoma_Survival Brain Cancer: Glioblastoma Survival Prediction Index
-This application provides the survival prediction index (SPI) of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
+\page Glioblastoma_Survival Glioblastoma Overall Survival Prediction
 
-<b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.
--# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
-  - Subject_ID
-    -# <b>features.csv</b>
-    -# CONVENTIONAL
-      - my_<b>t1</b>_file.nii.gz
-      - my_<b>t2</b>_file.nii.gz
-      - my_<b>t1ce</b>_file.nii.gz
-      - my_<b>flair</b>_file.nii.gz
-    -# DTI
-      - my_<b>axial</b>_file.nii.gz
-      - my_<b>fractional</b>_file.nii.gz
-      - my_<b>radial</b>_file.nii.gz
-      - my_<b>trace</b>_file.nii.gz
-    -# PERFUSION
-      - my_<b>rcbv</b>_file.nii.gz
-      - my_<b>psr</b>_file.nii.gz
-      - my_<b>ph</b>_file.nii.gz
-    -# SEGMENTATION
-      - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in same space as above images)
--# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Input_directory
-		-# Subject_ID1
-		-# Subject_ID2
-		-# ...
-		-# Subject_IDn
-      
-<b>USAGE:</b>
-- Train New Model: 
-	-# "Select Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the folder where the trained model will be saved.
-	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
-\endverbatim
-
-- Use Existing Model
-	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively. 
-	-# A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
-\endverbatim
-
---------
-
-References:
-
--# L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016, DOI:10.1093/neuonc/nov127
-
---------
+This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data.
 
 */
 
