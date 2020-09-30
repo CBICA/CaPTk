@@ -120,11 +120,6 @@
     <filename>ht_SpecialApps.html</filename>
   </compound>
   <compound kind="page">
-    <name>Glioblastoma_Molecular</name>
-    <title>Brain Cancer: Glioblastoma Molecular Subtype Prediction</title>
-    <filename>Glioblastoma_Molecular.html</filename>
-  </compound>
-  <compound kind="page">
     <name>Glioblastoma_WhiteStripe</name>
     <title>Brain Cancer: WhiteStripe Normalization</title>
     <filename>Glioblastoma_WhiteStripe.html</filename>
@@ -151,7 +146,7 @@
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Pseudoprogression</name>
-    <title>Brain Cancer: Pseudo-Progression Estimator</title>
+    <title>Glioblastoma Pseudo-progression Index</title>
     <filename>Glioblastoma_Pseudoprogression.html</filename>
   </compound>
   <compound kind="page">
