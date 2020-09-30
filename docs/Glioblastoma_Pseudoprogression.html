@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.18"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Brain Cancer: Pseudo-Progression Estimator</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Glioblastoma Pseudo-progression Index</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -58,99 +58,11 @@ $(document).ready(function(){initNavTree('Glioblastoma_Pseudoprogression.html','
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Brain Cancer: Pseudo-Progression Estimator </div>  </div>
+<div class="title">Glioblastoma Pseudo-progression Index </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
-<li>Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.</li>
-<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
-<li>SubjectID<ol type="a">
-<li><b>features.csv</b> (training only)</li>
-<li>CONVENTIONAL<ul>
-<li>my_<b>t1</b>_file.nii.gz</li>
-<li>my_<b>t2</b>_file.nii.gz</li>
-<li>my_<b>t1ce</b>_file.nii.gz</li>
-<li>my_<b>flair</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>DTI<ul>
-<li>my_<b>axial</b>_file.nii.gz</li>
-<li>my_<b>fractional</b>_file.nii.gz</li>
-<li>my_<b>radial</b>_file.nii.gz</li>
-<li>my_<b>trace</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>PERFUSION<ul>
-<li>my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)</li>
-<li>my_<b>ph</b>_file.nii.gz</li>
-<li>my_<b>psr</b>_file.nii.gz</li>
-<li>my_<b>rcbv</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>SEGMENTATION<ul>
-<li>my_<b>segmentation</b>_file.nii.gz</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows.<ul>
-<li>Input_Folder<ol type="a">
-<li>Subject_ID1</li>
-<li>Subject_ID2</li>
-<li>...</li>
-<li>Subject_IDn</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<p><b>USAGE:</b></p>
-<ul>
-<li>Pseudo-Progression estimation on a batch of subjects.<ul>
-<li>Train a new model:<ol type="1">
-<li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
-<li>Select the "Output Directory" where the trained model should be saved.</li>
-<li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around.</li>
-</ul>
-<ol type="1">
-<li>NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
-</pre></li>
-</ol>
-</li>
-<li>Use existing model:<ol type="1">
-<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip</a></li>
-<li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
-<li>Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively.</li>
-<li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
-</pre></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><b>RESULT INTERPRETATION:</b></p><ul>
-<li>1st column: Distance to hyperplane that classifies pseudo-progression versus the rest</li>
-<li>2nd column: Distance to hyperplane that classifies true-progression versus the rest</li>
-</ul>
-<hr  />
-<p>References:</p>
-<ol type="1">
-<li>H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.</li>
-</ol>
-<hr  />
- </div></div><!-- contents -->
+<div class="textblock"><p>This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

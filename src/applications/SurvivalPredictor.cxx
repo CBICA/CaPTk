@@ -188,6 +188,8 @@ int TrainNewSurvivalPredictionModel(const std::string inputdirectory,
 }
 int main(int argc, char **argv)
 {
+  std::cout << "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data.\n";
+  return EXIT_FAILURE;
 	cbica::CmdParser parser = cbica::CmdParser(argc, argv, "SurvivalPredictor");
 	parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
 	parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory having test subjects");

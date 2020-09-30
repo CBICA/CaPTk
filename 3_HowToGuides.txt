@@ -24,11 +24,10 @@ This section provides step-by-step guidance to apply the CaPTk functionalities:
   - [Brain Cancer: Population Atlas](Glioblastoma_Atlas.html)
   - [Brain Cancer: Confetti - Diffusion track visualization](Glioblastoma_Confetti.html)
   - [Brain Cancer: Glioblastoma Infiltration Index (Recurrence Predictor)](Glioblastoma_Recurrence.html)
-  - [Brain Cancer: Pseudo-Progression/TrueProgression Estimator](Glioblastoma_Pseudoprogression.html)
+  - [Brain Cancer: Glioblastoma Pseudo-progression Index](Glioblastoma_Pseudoprogression.html)
   - [Brain Cancer: Glioblastoma Survival Prediction Index](Glioblastoma_Survival.html)
   - [Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)](Glioblastoma_PHI.html)
   - [Brain Cancer: Glioblastoma EGFRvIII SVM Prediction](Glioblastoma_EGFRvIII.html)
-  - [Brain Cancer: Glioblastoma Molecular Subtype Prediction](Glioblastoma_Molecular.html)
   - [Breast Cancer: Breast Segmentation](BreastCancer_breastSegmentation.html)
   - [Breast Cancer: Breast Density Estimation (LIBRA)](BreastCancer_LIBRA.html)
   - [Breast Cancer: Texture Feature Extraction](BreastCancer_texture.html)
@@ -461,11 +460,10 @@ Contains the following applications:
 - \subpage Glioblastoma_Atlas "Brain Cancer: Population Atlas"
 - \subpage Glioblastoma_Confetti "Brain Cancer: Confetti"
 - \subpage Glioblastoma_Recurrence "Brain Cancer: Glioblastoma Infiltration Index (Recurrence)"
-- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Pseudo-Progression Estimator"
-- \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Survival Prediction Index"
+- \subpage Glioblastoma_Pseudoprogression "Brain Cancer: Glioblastoma Pseudo-progression Index"
+- \subpage Glioblastoma_Survival "Brain Cancer: Glioblastoma Overall Survival Prediction"
 - \subpage Glioblastoma_PHI "Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)"
 - \subpage Glioblastoma_EGFRvIII "Brain Cancer: Glioblastoma EGFRvIII SVM Index"
-- \subpage Glioblastoma_Molecular "Brain Cancer: Glioblastoma Molecular Subtype Prediction"
 - \subpage BreastCancer_breastSegmentation "Breast Cancer: Breast Segmentation"
 - \subpage BreastCancer_LIBRA "Breast Cancer: Breast Density Estimation (LIBRA)"
 - \subpage BreastCancer_texture "Breast Cancer: Texture Feature Extraction"
@@ -479,73 +477,6 @@ Contains the following applications:
 
 --------
 */
-
-/**
-\page Glioblastoma_Molecular Brain Cancer: Glioblastoma Molecular Subtype Prediction
-This application provides the prediction of the molecular subtype of <i>de novo</i> glioblastoma patients using baseline pre-operative multi-parametric MRI analysis [1].
-
-<b>REQUIREMENTS:</b>
--# Co-registered Multi-modal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV. 
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and molecular subtype (in second column) for training a new model, and age only for molecular subtype prediction of new patients. 
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
-  - Subject_ID
-    -# <b>features.csv</b>
-    -# CONVENTIONAL
-      - my_<b>t1</b>_file.nii.gz
-      - my_<b>t2</b>_file.nii.gz
-      - my_<b>t1ce</b>_file.nii.gz
-      - my_<b>flair</b>_file.nii.gz
-    -# DTI
-      - my_<b>axial</b>_file.nii.gz
-      - my_<b>fractional</b>_file.nii.gz
-      - my_<b>radial</b>_file.nii.gz
-      - my_<b>trace</b>_file.nii.gz
-    -# PERFUSION
-      - my_<b>rcbv</b>_file.nii.gz
-      - my_<b>psr</b>_file.nii.gz
-      - my_<b>ph</b>_file.nii.gz
-    -# SEGMENTATION
-      - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in common atlas space)
--# The data of multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Input_Directory
-		-# Subject_ID1
-		-# Subject_ID2
-		-# ...
-		-# Subject_IDn
-      
-<b>USAGE:</b>
-- Train New Model: 
-	-# "Select Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the folder where the trained model will be saved.
-	-# A pop-up window appears displaying the completion of model building. (Time depends on the number of patients: ~2*Patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 0 -i C:/MolecularSubtypeInput -o C:/MolecularSubtypeModel
-\endverbatim
-
-- Use Existing Model:
-	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the predicted molecular subtypes for all patients will be saved, and click on 'Confirm'.
-	-# A pop-up window appears displaying the completion of subtype calculation. The window will also show the molecular subtype of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/MolecularSubtypePredictor.exe -t 1 -i C:/MolecularSubtypeInput -m C:/MolecularSubtypeModel -o C:/MolecularSubtypeOutput
-\endverbatim
-
---------
-
-References:
-
--# L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016, DOI:10.1093/neuonc/nov127.
-
---------
-
-*/
-
 
 /**
 \page Glioblastoma_WhiteStripe Brain Cancer: WhiteStripe Normalization
@@ -702,68 +633,9 @@ References:
 */
   
 /**
-\page Glioblastoma_Survival Brain Cancer: Glioblastoma Survival Prediction Index
-This application provides the survival prediction index (SPI) of <i>de novo</i> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].
+\page Glioblastoma_Survival Glioblastoma Overall Survival Prediction
 
-<b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
--# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
--# Jakob atlas image warped to the patient space (like, registered to T1-Gd). Atlas image can be found here: ${CaPTk_InstallDir}/data/survival/jakob_labels_ChrisClark_to_glistr.nii.gz.
--# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients. 
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
-  - Subject_ID
-    -# <b>features.csv</b>
-    -# CONVENTIONAL
-      - my_<b>t1</b>_file.nii.gz
-      - my_<b>t2</b>_file.nii.gz
-      - my_<b>t1ce</b>_file.nii.gz
-      - my_<b>flair</b>_file.nii.gz
-    -# DTI
-      - my_<b>axial</b>_file.nii.gz
-      - my_<b>fractional</b>_file.nii.gz
-      - my_<b>radial</b>_file.nii.gz
-      - my_<b>trace</b>_file.nii.gz
-    -# PERFUSION
-      - my_<b>rcbv</b>_file.nii.gz
-      - my_<b>psr</b>_file.nii.gz
-      - my_<b>ph</b>_file.nii.gz
-    -# SEGMENTATION
-      - label_<b>segmentation</b>_file.nii.gz (in same space as above images)
-      - label_in_<b>atlas</b>_space.nii.gz (in same space as above images)
--# The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:
-	- Input_directory
-		-# Subject_ID1
-		-# Subject_ID2
-		-# ...
-		-# Subject_IDn
-      
-<b>USAGE:</b>
-- Train New Model: 
-	-# "Select Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the folder where the trained model will be saved.
-	-# A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
-\endverbatim
-
-- Use Existing Model
-	-# "Model Directory". Choose the directory of a saved model.
-	-# "Test Subjects". Select the input directory that follows the folder structure described above.
-	-# "Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively. 
-	-# A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).
-	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
-\verbatim
-${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
-\endverbatim
-
---------
-
-References:
-
--# L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016, DOI:10.1093/neuonc/nov127
-
---------
+This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data.
 
 */
 
@@ -828,75 +700,9 @@ References:
 
 
 /**
-\page Glioblastoma_Pseudoprogression Brain Cancer: Pseudo-Progression Estimator
-This application provides an estimate of the pseudo-progression after radiotherapy in glioblastoma patients, via multi-parametric MRI analysis, as shown in [1].
+\page Glioblastoma_Pseudoprogression Glioblastoma Pseudo-progression Index
 
-<b>REQUIREMENTS:</b>
--# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-4D, DSC-PH, DSC-PSR, DSC-RCBV, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.
--# Segmentation label of the demarcated region of interest (Label=1) in a single NIfTI (.nii.gz) file.
--# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
-  - SubjectID
-  	-# <b>features.csv</b> (training only)
-    -# CONVENTIONAL 
-      - my_<b>t1</b>_file.nii.gz
-      - my_<b>t2</b>_file.nii.gz
-      - my_<b>t1ce</b>_file.nii.gz
-      - my_<b>flair</b>_file.nii.gz
-    -# DTI
-      - my_<b>axial</b>_file.nii.gz
-      - my_<b>fractional</b>_file.nii.gz
-      - my_<b>radial</b>_file.nii.gz
-      - my_<b>trace</b>_file.nii.gz
-    -# PERFUSION
-      - my_perf_<b>truncated</b>_file.nii.gz (all 4D perfusion files must be aligned and truncated to have identical number of time points)
-      - my_<b>ph</b>_file.nii.gz
-      - my_<b>psr</b>_file.nii.gz
-      - my_<b>rcbv</b>_file.nii.gz
-    -# SEGMENTATION
-      - my_<b>segmentation</b>_file.nii.gz
--# The data of the single or multiple patients should be organized in the above mentioned structure and reside under one input folder as follows.
-	- Input_Folder
-		-# Subject_ID1
-		-# Subject_ID2
-		-# ...
-		-# Subject_IDn
-
-<b>USAGE:</b>
-
-- Pseudo-Progression estimation on a batch of subjects.
-	- Train a new model: 
-		-# Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
-		-# Select the "Output Directory" where the trained model should be saved.
-		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).
-		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around.
-    -# NOTE: in the sample data, we are providing 5 subjects to show the training functionality at work; the model generated using these should <b>NOT</b> be used to generate results. System should have atleast 32GB RAM to load the DSC-4D images. 
-\verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 0 -i C:/PseudoprogressionInputDirectory -o C:/OutputPseudoprogressionInputModelDirectory
-\endverbatim
-
-	- Use existing model: 
-		-# Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in ftp://www.nitrc.org/home/groups/captk/downloads/models/pseudoprogression.zip
-		-# Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).
-		-# Select the "Output Directory", where the user wants to save the output. The first and the second column of .csv will be distancce of sample from the hyperplance of pseudoprogression model and true recurrence model, respectively. 
-		-# Click on 'Confirm'.
-		-# A pop-up window will confirm the completion of assessment of pseudoprogression (~1.5*NoOfSubjects minutes).
-		- This application is also available as with a stand-alone CLI for data analysts to build pipelines around:
-\verbatim
-${CaPTk_InstallDir}/bin/PseudoProgressionEstimator.exe -t 1 -i C:/PseudoprogressionInputDirectory -o C:/PseudoprogressionOutputDirectory -m C:/PseudoprogressionInputModelDirectory
-\endverbatim
-
-<b>RESULT INTERPRETATION:</b>
-- 1st column: Distance to hyperplane that classifies pseudo-progression versus the rest
-- 2nd column: Distance to hyperplane that classifies true-progression versus the rest
-
---------
-
-References:
-
--# H.Akbari, S.Bakas, M.Martinez-Lage, M.Nasrallah, M.Rozycki, S.Rathore, G.Shukla, S.Mohan, M.Bilello, C.Davatzikos, "Quantitative radiomics and machine learning to distinguish true progression from pseudoprogression in patients with GBM", ASNR 56th Annual Meeting, 2018.
-
---------
+This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.
 
 */
   

@@ -49,10 +49,12 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 
 int main(int argc, char **argv)
 {
+  std::cout << "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.\n";
+  return EXIT_FAILURE;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
-  parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
-  parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::STRING, "", "The number of principal components.");
+  parser.addRequiredParameter("t", "type", cbica::Parameter::INTEGER, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
+  parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::FLOAT, "", "The number of principal components.");
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
@@ -65,43 +67,26 @@ int main(int argc, char **argv)
   std::string loggerFile;
   bool loggerRequested = false;
 
-  int tempPosition;
   int applicationType;
   applicationType = 0;
 
-  double inputPCs = 0;
+  float inputPCs = 0;
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
 
-  if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
+  parser.getParameterValue("i", inputFileName);
+  parser.getParameterValue("n", inputPCs);
+  parser.getParameterValue("o", outputDirectoryName);
+  parser.getParameterValue("t", applicationType);
+
+  if (parser.isPresent("m"))
   {
-    parser.echoUsage();
-    return EXIT_SUCCESS;
+    parser.getParameterValue("m", modelDirectoryName);
   }
-  if (parser.compareParameter("L", tempPosition))
+  if (parser.isPresent("L"))
   {
-    loggerFile = argv[tempPosition + 1];
+    parser.getParameterValue("L", loggerFile);
     loggerRequested = true;
     logger.UseNewFile(loggerFile);
-  }
-  if (parser.compareParameter("i", tempPosition))
-  {
-    inputFileName = argv[tempPosition + 1];
-  }
-  if (parser.compareParameter("n", tempPosition))
-  {
-	  inputPCs = atof(argv[tempPosition + 1]);
-  }
-  if (parser.compareParameter("o", tempPosition))
-  {
-    outputDirectoryName = argv[tempPosition + 1];
-  }
-  if (parser.compareParameter("m", tempPosition))
-  {
-    modelDirectoryName = argv[tempPosition + 1];
-  }
-  if (parser.compareParameter("t", tempPosition))
-  {
-    applicationType = atoi(argv[tempPosition + 1]);
   }
 
   std::cout << "Input File:" << inputFileName << std::endl;

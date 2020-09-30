@@ -7,12 +7,12 @@
     <toc>
       <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.0" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md139" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md140" />
-          <section title="Citations" ref="index.html#autotoc_md141" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md142" />
-          <section title="Disclaimer" ref="index.html#autotoc_md143" />
-          <section title="Contact" ref="index.html#autotoc_md144" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md133" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md134" />
+          <section title="Citations" ref="index.html#autotoc_md135" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md136" />
+          <section title="Disclaimer" ref="index.html#autotoc_md137" />
+          <section title="Contact" ref="index.html#autotoc_md138" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -72,11 +72,10 @@
           <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
           <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
           <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-          <section title="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
-          <section title="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
+          <section title="Glioblastoma Pseudo-progression Index" ref="Glioblastoma_Pseudoprogression.html" />
+          <section title="Glioblastoma Overall Survival Prediction" ref="Glioblastoma_Survival.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
           <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-          <section title="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
           <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
           <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
           <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
@@ -119,45 +118,45 @@
         </section>
       </section>
       <section title="Download Instructions" ref="Download.html">
-        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md101" />
+        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md95" />
       </section>
-      <section title="License" ref="Download.html#autotoc_md103" />
+      <section title="License" ref="Download.html#autotoc_md97" />
     </section>
   </section>
   <section title="Installation Instructions" ref="Installation.html">
-    <section title="Windows" ref="Installation.html#autotoc_md107" />
-    <section title="Linux" ref="Installation.html#autotoc_md108" />
-    <section title="macOS" ref="Installation.html#autotoc_md109" />
+    <section title="Windows" ref="Installation.html#autotoc_md101" />
+    <section title="Linux" ref="Installation.html#autotoc_md102" />
+    <section title="macOS" ref="Installation.html#autotoc_md103" />
   </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md113" />
-  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md114">
-    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md115" />
-    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md116" />
-    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md117" />
-    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md118" />
-    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md119" />
-    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md120" />
-    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md121" />
-    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md122" />
-    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md123" />
-    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md124" />
-    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md125" />
-    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md126" />
-    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md127" />
-    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md128" />
-    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md129" />
-    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md130" />
-    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md131" />
-    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md132" />
+  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md107" />
+  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md108">
+    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md109" />
+    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md110" />
+    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md111" />
+    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md112" />
+    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md113" />
+    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md114" />
+    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md115" />
+    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md116" />
+    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md117" />
+    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md118" />
+    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md119" />
+    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md120" />
+    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md121" />
+    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md122" />
+    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md123" />
+    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md124" />
+    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md125" />
+    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md126" />
   </section>
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md136" />
-<section title="Developers:" ref="People.html#autotoc_md137" />
-<section title="Collaborators:" ref="People.html#autotoc_md138" />
+<section title="Advisors:" ref="People.html#autotoc_md130" />
+<section title="Developers:" ref="People.html#autotoc_md131" />
+<section title="Collaborators:" ref="People.html#autotoc_md132" />
 </section>
 </section>
 </section>
@@ -181,13 +180,12 @@
       <keyword name="Deep Learning Segmentation" id="Deep Learning Segmentation" ref="seg_DL.html" />
       <keyword name="Feature Extraction" id="Feature Extraction" ref="ht_FeatureExtraction.html" />
       <keyword name="Specialized Applications (SAs) Usage" id="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html" />
-      <keyword name="Brain Cancer: Glioblastoma Molecular Subtype Prediction" id="Brain Cancer: Glioblastoma Molecular Subtype Prediction" ref="Glioblastoma_Molecular.html" />
       <keyword name="Brain Cancer: WhiteStripe Normalization" id="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
       <keyword name="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" id="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
       <keyword name="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" id="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-      <keyword name="Brain Cancer: Glioblastoma Survival Prediction Index" id="Brain Cancer: Glioblastoma Survival Prediction Index" ref="Glioblastoma_Survival.html" />
+      <keyword name="Glioblastoma Overall Survival Prediction" id="Glioblastoma Overall Survival Prediction" ref="Glioblastoma_Survival.html" />
       <keyword name="Brain Cancer: Glioblastoma EGFRvIII SVM Index" id="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-      <keyword name="Brain Cancer: Pseudo-Progression Estimator" id="Brain Cancer: Pseudo-Progression Estimator" ref="Glioblastoma_Pseudoprogression.html" />
+      <keyword name="Glioblastoma Pseudo-progression Index" id="Glioblastoma Pseudo-progression Index" ref="Glioblastoma_Pseudoprogression.html" />
       <keyword name="Brain Cancer: Population Atlas" id="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
       <keyword name="Brain Cancer: Confetti" id="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
       <keyword name="Miscellaneous: Directionality Estimator" id="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
@@ -247,7 +245,6 @@
       <file>seg_DL.html</file>
       <file>ht_FeatureExtraction.html</file>
       <file>ht_SpecialApps.html</file>
-      <file>Glioblastoma_Molecular.html</file>
       <file>Glioblastoma_WhiteStripe.html</file>
       <file>Glioblastoma_PHI.html</file>
       <file>Glioblastoma_Recurrence.html</file>
