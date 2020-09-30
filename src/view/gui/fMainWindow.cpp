@@ -382,7 +382,11 @@ fMainWindow::fMainWindow()
   }
 
   // TBD: this needs to be controlled from CMake and not hard-coded here
-  auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
+  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator";
+#ifdef BUILD_MSUBTYPE
+  brainAppList += " MolecularSubtypePredictor ";
+#endif
+  brainAppList += "SurvivalPredictor PopulationAtlases WhiteStripe confetti";
   std::string breastAppList = "";
 
 #ifndef __APPLE__
