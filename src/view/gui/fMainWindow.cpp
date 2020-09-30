@@ -617,7 +617,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma Survival Prediction Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Overall Survival Prediction"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSurvival()));
     }
     else if (vectorOfGBMApps[i].name.find("PopulationAtlases") != std::string::npos)
@@ -6860,10 +6860,13 @@ void fMainWindow::ApplicationMolecularSubtype()
 #ifdef BUILD_SURVIVAL
 void fMainWindow::ApplicationSurvival()
 {
-  survivalPanel.SetCurrentImagePath(mInputPathName);
-  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
-  survivalPanel.setModal(false);
-  survivalPanel.exec();
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //survivalPanel.SetCurrentImagePath(mInputPathName);
+  //survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
+  //survivalPanel.setModal(false);
+  //survivalPanel.exec();
 }
 #endif
 
