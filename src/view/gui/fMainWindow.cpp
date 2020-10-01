@@ -6665,10 +6665,7 @@ void fMainWindow::ApplicationEGFR()
 #ifdef BUILD_RECURRENCE
 void fMainWindow::ApplicationRecurrence()
 {
-  QString text = "This functionality has been removed from this CaPTk release, \
-and we are actively testing an optimized robust implementation that would enable \
-generalization in multi-institutional data. We expect this to be released in our \
-next patch release, expected in Q4 2020.";
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on a more optimized robust implementation that should enable generalization in multi-institutional data.";
   QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
   msgBox.exec();
   //recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
