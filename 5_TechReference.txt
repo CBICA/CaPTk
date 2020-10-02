@@ -164,7 +164,6 @@ An example of the list file for batch processing can be found in <b>${CaPTk_Inst
           <li>Correlation
           <li>Variance
           <li>SumAverage
-          <li>Variance
           <li>Auto<br>Correlation          
         </ul>
       <td>Bins <br><br>Radius <br><br>Dimensions <br><br>Offset <br><br>Axis
