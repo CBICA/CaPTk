@@ -239,6 +239,7 @@ This pipeline is also available from the web on the [CBICA Image Processing Port
 
 <b>REQUIREMENTS:</b>
 	-# 4 structural MRI images (T1, T1CE, T2, FLAIR), preferably in NIfTI format
+		- For DICOM images, please pass the first image in each of the series as input, not the folder.
 
 <b>USAGE:</b>
 
@@ -259,6 +260,35 @@ ${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1c
 \endverbatim
 
 <b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.
+
+<b>Explanation of output files:</b>
+
+Final co-registered images:
+
+-	T1_to_SRI.nii.gz : Co-registered T1 image
+-	T1CE_to_SRI.nii.gz: Co-registered T1CE image
+-	T2_to_SRI.nii.gz: Co-registered T2 image
+-	FL_to_SRI.nii.gz: Co-registered FLAIR image
+
+(Optional) Deep Learning based masks:
+
+-	brainMask_SRI.nii.gz
+-	brainTumorMask_SRI.nii.gz
+
+(Optional) Co-registered images, with brain mask applied:
+
+-	T1_to_SRI_brain.nii.gz
+-	T1CE_to_SRI_brain.nii.gz
+-	T2_to_SRI_brain.nii.gz
+-	FL_to_SRI_brain.nii.gz
+
+(Optional) Intermediate files (similar for T1CE, T2, FLAIR):
+
+-	T1_raw.nii.gz : NifTi file converted from input DICOM, or copy of input NifTI file
+-	T1_rai.nii.gz : Image re-oriented to LPS/RAI
+-	T1_rai_n4.nii.gz : Image with N4 bias correction applied to T1_rai.nii.gz
+-	T1_to_T1CE.mat : transformation matrix of Rigid registration, T1 to T1CE
+-	T1CE_to_SRI.mat : transformation matrix of Rigid registration, T1CE to SRI
 
 --------
 
