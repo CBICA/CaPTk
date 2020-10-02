@@ -239,6 +239,7 @@ This pipeline is also available from the web on the [CBICA Image Processing Port
 
 <b>REQUIREMENTS:</b>
 	-# 4 structural MRI images (T1, T1CE, T2, FLAIR), preferably in NIfTI format
+	  - For DICOM images, please pass the first image in each of the series as input, not the folder.
 
 <b>USAGE:</b>
 
