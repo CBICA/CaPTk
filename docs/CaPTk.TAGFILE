@@ -32,10 +32,12 @@
     <docanchor file="FAQ.html" title="What if I am having issues with the Linux Installer?">gs_FAQ_5</docanchor>
     <docanchor file="FAQ.html" title="FUSE Issues">gs_FAQ_5_1</docanchor>
     <docanchor file="FAQ.html" title="GLIBCXX or GLIBC Issues">gs_FAQ_5_2</docanchor>
+    <docanchor file="FAQ.html" title="CXXABI issues">gs_FAQ_5_3</docanchor>
     <docanchor file="FAQ.html" title="Is there a minimum recommended screen resolution for running CaPTk?">gs_FAQ_6</docanchor>
     <docanchor file="FAQ.html" title="Where can I find the CaPTk Docker Image?">gs_FAQ_7</docanchor>
     <docanchor file="FAQ.html" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_8</docanchor>
     <docanchor file="FAQ.html" title="Is there something wrong with Feature Extraction?">gs_FAQ_9</docanchor>
+    <docanchor file="FAQ.html" title="What if I am having an issue not listed here?">gs_FAQ_10</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>
@@ -118,11 +120,6 @@
     <filename>ht_SpecialApps.html</filename>
   </compound>
   <compound kind="page">
-    <name>Glioblastoma_Molecular</name>
-    <title>Brain Cancer: Glioblastoma Molecular Subtype Prediction</title>
-    <filename>Glioblastoma_Molecular.html</filename>
-  </compound>
-  <compound kind="page">
     <name>Glioblastoma_WhiteStripe</name>
     <title>Brain Cancer: WhiteStripe Normalization</title>
     <filename>Glioblastoma_WhiteStripe.html</filename>
@@ -139,7 +136,7 @@
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Survival</name>
-    <title>Brain Cancer: Glioblastoma Survival Prediction Index</title>
+    <title>Glioblastoma Overall Survival Prediction</title>
     <filename>Glioblastoma_Survival.html</filename>
   </compound>
   <compound kind="page">
@@ -149,7 +146,7 @@
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Pseudoprogression</name>
-    <title>Brain Cancer: Pseudoprogression Infiltration Index</title>
+    <title>Glioblastoma Pseudo-progression Index</title>
     <filename>Glioblastoma_Pseudoprogression.html</filename>
   </compound>
   <compound kind="page">
@@ -204,7 +201,7 @@
   </compound>
   <compound kind="page">
     <name>PCA_Extraction</name>
-    <title>Miscellaneous: PCA Volume Extraction</title>
+    <title>Miscellaneous: Perfusion PCA Volume Extraction</title>
     <filename>PCA_Extraction.html</filename>
   </compound>
   <compound kind="page">
@@ -216,6 +213,11 @@
     <name>ht_utilities</name>
     <title>Utilities (CLI only)</title>
     <filename>ht_utilities.html</filename>
+  </compound>
+  <compound kind="page">
+    <name>BraTS_Metrics</name>
+    <title>BraTS Similarity Metrics Computation (CLI Only)</title>
+    <filename>BraTS_Metrics.html</filename>
   </compound>
   <compound kind="page">
     <name>Science</name>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.18"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Cancer Imaging Phenomics Toolkit (CaPTk): Brain Cancer: Glioblastoma Survival Prediction Index</title>
+<title>Cancer Imaging Phenomics Toolkit (CaPTk): Glioblastoma Overall Survival Prediction</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -58,88 +58,11 @@ $(document).ready(function(){initNavTree('Glioblastoma_Survival.html',''); initR
 <div id="doc-content">
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Brain Cancer: Glioblastoma Survival Prediction Index </div>  </div>
+<div class="title">Glioblastoma Overall Survival Prediction </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application provides the survival prediction index (SPI) of <em>de novo</em> glioblastoma patients by using baseline pre-operative multi-parametric MRI analysis [1].</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
-<li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)</li>
-<li>Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)</li>
-<li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and survival (in second column) for training a new model, and age only for survival prediction of new patients.</li>
-<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
-<li>Subject_ID<ol type="a">
-<li><b>features.csv</b></li>
-<li>CONVENTIONAL<ul>
-<li>my_<b>t1</b>_file.nii.gz</li>
-<li>my_<b>t2</b>_file.nii.gz</li>
-<li>my_<b>t1ce</b>_file.nii.gz</li>
-<li>my_<b>flair</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>DTI<ul>
-<li>my_<b>axial</b>_file.nii.gz</li>
-<li>my_<b>fractional</b>_file.nii.gz</li>
-<li>my_<b>radial</b>_file.nii.gz</li>
-<li>my_<b>trace</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>PERFUSION<ul>
-<li>my_<b>rcbv</b>_file.nii.gz</li>
-<li>my_<b>psr</b>_file.nii.gz</li>
-<li>my_<b>ph</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>SEGMENTATION<ul>
-<li>label_<b>segmentation</b>_file.nii.gz (in same space as above images)</li>
-<li>label_in_<b>atlas</b>_space.nii.gz (in common atlas space)</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
-<li>Input_directory<ol type="a">
-<li>Subject_ID1</li>
-<li>Subject_ID2</li>
-<li>...</li>
-<li>Subject_IDn</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<p><b>USAGE:</b></p><ul>
-<li>Train New Model:<ol type="1">
-<li>"Select Subjects". Select the input directory that follows the folder structure described above.</li>
-<li>"Output". Select the folder where the trained model will be saved.</li>
-<li>A pop-up window appears displaying the completion of model building (time depends on the number of patients: ~2*patients minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 0 -i C:/SurvivalInput -o C:/SurvivalModel
-</pre></li>
-</ul>
-</li>
-<li>Use Existing Model<ol type="1">
-<li>"Model Directory". Choose the directory of a saved model.</li>
-<li>"Test Subjects". Select the input directory that follows the folder structure described above.</li>
-<li>"Output". Select the output directory where a .csv file with the classification scores for all patients will be saved, and click on 'Confirm'. The first column and the second column of .csv will be distancce of sample from the hyperplance of 6-months model and 18-months model, respectively.</li>
-<li>A pop-up window appears displaying the completion of results. The window will also show the SPI index (distance) of the first subject in the Data_of_multiple_patients folder (runtime depends on the number of patients: ~2*patients minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/SurvivalPredictor.exe -t 1 -i C:/SurvivalInput -m C:/SurvivalModel -o C:/SurvivalOutput
-</pre></li>
-</ul>
-</li>
-</ul>
-<hr  />
-<p>References:</p>
-<ol type="1">
-<li>L.Macyszyn, H.Akbari, J.M.Pisapia, X.Da, M.Attiah, V.Pigrish, Y.Bi, S.Pal, R.V.Davuluri, L.Roccograndi, N.Dahmane. M.Martinez-Lage, G.Biros, R.L.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos. "Imaging patterns predict patient survival and molecular subtype in glioblastoma via machine learning techniques", Neuro Oncol. 18(3):417-25, 2016, DOI:10.1093/neuonc/nov127</li>
-</ol>
-<hr  />
- </div></div><!-- contents -->
+<div class="textblock"><p>This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

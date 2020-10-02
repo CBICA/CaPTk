@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -61,25 +61,29 @@ $(document).ready(function(){initNavTree('BreastCancer_texture.html',''); initRe
 <div class="title">Breast Cancer: Texture Feature Extraction </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application extracts the Texture Features as described in the paper [1]. It uses <a href="BreastCancer_LIBRA.html">LIBRA</a> for segmentation and the <a href="ht_FeatureExtraction">Feature Extraction</a> backend to do all the feature computation.</p>
+<div class="textblock"><p>This application extracts radiomic features related to breast cancer risk, as described in the paper [1]. It is based upon <a href="BreastCancer_LIBRA.html">LIBRA</a> for segmentation of the breast and the lattice-based mode of <a href="ht_FeatureExtraction.html">Feature Extraction</a> backend to perform radiomic feature calculations.</p>
 <p><b>REQUIREMENTS:</b></p><ul>
 <li>Raw (i.e., "FOR PROCESSING") or vendor post-processed (i.e., "FOR PRESENTATION") FFDM images.</li>
-<li>FFDM vendors currently supported: GE Healthcare and Hologic.</li>
-<li>Each image stored in a separate folder.</li>
+<li>FFDM vendors currently supported: Hologic and GE Healthcare.</li>
+<li>Each image stored in a separate folder (required only in GUI).</li>
 </ul>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Load the FFDM image using the 'File -&gt; Load -&gt; Images' menu option.</li>
 <li>Launch <b>Breast Texture Feature Extraction</b> using the 'Applications -&gt; [Breast Cancer] Texture Pipeline' menu option.</li>
 <li>Specify the output directory.</li>
 </ol>
-<ul>
+<p><b>OUTPUT:</b></p><ul>
+<li>output.csv: CSV file with the extracted radiomic features.</li>
+<li>featureMap/: Folder of feature maps, one for each radiomic feature, reflecting the spatial feature distributions within the breast.<ul>
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/BreastTexturePipeline.exe -i C:/input/image.dcm -o C:/outputDir -d 1 
 </pre></li>
+</ul>
+</li>
 </ul>
 <hr  />
 <p>References:</p>
 <ol type="1">
-<li>B.M.Keller, D.L.Nathan, Y.Wang, Y.Zheng, J.C.Gee, E.F.Conant, D.Kontos, "Estimation of breast percent density in raw and processed full field digital mammography images via adaptive fuzzy c-means clustering and support vector machine segmentation", Med Phys. 39(8):4903-4917, 2012, DOI:10.1118/1.4736530</li>
+<li>Y.Zheng, B.M.Keller, S.Ray, Y.Wang, E.F.Conant, J.C.Gee, D.Kontos, "Parenchymal texture analysis in digital mammography: A fully automated pipeline for breast cancer risk assessment", Medical Physics, 2015.</li>
 </ol>
 <hr  />
  </div></div><!-- contents -->

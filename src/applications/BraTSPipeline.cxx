@@ -126,7 +126,7 @@ int main(int argc, char** argv)
       {
         std::cerr << "Something went wrong with the DICOM to NIfTI conversion for modality '" <<
           modality << "' with filename '" << it->second << "'"
-          << ", please use another package to conver to NIfTI and try again.\n";
+          << ", please use another package for NIfTI conversion and try again.\n";
         return EXIT_FAILURE;
       }
       else

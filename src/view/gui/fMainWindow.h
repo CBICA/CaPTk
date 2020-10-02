@@ -1405,14 +1405,12 @@ public slots:
   //! GUI control for Imaging Subtype
   void ApplicationImagingSubtype();
 #endif
-#ifdef BUILD_MSUBTYPE
   //! GUI control for Molecular Subtype
   void ApplicationMolecularSubtype();
 #endif
 #ifdef BUILD_SURVIVAL
   //! GUI control for Survival
   void ApplicationSurvival();
-#endif
 #ifdef BUILD_EGFRvIIISVM
   //! GUI control for EGFRvIII SVM
   void ApplicationEGFRvIIISVM();

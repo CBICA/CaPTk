@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -61,29 +61,66 @@ $(document).ready(function(){initNavTree('preprocessing_brats.html',''); initRes
 <div class="title">BraTS Pre-processing Pipeline </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>4 structural MRI images (T1, T1CE, T2, FLAIR)</li>
+<div class="textblock"><p>This pipeline is also available from the web on the <a href="https://ipp.cbica.upenn.edu/">CBICA Image Processing Portal</a>. Please see the experiment on the portal for details.</p>
+<p><b>REQUIREMENTS:</b></p><ol type="1">
+<li>4 structural MRI images (T1, T1CE, T2, FLAIR), preferably in NIfTI format<ul>
+<li>For DICOM images, please pass the first image in each of the series as input, not the folder.</li>
+</ul>
+</li>
 </ol>
 <p><b>USAGE:</b></p>
 <p>This CLI-only application takes 4 structural brain MRIs as input and performs the following steps [1-3]:</p>
 <ol type="1">
 <li>Re-orientation to LPS/RAI</li>
-<li><a href="preprocessing_bias.html">N4 Bias correction</a></li>
-<li><a href="preprocessing_reg.html">Co-registration</a> to T1CE</li>
-<li><a href="preprocessing_reg.html">Registration</a> to SRI-24 atlas [4]</li>
-<li>Apply registration to re-oriented image to maximize image fidelity</li>
-<li>OPTIONAL: <a href="seg_DL.html">Skull-stripping</a></li>
-<li>OPTIONAL: <a href="seg_DL.html">Tumor Segmentation</a></li>
+<li>Image registration to SRI-24 Atlas [4] which includes the following steps<ol type="a">
+<li><a href="preprocessing_bias.html">N4 Bias correction</a> (This is a TEMPORARY STEP, and is not applied in the final co-registered output images. It is only use to facilitate optimal registration.)</li>
+<li><a href="preprocessing_reg.html">Rigid Registration</a> of T1, T2, FLAIR to T1CE</li>
+<li><a href="preprocessing_reg.html">Rigid Registration</a> of T1CE to SRI-24 atlas [4]</li>
+<li>Applying transformation to the reoriented images</li>
+</ol>
+</li>
+<li>OPTIONAL: <a href="seg_DL.html">Deep-Learning based Skull-stripping</a> [5]</li>
+<li>OPTIONAL: <a href="seg_DL.html">Deep-Learning based Tumor Segmentation</a> [6]</li>
 </ol>
 <p>Example command: </p><pre class="fragment">${CaPTk_InstallDir}/bin/BraTSPipeline.exe -t1 C:/test/t1.nii.gz -t1c C:/test/t1ce.nii.gz -t2 C:/test/t2.nii.gz -fl C:/test/flair.nii.gz -o C:/test/outputDir 
 </pre><p><b>NOTE</b>: This applications takes ~30 minutes to finish on an 8-core Intel i7 with 16GB of RAM.</p>
+<p><b>Explanation of output files:</b></p>
+<p>Final co-registered images:</p>
+<ul>
+<li>T1_to_SRI.nii.gz : Co-registered T1 image</li>
+<li>T1CE_to_SRI.nii.gz: Co-registered T1CE image</li>
+<li>T2_to_SRI.nii.gz: Co-registered T2 image</li>
+<li>FL_to_SRI.nii.gz: Co-registered FLAIR image</li>
+</ul>
+<p>(Optional) Deep Learning based masks:</p>
+<ul>
+<li>brainMask_SRI.nii.gz</li>
+<li>brainTumorMask_SRI.nii.gz</li>
+</ul>
+<p>(Optional) Co-registered images, with brain mask applied:</p>
+<ul>
+<li>T1_to_SRI_brain.nii.gz</li>
+<li>T1CE_to_SRI_brain.nii.gz</li>
+<li>T2_to_SRI_brain.nii.gz</li>
+<li>FL_to_SRI_brain.nii.gz</li>
+</ul>
+<p>(Optional) Intermediate files (similar for T1CE, T2, FLAIR):</p>
+<ul>
+<li>T1_raw.nii.gz : NifTi file converted from input DICOM, or copy of input NifTI file</li>
+<li>T1_rai.nii.gz : Image re-oriented to LPS/RAI</li>
+<li>T1_rai_n4.nii.gz : Image with N4 bias correction applied to T1_rai.nii.gz</li>
+<li>T1_to_T1CE.mat : transformation matrix of Rigid registration, T1 to T1CE</li>
+<li>T1CE_to_SRI.mat : transformation matrix of Rigid registration, T1CE to SRI</li>
+</ul>
 <hr  />
 <p>Reference:</p>
 <ol type="1">
 <li>B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI:10.1109/TMI.2014.2377694</li>
 <li>S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J.S. Kirby, et al., "Advancing The Cancer Genome Atlas glioma MRI collections with expert segmentation labels and radiomic features", Nature Scientific Data, 4:170117 (2017) DOI:10.1038/sdata.2017.117</li>
 <li>S. Bakas, M. Reyes, A. Jakab, S. Bauer, M. Rempfler, A. Crimi, et al., "Identifying the Best Machine Learning Algorithms for Brain Tumor Segmentation, Progression Assessment, and Overall Survival Prediction in the BRATS Challenge", arXiv preprint arXiv:1811.02629 (2018)</li>
-<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010, DOI:10.1002/hbm.20906 </li>
+<li>T.Rohlfing, N.M.Zahr, E.V.Sullivan, A.Pfefferbaum, "The SRI24 multichannel atlas of normal adult human brain structure", Human Brain Mapping, 31(5):798-819, 2010, DOI:10.1002/hbm.20906</li>
+<li>S.Thakur, J.Doshi, S.Pati, S.Rathore, C.Sako, M.Bilello, S.M.Ha, G.Shukla, A.Flanders, A.Kotrotsou, M.Milchenko, S.Liem, G.S.Alexander, J.Lombardo, J.D.Palmer, P.LaMontagne, A.Nazeri, S.Talbar, U.Kulkarni, D.Marcus, R.Colen, C.Davatzikos, G.Erus, S.Bakas, "Brain Extraction on MRI Scans in Presence of Diffuse Glioma: Multi-institutional Performance Evaluation of Deep Learning Methods and Robust Modality-Agnostic Training, NeuroImage, Epub-ahead-of-print, 2020.
+-# K.Kamnitsas, C.Ledig, V.F.J.Newcombe, J.P.Simpson, A.D.Kane, D.K.Menon, D.Rueckert, B.Glocker, "Efficient Multi-Scale 3D CNN with Fully Connected CRF for Accurate Brain Lesion Segmentation", Medical Image Analysis, 2016. </li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -61,11 +61,15 @@ $(document).ready(function(){initNavTree('ht_utilities.html',''); initResizable(
 <div class="title">Utilities (CLI only) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This is a command line executable containing the following functionalities (with corresponding examples):</p><ul>
+<div class="textblock"><ul>
+<li><a class="el" href="BraTS_Metrics.html">BraTS Similarity Metrics Computation</a></li>
+</ul>
+<p>This is a command line executable containing the following functionalities (with corresponding examples):</p><ul>
 <li>Resizing <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear</pre></li>
 <li>Resampling <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0 -ri LINEAR
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rf C:/reference.nii.gz -ri LINEAR
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR</pre></li>
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/input.nii.gz -o C:/output.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputMask.nii.gz -o C:/outputMask.nii.gz -rr 1.0,2.0,3.0 -ri LINEAR -rm 1</pre></li>
 <li>Image information <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -inf
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
 <li>Unique values in image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un</pre></li>
