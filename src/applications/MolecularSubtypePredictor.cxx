@@ -198,6 +198,9 @@ int PrepareNewMolecularPredictionModel(const std::string inputdirectory,
 
 int main(int argc, char **argv)
 {
+  std::cout << "This functionality has been removed from this CaPTk release, \
+and we are actively testing an optimized robust implementation.\n";
+  return EXIT_FAILURE;
 #ifdef BUILD_MSUBTYPE
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "MolecularSubtypePredictor");
   parser.addRequiredParameter("t", "type", cbica::Parameter::STRING, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
