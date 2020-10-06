@@ -36,7 +36,7 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 By downloading CaPTk, you agree to our [License](./LICENSE). You can review Installation Instructions [here](https://cbica.github.io/CaPTk/Installation.html).
 
-## Latest Stable (1.8.0)
+## Latest Stable (1.8.1)
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
