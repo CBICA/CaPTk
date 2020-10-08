@@ -560,7 +560,22 @@ jobs:
         continueOnError: true
       displayName: Uploading to NITRC 
       condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
-
+        
+    - task: Docker@2
+    # Docker CLI needs to be installed on this agent for this step to work.
+      input:
+        containerRegistry: 'cbicaDockerHub' 
+        repository: 'cbica/captk'
+        command: buildAndPush
+        tags: |
+            latest
+            azure-latest
+            $(Build.BuildId)
+        Dockerfile: Dockerfile
+      displayName: Build and push image to Docker Hub
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+  
+    
 - job: 'macOS_SelfHost_1014'
   displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
