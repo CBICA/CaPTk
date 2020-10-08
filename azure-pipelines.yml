@@ -563,7 +563,7 @@ jobs:
         
     - task: Docker@2
     # Docker CLI needs to be installed on this agent for this step to work.
-      input:
+      inputs:
         containerRegistry: 'cbicaDockerHub' 
         repository: 'cbica/captk'
         command: buildAndPush
