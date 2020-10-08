@@ -573,7 +573,7 @@ jobs:
             $(Build.BuildId)
         Dockerfile: Dockerfile
       displayName: Build and push image to Docker Hub
-      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+      #condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
   
     
 - job: 'macOS_SelfHost_1014'
