@@ -72,6 +72,7 @@ public:
 
   PerfusionMapType CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
 private:
+	int m_TotalTimePoints;
 
 };
 

@@ -216,6 +216,8 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
     std::vector<ImageType::IndexType> indices;
+	int timepoints = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
+	std::cout << " Time Points: " << timepoints << std::endl;
 
     VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
     PerfusionTupleType new_tuple(indices, perfusionData);
