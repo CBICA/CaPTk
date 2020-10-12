@@ -87,7 +87,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < 45; j++)
+      for (unsigned int j = 0; j < 45; j++) //45 time points
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
@@ -99,7 +99,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], 10);
+    OnePatietnPerfusionData.SetSize(sizes[index], 10); //extracting 10 PCAs
 
     if (index != 0)
       start = start + sizes[index - 1];
@@ -171,6 +171,8 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
+
+	//blah.....
     for (int i = 0; i < number; i++)
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
@@ -204,31 +206,70 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   }
   return true;
 }
+
+PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
+{
+	//PerfusionMapType PerfusionDataMap;
+	//Extracting perfusion data of all the patients and putting in PerfusionDataMap
+	for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
+	{
+		std::cout << "Loading Perfusion Image: " << sid << std::endl;
+		std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
+		ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+		auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+		std::vector<ImageType::IndexType> indices;
+
+		//current time points
+		int timepoints = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
+
+		if (m_TotalTimePoints == 0) //true on first instantiation
+			m_TotalTimePoints = timepoints; //save the timepoints from first subject read
+
+		//if time points don't match, quit with error message.
+		if (timepoints != m_TotalTimePoints)
+		{
+			std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
+			return ErrorCode::DifferentTimePoints;
+		}
+
+		VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
+		PerfusionTupleType new_tuple(indices, perfusionData);
+		this->m_PerfusionDataMap[sid] = new_tuple;
+	}
+	return ErrorCode::NoError;
+}
+
 bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
 {
-  PerfusionMapType PerfusionDataMap;
+  //PerfusionMapType PerfusionDataMap;
 
   //Extracting perfusion data of all the patients and putting in PerfusionDataMap
-  for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
-  {
-    std::cout << "Loading Perfusion Image: " << sid << std::endl;
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    std::vector<ImageType::IndexType> indices;
-	int timepoints = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
-	std::cout << " Time Points: " << timepoints << std::endl;
+ // for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
+ // {
+ //   std::cout << "Loading Perfusion Image: " << sid << std::endl;
+ //   std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
+ //   ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+ //   auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+ //   std::vector<ImageType::IndexType> indices;
+	//int timepoints = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
+	//if(m_TotalTimePoints == 0)
+	//	m_TotalTimePoints = timepoints;
+	//if (timepoints != m_TotalTimePoints)
+	//{
+	//	std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
+	//	return EXIT_FAILURE;
+	//}
 
-    VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
-    PerfusionTupleType new_tuple(indices, perfusionData);
-    PerfusionDataMap[sid] = new_tuple;
-  }
+ //   VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
+ //   PerfusionTupleType new_tuple(indices, perfusionData);
+ //   PerfusionDataMap[sid] = new_tuple;
+ // }
 
   //combining perfusion data, calcualting PCA
   VariableSizeMatrixType TransformationMatrix;
   VariableLengthVectorType MeanVector;
   vtkSmartPointer<vtkTable> TransformedData;
-  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCA(PerfusionDataMap, TransformationMatrix, MeanVector, TransformedData);
+  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCA(this->m_PerfusionDataMap, TransformationMatrix, MeanVector, TransformedData);
 
   VariableSizeMatrixType TransformedDataMatrix;
   TransformedDataMatrix.SetSize(TransformedData->GetNumberOfRows(), TransformedData->GetNumberOfColumns());
