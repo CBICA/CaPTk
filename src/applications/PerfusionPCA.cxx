@@ -49,8 +49,8 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>> LoadQualifiedSubjec
 
 int main(int argc, char **argv)
 {
-  std::cout << "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.\n";
-  return EXIT_FAILURE;
+  //std::cout << "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.\n";
+  //return EXIT_FAILURE;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
   parser.addRequiredParameter("t", "type", cbica::Parameter::INTEGER, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
@@ -113,6 +113,12 @@ int main(int argc, char **argv)
   }
   std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
   PerfusionPCA object_pca;
+  if (object_pca.LoadData(QualifiedSubjects) == PerfusionPCA::DifferentTimePoints)
+  {
+	  std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
+	  return EXIT_FAILURE;
+  }
+
   if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
   {
     std::cout << "Model directory name:" << modelDirectoryName << std::endl;
