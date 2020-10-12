@@ -13,7 +13,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < 45; j++)
+      for (unsigned int j = 0; j < this->m_TotalTimePoints; j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
