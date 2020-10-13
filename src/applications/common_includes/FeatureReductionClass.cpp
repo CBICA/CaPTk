@@ -2862,13 +2862,94 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   return projectedData;
 }
 
+void FeatureReductionClass::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath)
+{
+	std::ofstream myfile;
+	myfile.open(filepath);
+	//for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
+	//{
+	//	for (unsigned int index2 = 0; index2 < inputdata[0].size(); index2++)
+	//	{
+	//		if (index2 == 0)
+	//			myfile << std::to_string(inputdata[index1][index2]);
+	//		else
+	//			myfile << "," << std::to_string(inputdata[index1][index2]);
+	//	}
+	//	myfile << "\n";
+	//}
+	for (vtkIdType i = 0; i < inputdata->GetNumberOfValues(); i++)
+		myfile << std::to_string(inputdata->GetValue(i)) << std::endl;
+	myfile.close();
+}
+
+void FeatureReductionClass::WriteEigenVector(vtkDoubleArray * input, std::string filepath)
+{
+	std::ofstream myfile;
+	myfile.open(filepath);
+	for (vtkIdType i = 0; i < input->GetNumberOfTuples(); i++)
+	{
+		myfile << "Eigenvector " << i << " : ";
+		double* evec = new double[input->GetNumberOfComponents()];
+		input->GetTuple(i, evec);
+		for (vtkIdType j = 0; j < input->GetNumberOfComponents(); j++)
+		{
+			myfile << evec[j] << " ";
+		}
+		delete[] evec;
+		myfile << "\n";
+	}
+	myfile.close();
+}
+
+void FeatureReductionClass::WriteVTKTable(vtkTable * t, std::string filepath)
+{
+	std::ofstream myfile;
+	myfile.open(filepath);
+	for (vtkIdType i = 0; i < t->GetNumberOfRows(); i++)
+	{
+		for (vtkIdType j = 0; j < t->GetNumberOfColumns(); j++)
+		{
+			//vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(t->GetColumn(i));
+			//std::string fname = "col" + std::to_string(i) + ".csv";
+			//this->WritevtkArray(da, fname);
+			myfile << t->GetValue(i, j) << " ";
+		}
+		myfile << "\n";
+	}
+	myfile.close();
+}
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
+  
+  std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePoints" << std::endl;
+  std::cout << "# features: " << NumberOfFeatures << std::endl;
+  std::cout << "# samples: " << NumberOfSamples << std::endl;
 
+  //vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+  //for (size_t i = 0; i < NumberOfFeatures; i++)
+  //{
+	 // vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+	 // da->SetNumberOfComponents(1);
+	 // da->SetName(std::to_string(i).c_str());
+	 // for (size_t index = 0; index < NumberOfSamples; index++)
+		//  da->InsertNextValue(intensities[index][i]);
+	 // datasetTable->AddColumn(da);
+  //}
+
+  //vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(0));
+  //this->WritevtkArray(da, "col1.csv");
+
+  //vtkDoubleArray*da2 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(1));
+  //this->WritevtkArray(da2, "col2.csv");
+
+  //vtkDoubleArray*da3 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(2));
+  //this->WritevtkArray(da3, "col3.csv");
+
+ // to comment
   vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
   vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
   vtkSmartPointer<vtkDoubleArray> A1 = vtkSmartPointer<vtkDoubleArray>::New();
@@ -3057,6 +3138,57 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
     V1->InsertNextValue(intensities[index][43]);
     W0->InsertNextValue(intensities[index][44]);
   }
+  
+  std::cout << " A1 data array: items = " << A0->GetNumberOfValues() << std::endl;
+
+  this->WritevtkArray(A0.GetPointer(), "A0.csv");
+  this->WritevtkArray(A1.GetPointer(), "A1.csv");
+  this->WritevtkArray(B0.GetPointer(), "B0.csv");
+  this->WritevtkArray(A0.GetPointer(), "B1.csv");
+  this->WritevtkArray(A1.GetPointer(), "C0.csv");
+  this->WritevtkArray(B0.GetPointer(), "C1.csv");
+  this->WritevtkArray(A0.GetPointer(), "D0.csv");
+  this->WritevtkArray(A1.GetPointer(), "D1.csv");
+  this->WritevtkArray(B0.GetPointer(), "E0.csv");
+  this->WritevtkArray(A0.GetPointer(), "E1.csv");
+  this->WritevtkArray(A1.GetPointer(), "F0.csv");
+  this->WritevtkArray(B0.GetPointer(), "F1.csv");
+  this->WritevtkArray(A0.GetPointer(), "G0.csv");
+  this->WritevtkArray(A1.GetPointer(), "G1.csv");
+  this->WritevtkArray(B0.GetPointer(), "H0.csv");
+  this->WritevtkArray(A0.GetPointer(), "H1.csv");
+  this->WritevtkArray(A1.GetPointer(), "I0.csv");
+  this->WritevtkArray(B0.GetPointer(), "I1.csv");
+  this->WritevtkArray(A0.GetPointer(), "J0.csv");
+  this->WritevtkArray(A1.GetPointer(), "J1.csv");
+  this->WritevtkArray(B0.GetPointer(), "K0.csv");
+  this->WritevtkArray(A0.GetPointer(), "K1.csv");
+  this->WritevtkArray(A1.GetPointer(), "L0.csv");
+  this->WritevtkArray(B0.GetPointer(), "L1.csv");
+  this->WritevtkArray(A0.GetPointer(), "M0.csv");
+  this->WritevtkArray(A1.GetPointer(), "M1.csv");
+  this->WritevtkArray(B0.GetPointer(), "N0.csv");
+  this->WritevtkArray(A0.GetPointer(), "N1.csv");
+  this->WritevtkArray(A1.GetPointer(), "O0.csv");
+  this->WritevtkArray(B0.GetPointer(), "O1.csv");
+  this->WritevtkArray(A0.GetPointer(), "P0.csv");
+  this->WritevtkArray(A1.GetPointer(), "P1.csv");
+  this->WritevtkArray(B0.GetPointer(), "Q0.csv");
+  this->WritevtkArray(A0.GetPointer(), "Q1.csv");
+  this->WritevtkArray(A1.GetPointer(), "R0.csv");
+  this->WritevtkArray(B0.GetPointer(), "R1.csv");
+  this->WritevtkArray(A0.GetPointer(), "S0.csv");
+  this->WritevtkArray(A1.GetPointer(), "S1.csv");
+  this->WritevtkArray(B0.GetPointer(), "T0.csv");
+  this->WritevtkArray(A0.GetPointer(), "T1.csv");
+  this->WritevtkArray(A1.GetPointer(), "U0.csv");
+  this->WritevtkArray(B0.GetPointer(), "U1.csv");
+  this->WritevtkArray(A0.GetPointer(), "V0.csv");
+  this->WritevtkArray(A1.GetPointer(), "V1.csv");
+  this->WritevtkArray(B0.GetPointer(), "W0.csv");
+
+ // std::cout << " wrriten A0 csv " << std::endl;
+
   datasetTable->AddColumn(A0);
   datasetTable->AddColumn(A1);
   datasetTable->AddColumn(B0);
@@ -3102,6 +3234,9 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   datasetTable->AddColumn(V0);
   datasetTable->AddColumn(V1);
   datasetTable->AddColumn(W0);
+  // to comment
+
+  this->WriteVTKTable(datasetTable, "table.csv");
 
   vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
 #if VTK_MAJOR_VERSION <= 5
@@ -3110,6 +3245,15 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #endif
 
+  //for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+  //{
+	 // //std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
+	 // pcaStatistics->SetColumnStatus(datasetTable->GetColumnName(i), 1);
+  //}
+
+  std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
+
+  //to comment
   pcaStatistics->SetColumnStatus("a0", 1);
   pcaStatistics->SetColumnStatus("a1", 1);
   pcaStatistics->SetColumnStatus("b0", 1);
@@ -3155,6 +3299,9 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   pcaStatistics->SetColumnStatus("v0", 1);
   pcaStatistics->SetColumnStatus("v1", 1);
   pcaStatistics->SetColumnStatus("w0", 1);
+  //to comment
+
+  //std::cout << "selected columns: " << pcaStatistics->GetNumberOfColumnsForRequest() << std::endl;
 
   pcaStatistics->RequestSelectedColumns();
   pcaStatistics->SetDeriveOption(true);
@@ -3165,6 +3312,9 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 
   vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
   pcaStatistics->GetEigenvectors(eigenvectors);
+
+  eigenvectors->Print(std::cout);
+  this->WriteEigenVector(eigenvectors, "eigenvec_withhardcoding.csv");
 
   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
@@ -3213,6 +3363,831 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   return projectedDatasetTable;
 }
 
+vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
+{
+	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
+	size_t NumberOfFeatures = intensities[0].size();
+	size_t NumberOfSamples = intensities.size();
+
+	std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved" << std::endl;
+	std::cout << "# features: " << NumberOfFeatures << std::endl;
+	std::cout << "# samples: " << NumberOfSamples << std::endl;
+
+	vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+	for (size_t i = 0; i < NumberOfFeatures; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+		da->SetNumberOfComponents(1);
+		std::string name = std::to_string(i);
+		std::cout << "name: " << name << std::endl;
+		da->SetName(name.c_str());
+		for (size_t index = 0; index < NumberOfSamples; index++)
+			da->InsertNextValue(intensities[index][i]);
+		std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
+		da->Squeeze();
+		std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
+		datasetTable->AddColumn(da);
+	}
+
+	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	{
+		vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
+		std::string fname = "col" + std::to_string(i) + ".csv";
+		this->WritevtkArray(da, fname);
+
+	}
+
+	this->WriteVTKTable(datasetTable,"table.csv");
+
+	//vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(0));
+	//this->WritevtkArray(da, "col1.csv");
+
+	//vtkDoubleArray*da2 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(1));
+	//this->WritevtkArray(da2, "col2.csv");
+
+	//vtkDoubleArray*da3 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(2));
+	//this->WritevtkArray(da3, "col3.csv");
+
+	//to comment
+	//vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+	//vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> A1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> B0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> B1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> C0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> C1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> D0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> D1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> E0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> E1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> F0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> F1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> G0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> G1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> H0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> H1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> I0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> I1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> J0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> J1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> K0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> K1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> L0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> L1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> M0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> M1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> N0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> N1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> O0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> O1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> P0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> P1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> Q0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> Q1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> R0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> R1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> S0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> S1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> T0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> T1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> U0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> U1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> V0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> V1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> W0 = vtkSmartPointer<vtkDoubleArray>::New();
+
+	//A0->SetNumberOfComponents(1);
+	//A1->SetNumberOfComponents(1);
+	//B0->SetNumberOfComponents(1);
+	//B1->SetNumberOfComponents(1);
+	//C0->SetNumberOfComponents(1);
+	//C1->SetNumberOfComponents(1);
+	//D0->SetNumberOfComponents(1);
+	//D1->SetNumberOfComponents(1);
+	//E0->SetNumberOfComponents(1);
+	//E1->SetNumberOfComponents(1);
+	//F0->SetNumberOfComponents(1);
+	//F1->SetNumberOfComponents(1);
+	//G0->SetNumberOfComponents(1);
+	//G1->SetNumberOfComponents(1);
+	//H0->SetNumberOfComponents(1);
+	//H1->SetNumberOfComponents(1);
+	//I0->SetNumberOfComponents(1);
+	//I1->SetNumberOfComponents(1);
+	//J0->SetNumberOfComponents(1);
+	//J1->SetNumberOfComponents(1);
+	//K0->SetNumberOfComponents(1);
+	//K1->SetNumberOfComponents(1);
+	//L0->SetNumberOfComponents(1);
+	//L1->SetNumberOfComponents(1);
+	//M0->SetNumberOfComponents(1);
+	//M1->SetNumberOfComponents(1);
+	//N0->SetNumberOfComponents(1);
+	//N1->SetNumberOfComponents(1);
+	//O0->SetNumberOfComponents(1);
+	//O1->SetNumberOfComponents(1);
+	//P0->SetNumberOfComponents(1);
+	//P1->SetNumberOfComponents(1);
+	//Q0->SetNumberOfComponents(1);
+	//Q1->SetNumberOfComponents(1);
+	//R0->SetNumberOfComponents(1);
+	//R1->SetNumberOfComponents(1);
+	//S0->SetNumberOfComponents(1);
+	//S1->SetNumberOfComponents(1);
+	//T0->SetNumberOfComponents(1);
+	//T1->SetNumberOfComponents(1);
+	//U0->SetNumberOfComponents(1);
+	//U1->SetNumberOfComponents(1);
+	//V0->SetNumberOfComponents(1);
+	//V1->SetNumberOfComponents(1);
+	//W0->SetNumberOfComponents(1);
+
+	//A0->SetName("a0");
+	//A1->SetName("a1");
+	//B0->SetName("b0");
+	//B1->SetName("b1");
+	//C0->SetName("c0");
+	//C1->SetName("c1");
+	//D0->SetName("d0");
+	//D1->SetName("d1");
+	//E0->SetName("e0");
+	//E1->SetName("e1");
+	//F0->SetName("f0");
+	//F1->SetName("f1");
+	//G0->SetName("g0");
+	//G1->SetName("g1");
+	//H0->SetName("h0");
+	//H1->SetName("h1");
+	//I0->SetName("i0");
+	//I1->SetName("i1");
+	//J0->SetName("j0");
+	//J1->SetName("j1");
+	//K0->SetName("k0");
+	//K1->SetName("k1");
+	//L0->SetName("l0");
+	//L1->SetName("l1");
+	//M0->SetName("m0");
+	//M1->SetName("m1");
+	//N0->SetName("n0");
+	//N1->SetName("n1");
+	//O0->SetName("o0");
+	//O1->SetName("o1");
+	//P0->SetName("p0");
+	//P1->SetName("p1");
+	//Q0->SetName("q0");
+	//Q1->SetName("q1");
+	//R0->SetName("r0");
+	//R1->SetName("r1");
+	//S0->SetName("s0");
+	//S1->SetName("s1");
+	//T0->SetName("t0");
+	//T1->SetName("t1");
+	//U0->SetName("u0");
+	//U1->SetName("u1");
+	//V0->SetName("v0");
+	//V1->SetName("v1");
+	//W0->SetName("w0");
+
+	//// this should be made parallel
+	//for (size_t index = 0; index < NumberOfSamples; index++)
+	//{
+	//  A0->InsertNextValue(intensities[index][0]);
+	//  A1->InsertNextValue(intensities[index][1]);
+	//  B0->InsertNextValue(intensities[index][2]);
+	//  B1->InsertNextValue(intensities[index][3]);
+	//  C0->InsertNextValue(intensities[index][4]);
+	//  C1->InsertNextValue(intensities[index][5]);
+	//  D0->InsertNextValue(intensities[index][6]);
+	//  D1->InsertNextValue(intensities[index][7]);
+	//  E0->InsertNextValue(intensities[index][8]);
+	//  E1->InsertNextValue(intensities[index][9]);
+	//  F0->InsertNextValue(intensities[index][10]);
+	//  F1->InsertNextValue(intensities[index][11]);
+	//  G0->InsertNextValue(intensities[index][12]);
+	//  G1->InsertNextValue(intensities[index][13]);
+	//  H0->InsertNextValue(intensities[index][14]);
+	//  H1->InsertNextValue(intensities[index][15]);
+	//  I0->InsertNextValue(intensities[index][16]);
+	//  I1->InsertNextValue(intensities[index][17]);
+	//  J0->InsertNextValue(intensities[index][18]);
+	//  J1->InsertNextValue(intensities[index][19]);
+	//  K0->InsertNextValue(intensities[index][20]);
+	//  K1->InsertNextValue(intensities[index][21]);
+	//  L0->InsertNextValue(intensities[index][22]);
+	//  L1->InsertNextValue(intensities[index][23]);
+	//  M0->InsertNextValue(intensities[index][24]);
+	//  M1->InsertNextValue(intensities[index][25]);
+	//  N0->InsertNextValue(intensities[index][26]);
+	//  N1->InsertNextValue(intensities[index][27]);
+	//  O0->InsertNextValue(intensities[index][28]);
+	//  O1->InsertNextValue(intensities[index][29]);
+	//  P0->InsertNextValue(intensities[index][30]);
+	//  P1->InsertNextValue(intensities[index][31]);
+	//  Q0->InsertNextValue(intensities[index][32]);
+	//  Q1->InsertNextValue(intensities[index][33]);
+	//  R0->InsertNextValue(intensities[index][34]);
+	//  R1->InsertNextValue(intensities[index][35]);
+	//  S0->InsertNextValue(intensities[index][36]);
+	//  S1->InsertNextValue(intensities[index][37]);
+	//  T0->InsertNextValue(intensities[index][38]);
+	//  T1->InsertNextValue(intensities[index][39]);
+	//  U0->InsertNextValue(intensities[index][40]);
+	//  U1->InsertNextValue(intensities[index][41]);
+	//  V0->InsertNextValue(intensities[index][42]);
+	//  V1->InsertNextValue(intensities[index][43]);
+	//  W0->InsertNextValue(intensities[index][44]);
+	//}
+	//
+	//this->WritevtkArray(A0.GetPointer(), "A0.csv");
+	//this->WritevtkArray(A1.GetPointer(), "A1.csv");
+	//this->WritevtkArray(B0.GetPointer(), "B0.csv");
+
+	//std::cout << " wrriten A0 csv " << std::endl;
+
+	//datasetTable->AddColumn(A0);
+	//datasetTable->AddColumn(A1);
+	//datasetTable->AddColumn(B0);
+	//datasetTable->AddColumn(B1);
+	//datasetTable->AddColumn(C0);
+	//datasetTable->AddColumn(C1);
+	//datasetTable->AddColumn(D0);
+	//datasetTable->AddColumn(D1);
+	//datasetTable->AddColumn(E0);
+	//datasetTable->AddColumn(E1);
+	//datasetTable->AddColumn(F0);
+	//datasetTable->AddColumn(F1);
+	//datasetTable->AddColumn(G0);
+	//datasetTable->AddColumn(G1);
+	//datasetTable->AddColumn(H0);
+	//datasetTable->AddColumn(H1);
+	//datasetTable->AddColumn(I0);
+	//datasetTable->AddColumn(I1);
+	//datasetTable->AddColumn(J0);
+	//datasetTable->AddColumn(J1);
+	//datasetTable->AddColumn(K0);
+	//datasetTable->AddColumn(K1);
+	//datasetTable->AddColumn(L0);
+	//datasetTable->AddColumn(L1);
+	//datasetTable->AddColumn(M0);
+	//datasetTable->AddColumn(M1);
+	//datasetTable->AddColumn(N0);
+	//datasetTable->AddColumn(N1);
+	//datasetTable->AddColumn(O0);
+	//datasetTable->AddColumn(O1);
+	//datasetTable->AddColumn(P0);
+	//datasetTable->AddColumn(P1);
+	//datasetTable->AddColumn(Q0);
+	//datasetTable->AddColumn(Q1);
+	//datasetTable->AddColumn(R0);
+	//datasetTable->AddColumn(R1);
+	//datasetTable->AddColumn(S0);
+	//datasetTable->AddColumn(S1);
+	//datasetTable->AddColumn(T0);
+	//datasetTable->AddColumn(T1);
+	//datasetTable->AddColumn(U0);
+	//datasetTable->AddColumn(U1);
+	//datasetTable->AddColumn(V0);
+	//datasetTable->AddColumn(V1);
+	//datasetTable->AddColumn(W0);
+	//// to comment
+
+	vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
+#if VTK_MAJOR_VERSION <= 5
+	pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#else
+	pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#endif
+
+	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
+
+	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	{
+		//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
+		const char *name = datasetTable->GetColumnName(i);
+		std::cout << " col name: " << name << std::endl;
+		pcaStatistics->SetColumnStatus(name, 1);
+	}
+
+	////to comment
+	//pcaStatistics->SetColumnStatus("a0", 1);
+	//pcaStatistics->SetColumnStatus("a1", 1);
+	//pcaStatistics->SetColumnStatus("b0", 1);
+	//pcaStatistics->SetColumnStatus("b1", 1);
+	//pcaStatistics->SetColumnStatus("c0", 1);
+	//pcaStatistics->SetColumnStatus("c1", 1);
+	//pcaStatistics->SetColumnStatus("d0", 1);
+	//pcaStatistics->SetColumnStatus("d1", 1);
+	//pcaStatistics->SetColumnStatus("e0", 1);
+	//pcaStatistics->SetColumnStatus("e1", 1);
+	//pcaStatistics->SetColumnStatus("f0", 1);
+	//pcaStatistics->SetColumnStatus("f1", 1);
+	//pcaStatistics->SetColumnStatus("g0", 1);
+	//pcaStatistics->SetColumnStatus("g1", 1);
+	//pcaStatistics->SetColumnStatus("h0", 1);
+	//pcaStatistics->SetColumnStatus("h1", 1);
+	//pcaStatistics->SetColumnStatus("i0", 1);
+	//pcaStatistics->SetColumnStatus("i1", 1);
+	//pcaStatistics->SetColumnStatus("j0", 1);
+	//pcaStatistics->SetColumnStatus("j1", 1);
+	//pcaStatistics->SetColumnStatus("k0", 1);
+	//pcaStatistics->SetColumnStatus("k1", 1);
+	//pcaStatistics->SetColumnStatus("l0", 1);
+	//pcaStatistics->SetColumnStatus("l1", 1);
+	//pcaStatistics->SetColumnStatus("m0", 1);
+	//pcaStatistics->SetColumnStatus("m1", 1);
+	//pcaStatistics->SetColumnStatus("n0", 1);
+	//pcaStatistics->SetColumnStatus("n1", 1);
+	//pcaStatistics->SetColumnStatus("o0", 1);
+	//pcaStatistics->SetColumnStatus("o1", 1);
+	//pcaStatistics->SetColumnStatus("p0", 1);
+	//pcaStatistics->SetColumnStatus("p1", 1);
+	//pcaStatistics->SetColumnStatus("q0", 1);
+	//pcaStatistics->SetColumnStatus("q1", 1);
+	//pcaStatistics->SetColumnStatus("r0", 1);
+	//pcaStatistics->SetColumnStatus("r1", 1);
+	//pcaStatistics->SetColumnStatus("s0", 1);
+	//pcaStatistics->SetColumnStatus("s1", 1);
+	//pcaStatistics->SetColumnStatus("t0", 1);
+	//pcaStatistics->SetColumnStatus("t1", 1);
+	//pcaStatistics->SetColumnStatus("u0", 1);
+	//pcaStatistics->SetColumnStatus("u1", 1);
+	//pcaStatistics->SetColumnStatus("v0", 1);
+	//pcaStatistics->SetColumnStatus("v1", 1);
+	//pcaStatistics->SetColumnStatus("w0", 1);
+	////to comment
+
+	pcaStatistics->RequestSelectedColumns();
+	pcaStatistics->SetDeriveOption(true);
+	pcaStatistics->Update();
+
+	VariableSizeMatrixType transposePCAMatrix;
+	transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
+
+	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvectors(eigenvectors);
+
+	eigenvectors->Print(std::cout);
+	this->WriteEigenVector(eigenvectors, "eigenvec_nohardcoding.csv");
+
+	vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+	for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
+	{
+		vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
+		for (vtkIdType c = 0; c < static_cast<vtkIdType>(NumberOfSamples); c++)
+			col->InsertNextValue(0);
+		projectedDatasetTable->AddColumn(col);
+	}
+
+	try
+	{
+		for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
+		{
+			double* evec = new double[eigenvectors->GetNumberOfComponents()];
+			eigenvectors->GetTuple(i, evec);
+			for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+				transposePCAMatrix[i][j] = evec[j];
+			delete evec;
+		}
+
+		PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+		for (size_t i = 0; i < NumberOfSamples; i++)
+		{
+			for (size_t j = 0; j < NumberOfFeatures; j++)
+			{
+				double sum = 0;
+				for (size_t k = 0; k < NumberOfFeatures; k++)
+					sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+				projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+			}
+		}
+		VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+		for (size_t c = 0; c < NumberOfFeatures; c++)
+			for (size_t r = 0; r < NumberOfSamples; r++)
+				projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+		TransformationMatrix = PCATransformationMatrix;
+		MeanVector = mPMeanvector;
+	}
+	catch (const std::exception& e1)
+	{
+		std::cerr << e1.what() << "\n";
+	}
+
+	return projectedDatasetTable;
+}
+
+vtkSmartPointer<vtkTable> FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemovedMuliloop(VectorVectorDouble & intensities, VariableSizeMatrixType & TransformationMatrix, VariableLengthVectorType & MeanVector)
+{
+	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
+	size_t NumberOfFeatures = intensities[0].size();
+	size_t NumberOfSamples = intensities.size();
+
+	std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved" << std::endl;
+	std::cout << "# features: " << NumberOfFeatures << std::endl;
+	std::cout << "# samples: " << NumberOfSamples << std::endl;
+
+	vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+	for (size_t i = 0; i < NumberOfFeatures; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+		da->SetNumberOfComponents(1);
+		std::string name = std::to_string(i);
+		std::cout << "name: " << name << std::endl;
+		da->SetName(name.c_str());
+		for (size_t index = 0; index < NumberOfSamples; index++)
+			da->InsertNextValue(intensities[index][i]);
+		std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
+		da->Squeeze();
+		std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
+		datasetTable->AddColumn(da);
+	}
+
+	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	{
+		vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
+		std::string fname = "col" + std::to_string(i) + ".csv";
+		this->WritevtkArray(da, fname);
+
+	}
+
+	this->WriteVTKTable(datasetTable, "table.csv");
+
+	//vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(0));
+	//this->WritevtkArray(da, "col1.csv");
+
+	//vtkDoubleArray*da2 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(1));
+	//this->WritevtkArray(da2, "col2.csv");
+
+	//vtkDoubleArray*da3 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(2));
+	//this->WritevtkArray(da3, "col3.csv");
+
+	//to comment
+	//vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+	//vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> A1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> B0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> B1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> C0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> C1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> D0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> D1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> E0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> E1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> F0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> F1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> G0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> G1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> H0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> H1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> I0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> I1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> J0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> J1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> K0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> K1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> L0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> L1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> M0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> M1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> N0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> N1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> O0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> O1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> P0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> P1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> Q0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> Q1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> R0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> R1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> S0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> S1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> T0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> T1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> U0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> U1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> V0 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> V1 = vtkSmartPointer<vtkDoubleArray>::New();
+	//vtkSmartPointer<vtkDoubleArray> W0 = vtkSmartPointer<vtkDoubleArray>::New();
+
+	//A0->SetNumberOfComponents(1);
+	//A1->SetNumberOfComponents(1);
+	//B0->SetNumberOfComponents(1);
+	//B1->SetNumberOfComponents(1);
+	//C0->SetNumberOfComponents(1);
+	//C1->SetNumberOfComponents(1);
+	//D0->SetNumberOfComponents(1);
+	//D1->SetNumberOfComponents(1);
+	//E0->SetNumberOfComponents(1);
+	//E1->SetNumberOfComponents(1);
+	//F0->SetNumberOfComponents(1);
+	//F1->SetNumberOfComponents(1);
+	//G0->SetNumberOfComponents(1);
+	//G1->SetNumberOfComponents(1);
+	//H0->SetNumberOfComponents(1);
+	//H1->SetNumberOfComponents(1);
+	//I0->SetNumberOfComponents(1);
+	//I1->SetNumberOfComponents(1);
+	//J0->SetNumberOfComponents(1);
+	//J1->SetNumberOfComponents(1);
+	//K0->SetNumberOfComponents(1);
+	//K1->SetNumberOfComponents(1);
+	//L0->SetNumberOfComponents(1);
+	//L1->SetNumberOfComponents(1);
+	//M0->SetNumberOfComponents(1);
+	//M1->SetNumberOfComponents(1);
+	//N0->SetNumberOfComponents(1);
+	//N1->SetNumberOfComponents(1);
+	//O0->SetNumberOfComponents(1);
+	//O1->SetNumberOfComponents(1);
+	//P0->SetNumberOfComponents(1);
+	//P1->SetNumberOfComponents(1);
+	//Q0->SetNumberOfComponents(1);
+	//Q1->SetNumberOfComponents(1);
+	//R0->SetNumberOfComponents(1);
+	//R1->SetNumberOfComponents(1);
+	//S0->SetNumberOfComponents(1);
+	//S1->SetNumberOfComponents(1);
+	//T0->SetNumberOfComponents(1);
+	//T1->SetNumberOfComponents(1);
+	//U0->SetNumberOfComponents(1);
+	//U1->SetNumberOfComponents(1);
+	//V0->SetNumberOfComponents(1);
+	//V1->SetNumberOfComponents(1);
+	//W0->SetNumberOfComponents(1);
+
+	//A0->SetName("a0");
+	//A1->SetName("a1");
+	//B0->SetName("b0");
+	//B1->SetName("b1");
+	//C0->SetName("c0");
+	//C1->SetName("c1");
+	//D0->SetName("d0");
+	//D1->SetName("d1");
+	//E0->SetName("e0");
+	//E1->SetName("e1");
+	//F0->SetName("f0");
+	//F1->SetName("f1");
+	//G0->SetName("g0");
+	//G1->SetName("g1");
+	//H0->SetName("h0");
+	//H1->SetName("h1");
+	//I0->SetName("i0");
+	//I1->SetName("i1");
+	//J0->SetName("j0");
+	//J1->SetName("j1");
+	//K0->SetName("k0");
+	//K1->SetName("k1");
+	//L0->SetName("l0");
+	//L1->SetName("l1");
+	//M0->SetName("m0");
+	//M1->SetName("m1");
+	//N0->SetName("n0");
+	//N1->SetName("n1");
+	//O0->SetName("o0");
+	//O1->SetName("o1");
+	//P0->SetName("p0");
+	//P1->SetName("p1");
+	//Q0->SetName("q0");
+	//Q1->SetName("q1");
+	//R0->SetName("r0");
+	//R1->SetName("r1");
+	//S0->SetName("s0");
+	//S1->SetName("s1");
+	//T0->SetName("t0");
+	//T1->SetName("t1");
+	//U0->SetName("u0");
+	//U1->SetName("u1");
+	//V0->SetName("v0");
+	//V1->SetName("v1");
+	//W0->SetName("w0");
+
+	//// this should be made parallel
+	//for (size_t index = 0; index < NumberOfSamples; index++)
+	//{
+	//  A0->InsertNextValue(intensities[index][0]);
+	//  A1->InsertNextValue(intensities[index][1]);
+	//  B0->InsertNextValue(intensities[index][2]);
+	//  B1->InsertNextValue(intensities[index][3]);
+	//  C0->InsertNextValue(intensities[index][4]);
+	//  C1->InsertNextValue(intensities[index][5]);
+	//  D0->InsertNextValue(intensities[index][6]);
+	//  D1->InsertNextValue(intensities[index][7]);
+	//  E0->InsertNextValue(intensities[index][8]);
+	//  E1->InsertNextValue(intensities[index][9]);
+	//  F0->InsertNextValue(intensities[index][10]);
+	//  F1->InsertNextValue(intensities[index][11]);
+	//  G0->InsertNextValue(intensities[index][12]);
+	//  G1->InsertNextValue(intensities[index][13]);
+	//  H0->InsertNextValue(intensities[index][14]);
+	//  H1->InsertNextValue(intensities[index][15]);
+	//  I0->InsertNextValue(intensities[index][16]);
+	//  I1->InsertNextValue(intensities[index][17]);
+	//  J0->InsertNextValue(intensities[index][18]);
+	//  J1->InsertNextValue(intensities[index][19]);
+	//  K0->InsertNextValue(intensities[index][20]);
+	//  K1->InsertNextValue(intensities[index][21]);
+	//  L0->InsertNextValue(intensities[index][22]);
+	//  L1->InsertNextValue(intensities[index][23]);
+	//  M0->InsertNextValue(intensities[index][24]);
+	//  M1->InsertNextValue(intensities[index][25]);
+	//  N0->InsertNextValue(intensities[index][26]);
+	//  N1->InsertNextValue(intensities[index][27]);
+	//  O0->InsertNextValue(intensities[index][28]);
+	//  O1->InsertNextValue(intensities[index][29]);
+	//  P0->InsertNextValue(intensities[index][30]);
+	//  P1->InsertNextValue(intensities[index][31]);
+	//  Q0->InsertNextValue(intensities[index][32]);
+	//  Q1->InsertNextValue(intensities[index][33]);
+	//  R0->InsertNextValue(intensities[index][34]);
+	//  R1->InsertNextValue(intensities[index][35]);
+	//  S0->InsertNextValue(intensities[index][36]);
+	//  S1->InsertNextValue(intensities[index][37]);
+	//  T0->InsertNextValue(intensities[index][38]);
+	//  T1->InsertNextValue(intensities[index][39]);
+	//  U0->InsertNextValue(intensities[index][40]);
+	//  U1->InsertNextValue(intensities[index][41]);
+	//  V0->InsertNextValue(intensities[index][42]);
+	//  V1->InsertNextValue(intensities[index][43]);
+	//  W0->InsertNextValue(intensities[index][44]);
+	//}
+	//
+	//this->WritevtkArray(A0.GetPointer(), "A0.csv");
+	//this->WritevtkArray(A1.GetPointer(), "A1.csv");
+	//this->WritevtkArray(B0.GetPointer(), "B0.csv");
+
+	//std::cout << " wrriten A0 csv " << std::endl;
+
+	//datasetTable->AddColumn(A0);
+	//datasetTable->AddColumn(A1);
+	//datasetTable->AddColumn(B0);
+	//datasetTable->AddColumn(B1);
+	//datasetTable->AddColumn(C0);
+	//datasetTable->AddColumn(C1);
+	//datasetTable->AddColumn(D0);
+	//datasetTable->AddColumn(D1);
+	//datasetTable->AddColumn(E0);
+	//datasetTable->AddColumn(E1);
+	//datasetTable->AddColumn(F0);
+	//datasetTable->AddColumn(F1);
+	//datasetTable->AddColumn(G0);
+	//datasetTable->AddColumn(G1);
+	//datasetTable->AddColumn(H0);
+	//datasetTable->AddColumn(H1);
+	//datasetTable->AddColumn(I0);
+	//datasetTable->AddColumn(I1);
+	//datasetTable->AddColumn(J0);
+	//datasetTable->AddColumn(J1);
+	//datasetTable->AddColumn(K0);
+	//datasetTable->AddColumn(K1);
+	//datasetTable->AddColumn(L0);
+	//datasetTable->AddColumn(L1);
+	//datasetTable->AddColumn(M0);
+	//datasetTable->AddColumn(M1);
+	//datasetTable->AddColumn(N0);
+	//datasetTable->AddColumn(N1);
+	//datasetTable->AddColumn(O0);
+	//datasetTable->AddColumn(O1);
+	//datasetTable->AddColumn(P0);
+	//datasetTable->AddColumn(P1);
+	//datasetTable->AddColumn(Q0);
+	//datasetTable->AddColumn(Q1);
+	//datasetTable->AddColumn(R0);
+	//datasetTable->AddColumn(R1);
+	//datasetTable->AddColumn(S0);
+	//datasetTable->AddColumn(S1);
+	//datasetTable->AddColumn(T0);
+	//datasetTable->AddColumn(T1);
+	//datasetTable->AddColumn(U0);
+	//datasetTable->AddColumn(U1);
+	//datasetTable->AddColumn(V0);
+	//datasetTable->AddColumn(V1);
+	//datasetTable->AddColumn(W0);
+	//// to comment
+
+	vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
+#if VTK_MAJOR_VERSION <= 5
+	pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#else
+	pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#endif
+
+	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
+
+	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	{
+		//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
+		const char *name = datasetTable->GetColumnName(i);
+		std::cout << " col name: " << name << std::endl;
+		pcaStatistics->SetColumnStatus(name, 1);
+	}
+
+	////to comment
+	//pcaStatistics->SetColumnStatus("a0", 1);
+	//pcaStatistics->SetColumnStatus("a1", 1);
+	//pcaStatistics->SetColumnStatus("b0", 1);
+	//pcaStatistics->SetColumnStatus("b1", 1);
+	//pcaStatistics->SetColumnStatus("c0", 1);
+	//pcaStatistics->SetColumnStatus("c1", 1);
+	//pcaStatistics->SetColumnStatus("d0", 1);
+	//pcaStatistics->SetColumnStatus("d1", 1);
+	//pcaStatistics->SetColumnStatus("e0", 1);
+	//pcaStatistics->SetColumnStatus("e1", 1);
+	//pcaStatistics->SetColumnStatus("f0", 1);
+	//pcaStatistics->SetColumnStatus("f1", 1);
+	//pcaStatistics->SetColumnStatus("g0", 1);
+	//pcaStatistics->SetColumnStatus("g1", 1);
+	//pcaStatistics->SetColumnStatus("h0", 1);
+	//pcaStatistics->SetColumnStatus("h1", 1);
+	//pcaStatistics->SetColumnStatus("i0", 1);
+	//pcaStatistics->SetColumnStatus("i1", 1);
+	//pcaStatistics->SetColumnStatus("j0", 1);
+	//pcaStatistics->SetColumnStatus("j1", 1);
+	//pcaStatistics->SetColumnStatus("k0", 1);
+	//pcaStatistics->SetColumnStatus("k1", 1);
+	//pcaStatistics->SetColumnStatus("l0", 1);
+	//pcaStatistics->SetColumnStatus("l1", 1);
+	//pcaStatistics->SetColumnStatus("m0", 1);
+	//pcaStatistics->SetColumnStatus("m1", 1);
+	//pcaStatistics->SetColumnStatus("n0", 1);
+	//pcaStatistics->SetColumnStatus("n1", 1);
+	//pcaStatistics->SetColumnStatus("o0", 1);
+	//pcaStatistics->SetColumnStatus("o1", 1);
+	//pcaStatistics->SetColumnStatus("p0", 1);
+	//pcaStatistics->SetColumnStatus("p1", 1);
+	//pcaStatistics->SetColumnStatus("q0", 1);
+	//pcaStatistics->SetColumnStatus("q1", 1);
+	//pcaStatistics->SetColumnStatus("r0", 1);
+	//pcaStatistics->SetColumnStatus("r1", 1);
+	//pcaStatistics->SetColumnStatus("s0", 1);
+	//pcaStatistics->SetColumnStatus("s1", 1);
+	//pcaStatistics->SetColumnStatus("t0", 1);
+	//pcaStatistics->SetColumnStatus("t1", 1);
+	//pcaStatistics->SetColumnStatus("u0", 1);
+	//pcaStatistics->SetColumnStatus("u1", 1);
+	//pcaStatistics->SetColumnStatus("v0", 1);
+	//pcaStatistics->SetColumnStatus("v1", 1);
+	//pcaStatistics->SetColumnStatus("w0", 1);
+	////to comment
+
+	pcaStatistics->RequestSelectedColumns();
+	pcaStatistics->SetDeriveOption(true);
+	pcaStatistics->Update();
+
+	VariableSizeMatrixType transposePCAMatrix;
+	transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
+
+	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvectors(eigenvectors);
+
+	eigenvectors->Print(std::cout);
+	this->WriteEigenVector(eigenvectors, "eigenvec_nohardcoding.csv");
+
+	vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+	for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
+	{
+		vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
+		for (vtkIdType c = 0; c < static_cast<vtkIdType>(NumberOfSamples); c++)
+			col->InsertNextValue(0);
+		projectedDatasetTable->AddColumn(col);
+	}
+
+	try
+	{
+		for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
+		{
+			double* evec = new double[eigenvectors->GetNumberOfComponents()];
+			eigenvectors->GetTuple(i, evec);
+			for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+				transposePCAMatrix[i][j] = evec[j];
+			delete evec;
+		}
+
+		PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+		for (size_t i = 0; i < NumberOfSamples; i++)
+		{
+			for (size_t j = 0; j < NumberOfFeatures; j++)
+			{
+				double sum = 0;
+				for (size_t k = 0; k < NumberOfFeatures; k++)
+					sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+				projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+			}
+		}
+		VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+		for (size_t c = 0; c < NumberOfFeatures; c++)
+			for (size_t r = 0; r < NumberOfSamples; r++)
+				projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+		TransformationMatrix = PCATransformationMatrix;
+		MeanVector = mPMeanvector;
+	}
+	catch (const std::exception& e1)
+	{
+		std::cerr << e1.what() << "\n";
+	}
+
+	return projectedDatasetTable;
+}
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {

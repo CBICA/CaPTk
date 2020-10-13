@@ -19,6 +19,8 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 //#include "vnl_matrix.h"
 #include "itkVariableSizeMatrix.h"
 #include "itkVariableLengthVector.h"
+#include "vtkDoubleArray.h"
+#include "vtkTable.h"
 //#include "vtkTable.h"
 //#include "CAPTk.h"
 using VectorVectorDouble = std::vector< std::vector < double > >;
@@ -48,6 +50,8 @@ public:
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities);
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePoints(vnl_matrix<double> &intensities);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemoved(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemovedMuliloop(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   /**
   \brief Applies the exsiting PCA model (developed on training data) on test data
@@ -106,6 +110,12 @@ public:
     PCATransformationMatrix.SetSize(0, 0);
     mPMeanvector.SetSize(0);
   }
+
+  void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
+
+  void WriteEigenVector(vtkDoubleArray* input, std::string filepath);
+
+  void WriteVTKTable(vtkTable *t, std::string filepath);
 
 private:
   VariableSizeMatrixType PCATransformationMatrix;
