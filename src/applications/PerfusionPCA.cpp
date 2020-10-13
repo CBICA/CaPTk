@@ -18,8 +18,37 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
-  FeatureReductionClass m_featureReduction;
-  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  //FeatureReductionClass m_featureReduction;
+  //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+
+  //VariableSizeMatrixType TransformedDataMatrix;
+  //TransformedDataMatrix.SetSize(ReducedPCAs->GetNumberOfRows(), ReducedPCAs->GetNumberOfColumns());
+  //for (unsigned int index1 = 0; index1 < ReducedPCAs.GetPointer()->GetNumberOfRows(); index1++)
+	 // for (unsigned int index2 = 0; index2 < ReducedPCAs.GetPointer()->GetNumberOfColumns(); index2++)
+		//  TransformedDataMatrix(index1, index2) = ReducedPCAs->GetValue(index1, index2).ToDouble();
+
+  //WriteCSVFiles(TransformationMatrix, "PCA_PERF.csv");
+  //WriteCSVFiles(MeanVector, "Mean_PERF.csv");
+  //WriteCSVFiles(TransformedDataMatrix, "PCA_Data.csv");
+
+  //after removing hard coding
+  VariableSizeMatrixType TransformationMatrix2;
+  VariableLengthVectorType MeanVector2;
+  FeatureReductionClass fr;
+  vtkSmartPointer<vtkTable> ReducedPCAs2 = fr.GetDiscerningPerfusionTimePointsHardcodingRemoved(CombinedPerfusionFeaturesMap, TransformationMatrix2, MeanVector2);
+
+  VariableSizeMatrixType TransformedDataMatrix2;
+  TransformedDataMatrix2.SetSize(ReducedPCAs2->GetNumberOfRows(), ReducedPCAs2->GetNumberOfColumns());
+  for (unsigned int index1 = 0; index1 < ReducedPCAs2.GetPointer()->GetNumberOfRows(); index1++)
+	  for (unsigned int index2 = 0; index2 < ReducedPCAs2.GetPointer()->GetNumberOfColumns(); index2++)
+		  TransformedDataMatrix2(index1, index2) = ReducedPCAs2->GetValue(index1, index2).ToDouble();
+
+  WriteCSVFiles(TransformationMatrix2, "PCA_PERF2.csv");
+  WriteCSVFiles(MeanVector2, "Mean_PERF2.csv");
+  WriteCSVFiles(TransformedDataMatrix2, "PCA_Data2.csv");
+  //after removing hard coding
+
+  std::cout << " written files " << std::endl;
 
   int start = 0;
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
