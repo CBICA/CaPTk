@@ -1,4 +1,4 @@
-# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason
+# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason 
 schedules:
 - cron: "0 4 * * *"
   displayName: Daily midnight build
