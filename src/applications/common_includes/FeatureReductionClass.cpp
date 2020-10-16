@@ -27,6 +27,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "vtkPCAStatistics.h"
 #include "vtkStatisticsAlgorithm.h"
 #include "CaPTkDefines.h"
+#include "vtkStringArray.h"
 
 FeatureReductionClass::FeatureReductionClass()
 {
@@ -2886,6 +2887,10 @@ void FeatureReductionClass::WriteEigenVector(vtkDoubleArray * input, std::string
 {
 	std::ofstream myfile;
 	myfile.open(filepath);
+
+	std::cout << " number of tuples in eigen vector: " << input->GetNumberOfTuples() << std::endl;
+	std::cout << " number of components in eigen vector: " << input->GetNumberOfComponents() << std::endl;
+
 	for (vtkIdType i = 0; i < input->GetNumberOfTuples(); i++)
 	{
 		myfile << "Eigenvector " << i << " : ";
@@ -2921,6 +2926,7 @@ void FeatureReductionClass::WriteVTKTable(vtkTable * t, std::string filepath)
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
+	//TBD:: probably number of samples = # pixels in mask
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
@@ -3301,8 +3307,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   pcaStatistics->SetColumnStatus("w0", 1);
   //to comment
 
-  //std::cout << "selected columns: " << pcaStatistics->GetNumberOfColumnsForRequest() << std::endl;
-
   pcaStatistics->RequestSelectedColumns();
   pcaStatistics->SetDeriveOption(true);
   pcaStatistics->Update();
@@ -3366,7 +3370,8 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
 	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
-	size_t NumberOfFeatures = intensities[0].size();
+	size_t NumberOfTimePoints;
+	size_t NumberOfFeatures = NumberOfTimePoints = intensities[0].size();
 	size_t NumberOfSamples = intensities.size();
 
 	std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved" << std::endl;
@@ -3374,30 +3379,30 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	std::cout << "# samples: " << NumberOfSamples << std::endl;
 
 	vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
-	for (size_t i = 0; i < NumberOfFeatures; i++)
-	{
-		vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
-		da->SetNumberOfComponents(1);
-		std::string name = std::to_string(i);
-		std::cout << "name: " << name << std::endl;
-		da->SetName(name.c_str());
-		for (size_t index = 0; index < NumberOfSamples; index++)
-			da->InsertNextValue(intensities[index][i]);
-		std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
-		da->Squeeze();
-		std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
-		datasetTable->AddColumn(da);
-	}
+	//for (size_t i = 0; i < NumberOfTimePoints; i++)
+	//{
+	//	vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+	//	da->SetNumberOfComponents(1);
+	//	std::string name = std::to_string(i);
+	//	//std::cout << "name: " << name << std::endl;
+	//	da->SetName(name.c_str());
+	//	for (size_t index = 0; index < NumberOfSamples; index++)
+	//		da->InsertNextValue(intensities[index][i]);
+	//	//std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
+	//	//da->Squeeze();
+	//	//std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
+	//	datasetTable->AddColumn(da);
+	//}
 
-	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
-	{
-		vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
-		std::string fname = "col" + std::to_string(i) + ".csv";
-		this->WritevtkArray(da, fname);
+	//for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	//{
+	//	vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
+	//	std::string fname = "col" + std::to_string(i) + ".csv";
+	//	this->WritevtkArray(da, fname);
 
-	}
+	//}
 
-	this->WriteVTKTable(datasetTable,"table.csv");
+	//this->WriteVTKTable(datasetTable,"table.csv");
 
 	//vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(0));
 	//this->WritevtkArray(da, "col1.csv");
@@ -3651,6 +3656,10 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	//datasetTable->AddColumn(W0);
 	//// to comment
 
+int counter = 0;
+int var_Counter = 0;
+std::string var_string;
+
 	vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
 #if VTK_MAJOR_VERSION <= 5
 	pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
@@ -3658,15 +3667,102 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #endif
 
-	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
+	for (size_t i = 0; i < NumberOfTimePoints; i++)
+	{
+		vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+		da->SetNumberOfComponents(1);
 
+		if (var_Counter == 0)
+			var_string = "A";
+		else if (var_Counter == 1)
+			var_string = "B";
+		else if (var_Counter == 2)
+			var_string = "C";
+		else if (var_Counter == 3)
+			var_string = "D";
+		else if (var_Counter == 4)
+			var_string = "E";
+		else if (var_Counter == 5)
+			var_string = "F";
+		else if (var_Counter == 6)
+			var_string = "G";
+		else if (var_Counter == 7)
+			var_string = "H";
+		else if (var_Counter == 8)
+			var_string = "I";
+		else if (var_Counter == 9)
+			var_string = "J";
+
+		//var_string = "A";
+		std::string namefinal = var_string + std::to_string(counter);
+		//std::string namefinal = var_string + std::to_string(/*counter*/i);
+		da->SetName(namefinal.c_str());
+
+		std::cout << " da name added for item # : " << i << " " << namefinal << std::endl;
+		//std::cout << " da name retrieved for item # : " << i << " " << da->GetName() << std::endl;
+
+		for (size_t index = 0; index < NumberOfSamples; index++)
+			da->InsertNextValue(intensities[index][i]);
+		datasetTable->AddColumn(da);
+		pcaStatistics->SetColumnStatus(namefinal.c_str(), 1);
+
+		//std::string name = std::to_string(i);
+		//std::cout << "name: " << name << std::endl;
+		//da->SetName(name.c_str());
+		//for (size_t index = 0; index < NumberOfSamples; index++)
+			//da->InsertNextValue(intensities[index][i]);
+		//std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
+		//da->Squeeze();
+		//std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
+		//datasetTable->AddColumn(da);
+
+		counter++;
+		if (counter == 9)
+		{
+			counter = 0;
+			var_Counter++;
+		}
+	}
+
+	std::cout << " print double array names in table " << std::endl;
 	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
 	{
-		//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
-		const char *name = datasetTable->GetColumnName(i);
-		std::cout << " col name: " << name << std::endl;
-		pcaStatistics->SetColumnStatus(name, 1);
+		vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
+		std::string fname = "col" + std::to_string(i) + ".csv";
+		//this->WritevtkArray(da, fname);
+		std::cout << "da name for : " << i << " " << da->GetName() << std::endl;
+
 	}
+
+	std::cout << "print table column names " << std::endl;
+	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	{
+		const char* colname = datasetTable->GetColumnName(i);
+		std::cout << "col name for : " << i << " " << colname << std::endl;
+
+	}
+
+	std::cout << " number of requests: " << pcaStatistics->GetNumberOfRequests() << std::endl;
+	std::cout << "number of columns for first request: " << pcaStatistics->GetNumberOfColumnsForRequest(1) << std::endl;
+	vtkStringArray* assessnames = pcaStatistics->GetAssessNames();
+	for (vtkIdType i = 0; i < assessnames->GetNumberOfValues(); i++)
+	{
+		std::cout << " assess name " << i << " : " << assessnames->GetValue(i) << std::endl;
+	}
+	std::cout << " basis name: " << pcaStatistics->GetBasisSchemeName(pcaStatistics->GetBasisScheme()) << std::endl;
+
+	this->WriteVTKTable(datasetTable, "table.csv");
+	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
+
+	//int counter = 0;
+	//for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	//{
+	//	//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
+	//	const char *name = datasetTable->GetColumnName(i);
+	//	std::cout << "counter val: " << i << " col name: " << name << std::endl;
+	//	pcaStatistics->SetColumnStatus(name, 1);
+	//	//counter++;
+	//}
 
 	////to comment
 	//pcaStatistics->SetColumnStatus("a0", 1);
@@ -3757,6 +3853,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 				double sum = 0;
 				for (size_t k = 0; k < NumberOfFeatures; k++)
 					sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+				//TBD: this is where we want to calculate variance to determine # PCs
 				projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
 			}
 		}
@@ -3779,27 +3876,92 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 vtkSmartPointer<vtkTable> FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemovedMuliloop(VectorVectorDouble & intensities, VariableSizeMatrixType & TransformationMatrix, VariableLengthVectorType & MeanVector)
 {
 	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
-	size_t NumberOfFeatures = intensities[0].size();
+	size_t NumberOfTimePoints;
+	size_t NumberOfFeatures = NumberOfTimePoints = intensities[0].size();
 	size_t NumberOfSamples = intensities.size();
 
 	std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePointsHardcodingRemoved" << std::endl;
 	std::cout << "# features: " << NumberOfFeatures << std::endl;
 	std::cout << "# samples: " << NumberOfSamples << std::endl;
 
+	std::vector< vtkSmartPointer<vtkDoubleArray> > daList;
 	vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
-	for (size_t i = 0; i < NumberOfFeatures; i++)
+	for (size_t i = 0; i < NumberOfTimePoints; i++)
 	{
 		vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
-		da->SetNumberOfComponents(1);
+		daList.push_back(da);
+	}
+
+	for (int i = 0; i < daList.size(); i++)
+	{
+		daList[i]->SetNumberOfComponents(1);
+	}
+
+	std::vector<std::string> names;
+	for (int i = 0; i < daList.size(); i++)
+	{
 		std::string name = std::to_string(i);
 		std::cout << "name: " << name << std::endl;
-		da->SetName(name.c_str());
-		for (size_t index = 0; index < NumberOfSamples; index++)
-			da->InsertNextValue(intensities[index][i]);
-		std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
-		da->Squeeze();
-		std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
-		datasetTable->AddColumn(da);
+		daList[i]->SetName(name.c_str());
+		names.push_back(name);
+	}
+
+	//for (int i = 0; i < daList.size(); i++)
+	for (size_t index = 0; index < NumberOfSamples; index++)
+	{
+		daList[0]->InsertNextValue(intensities[index][0]);
+		daList[1]->InsertNextValue(intensities[index][1]);
+		daList[2]->InsertNextValue(intensities[index][2]);
+		daList[3]->InsertNextValue(intensities[index][3]);
+		daList[4]->InsertNextValue(intensities[index][4]);
+		daList[5]->InsertNextValue(intensities[index][5]);
+		daList[6]->InsertNextValue(intensities[index][6]);
+		daList[7]->InsertNextValue(intensities[index][7]);
+		daList[8]->InsertNextValue(intensities[index][8]);
+		daList[9]->InsertNextValue(intensities[index][9]);
+		daList[10]->InsertNextValue(intensities[index][10]);
+		daList[11]->InsertNextValue(intensities[index][11]);
+		daList[12]->InsertNextValue(intensities[index][12]);
+		daList[13]->InsertNextValue(intensities[index][13]);
+		daList[14]->InsertNextValue(intensities[index][14]);
+		daList[15]->InsertNextValue(intensities[index][15]);
+		daList[16]->InsertNextValue(intensities[index][16]);
+		daList[17]->InsertNextValue(intensities[index][17]);
+		daList[18]->InsertNextValue(intensities[index][18]);
+		daList[19]->InsertNextValue(intensities[index][19]);
+		daList[20]->InsertNextValue(intensities[index][20]);
+		daList[21]->InsertNextValue(intensities[index][21]);
+		daList[22]->InsertNextValue(intensities[index][22]);
+		daList[23]->InsertNextValue(intensities[index][23]);
+		daList[24]->InsertNextValue(intensities[index][24]);
+		daList[25]->InsertNextValue(intensities[index][25]);
+		daList[26]->InsertNextValue(intensities[index][26]);
+		daList[27]->InsertNextValue(intensities[index][27]);
+		daList[28]->InsertNextValue(intensities[index][28]);
+		daList[29]->InsertNextValue(intensities[index][29]);
+		daList[30]->InsertNextValue(intensities[index][30]);
+		daList[31]->InsertNextValue(intensities[index][31]);
+		daList[32]->InsertNextValue(intensities[index][32]);
+		daList[33]->InsertNextValue(intensities[index][33]);
+		daList[34]->InsertNextValue(intensities[index][34]);
+		daList[35]->InsertNextValue(intensities[index][35]);
+		daList[36]->InsertNextValue(intensities[index][36]);
+		daList[37]->InsertNextValue(intensities[index][37]);
+		daList[38]->InsertNextValue(intensities[index][38]);
+		daList[39]->InsertNextValue(intensities[index][39]);
+		daList[40]->InsertNextValue(intensities[index][40]);
+		daList[41]->InsertNextValue(intensities[index][41]);
+		daList[42]->InsertNextValue(intensities[index][42]);
+		daList[43]->InsertNextValue(intensities[index][43]);
+		daList[44]->InsertNextValue(intensities[index][44]);
+	}
+
+		//std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
+		//da->Squeeze();
+		//std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
+	for (int i = 0; i < daList.size(); i++)
+	{
+		datasetTable->AddColumn(daList[i]);
 	}
 
 	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
@@ -4073,13 +4235,18 @@ vtkSmartPointer<vtkTable> FeatureReductionClass::GetDiscerningPerfusionTimePoint
 
 	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
 
-	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	for (int i = 0; i < daList.size(); i++)
 	{
-		//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
-		const char *name = datasetTable->GetColumnName(i);
-		std::cout << " col name: " << name << std::endl;
-		pcaStatistics->SetColumnStatus(name, 1);
+		pcaStatistics->SetColumnStatus(names[i].c_str(), 1);
 	}
+
+	//for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
+	//{
+	//	//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
+	//	const char *name = datasetTable->GetColumnName(i);
+	//	std::cout << " col name: " << name << std::endl;
+	//	pcaStatistics->SetColumnStatus(name, 1);
+	//}
 
 	////to comment
 	//pcaStatistics->SetColumnStatus("a0", 1);
