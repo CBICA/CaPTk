@@ -13,11 +13,17 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
+	  //Features number of columns  = totat time points
       for (unsigned int j = 0; j < this->m_TotalTimePoints; j++)
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
+
+  FeatureReductionClass m_featureReduction;
+  //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsHardcodingRemoved(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+
   //FeatureReductionClass m_featureReduction;
   //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
@@ -31,22 +37,22 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
   //WriteCSVFiles(MeanVector, "Mean_PERF.csv");
   //WriteCSVFiles(TransformedDataMatrix, "PCA_Data.csv");
 
-  //after removing hard coding
-  VariableSizeMatrixType TransformationMatrix2;
-  VariableLengthVectorType MeanVector2;
-  FeatureReductionClass fr;
-  vtkSmartPointer<vtkTable> ReducedPCAs2 = fr.GetDiscerningPerfusionTimePointsHardcodingRemoved(CombinedPerfusionFeaturesMap, TransformationMatrix2, MeanVector2);
+  ////after removing hard coding
+  //VariableSizeMatrixType TransformationMatrix2;
+  //VariableLengthVectorType MeanVector2;
+  //FeatureReductionClass fr;
+  //vtkSmartPointer<vtkTable> ReducedPCAs2 = fr.GetDiscerningPerfusionTimePointsHardcodingRemoved(CombinedPerfusionFeaturesMap, TransformationMatrix2, MeanVector2);
 
-  VariableSizeMatrixType TransformedDataMatrix2;
-  TransformedDataMatrix2.SetSize(ReducedPCAs2->GetNumberOfRows(), ReducedPCAs2->GetNumberOfColumns());
-  for (unsigned int index1 = 0; index1 < ReducedPCAs2.GetPointer()->GetNumberOfRows(); index1++)
-	  for (unsigned int index2 = 0; index2 < ReducedPCAs2.GetPointer()->GetNumberOfColumns(); index2++)
-		  TransformedDataMatrix2(index1, index2) = ReducedPCAs2->GetValue(index1, index2).ToDouble();
+  //VariableSizeMatrixType TransformedDataMatrix2;
+  //TransformedDataMatrix2.SetSize(ReducedPCAs2->GetNumberOfRows(), ReducedPCAs2->GetNumberOfColumns());
+  //for (unsigned int index1 = 0; index1 < ReducedPCAs2.GetPointer()->GetNumberOfRows(); index1++)
+	 // for (unsigned int index2 = 0; index2 < ReducedPCAs2.GetPointer()->GetNumberOfColumns(); index2++)
+		//  TransformedDataMatrix2(index1, index2) = ReducedPCAs2->GetValue(index1, index2).ToDouble();
 
-  WriteCSVFiles(TransformationMatrix2, "PCA_PERF2.csv");
-  WriteCSVFiles(MeanVector2, "Mean_PERF2.csv");
-  WriteCSVFiles(TransformedDataMatrix2, "PCA_Data2.csv");
-  //after removing hard coding
+  //WriteCSVFiles(TransformationMatrix2, "PCA_PERF2.csv");
+  //WriteCSVFiles(MeanVector2, "Mean_PERF2.csv");
+  //WriteCSVFiles(TransformedDataMatrix2, "PCA_Data2.csv");
+  ////after removing hard coding
 
   std::cout << " written files " << std::endl;
 
@@ -257,6 +263,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::Image
 		//if time points don't match, quit with error message.
 		if (timepoints != m_TotalTimePoints)
 		{
+			//TBD: throw name of data with incorrect time points
 			std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
 			return ErrorCode::DifferentTimePoints;
 		}
