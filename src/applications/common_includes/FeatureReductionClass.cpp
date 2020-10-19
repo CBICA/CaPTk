@@ -2934,27 +2934,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePoints" << std::endl;
   std::cout << "# features: " << NumberOfFeatures << std::endl;
   std::cout << "# samples: " << NumberOfSamples << std::endl;
-
-  //vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
-  //for (size_t i = 0; i < NumberOfFeatures; i++)
-  //{
-	 // vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
-	 // da->SetNumberOfComponents(1);
-	 // da->SetName(std::to_string(i).c_str());
-	 // for (size_t index = 0; index < NumberOfSamples; index++)
-		//  da->InsertNextValue(intensities[index][i]);
-	 // datasetTable->AddColumn(da);
-  //}
-
-  //vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(0));
-  //this->WritevtkArray(da, "col1.csv");
-
-  //vtkDoubleArray*da2 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(1));
-  //this->WritevtkArray(da2, "col2.csv");
-
-  //vtkDoubleArray*da3 = vtkDoubleArray::SafeDownCast(datasetTable2->GetColumn(2));
-  //this->WritevtkArray(da3, "col3.csv");
-
+  
  // to comment
   vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
   vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
@@ -3145,56 +3125,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
     W0->InsertNextValue(intensities[index][44]);
   }
   
-  std::cout << " A1 data array: items = " << A0->GetNumberOfValues() << std::endl;
-
-  this->WritevtkArray(A0.GetPointer(), "A0.csv");
-  this->WritevtkArray(A1.GetPointer(), "A1.csv");
-  this->WritevtkArray(B0.GetPointer(), "B0.csv");
-  this->WritevtkArray(A0.GetPointer(), "B1.csv");
-  this->WritevtkArray(A1.GetPointer(), "C0.csv");
-  this->WritevtkArray(B0.GetPointer(), "C1.csv");
-  this->WritevtkArray(A0.GetPointer(), "D0.csv");
-  this->WritevtkArray(A1.GetPointer(), "D1.csv");
-  this->WritevtkArray(B0.GetPointer(), "E0.csv");
-  this->WritevtkArray(A0.GetPointer(), "E1.csv");
-  this->WritevtkArray(A1.GetPointer(), "F0.csv");
-  this->WritevtkArray(B0.GetPointer(), "F1.csv");
-  this->WritevtkArray(A0.GetPointer(), "G0.csv");
-  this->WritevtkArray(A1.GetPointer(), "G1.csv");
-  this->WritevtkArray(B0.GetPointer(), "H0.csv");
-  this->WritevtkArray(A0.GetPointer(), "H1.csv");
-  this->WritevtkArray(A1.GetPointer(), "I0.csv");
-  this->WritevtkArray(B0.GetPointer(), "I1.csv");
-  this->WritevtkArray(A0.GetPointer(), "J0.csv");
-  this->WritevtkArray(A1.GetPointer(), "J1.csv");
-  this->WritevtkArray(B0.GetPointer(), "K0.csv");
-  this->WritevtkArray(A0.GetPointer(), "K1.csv");
-  this->WritevtkArray(A1.GetPointer(), "L0.csv");
-  this->WritevtkArray(B0.GetPointer(), "L1.csv");
-  this->WritevtkArray(A0.GetPointer(), "M0.csv");
-  this->WritevtkArray(A1.GetPointer(), "M1.csv");
-  this->WritevtkArray(B0.GetPointer(), "N0.csv");
-  this->WritevtkArray(A0.GetPointer(), "N1.csv");
-  this->WritevtkArray(A1.GetPointer(), "O0.csv");
-  this->WritevtkArray(B0.GetPointer(), "O1.csv");
-  this->WritevtkArray(A0.GetPointer(), "P0.csv");
-  this->WritevtkArray(A1.GetPointer(), "P1.csv");
-  this->WritevtkArray(B0.GetPointer(), "Q0.csv");
-  this->WritevtkArray(A0.GetPointer(), "Q1.csv");
-  this->WritevtkArray(A1.GetPointer(), "R0.csv");
-  this->WritevtkArray(B0.GetPointer(), "R1.csv");
-  this->WritevtkArray(A0.GetPointer(), "S0.csv");
-  this->WritevtkArray(A1.GetPointer(), "S1.csv");
-  this->WritevtkArray(B0.GetPointer(), "T0.csv");
-  this->WritevtkArray(A0.GetPointer(), "T1.csv");
-  this->WritevtkArray(A1.GetPointer(), "U0.csv");
-  this->WritevtkArray(B0.GetPointer(), "U1.csv");
-  this->WritevtkArray(A0.GetPointer(), "V0.csv");
-  this->WritevtkArray(A1.GetPointer(), "V1.csv");
-  this->WritevtkArray(B0.GetPointer(), "W0.csv");
-
- // std::cout << " wrriten A0 csv " << std::endl;
-
   datasetTable->AddColumn(A0);
   datasetTable->AddColumn(A1);
   datasetTable->AddColumn(B0);
@@ -3242,22 +3172,12 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   datasetTable->AddColumn(W0);
   // to comment
 
-  this->WriteVTKTable(datasetTable, "table.csv");
-
   vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
 #if VTK_MAJOR_VERSION <= 5
   pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #else
   pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #endif
-
-  //for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
-  //{
-	 // //std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
-	 // pcaStatistics->SetColumnStatus(datasetTable->GetColumnName(i), 1);
-  //}
-
-  std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
 
   //to comment
   pcaStatistics->SetColumnStatus("a0", 1);
@@ -3317,16 +3237,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
   pcaStatistics->GetEigenvectors(eigenvectors);
 
-  eigenvectors->Print(std::cout);
-  this->WriteEigenVector(eigenvectors, "eigenvec_withhardcoding.csv");
-
-  vtkSmartPointer<vtkDoubleArray> eigenvalues = vtkSmartPointer<vtkDoubleArray>::New();
-  pcaStatistics->GetEigenvalues(eigenvalues);
-
-  eigenvalues->Print(std::cout);
-  this->WriteEigenVector(eigenvalues, "eigenvalues_withhc.csv");
-
-  vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
     vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
@@ -4190,7 +4101,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	//for (size_t i = 0; i < NumberOfTimePoints; /*i++*/)
 	size_t i = 0;
 	{
-		for (c = 'A'; c <= 'Z' && i < NumberOfTimePoints; c++)
+		for (char c = 'A'; c <= 'Z' && i < NumberOfTimePoints; c++)
 		{
 			for (int cc = 0; cc < 9 && i < NumberOfTimePoints; cc++)
 			{
