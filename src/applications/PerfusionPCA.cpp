@@ -22,7 +22,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 
   FeatureReductionClass m_featureReduction;
   //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
-  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsHardcodingRemoved(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsHardcodingRemoved2(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
   //FeatureReductionClass m_featureReduction;
   //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
@@ -242,7 +242,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   return true;
 }
 
-PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects)
+PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, std::string &inValidSubject)
 {
 	//PerfusionMapType PerfusionDataMap;
 	//Extracting perfusion data of all the patients and putting in PerfusionDataMap
@@ -264,6 +264,8 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::Image
 		if (timepoints != m_TotalTimePoints)
 		{
 			//TBD: throw name of data with incorrect time points
+			//std::cout << "incorrect subject: " << currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] << std::endl;
+			inValidSubject = currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION];
 			std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
 			return ErrorCode::DifferentTimePoints;
 		}
