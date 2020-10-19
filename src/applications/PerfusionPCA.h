@@ -68,7 +68,7 @@ public:
   /*template<class ImageTypeFloat4D, class ImageTypeFloat3D>
   std::vector<typename ImageTypeFloat3D::Pointer> Run(typename ImageTypeFloat3D::Pointer maskImagePointerNifti, typename ImageTypeFloat4D::Pointer perfImagePointerNifti);
 */
-  ErrorCode LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
+  ErrorCode LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects, std::string &inValidSubject);
   bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory,std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
   bool ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects,const std::string ModelDirectoryName);
   
