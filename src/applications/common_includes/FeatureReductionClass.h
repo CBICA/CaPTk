@@ -51,6 +51,7 @@ public:
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePoints(vnl_matrix<double> &intensities);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemoved(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemoved2(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemovedMuliloop(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   /**
