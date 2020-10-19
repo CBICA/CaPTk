@@ -113,7 +113,8 @@ int main(int argc, char **argv)
   }
   std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
   PerfusionPCA object_pca;
-  if (object_pca.LoadData(QualifiedSubjects) == PerfusionPCA::DifferentTimePoints)
+  std::string inValidSubject;
+  if (object_pca.LoadData(QualifiedSubjects, inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
 	  std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
 	  return EXIT_FAILURE;
