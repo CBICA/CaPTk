@@ -21,8 +21,8 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
   }
 
   FeatureReductionClass m_featureReduction;
-  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
-  //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsHardcodingRemoved2(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsDynamic(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
   std::cout << " written files " << std::endl;
 
