@@ -3822,7 +3822,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #endif
 
-	//NumberOfTimePoints = 360;
 	size_t i = 0;
 		for (char k = 'a'; k <= 'z' && i < NumberOfTimePoints; k++)
 		{
@@ -3849,7 +3848,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 		}
 
 	std::cout << " print double array names in table " << std::endl;
-	//exit(1);
 	for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
 	{
 		vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(datasetTable->GetColumn(i));
@@ -3878,64 +3876,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 
 	this->WriteVTKTable(datasetTable, "table.csv");
 	std::cout << " dateset table: rows = " << datasetTable->GetNumberOfRows() << " cols = " << datasetTable->GetNumberOfColumns() << std::endl;
-
-	//int counter = 0;
-	//for (vtkIdType i = 0; i < datasetTable->GetNumberOfColumns(); i++)
-	//{
-	//	//std::cout << "column: " << datasetTable->GetColumnName(i) << std::endl;
-	//	const char *name = datasetTable->GetColumnName(i);
-	//	std::cout << "counter val: " << i << " col name: " << name << std::endl;
-	//	pcaStatistics->SetColumnStatus(name, 1);
-	//	//counter++;
-	//}
-
-	////to comment
-	//pcaStatistics->SetColumnStatus("a0", 1);
-	//pcaStatistics->SetColumnStatus("a1", 1);
-	//pcaStatistics->SetColumnStatus("b0", 1);
-	//pcaStatistics->SetColumnStatus("b1", 1);
-	//pcaStatistics->SetColumnStatus("c0", 1);
-	//pcaStatistics->SetColumnStatus("c1", 1);
-	//pcaStatistics->SetColumnStatus("d0", 1);
-	//pcaStatistics->SetColumnStatus("d1", 1);
-	//pcaStatistics->SetColumnStatus("e0", 1);
-	//pcaStatistics->SetColumnStatus("e1", 1);
-	//pcaStatistics->SetColumnStatus("f0", 1);
-	//pcaStatistics->SetColumnStatus("f1", 1);
-	//pcaStatistics->SetColumnStatus("g0", 1);
-	//pcaStatistics->SetColumnStatus("g1", 1);
-	//pcaStatistics->SetColumnStatus("h0", 1);
-	//pcaStatistics->SetColumnStatus("h1", 1);
-	//pcaStatistics->SetColumnStatus("i0", 1);
-	//pcaStatistics->SetColumnStatus("i1", 1);
-	//pcaStatistics->SetColumnStatus("j0", 1);
-	//pcaStatistics->SetColumnStatus("j1", 1);
-	//pcaStatistics->SetColumnStatus("k0", 1);
-	//pcaStatistics->SetColumnStatus("k1", 1);
-	//pcaStatistics->SetColumnStatus("l0", 1);
-	//pcaStatistics->SetColumnStatus("l1", 1);
-	//pcaStatistics->SetColumnStatus("m0", 1);
-	//pcaStatistics->SetColumnStatus("m1", 1);
-	//pcaStatistics->SetColumnStatus("n0", 1);
-	//pcaStatistics->SetColumnStatus("n1", 1);
-	//pcaStatistics->SetColumnStatus("o0", 1);
-	//pcaStatistics->SetColumnStatus("o1", 1);
-	//pcaStatistics->SetColumnStatus("p0", 1);
-	//pcaStatistics->SetColumnStatus("p1", 1);
-	//pcaStatistics->SetColumnStatus("q0", 1);
-	//pcaStatistics->SetColumnStatus("q1", 1);
-	//pcaStatistics->SetColumnStatus("r0", 1);
-	//pcaStatistics->SetColumnStatus("r1", 1);
-	//pcaStatistics->SetColumnStatus("s0", 1);
-	//pcaStatistics->SetColumnStatus("s1", 1);
-	//pcaStatistics->SetColumnStatus("t0", 1);
-	//pcaStatistics->SetColumnStatus("t1", 1);
-	//pcaStatistics->SetColumnStatus("u0", 1);
-	//pcaStatistics->SetColumnStatus("u1", 1);
-	//pcaStatistics->SetColumnStatus("v0", 1);
-	//pcaStatistics->SetColumnStatus("v1", 1);
-	//pcaStatistics->SetColumnStatus("w0", 1);
-	////to comment
 
 	pcaStatistics->RequestSelectedColumns();
 	pcaStatistics->SetDeriveOption(true);
