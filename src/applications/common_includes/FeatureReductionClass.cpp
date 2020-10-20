@@ -258,7 +258,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 				datasetTable->AddColumn(da);
 				pcaStatistics->SetColumnStatus(name.c_str(), 1);
 
-				i++; // timepoint counter
+				i++; //timepoint counter
 			}
 		}
 	}
@@ -306,6 +306,9 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	for (size_t c = 0; c < NumberOfFeatures; c++)
 		for (size_t r = 0; r < NumberOfSamples; r++)
 			projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+	TransformationMatrix = PCATransformationMatrix; //returned as reference
+	MeanVector = mPMeanvector; //returned as reference
 
 	return projectedDatasetTable;
 }
