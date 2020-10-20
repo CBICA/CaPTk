@@ -3832,57 +3832,17 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 				{
 					vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
 					da->SetNumberOfComponents(1);
-					//if (var_Counter == 0)
-					//	var_string = "A";
-					//else if (var_Counter == 1)
-					//	var_string = "B";
-					//else if (var_Counter == 2)
-					//	var_string = "C";
-					//else if (var_Counter == 3)
-					//	var_string = "D";
-					//else if (var_Counter == 4)
-					//	var_string = "E";
-					//else if (var_Counter == 5)
-					//	var_string = "F";
-					//else if (var_Counter == 6)
-					//	var_string = "G";
-					//else if (var_Counter == 7)
-					//	var_string = "H";
-					//else if (var_Counter == 8)
-					//	var_string = "I";
-					//else if (var_Counter == 9)
-					//	var_string = "J";
 
-					//var_string = "A";
-					//std::string namefinal = var_string + std::to_string(counter);
 					std::string namefinal = std::string(1,k) + std::string(1,c) + std::to_string(cc);
-					//std::string namefinal = var_string + std::to_string(/*counter*/i);
 					da->SetName(namefinal.c_str());
 
 					std::cout << " da name added for item # : " << i << " " << namefinal << std::endl;
-					//std::cout << " da name retrieved for item # : " << i << " " << da->GetName() << std::endl;
 
 					for (size_t index = 0; index < NumberOfSamples; index++)
 						da->InsertNextValue(intensities[index][i]);
 					datasetTable->AddColumn(da);
 					pcaStatistics->SetColumnStatus(namefinal.c_str(), 1);
 
-					//std::string name = std::to_string(i);
-					//std::cout << "name: " << name << std::endl;
-					//da->SetName(name.c_str());
-					//for (size_t index = 0; index < NumberOfSamples; index++)
-						//da->InsertNextValue(intensities[index][i]);
-					//std::cout << " data array: items = " << da->GetNumberOfValues() << std::endl;
-					//da->Squeeze();
-					//std::cout << " data array after squeeze: items = " << da->GetNumberOfValues() << std::endl;
-					//datasetTable->AddColumn(da);
-
-					//counter++;
-					//if (counter == 9)
-					//{
-					//	counter = 0;
-					//	var_Counter++;
-					//}
 					i++;
 				}
 			}
