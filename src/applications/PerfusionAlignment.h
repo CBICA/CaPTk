@@ -135,6 +135,9 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
     maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
+    // put an error check here
+    // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
+    // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage, 0, 9); //values do not matter here
     
     std::cout << "Started resampling.\n";
