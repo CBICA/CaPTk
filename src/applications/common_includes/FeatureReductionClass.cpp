@@ -236,8 +236,8 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 #endif
 
 	size_t i = 0;
-	//nested for loops will create a max of 26*26*10 = 6760 distinct names and double array entries to fill the vtkTable
-	//as input to vtkpcastatistics class.
+	//nested for loops will create a max of 26*26*10 = 6760 distinct names and double arrays to fill the vtkTable
+	//as input to vtkpcastatistics class. Names should be distinct and non-numerical
 	for (char k = 'a'; (k <= 'z') && (i < NumberOfTimePoints); k++)
 	{
 		for (char c = 'A'; (c <= 'Z') && (i < NumberOfTimePoints); c++)
@@ -3673,6 +3673,30 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 
 	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
 	pcaStatistics->GetEigenvectors(eigenvectors);
+
+	vtkSmartPointer<vtkDoubleArray> eigenvals = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvalues(eigenvals);
+
+	//pseudo code
+	//eigenvals[0] -> 1st eigen val
+	//eigenvals[1] -> 2nd eigen val
+
+	//init vector = amtvar
+	//get sum of all eigen vals = sumeigenvals
+	//cumsum = 0;
+	//for loop across eigenvals
+	// cumsum = cumsum + eigenval[i];
+	//amtvar[i] = cumsum/sumeigenvals;
+
+	//write as vector in csv format to give amount of variance per PC ( always write ) - filename - PCCumulativeVariance.csv
+
+	// only when user asks i.e. gives the threshold on CLI/GUI
+	//ask user for % threshold for variance (amtvar)
+	//this should write out all PCs under the given threshold
+
+
+	//sanity check - see eigenvals and amtvar(should be in increasing order and cannot be over 100%)
+	//eigenvals should be in decreasing order and sum cannot be over 100
 
 	eigenvectors->Print(std::cout);
 	this->WriteEigenVector(eigenvectors, "eigenvec_nohardcoding.csv");
