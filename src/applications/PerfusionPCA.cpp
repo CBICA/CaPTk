@@ -285,9 +285,15 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     for (unsigned int index2 = 0; index2 < TransformedData.GetPointer()->GetNumberOfColumns(); index2++)
       TransformedDataMatrix(index1, index2) = TransformedData->GetValue(index1, index2).ToDouble();
 
+  //create vector with 1 item representing total timepoints in input data
+  //vector is needed for csv writer
+  std::vector<int> timepointvector = { this->m_TotalTimePoints };
+
+  //write model files
   WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv");
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
   WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv");
+  WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv");
 
   //Putting back in images of respective patients
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
