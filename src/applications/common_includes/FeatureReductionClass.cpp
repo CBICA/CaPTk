@@ -298,13 +298,13 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	double sumEigenValues = 0.0;
 	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
 		sumEigenValues = sumEigenValues + eigenvalues->GetValue(i);
-	std::cout << " sum of all eigen values: " << sumEigenValues << std::endl;
+	//std::cout << " sum of all eigen values: " << sumEigenValues << std::endl;
 
 	//array to store variance
 	vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
 	variance->SetNumberOfValues(eigenvalues->GetNumberOfValues());
 
-	std::cout << " calculating variance " << std::endl;
+	//std::cout << " calculating variance " << std::endl;
 
 	double cumulativeSum = 0.0; //cumulative sum
 	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
@@ -314,17 +314,15 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	}
 
 	//write eigen values
-	std::cout << " write eigen values " << std::endl;
-	eigenvalues->Print(std::cout);
+	//std::cout << " write eigen values " << std::endl;
+	//eigenvalues->Print(std::cout);
 	this->WritevtkArray(eigenvalues, "eigenvalues.csv");
 
 	//write variance
-	std::cout << " write variance " << std::endl;
-	variance->Print(std::cout);
+	//std::cout << " write variance " << std::endl;
+	//variance->Print(std::cout);
 	this->WritevtkArray(variance, "variance.csv");
 	
-	//exit(1);
-
 	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
 	pcaStatistics->GetEigenvectors(eigenvectors);
 
