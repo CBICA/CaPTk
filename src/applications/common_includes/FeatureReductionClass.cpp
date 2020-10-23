@@ -217,6 +217,8 @@ for (int i = 0; i < NumberOfFeatures; i++)
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
+	std::cout << " Entering FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic " << std::endl;
+
 	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
 	size_t NumberOfTimePoints;
 	size_t NumberOfFeatures = NumberOfTimePoints = intensities[0].size();
@@ -268,6 +270,60 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 
 	VariableSizeMatrixType transposePCAMatrix;
 	transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
+
+	//variance calculation
+		//init vector = amtvar
+	//get sum of all eigen vals = sumeigenvals
+	//cumsum = 0;
+	//for loop across eigenvals
+	// cumsum = cumsum + eigenval[i];
+	//amtvar[i] = cumsum/sumeigenvals;
+
+	//write as vector in csv format to give amount of variance per PC ( always write ) - filename - PCCumulativeVariance.csv
+
+	// only when user asks i.e. gives the threshold on CLI/GUI
+	//ask user for % threshold for variance (amtvar)
+	//this should write out all PCs under the given threshold
+
+
+	//sanity check - see eigenvals and amtvar(should be in increasing order and cannot be over 100%)
+	//eigenvals should be in decreasing order and sum cannot be over 100
+
+	std::cout << " getting eigen values " << std::endl;
+
+	vtkSmartPointer<vtkDoubleArray> eigenvalues = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvalues(eigenvalues);
+
+	//get sum of all eigen values
+	double sumEigenValues = 0.0;
+	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
+		sumEigenValues = sumEigenValues + eigenvalues->GetValue(i);
+	std::cout << " sum of all eigen values: " << sumEigenValues << std::endl;
+
+	//array to store variance
+	vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
+	variance->SetNumberOfValues(eigenvalues->GetNumberOfValues());
+
+	std::cout << " calculating variance " << std::endl;
+
+	double cumulativeSum = 0.0; //cumulative sum
+	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
+	{
+		cumulativeSum = cumulativeSum + eigenvalues->GetValue(i);
+		variance->SetValue(i,cumulativeSum / sumEigenValues);
+	}
+
+	//write eigen values
+	std::cout << " write eigen values " << std::endl;
+	eigenvalues->Print(std::cout);
+	this->WriteEigenVector(eigenvalues, "eigenvalues.csv");
+
+	//write variance
+	std::cout << " write variance " << std::endl;
+	variance->Print(std::cout);
+	this->WriteEigenVector(variance, "variance.csv");
+	
+	//exit(1);
 
 	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
 	pcaStatistics->GetEigenvectors(eigenvectors);
