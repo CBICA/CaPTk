@@ -316,12 +316,12 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	//write eigen values
 	std::cout << " write eigen values " << std::endl;
 	eigenvalues->Print(std::cout);
-	this->WriteEigenVector(eigenvalues, "eigenvalues.csv");
+	this->WritevtkArray(eigenvalues, "eigenvalues.csv");
 
 	//write variance
 	std::cout << " write variance " << std::endl;
 	variance->Print(std::cout);
-	this->WriteEigenVector(variance, "variance.csv");
+	this->WritevtkArray(variance, "variance.csv");
 	
 	//exit(1);
 
@@ -3041,8 +3041,8 @@ void FeatureReductionClass::WriteEigenVector(vtkDoubleArray * input, std::string
 	std::ofstream myfile;
 	myfile.open(filepath);
 
-	std::cout << " number of tuples in eigen vector: " << input->GetNumberOfTuples() << std::endl;
-	std::cout << " number of components in eigen vector: " << input->GetNumberOfComponents() << std::endl;
+	//std::cout << " number of tuples in eigen vector: " << input->GetNumberOfTuples() << std::endl;
+	//std::cout << " number of components in eigen vector: " << input->GetNumberOfComponents() << std::endl;
 
 	for (vtkIdType i = 0; i < input->GetNumberOfTuples(); i++)
 	{
