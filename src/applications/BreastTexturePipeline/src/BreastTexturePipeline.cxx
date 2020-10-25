@@ -9,7 +9,7 @@
 #include "ZScoreNormalizer.h"
 #include "FeatureExtraction.h"
 
-std::string inputImageFile, outputDir;
+std::string inputImageFile, outputDir, parameterFile;
 
 bool debugMode;
 
@@ -155,10 +155,13 @@ int algorithmsRunner()
     //auto featureExtractionPath = findRelativeApplicationPath("FeatureExtraction");
 
     auto currentDataDir = getCaPTkDataDir();
-    auto latticeFeatureParamFilePath = currentDataDir + "/features/2_params_default_lattice.csv";
-    if (!cbica::isFile(latticeFeatureParamFilePath))
+    if (parameterFile.empty())
     {
-      std::cerr << "The default lattice parameter file, '2_params_default_lattice.csv' was not found in the data directory, '" << currentDataDir << "'; please check.\n";
+      parameterFile = currentDataDir + "/features/2_params_default_lattice.csv";
+    }
+    if (!cbica::isFile(parameterFile))
+    {
+      std::cerr << "The specified lattice parameter file, '" << parameterFile << "' was not found; please check.\n";
       exit(EXIT_FAILURE);
     }
 
@@ -173,7 +176,7 @@ int algorithmsRunner()
     features.SetMaskImage(outputRelevantMaskImage_flipped);
     features.SetWriteFeatureMaps(true);
     features.SetValidMask();
-    features.SetRequestedFeatures(latticeFeatureParamFilePath);
+    features.SetRequestedFeatures(parameterFile);
     features.SetOutputFilename(cbica::normPath(outputDir + "/features/output.csv"));
     features.SetVerticallyConcatenatedOutput(true);
     features.Update();
@@ -198,6 +201,7 @@ int main(int argc, char** argv)
   parser.addRequiredParameter("o", "outputDir", cbica::Parameter::DIRECTORY, "NIfTI", "Dir with write access", "All output files are written here");
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
   parser.addOptionalParameter("r", "resize", cbica::Parameter::INTEGER, "0 - 100", "What resizing factor is to be applied", "Default: " + std::to_string(resizingFactor));
+  parser.addOptionalParameter("p", "paramFile", cbica::Parameter::FILE, ".csv", "A csv file with all features and its parameters filled", "Default: '../data/2_params_default.csv'");
 
   parser.getParameterValue("i", inputImageFile);
   parser.getParameterValue("o", outputDir);
@@ -216,6 +220,10 @@ int main(int argc, char** argv)
   if (parser.isPresent("r"))
   {
     parser.getParameterValue("r", resizingFactor);
+  }
+  if (parser.isPresent("p"))
+  {
+    parser.getParameterValue("p", parameterFile);
   }
   //auto inputImageInfo = cbica::ImageInfo(inputImageFile);
 
