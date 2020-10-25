@@ -1110,6 +1110,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           else
           {
             std::cerr << "Unsupported binning type selected; defaulting to FixedBinNumber.\n";
+            m_histogramBinningType = HistogramBinningType::FixedBinNumber;
           }
         }
         else if (outer_key == ParamsString[Resampling])
