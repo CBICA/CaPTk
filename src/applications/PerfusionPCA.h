@@ -75,10 +75,14 @@ public:
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
 
-  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs);
+  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs, vtkSmartPointer<vtkDoubleArray> &variance);
   VariableSizeMatrixType ColumnWiseScaling(VariableSizeMatrixType inputdata);
 
   PerfusionMapType CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+
+  //write vtk array
+  void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
+
 private:
 
 	int m_TotalTimePoints = 0;
