@@ -1,6 +1,6 @@
 #include "PerfusionPCA.h"
 
-PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs)
+PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs, vtkSmartPointer<vtkDoubleArray> &variance)
 {
   PerfusionMapType RevisedPerfusionMap;
 
@@ -22,7 +22,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 
   FeatureReductionClass m_featureReduction;
   //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
-  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsDynamic(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
+  ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsDynamic(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector, variance);
 
   std::cout << " written files " << std::endl;
 
@@ -277,7 +277,8 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   VariableSizeMatrixType TransformationMatrix;
   VariableLengthVectorType MeanVector;
   vtkSmartPointer<vtkTable> TransformedData;
-  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCA(this->m_PerfusionDataMap, TransformationMatrix, MeanVector, TransformedData);
+  vtkSmartPointer<vtkDoubleArray> variance;
+  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCA(this->m_PerfusionDataMap, TransformationMatrix, MeanVector, TransformedData, variance);
 
   VariableSizeMatrixType TransformedDataMatrix;
   TransformedDataMatrix.SetSize(TransformedData->GetNumberOfRows(), TransformedData->GetNumberOfColumns());
@@ -294,6 +295,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
   WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv");
   WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv");
+  this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
   //Putting back in images of respective patients
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
@@ -349,4 +351,14 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     }
   }
   return true;
+}
+
+
+void PerfusionPCA::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath)
+{
+	std::ofstream myfile;
+	myfile.open(filepath);
+	for (vtkIdType i = 0; i < inputdata->GetNumberOfValues(); i++)
+		myfile << std::to_string(inputdata->GetValue(i)) << std::endl;
+	myfile.close();
 }
