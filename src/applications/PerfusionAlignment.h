@@ -146,13 +146,28 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         return std::make_pair(PerfusionAlignment, maskImage);
       }
     }
-    auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
-    thresholder->SetInput(t1ceImagePointer);
-    thresholder->SetOutsideValue(1);
-    thresholder->SetInsideValue(0);
-    thresholder->Update();
-    //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
-    maskImage = thresholder->GetOutput();
+    else
+    {
+      if (maskFile == "1")
+      {
+        auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+        thresholder->SetInput(t1ceImagePointer);
+        thresholder->SetOutsideValue(1);
+        thresholder->SetInsideValue(0);
+        thresholder->Update();
+        //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
+        maskImage = thresholder->GetOutput();
+      }
+      else if (maskFile == "2")
+      {
+        // do the other thing
+      }
+      else
+      {
+        std::cerr << "Only 2 masking options are defined - please choose '1' or '2' as masking type.\n";
+        return std::make_pair(PerfusionAlignment, maskImage);
+      }
+    }
 
     maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
     // put an error check here
