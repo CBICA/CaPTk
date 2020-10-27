@@ -13,15 +13,26 @@ next patch release, expected in Q4 2020.\n";
   int pointsbeforedrop, pointsafterdrop;
   bool dropscaling = 0;
   double timeresolution;
-  float baseline = 300, stdDev = 10;
+  size_t time_beforeDrop, time_afterDrop;
+  float baseline = 300, stdDev = 10, time_inputPerfTime, time_outputPerfTime = 1.0, scale_maxIntensityBeforeDrop = 300, scale_intensityDropInMeanCurve = 100;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
   parser.addRequiredParameter("i", "input", cbica::Parameter::FILE, "File with read access", "The input DSC-MRI image.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::STRING, "File with read access", "The mask or the type of default masking", "1: otsu+stdDev-drop; 2: stdDev-volume+otsu");
-  parser.addRequiredParameter("b", "timePointsBeforeDrop", cbica::Parameter::STRING, "0-100", "The number of time-points before the drop.");
-  parser.addRequiredParameter("a", "timePointsAfterDrop", cbica::Parameter::STRING, "0-100", "The number of time-points after the drop.");
-  parser.addRequiredParameter("t", "timeDomainResolution", cbica::Parameter::FLOAT, "0.01-100", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
+  parser.addRequiredParameter("t1", "tInputPerfRep", cbica::Parameter::FLOAT, "0-100", "The input perfusion repetition time");
+  parser.addOptionalParameter("t2", "tOutputPerfRep", cbica::Parameter::FLOAT, "0-100", "The output perfusion repetition time", "Defaults to: " + std::to_string(time_outputPerfTime));
+  parser.addRequiredParameter("t3", "tBeforeDrop", cbica::Parameter::INTEGER, "0-100", "Number of timepoints BEFORE drop (starting index '1')");
+  parser.addRequiredParameter("t4", "tAfterDrop", cbica::Parameter::INTEGER, "0-100", "Number of timepoints AFTER drop (starting index '1')");
+
+  parser.addOptionalParameter("s1", "sMaxBeforeDrop", cbica::Parameter::FLOAT, "0-100", "The output perfusion repetition time", "Defaults to: " + std::to_string(scale_maxIntensityBeforeDrop));
+  parser.addOptionalParameter("s2", "sDropInMeanCurve", cbica::Parameter::FLOAT, "0-100", "The intensity drop in mean curve inside ROI", "Defaults to: " + std::to_string(scale_intensityDropInMeanCurve));
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "Directory with write access", "The output directory.");
+
+
+  //parser.addRequiredParameter("b", "timePointsBeforeDrop", cbica::Parameter::STRING, "0-100", "The number of time-points before the drop.");
+  //parser.addRequiredParameter("a", "timePointsAfterDrop", cbica::Parameter::STRING, "0-100", "The number of time-points after the drop.");
+  //parser.addRequiredParameter("t", "timeDomainResolution", cbica::Parameter::FLOAT, "0.01-100", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
+
   parser.addOptionalParameter("d", "dropScaling", cbica::Parameter::BOOLEAN, "0-1", "Whether to scale the value of the drop for the curve? 1=yes, 0=no; defaults to '0'");
   parser.addOptionalParameter("s", "stdDev", cbica::Parameter::FLOAT, "0-100", "The standard deviation threshold of time series signal above which the", "location is considered to part of brain", "Defaults to " + std::to_string(stdDev));
   parser.addOptionalParameter("bl", "baseLine", cbica::Parameter::FLOAT, "0-1000", "The value of the baseline to which the output gets scaled", "Only used if '-d' is '1'", "Defaults to " + std::to_string(baseline));
@@ -35,6 +46,21 @@ next patch release, expected in Q4 2020.\n";
   std::string loggerFile;
   bool loggerRequested = false;
   std::string inputFileName, inputDicomName, outputDirectoryName, inputt1ceName;
+
+  parser.getParameterValue("i", inputFileName);
+  parser.getParameterValue("t1", time_inputPerfTime);
+  parser.getParameterValue("t3", time_beforeDrop);
+  parser.getParameterValue("t4", time_afterDrop);
+
+  if (parser.isPresent("t2"))
+  {
+    parser.getParameterValue("t2", time_outputPerfTime);
+    if (time_outputPerfTime < 0)
+    {
+      std::cerr << "The output time resolution cannot be less than 0, using default, instead.\n";
+      time_outputPerfTime = 1;
+    }
+  }
 
   if (parser.compareParameter("L", tempPosition))
   {
