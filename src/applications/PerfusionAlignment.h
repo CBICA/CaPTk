@@ -26,6 +26,8 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkImageRegionConstIterator.h"
 #include "itkStatisticsImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
+
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -105,7 +107,14 @@ public:
   std::pair<typename ImageType::Pointer, std::vector< typename ImageType::PixelType > > GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes, typename ImageType::Pointer maskImage)
   {
     auto stdDevImage = cbica::CreateImage< ImageType >(perfusionImageVolumes[0]);
-    std::vector< typename ImageType::PixelType > stdDevVector;
+
+    auto size = maskImage->GetLargestPossibleRegion().GetSize();
+    auto totalSize = 1;
+    for (size_t d = 0; d < ImageType::ImageDimension; d++)
+    {
+      totalSize *= size[d];
+    }
+    std::vector< typename ImageType::PixelType > stdDevVector(totalSize);
 
     using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
     itk::ImageRegionIteratorWithIndex< ImageType > stdDevIterator(stdDevImage, stdDevImage->GetLargestPossibleRegion());
@@ -119,28 +128,30 @@ public:
     }
 
     // iterate through each voxel and get 
+    size_t sizeCounter = 0;
     for (maskIterator.GoToBegin(); !maskIterator.IsAtEnd(); ++maskIterator)
     {
       auto currentIndex = maskIterator.GetIndex();
       if (maskIterator.Get() > 0)
       {
-        auto currentVoxels = stdDevVector;
+        std::vector< typename ImageType::PixelType > currentVoxels(volumeIterators.size());
         for (size_t i = 0; i < volumeIterators.size(); i++)
         {
           volumeIterators[i].SetIndex(currentIndex);
-          currentVoxels.push_back(volumeIterators[i].Get());
+          currentVoxels[i] = volumeIterators[i].Get();
         }
 
         cbica::Statistics< float >  statsCalculator(currentVoxels);
         auto currentStdDev = statsCalculator.GetStandardDeviation();
         stdDevIterator.SetIndex(currentIndex);
         stdDevIterator.Set(currentStdDev);
-        stdDevVector.push_back(currentStdDev);
+        stdDevVector[sizeCounter] = currentStdDev;
       }
       else
       {
-        stdDevVector.push_back(0);
+        stdDevVector[sizeCounter] = 0;
       }
+      sizeCounter++;
     }
 
     return std::make_pair(stdDevImage, stdDevVector);
@@ -206,9 +217,24 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         maskImage = thresholder->GetOutput();
         auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, maskImage);
 
-        cbica::Statistics< float > statsCalculator(stdDevImageAndVector.second);
-        auto temp = statsCalculator.GetNthPercentileElement(10);
-        auto test = 1;
+        std::vector< float > stdDevNonZero;
+        for (size_t i = 0; i < stdDevImageAndVector.second.size(); i++)
+        {
+          if (stdDevImageAndVector.second[i] != 0)
+          {
+            stdDevNonZero.push_back(stdDevImageAndVector.second[i]);
+          }
+        }
+
+        cbica::Statistics< float > statsCalculator(stdDevNonZero);
+        auto thresholder_below = itk::BinaryThresholdImageFilter< ImageType, ImageType >::New();
+        thresholder_below->SetInput(stdDevImageAndVector.first);
+        thresholder_below->SetOutsideValue(0);
+        thresholder_below->SetInsideValue(1);
+        thresholder_below->SetLowerThreshold(statsCalculator.GetNthPercentileElement(10));
+        //thresholder_below->SetUpperThreshold(statsCalculator.GetMaximum());
+        thresholder_below->Update();
+        maskImage = thresholder_below->GetOutput();
       }
       else if (maskFile == "2")
       {
