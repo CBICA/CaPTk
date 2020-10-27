@@ -239,6 +239,16 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       else if (maskFile == "2")
       {
         // do the other thing
+        auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, cbica::CreateImage< ImageType >(perfusionImageVolumes[0], 1)); // create mask with all 1s
+        auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
+        thresholder->SetInput(stdDevImageAndVector.first);
+        thresholder->SetOutsideValue(1);
+        thresholder->SetInsideValue(0);
+        thresholder->Update();
+        //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
+        maskImage = thresholder->GetOutput();
+        cbica::WriteImage< ImageType >(maskImage, "C:/Users/sarth/Downloads/perfalign/mask_2.nii.gz");
+        auto test = 1;
       }
       else
       {
