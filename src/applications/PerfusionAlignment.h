@@ -137,6 +137,15 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   {
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
+    if (cbica::isFile(maskFile))
+    {
+      maskImage = cbica::ReadImage< ImageType >(maskFile);
+      if (!cbica::ImageSanityCheck< ImageType >(t1ceImagePointer, maskImage))
+      {
+        std::cerr << "Mask and first perfusion volume are not in the same space, please check again or choose one of the default masking options.\n";
+        return std::make_pair(PerfusionAlignment, maskImage);
+      }
+    }
     auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
     thresholder->SetInput(t1ceImagePointer);
     thresholder->SetOutsideValue(1);
