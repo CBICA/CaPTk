@@ -213,7 +213,6 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         thresholder->SetOutsideValue(1);
         thresholder->SetInsideValue(0);
         thresholder->Update();
-        //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
         maskImage = thresholder->GetOutput();
         auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, maskImage);
 
@@ -232,7 +231,6 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         thresholder_below->SetOutsideValue(0);
         thresholder_below->SetInsideValue(1);
         thresholder_below->SetLowerThreshold(statsCalculator.GetNthPercentileElement(10));
-        //thresholder_below->SetUpperThreshold(statsCalculator.GetMaximum());
         thresholder_below->Update();
         maskImage = thresholder_below->GetOutput();
       }
@@ -245,10 +243,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         thresholder->SetOutsideValue(1);
         thresholder->SetInsideValue(0);
         thresholder->Update();
-        //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
         maskImage = thresholder->GetOutput();
-        cbica::WriteImage< ImageType >(maskImage, "C:/Users/sarth/Downloads/perfalign/mask_2.nii.gz");
-        auto test = 1;
       }
       else
       {
