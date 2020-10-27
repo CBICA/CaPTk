@@ -56,6 +56,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t", "type", cbica::Parameter::INTEGER, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
   parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::FLOAT, "", "The number of principal components.");
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
+  parser.addOptionalParameter("vt", "variance threshold", cbica::Parameter::FLOAT, "", "The variance threshold");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5", "Trains a new model based on the samples in inputDir");
