@@ -102,14 +102,15 @@ public:
 
   //! This function calculates the std-dev of the perfusion signal across the 4D timepoints
   template< class ImageType = ImageTypeFloat3D >
-  typename ImageType::Pointer GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes)
+  typename ImageType::Pointer GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes, typename ImageType::Pointer maskImage)
   {
     auto stdDevImage = cbica::CreateImage< ImageType >(perfusionImageVolumes[0]);
-    std::vector< typename ImageType::PixelType > stdDevVector(perfusionImageVolumes.size());
+    std::vector< typename ImageType::PixelType > stdDevVector;
 
     using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
 
     // initialize the image iterators
+    IteratorType maskIterator(maskImage, maskImage->GetLargestPossibleRegion());
     std::vector< IteratorType > volumeIterators(perfusionImageVolumes.size());
     for (size_t i = 0; i < perfusionImageVolumes.size(); i++)
     {
@@ -117,9 +118,28 @@ public:
     }
 
     // iterate through each voxel and get 
-    for (volumeIterators[0].GoToBegin(); !volumeIterators[0].IsAtEnd(); ++volumeIterators[0])
+    for (maskIterator.GoToBegin(); !maskIterator.IsAtEnd(); ++maskIterator)
     {
+      auto currentIndex = maskIterator.GetIndex();
+      if (maskIterator.Get() > 0)
+      {
+        auto currentVoxels = stdDevVector;
+        for (size_t i = 0; i < volumeIterators.size(); i++)
+        {
+          volumeIterators[i].SetIndex(currentIndex);
+          currentVoxels.push_back(volumeIterators[i].Get());
+        }
 
+        cbica::Statistics< float >  statsCalculator(currentVoxels);
+        auto currentStdDev = statsCalculator.GetStandardDeviation();
+        stdDevImage->SetPixel(currentIndex, currentStdDev);
+        stdDevVector.push_back(currentStdDev);
+      }
+      else
+      {
+        stdDevImage->SetPixel(currentIndex, 0);
+        stdDevVector.push_back(0);
+      }
     }
   }
 
