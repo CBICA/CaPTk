@@ -37,8 +37,7 @@ next patch release, expected in Q4 2020.\n";
   //parser.addOptionalParameter("s", "stdDev", cbica::Parameter::FLOAT, "0-100", "The standard deviation threshold of time series signal above which the", "location is considered to part of brain", "Defaults to " + std::to_string(stdDev));
   //parser.addOptionalParameter("bl", "baseLine", cbica::Parameter::FLOAT, "0-1000", "The value of the baseline to which the output gets scaled", "Only used if '-d' is '1'", "Defaults to " + std::to_string(baseline));
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  //parser.exampleUsage("PerfusionAlignment -i AAAC_PreOp_perf_pp.nii.gz -d AAAC_PreOp_perf_pp.dcm -o <output dir>");
-  parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -c AAAC_PreOp_t1ce_pp.nii.gz -b 15 -a 17 -t 2 -o <output dir>", "Aligns the perfusion signal of the input image based on the time points");
+  parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -t1 2 -t3 15 -t4 30 -o C:/testPerf", "Aligns the perfusion signal of the input image based on the time points");
   parser.addApplicationDescription("Perfusion Alignment of the input based based on specified time points");
 
   // parameters to get from the command line
