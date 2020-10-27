@@ -25,6 +25,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkStatisticsImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -72,7 +73,7 @@ public:
 
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType, class PerfusionImageType >
-  std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > Run(std::string perfusionFile,
+  std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > Run(std::string perfusionFile, std::string maskFile,
     int pointsbeforedrop, int pointsafterdrop,
     std::vector<double> & OriginalCurve,
     std::vector<double> & InterpolatedCurve,
@@ -103,7 +104,7 @@ private:
 };
 
 template< class ImageType, class PerfusionImageType >
-std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > PerfusionAlignment::Run(std::string perfusionFile,
+std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > PerfusionAlignment::Run(std::string perfusionFile, std::string maskFile,
   int pointsbeforedrop,int pointsafterdrop,
   std::vector<double> & OriginalCurve, 
   std::vector<double> & InterpolatedCurve,
@@ -136,6 +137,14 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   {
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
+    auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+    thresholder->SetInput(t1ceImagePointer);
+    thresholder->SetOutsideValue(1);
+    thresholder->SetInsideValue(0);
+    thresholder->Update();
+    //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
+    maskImage = thresholder->GetOutput();
+
     maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
     // put an error check here
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
@@ -184,7 +193,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    if (dropscaling)
+    if (true/*dropscaling*/)
     {
       resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
       RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage, 0, 9); //values do not matter here

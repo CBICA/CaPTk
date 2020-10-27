@@ -35,13 +35,26 @@ int main(int argc, char **argv)
   cbica::Logging logger;
   std::string loggerFile;
   bool loggerRequested = false;
-  std::string inputFileName, inputDicomName, outputDirectoryName;
+  std::string inputFileName, inputMaskFileName, inputDicomName, outputDirectoryName;
 
   parser.getParameterValue("i", inputFileName);
   parser.getParameterValue("t1", time_inputPerfTime);
   parser.getParameterValue("t3", time_beforeDrop);
   parser.getParameterValue("t4", time_afterDrop);
   parser.getParameterValue("o", outputDirectoryName);
+
+  if (parser.isPresent("m"))
+  {
+    parser.getParameterValue("m", inputMaskFileName);
+  }
+  if (!cbica::isFile(inputMaskFileName))
+  {
+    if ((inputMaskFileName != "1") && (inputMaskFileName != "2"))
+    {
+      std::cerr << "Please chose either '1' or '2' as the masking option.\n";
+      return EXIT_FAILURE;
+    }
+  }
 
   if (parser.isPresent("t2"))
   {
@@ -60,7 +73,7 @@ int main(int argc, char **argv)
   {
     parser.getParameterValue("s2", scale_intensityDropInMeanCurve);
   }
-  if (parser.isPresent("L")
+  if (parser.isPresent("L"))
   {
     parser.getParameterValue("L", loggerFile);
     loggerRequested = true;
@@ -77,7 +90,8 @@ int main(int argc, char **argv)
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   //std::vector<typename ImageTypeFloat3D::Pointer>  = 
-  auto output =  objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, time_beforeDrop, time_afterDrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, time_inputPerfTime, dropscaling, stdDev, baseline);
+  auto output = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, inputMaskFileName, time_beforeDrop, time_afterDrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve,
+    time_inputPerfTime, scale_maxIntensityBeforeDrop, scale_intensityDropInMeanCurve, 10/*stdDev*/, 100/*baseline*/); // , dropscaling, stdDev, baseline);
 
   auto PerfusionAlignment = output.first;
   auto calculatedMask = output.second;
