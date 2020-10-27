@@ -9,10 +9,6 @@ and we are actively testing an optimized robust implementation that would enable
 generalization in multi-institutional data. We expect this to be released in our \
 next patch release, expected in Q4 2020.\n";
   return EXIT_FAILURE;
-  int tempPosition;
-  int pointsbeforedrop, pointsafterdrop;
-  bool dropscaling = 0;
-  double timeresolution;
   size_t time_beforeDrop, time_afterDrop;
   float baseline = 300, stdDev = 10, time_inputPerfTime, time_outputPerfTime = 1.0, scale_maxIntensityBeforeDrop = 300, scale_intensityDropInMeanCurve = 100;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
@@ -69,9 +65,9 @@ next patch release, expected in Q4 2020.\n";
   {
     parser.getParameterValue("s2", scale_intensityDropInMeanCurve);
   }
-  if (parser.compareParameter("L", tempPosition))
+  if (parser.isPresent("L")
   {
-    loggerFile = argv[tempPosition + 1];
+    parser.getParameterValue("L", loggerFile);
     loggerRequested = true;
     logger.UseNewFile(loggerFile);
   }
@@ -86,7 +82,7 @@ next patch release, expected in Q4 2020.\n";
   PerfusionAlignment objPerfusion;
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   //std::vector<typename ImageTypeFloat3D::Pointer>  = 
-  auto output =  objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, pointsbeforedrop, pointsafterdrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, timeresolution, dropscaling, stdDev, baseline);
+  auto output =  objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, time_beforeDrop, time_afterDrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, time_inputPerfTime, dropscaling, stdDev, baseline);
 
   auto PerfusionAlignment = output.first;
   auto calculatedMask = output.second;

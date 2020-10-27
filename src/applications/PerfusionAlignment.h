@@ -79,7 +79,8 @@ public:
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
     const double timeresolution,
-    const bool dropscaling, const float stdDev, const float baseline);
+    const float scale_maxIntensityBeforeDrop,
+    const float scale_intensityDropInMeanCurve, const float stdDev, const float baseline);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -109,7 +110,8 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
   const double timeresolution,
-  const bool dropscaling,
+  const float scale_maxIntensityBeforeDrop,
+  const float scale_intensityDropInMeanCurve,
   const float stdDev, const float baseline)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
