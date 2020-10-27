@@ -102,12 +102,13 @@ public:
 
   //! This function calculates the std-dev of the perfusion signal across the 4D timepoints
   template< class ImageType = ImageTypeFloat3D >
-  typename ImageType::Pointer GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes, typename ImageType::Pointer maskImage)
+  std::pair<typename ImageType::Pointer, std::vector< typename ImageType::PixelType > > GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes, typename ImageType::Pointer maskImage)
   {
     auto stdDevImage = cbica::CreateImage< ImageType >(perfusionImageVolumes[0]);
     std::vector< typename ImageType::PixelType > stdDevVector;
 
     using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
+    itk::ImageRegionIteratorWithIndex< ImageType > stdDevIterator(stdDevImage, stdDevImage->GetLargestPossibleRegion());
 
     // initialize the image iterators
     IteratorType maskIterator(maskImage, maskImage->GetLargestPossibleRegion());
@@ -132,15 +133,17 @@ public:
 
         cbica::Statistics< float >  statsCalculator(currentVoxels);
         auto currentStdDev = statsCalculator.GetStandardDeviation();
-        stdDevImage->SetPixel(currentIndex, currentStdDev);
+        stdDevIterator.SetIndex(currentIndex);
+        stdDevIterator.Set(currentStdDev);
         stdDevVector.push_back(currentStdDev);
       }
       else
       {
-        stdDevImage->SetPixel(currentIndex, 0);
         stdDevVector.push_back(0);
       }
     }
+
+    return std::make_pair(stdDevImage, stdDevVector);
   }
 
 private:
@@ -194,13 +197,15 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     {
       if (maskFile == "1")
       {
-        auto thresholder = itk::OtsuThresholdImageFilter< TImageType, TImageType >::New();
+        auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
         thresholder->SetInput(t1ceImagePointer);
         thresholder->SetOutsideValue(1);
         thresholder->SetInsideValue(0);
         thresholder->Update();
         //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
         maskImage = thresholder->GetOutput();
+        auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, maskImage);
+        auto test = 1;
       }
       else if (maskFile == "2")
       {
