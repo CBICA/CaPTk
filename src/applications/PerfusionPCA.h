@@ -83,6 +83,9 @@ public:
   //write vtk array
   void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
 
+  //determine # PCs based on user provided variance threshold
+  void DetermineNumberOdfPCsFromVariance() {}
+
 private:
 
 	int m_TotalTimePoints = 0;
