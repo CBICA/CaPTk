@@ -4,13 +4,8 @@
 
 int main(int argc, char **argv)
 {
-  std::cout << "This functionality has been removed from this CaPTk release, \
-and we are actively testing an optimized robust implementation that would enable \
-generalization in multi-institutional data. We expect this to be released in our \
-next patch release, expected in Q4 2020.\n";
-  return EXIT_FAILURE;
   size_t time_beforeDrop, time_afterDrop;
-  float baseline = 300, stdDev = 10, time_inputPerfTime, time_outputPerfTime = 1.0, scale_maxIntensityBeforeDrop = 300, scale_intensityDropInMeanCurve = 100;
+  float time_inputPerfTime, time_outputPerfTime = 1.0, scale_maxIntensityBeforeDrop = 300, scale_intensityDropInMeanCurve = 100;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
   parser.addRequiredParameter("i", "input", cbica::Parameter::FILE, "File with read access", "The input DSC-MRI image.");
   parser.addOptionalParameter("m", "mask", cbica::Parameter::STRING, "File with read access", "The mask or the type of default masking", "1: otsu+stdDev-drop; 2: stdDev-volume+otsu");
