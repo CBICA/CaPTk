@@ -205,6 +205,9 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
         //std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
         maskImage = thresholder->GetOutput();
         auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, maskImage);
+
+        cbica::Statistics< float > statsCalculator(stdDevImageAndVector.second);
+        auto temp = statsCalculator.GetNthPercentileElement(10);
         auto test = 1;
       }
       else if (maskFile == "2")
