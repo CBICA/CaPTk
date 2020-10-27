@@ -29,6 +29,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
+#include "cbicaStatistics.h"
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
@@ -98,6 +99,13 @@ public:
   //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end, float stdDev_threshold);
+
+  //! This function calculates the std-dev of the perfusion signal across the 4D timepoints
+  template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
+  typename ImageType::Pointer GetStdDevFrom4DImage(typename PerfusionImageType::Pointer perfImagePointerNifti)
+  {
+
+  }
 
 private:
   bool m_negativesDetected = false;
