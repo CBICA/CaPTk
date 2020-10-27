@@ -90,6 +90,48 @@ public:
   template< class ImageType, class PerfusionImageType >
   std::vector<double> CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end);
 
+  //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
+  template< class ImageType >
+  std::vector<double> CalculatePerfusionVolumeMean(std::vector< typename ImageType::Pointer > perfusionImageVolumes, typename ImageType::Pointer maskImage)
+  {
+    std::vector< typename ImageType::PixelType > averageCurve(perfusionImageVolumes.size());
+
+    // initialize the image iterators
+    using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
+    IteratorType maskIterator(maskImage, maskImage->GetLargestPossibleRegion());
+    std::vector< IteratorType > volumeIterators(perfusionImageVolumes.size());
+    for (size_t i = 0; i < perfusionImageVolumes.size(); i++)
+    {
+      volumeIterators[i] = IteratorType(perfusionImageVolumes[i], perfusionImageVolumes[i]->GetLargestPossibleRegion());
+    }
+
+    size_t sizeCounter = 0;
+    for (maskIterator.GoToBegin(); !maskIterator.IsAtEnd(); ++maskIterator)
+    {
+      auto currentIndex = maskIterator.GetIndex();
+      if (maskIterator.Get() > 0)
+      {
+        std::vector< typename ImageType::PixelType > currentVoxels(volumeIterators.size());
+        for (size_t i = 0; i < volumeIterators.size(); i++)
+        {
+          volumeIterators[i].SetIndex(currentIndex);
+          currentVoxels[i] = volumeIterators[i].Get();
+        }
+
+        cbica::Statistics< float >  statsCalculator(currentVoxels);
+        auto currentStdDev = statsCalculator.GetMean();
+        averageCurve[sizeCounter] = currentStdDev;
+      }
+      else
+      {
+        stdDevVector[sizeCounter] = 0;
+      }
+      sizeCounter++;
+    }
+
+    return averageCurve;
+  }
+
   //This function shifts the baseline value of DSC-MRI curves
   template< class PerfusionImageType >
   typename PerfusionImageType::Pointer ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, float baseLine);
@@ -263,6 +305,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
     // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage, 0, 9); //values do not matter here
+    auto OriginalCurve_2 = CalculatePerfusionVolumeMean<ImageType>(perfusionImageVolumes, maskImage); //values do not matter here
     
     std::cout << "Started resampling.\n";
     // Resize
