@@ -101,10 +101,26 @@ public:
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end, float stdDev_threshold);
 
   //! This function calculates the std-dev of the perfusion signal across the 4D timepoints
-  template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
-  typename ImageType::Pointer GetStdDevFrom4DImage(typename PerfusionImageType::Pointer perfImagePointerNifti)
+  template< class ImageType = ImageTypeFloat3D >
+  typename ImageType::Pointer GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes)
   {
+    auto stdDevImage = cbica::CreateImage< ImageType >(perfusionImageVolumes[0]);
+    std::vector< typename ImageType::PixelType > stdDevVector(perfusionImageVolumes.size());
 
+    using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
+
+    // initialize the image iterators
+    std::vector< IteratorType > volumeIterators(perfusionImageVolumes.size());
+    for (size_t i = 0; i < perfusionImageVolumes.size(); i++)
+    {
+      volumeIterators[i] = IteratorType(perfusionImageVolumes[i], perfusionImageVolumes[i]->GetLargestPossibleRegion());
+    }
+
+    // iterate through each voxel and get 
+    for (volumeIterators[0].GoToBegin(); !volumeIterators[0].IsAtEnd(); ++volumeIterators[0])
+    {
+
+    }
   }
 
 private:
