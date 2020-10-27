@@ -252,7 +252,13 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       }
     }
 
-    maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
+    if (maskImage.IsNull())
+    {
+      std::cerr << "Mask image needs to be defined at this point.\n";
+      return std::make_pair(PerfusionAlignment, maskImage);
+    }
+
+    //maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
     // put an error check here
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
     // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
