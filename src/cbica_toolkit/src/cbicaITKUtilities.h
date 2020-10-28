@@ -381,7 +381,8 @@ namespace cbica
     const typename TImageType::Pointer image1, 
     const typename TImageType::Pointer image2,
     const float nifti2dicomTolerance = 0.0,
-    const float nifti2dicomOriginTolerance = 0.0)
+    const float nifti2dicomOriginTolerance = 0.0,
+    const float nifti2dicomSpacingTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -412,15 +413,30 @@ namespace cbica
       {
         if (directions_1[i][j] != directions_2[i][j])
         {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100;
-          if (directions_1[i][j] != 0)
+          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]);
+          // perform an absolute check when either of the direction cosine location is zero
+          if ((directions_1[i][j] == 0) || (directions_2[i][j] == 0))
           {
-            percentageDifference /= directions_1[i][j];
+            auto threshold = 10e-5; // chose as a very small number, which is greater than std::numeric_traits<float>::epsilon() for comparison purposes
+            if (percentageDifference < threshold)
+            {
+              std::cerr << "Ignoring absolute difference of " << percentageDifference << " at location '[" << i << "," << j << "]' of direction matrix.\n";
+              percentageDifference = 0;
+            }
+            else
+            {
+              // otherwise, calculate the percentage based on the non-zero cosine
+              if (directions_1[i][j] == 0)
+              {
+                percentageDifference /= directions_2[i][j];
+              }
+              else if (directions_2[i][j] == 0)
+              {
+                percentageDifference /= directions_1[i][j];
+              }
+            }
           }
-          else
-          {
-            percentageDifference /= directions_2[i][j];
-          }
+          percentageDifference *= 100;
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
@@ -430,7 +446,7 @@ namespace cbica
               "Direction matrix for input 2:\n" << directions_2 << "\n";
             return false;
           }
-          else
+          else if (percentageDifference != 0)
           {
             std::cout << "Ignoring direction difference of '" <<
               percentageDifference << "%' in location '[" <<
@@ -469,7 +485,7 @@ namespace cbica
       {
         auto percentageDifference = std::abs(spacing_1[d] - spacing_2[d]) * 100;
         percentageDifference /= spacing_1[d];
-        if (percentageDifference > 0.0001)
+        if (percentageDifference > nifti2dicomSpacingTolerance)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
           return false;
@@ -565,21 +581,36 @@ namespace cbica
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {
-            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]) * 100;
-            if (imageDirs1[d][i] != 0)
+            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]);
+            // perform an absolute check when either of the direction cosine location is zero
+            if ((imageDirs1[d][i] == 0) || (imageDirs2[d][i] == 0))
             {
-              percentageDifference /= imageDirs1[d][i];
+              auto threshold = 10e-5; // chose as a very small number, which is greater than std::numeric_traits<float>::epsilon() for comparison purposes
+              if (percentageDifference < threshold)
+              {
+                std::cerr << "Ignoring absolute difference of " << percentageDifference << " at location '[" << d << "," << i << "]' of direction matrix.\n";
+                percentageDifference = 0;
+              }
+              else
+              {
+                // otherwise, calculate the percentage based on the non-zero cosine
+                if (imageDirs1[d][i] == 0)
+                {
+                  percentageDifference /= imageDirs2[d][i];
+                }
+                else if (imageDirs2[d][i] == 0)
+                {
+                  percentageDifference /= imageDirs1[d][i];
+                }
+              }
             }
-            else
-            {
-              percentageDifference /= imageDirs2[d][i];
-            }
+            percentageDifference *= 100;
             if (percentageDifference > 0.0001)
             {
               std::cerr << "Direction mismatch at dimension '" << d << "'\n";
               return false;
             }
-            else
+            else if (percentageDifference != 0)
             {
               std::cout << "Ignoring direction difference of '" <<
                 percentageDifference << "%' in dimension '" <<
