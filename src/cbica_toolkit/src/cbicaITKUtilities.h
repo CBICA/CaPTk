@@ -413,7 +413,7 @@ namespace cbica
       {
         if (directions_1[i][j] != directions_2[i][j])
         {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100;
+          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]);
           if (directions_1[i][j] != 0)
           {
             percentageDifference /= directions_1[i][j];
@@ -422,6 +422,7 @@ namespace cbica
           {
             percentageDifference /= directions_2[i][j];
           }
+          percentageDifference *= 100;
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
@@ -566,7 +567,7 @@ namespace cbica
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {
-            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]) * 100;
+            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]);
             if (imageDirs1[d][i] != 0)
             {
               percentageDifference /= imageDirs1[d][i];
@@ -575,6 +576,7 @@ namespace cbica
             {
               percentageDifference /= imageDirs2[d][i];
             }
+            percentageDifference *= 100;
             if (percentageDifference > 0.0001)
             {
               std::cerr << "Direction mismatch at dimension '" << d << "'\n";
