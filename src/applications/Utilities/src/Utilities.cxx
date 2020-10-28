@@ -1115,8 +1115,11 @@ int algorithmsRunner()
     if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
     {
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
-      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
-      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      auto input = cbica::ReadImage< TImageType >(inputImageFile);
+      auto mask = cbica::ReadImage< TImageType >(inputMaskFile);
+      mask->CopyInformation(input); // sanity check as already passed at this point, this ensures itk filter works
+      masker->SetInput(input);
+      masker->SetMaskImage(mask);
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
     }
@@ -1135,6 +1138,8 @@ int algorithmsRunner()
       auto inputImages = cbica::GetExtractedImages<
         TImageType, TBaseImageType >(
           inputImage);
+
+      maskImage->CopyInformation(inputImages[0]); // sanity check as already passed at this point, this ensures itk filter works
 
       std::vector< typename TBaseImageType::Pointer > outputImages;
       outputImages.resize(inputImages.size());
