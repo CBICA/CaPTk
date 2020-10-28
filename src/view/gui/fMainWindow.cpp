@@ -7614,13 +7614,7 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-  QString text = "This functionality has been removed from this CaPTk release, \
-and we are actively testing an optimized robust implementation that would enable \
-generalization in multi-institutional data. We expect this to be released in our \
-next patch release, expected in Q4 2020.";
-  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
-  msgBox.exec();
-  //perfalignPanel.exec();
+  perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
