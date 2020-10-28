@@ -50,7 +50,7 @@ public:
   void SelectInputImage();
 
 signals:
-  void RunPerfusionAlignmentCalculation(double echotime, int before, int after, bool dropscaling, const std::string inputfile, std::string outputFolder);
+  void RunPerfusionAlignmentCalculation(double echotime, double echoOutput, int before, int after, int mean, int scale, const std::string inputfile, const std::string maskfile, std::string outputFolder);
 };
 
 
