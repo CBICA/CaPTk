@@ -61,6 +61,8 @@ public:
   QLabel *longRunningWarning;
   QPushButton *outputImageButton;
 
+  QLabel *outputEchoTimeLabel;
+  QLineEdit *outputEchoTimeName;
 
   QPushButton *confirmButton;
   QPushButton *cancelButton;
@@ -187,6 +189,18 @@ public:
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
 
+    outputEchoTimeLabel = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(outputEchoTimeLabel->sizePolicy().hasHeightForWidth());
+    outputEchoTimeLabel->setSizePolicy(sizePolicy);
+    outputEchoTimeLabel->setText("Desired Time-resolution (seconds)");
+
+    outputEchoTimeName = new QLineEdit("1");
+    outputEchoTimeName->setObjectName(QString::fromUtf8("outputEchoTimeName"));
+    sizePolicy.setHeightForWidth(outputEchoTimeName->sizePolicy().hasHeightForWidth());
+    outputEchoTimeName->setSizePolicy(sizePolicy);
+    outputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    outputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
+
     outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
     sizePolicy.setHeightForWidth(outputImageName->sizePolicy().hasHeightForWidth());
@@ -203,9 +217,11 @@ public:
     longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
-    outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
-    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
+    outputGridLayout->addWidget(outputEchoTimeLabel, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputEchoTimeName, 0, 1, 1, 1);
+    outputGridLayout->addWidget(outputImageName, 1, 0, 1, 1);
+    outputGridLayout->addWidget(outputImageButton, 1, 1, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 2, 0, 1, 2);
 
     // put the layout in perspective
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
