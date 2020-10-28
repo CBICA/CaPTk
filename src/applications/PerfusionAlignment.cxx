@@ -91,7 +91,7 @@ int main(int argc, char **argv)
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   //std::vector<typename ImageTypeFloat3D::Pointer>  = 
   auto output = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputFileName, inputMaskFileName, time_beforeDrop, time_afterDrop, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve,
-    time_inputPerfTime, scale_maxIntensityBeforeDrop, scale_intensityDropInMeanCurve, 10/*stdDev*/, 100/*baseline*/); // , dropscaling, stdDev, baseline);
+    time_inputPerfTime, time_outputPerfTime, scale_maxIntensityBeforeDrop, scale_intensityDropInMeanCurve, 10/*stdDev*/, 100/*baseline*/); // , dropscaling, stdDev, baseline);
 
   auto PerfusionAlignment = output.first;
   auto calculatedMask = output.second;

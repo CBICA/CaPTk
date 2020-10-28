@@ -83,6 +83,7 @@ public:
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
     const double timeresolution,
+    const double time_outputPerfTime,
     const float scale_maxIntensityBeforeDrop,
     const float scale_intensityDropInMeanCurve, const float stdDev, const float baseline);
 
@@ -171,6 +172,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
   const double timeresolution,
+  const double time_outputPerfTime,
   const float scale_maxIntensityBeforeDrop,
   const float scale_intensityDropInMeanCurve,
   const float stdDev, const float baseline)
@@ -267,15 +269,11 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); //values do not matter here
     std::cout << "Started resampling.\n";
     // Resize
-    auto inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
-    auto outputSize = inputSize;
-    outputSize[3] = timeresolution * inputSize[3];
-
     auto inputSpacing = perfImagePointerNifti->GetSpacing();
     auto outputSpacing = inputSpacing;
-    outputSpacing[3] = inputSpacing[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
+    outputSpacing[3] = time_outputPerfTime;
 
-    auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, outputSize);
+    auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing);
     auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
     std::vector< typename ImageType::Pointer > mask_volumes(resampledPerfusion_volumes.size());
     for (size_t i = 0; i < mask_volumes.size(); i++)
