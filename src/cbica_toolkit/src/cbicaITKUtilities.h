@@ -381,7 +381,8 @@ namespace cbica
     const typename TImageType::Pointer image1, 
     const typename TImageType::Pointer image2,
     const float nifti2dicomTolerance = 0.0,
-    const float nifti2dicomOriginTolerance = 0.0)
+    const float nifti2dicomOriginTolerance = 0.0,
+    const float nifti2dicomSpacingTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -461,7 +462,7 @@ namespace cbica
       {
         auto percentageDifference = std::abs(spacing_1[d] - spacing_2[d]) * 100;
         percentageDifference /= spacing_1[d];
-        if (percentageDifference > 0.0001)
+        if (percentageDifference > nifti2dicomSpacingTolerance)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
           return false;
