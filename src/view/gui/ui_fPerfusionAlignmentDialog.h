@@ -64,6 +64,12 @@ public:
   QLabel *outputEchoTimeLabel;
   QLineEdit *outputEchoTimeName;
 
+  QLabel *outputScaleBeforeDropLabel;
+  QLineEdit *outputScaleBeforeDropName;
+
+  QLabel *outputScaleDropBeforeMeanLabel;
+  QLineEdit *outputScaleDropBeforeMeanName;
+
   QPushButton *confirmButton;
   QPushButton *cancelButton;
 
@@ -199,7 +205,29 @@ public:
     sizePolicy.setHeightForWidth(outputEchoTimeName->sizePolicy().hasHeightForWidth());
     outputEchoTimeName->setSizePolicy(sizePolicy);
     outputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-    outputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
+    outputEchoTimeName->setValidator(new QIntValidator(0, 100, outputGroupBox));
+
+    outputScaleBeforeDropLabel = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(outputScaleBeforeDropLabel->sizePolicy().hasHeightForWidth());
+    outputScaleBeforeDropLabel->setSizePolicy(sizePolicy);
+    outputScaleBeforeDropLabel->setText("Maximum intensity before drop in mean curve inside ROI");
+
+    outputScaleBeforeDropName = new QLineEdit("300");
+    outputScaleBeforeDropName->setObjectName(QString::fromUtf8("outputScaleBeforeDropName"));
+    sizePolicy.setHeightForWidth(outputScaleBeforeDropName->sizePolicy().hasHeightForWidth());
+    outputScaleBeforeDropName->setSizePolicy(sizePolicy);
+    outputScaleBeforeDropName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    outputScaleDropBeforeMeanLabel = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(outputScaleDropBeforeMeanLabel->sizePolicy().hasHeightForWidth());
+    outputScaleDropBeforeMeanLabel->setSizePolicy(sizePolicy);
+    outputScaleDropBeforeMeanLabel->setText("Intensity drop in mean curve inside ROI");
+
+    outputScaleDropBeforeMeanName = new QLineEdit("100");
+    outputScaleDropBeforeMeanName->setObjectName(QString::fromUtf8("outputScaleDropBeforeMeanName"));
+    sizePolicy.setHeightForWidth(outputScaleDropBeforeMeanName->sizePolicy().hasHeightForWidth());
+    outputScaleDropBeforeMeanName->setSizePolicy(sizePolicy);
+    outputScaleDropBeforeMeanName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
     outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
@@ -219,9 +247,13 @@ public:
 
     outputGridLayout->addWidget(outputEchoTimeLabel, 0, 0, 1, 1);
     outputGridLayout->addWidget(outputEchoTimeName, 0, 1, 1, 1);
-    outputGridLayout->addWidget(outputImageName, 1, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 1, 1, 1, 1);
-    outputGridLayout->addWidget(longRunningWarning, 2, 0, 1, 2);
+    outputGridLayout->addWidget(outputScaleBeforeDropLabel, 1, 0, 1, 1);
+    outputGridLayout->addWidget(outputScaleBeforeDropName, 1, 1, 1, 1);
+    outputGridLayout->addWidget(outputScaleDropBeforeMeanLabel, 2, 0, 1, 1);
+    outputGridLayout->addWidget(outputScaleDropBeforeMeanName, 2, 1, 1, 1);
+    outputGridLayout->addWidget(outputImageName, 3, 0, 1, 1);
+    outputGridLayout->addWidget(outputImageButton, 3, 1, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 4, 0, 1, 2);
 
     // put the layout in perspective
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
