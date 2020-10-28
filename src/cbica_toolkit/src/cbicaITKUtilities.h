@@ -413,13 +413,13 @@ namespace cbica
         if (directions_1[i][j] != directions_2[i][j])
         {
           auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100;
-          if (directions_1[d][i] != 0)
+          if (directions_1[i][j] != 0)
           {
-            percentageDifference /= directions_1[d][i];
+            percentageDifference /= directions_1[i][j];
           }
           else
           {
-            percentageDifference /= directions_2[d][i];
+            percentageDifference /= directions_2[i][j];
           }
           if (percentageDifference > nifti2dicomTolerance)
           {
