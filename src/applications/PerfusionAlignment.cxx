@@ -14,7 +14,7 @@ int main(int argc, char **argv)
   parser.addRequiredParameter("t3", "tBeforeDrop", cbica::Parameter::INTEGER, "0-100", "Number of timepoints BEFORE drop (starting index '1')");
   parser.addRequiredParameter("t4", "tAfterDrop", cbica::Parameter::INTEGER, "0-100", "Number of timepoints AFTER drop (starting index '1')");
 
-  parser.addOptionalParameter("s1", "sMaxBeforeDrop", cbica::Parameter::FLOAT, "0-100", "The output perfusion repetition time", "Defaults to: " + std::to_string(scale_maxIntensityBeforeDrop));
+  parser.addOptionalParameter("s1", "sMaxBeforeDrop", cbica::Parameter::FLOAT, "0-100", "The maximum intensity before drop in mean curve inside ROI", "Defaults to: " + std::to_string(scale_maxIntensityBeforeDrop));
   parser.addOptionalParameter("s2", "sDropInMeanCurve", cbica::Parameter::FLOAT, "0-100", "The intensity drop in mean curve inside ROI", "Defaults to: " + std::to_string(scale_intensityDropInMeanCurve));
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "Directory with write access", "The output directory.");
