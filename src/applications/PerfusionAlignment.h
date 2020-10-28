@@ -305,15 +305,11 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    if (true/*dropscaling*/)
-    {
-      //resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve, scale_maxIntensityBeforeDrop);
-      resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve, scale_intensityDropInMeanCurve);
-      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); 
-      GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
-      std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
-    }
-    //auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_intensityDropInMeanCurve);
+    resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve, scale_intensityDropInMeanCurve);
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
+    GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
+    std::cout << "Curve characteristics after drop scaling ::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
+
     auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_maxIntensityBeforeDrop);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
