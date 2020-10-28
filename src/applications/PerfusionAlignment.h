@@ -97,7 +97,7 @@ public:
 
   //This function scales the drop value of DSC-MRI curves
   template< class PerfusionImageType >
-  typename PerfusionImageType::Pointer ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, double min_curve);
+  typename PerfusionImageType::Pointer ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, double min_curve, double multiplier);
 
   //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
@@ -307,12 +307,14 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
 
     if (true/*dropscaling*/)
     {
-      resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
+      //resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve, scale_maxIntensityBeforeDrop);
+      resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve, scale_intensityDropInMeanCurve);
       RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); 
       GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
       std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
     }
-    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_intensityDropInMeanCurve);
+    //auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_intensityDropInMeanCurve);
+    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_maxIntensityBeforeDrop);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
 
@@ -532,9 +534,8 @@ typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNo
   return outputImage;
 }
 template< class PerfusionImageType >
-typename PerfusionImageType::Pointer PerfusionAlignment::ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average,double min_curve)
+typename PerfusionImageType::Pointer PerfusionAlignment::ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average, double min_curve, double multiplier)
 {
-  double multiplier = 100;
   auto outputImage = cbica::CreateImage< PerfusionImageType >(perfImagePointerNifti);
   itk::ImageRegionConstIterator< PerfusionImageType > inputImageIterator(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion()),
     inputMaskIterator(ImagePointerMask, ImagePointerMask->GetLargestPossibleRegion());
