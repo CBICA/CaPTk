@@ -262,11 +262,11 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       return std::make_pair(PerfusionAlignment, maskImage);
     }
 
-    //maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
+    //maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev);
     // put an error check here
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
     // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
-    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); //values do not matter here
+    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); 
     std::cout << "Started resampling.\n";
     // Resize
     auto inputSpacing = perfImagePointerNifti->GetSpacing();
@@ -299,7 +299,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       }
     }
     resampledPerfusion = cbica::GetJoinedImage< ImageType, PerfusionImageType >(resampledPerfusion_volumes);
-    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); //values do not matter here
+    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); 
 
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
@@ -308,15 +308,15 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     if (true/*dropscaling*/)
     {
       resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
-      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); //values do not matter here
+      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage); 
       GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
       std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
     }
-    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, baseline);
+    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, scale_intensityDropInMeanCurve);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
 
-    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage); //values do not matter here
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage); 
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base shifting::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
