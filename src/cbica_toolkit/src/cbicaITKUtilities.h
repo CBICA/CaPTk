@@ -364,6 +364,33 @@ namespace cbica
     return returnVector;
   }
 
+  //! Function that does "soft" threshold checking of 2 numbers - only used for imaging characteristics check
+  inline float ImagePropertyDifference(float input_1, float input_2, float threshold = 10e-5)
+  {
+    auto percentageDifference = std::abs(input_1 - input_2);
+    // perform an absolute check when either of the direction cosine location is zero
+    if ((input_1 == 0) || (input_2 == 0))
+    {
+      if (percentageDifference < threshold)
+      {
+        percentageDifference = 0;
+      }
+      else
+      {
+        // otherwise, calculate the percentage based on the non-zero cosine
+        if (input_1 == 0)
+        {
+          percentageDifference /= input_1;
+        }
+        else if (input_2 == 0)
+        {
+          percentageDifference /= input_1;
+        }
+      }
+    }
+    return percentageDifference * 100;
+  }
+
   /**
   \brief Wrap of GetPixelValues
   */
@@ -413,30 +440,7 @@ namespace cbica
       {
         if (directions_1[i][j] != directions_2[i][j])
         {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]);
-          // perform an absolute check when either of the direction cosine location is zero
-          if ((directions_1[i][j] == 0) || (directions_2[i][j] == 0))
-          {
-            auto threshold = 10e-5; // chose as a very small number, which is greater than std::numeric_traits<float>::epsilon() for comparison purposes
-            if (percentageDifference < threshold)
-            {
-              std::cerr << "Ignoring absolute difference of " << percentageDifference << " at location '[" << i << "," << j << "]' of direction matrix.\n";
-              percentageDifference = 0;
-            }
-            else
-            {
-              // otherwise, calculate the percentage based on the non-zero cosine
-              if (directions_1[i][j] == 0)
-              {
-                percentageDifference /= directions_2[i][j];
-              }
-              else if (directions_2[i][j] == 0)
-              {
-                percentageDifference /= directions_1[i][j];
-              }
-            }
-          }
-          percentageDifference *= 100;
+          auto percentageDifference = ImagePropertyDifference(directions_1[i][j], directions_2[i][j]);
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
@@ -465,7 +469,7 @@ namespace cbica
       }
       if (origin_1[d] != origin_2[d])
       {
-        auto percentageDifference = std::abs(origin_1[d] - origin_2[d]) * 100 / std::abs(origin_1[d]);
+        auto percentageDifference = ImagePropertyDifference(origin_1[d], origin_2[d]);
         if (percentageDifference > nifti2dicomOriginTolerance)
         {
           std::cerr << "Origin mismatch > " << percentageDifference <<
@@ -483,8 +487,7 @@ namespace cbica
       }
       if (spacing_1[d] != spacing_2[d])
       {
-        auto percentageDifference = std::abs(spacing_1[d] - spacing_2[d]) * 100;
-        percentageDifference /= spacing_1[d];
+        auto percentageDifference = ImagePropertyDifference(spacing_1[d], spacing_2[d]);
         if (percentageDifference > nifti2dicomSpacingTolerance)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
@@ -550,8 +553,7 @@ namespace cbica
       }
       if (imageSpacing1[d] != imageSpacing2[d])
       {
-        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
-        percentageDifference /= imageSpacing1[d];
+        auto percentageDifference = ImagePropertyDifference(imageSpacing1[d], imageSpacing2[d]);
         if (percentageDifference > 0.0001)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
@@ -581,30 +583,7 @@ namespace cbica
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {
-            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]);
-            // perform an absolute check when either of the direction cosine location is zero
-            if ((imageDirs1[d][i] == 0) || (imageDirs2[d][i] == 0))
-            {
-              auto threshold = 10e-5; // chose as a very small number, which is greater than std::numeric_traits<float>::epsilon() for comparison purposes
-              if (percentageDifference < threshold)
-              {
-                std::cerr << "Ignoring absolute difference of " << percentageDifference << " at location '[" << d << "," << i << "]' of direction matrix.\n";
-                percentageDifference = 0;
-              }
-              else
-              {
-                // otherwise, calculate the percentage based on the non-zero cosine
-                if (imageDirs1[d][i] == 0)
-                {
-                  percentageDifference /= imageDirs2[d][i];
-                }
-                else if (imageDirs2[d][i] == 0)
-                {
-                  percentageDifference /= imageDirs1[d][i];
-                }
-              }
-            }
-            percentageDifference *= 100;
+            auto percentageDifference = ImagePropertyDifference(imageDirs1[d][i], imageDirs2[d][i]);
             if (percentageDifference > 0.0001)
             {
               std::cerr << "Direction mismatch at dimension '" << d << "'\n";
