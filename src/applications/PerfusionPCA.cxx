@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionPCA");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input directory.");
   parser.addRequiredParameter("t", "type", cbica::Parameter::INTEGER, "", "The option of preparing a new model (=0), and for testing on an existing model (=1)");
-  parser.addRequiredParameter("n", "number of PCAs", cbica::Parameter::FLOAT, "", "The number of principal components.");
+  parser.addOptionalParameter("n", "number of PCAs", cbica::Parameter::FLOAT, "", "The number of principal components.");
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addOptionalParameter("vt", "variance threshold", cbica::Parameter::FLOAT, "", "The variance threshold");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
@@ -72,12 +72,14 @@ int main(int argc, char **argv)
   applicationType = 0;
 
   float inputPCs = 0;
+  float varianceThreshold = 0.0;
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
 
   parser.getParameterValue("i", inputFileName);
   parser.getParameterValue("n", inputPCs);
   parser.getParameterValue("o", outputDirectoryName);
   parser.getParameterValue("t", applicationType);
+  parser.getParameterValue("vt", varianceThreshold);
 
   if (parser.isPresent("m"))
   {
@@ -145,7 +147,13 @@ int main(int argc, char **argv)
     object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
-    object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+  {
+	  if (parser.isPresent("n"))
+		  object_pca.SetNumberOfPCs(inputPCs);
+	  if (parser.isPresent("vt"))
+		  object_pca.SetVarianceThreshold(varianceThreshold);
+	  object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+  }
   else
   {
     parser.echoVersion();
