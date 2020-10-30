@@ -364,6 +364,33 @@ namespace cbica
     return returnVector;
   }
 
+  //! Function that does "soft" threshold checking of 2 numbers - only used for imaging characteristics check
+  inline float ImagePropertyDifference(float input_1, float input_2, float threshold = 10e-5)
+  {
+    auto percentageDifference = std::abs(input_1 - input_2);
+    // perform an absolute check when either of the direction cosine location is zero
+    if ((input_1 == 0) || (input_2 == 0))
+    {
+      if (percentageDifference < threshold)
+      {
+        percentageDifference = 0;
+      }
+      else
+      {
+        // otherwise, calculate the percentage based on the non-zero cosine
+        if (input_1 == 0)
+        {
+          percentageDifference /= input_1;
+        }
+        else if (input_2 == 0)
+        {
+          percentageDifference /= input_1;
+        }
+      }
+    }
+    return percentageDifference * 100;
+  }
+
   /**
   \brief Wrap of GetPixelValues
   */
@@ -381,7 +408,8 @@ namespace cbica
     const typename TImageType::Pointer image1, 
     const typename TImageType::Pointer image2,
     const float nifti2dicomTolerance = 0.0,
-    const float nifti2dicomOriginTolerance = 0.0)
+    const float nifti2dicomOriginTolerance = 0.0,
+    const float nifti2dicomSpacingTolerance = 0.0)
   {
     auto size_1 = image1->GetLargestPossibleRegion().GetSize();
     auto size_2 = image2->GetLargestPossibleRegion().GetSize();
@@ -412,7 +440,7 @@ namespace cbica
       {
         if (directions_1[i][j] != directions_2[i][j])
         {
-          auto percentageDifference = std::abs(directions_1[i][j] - directions_2[i][j]) * 100 / std::abs(directions_1[i][j]);
+          auto percentageDifference = ImagePropertyDifference(directions_1[i][j], directions_2[i][j]);
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
@@ -422,7 +450,7 @@ namespace cbica
               "Direction matrix for input 2:\n" << directions_2 << "\n";
             return false;
           }
-          else
+          else if (percentageDifference != 0)
           {
             std::cout << "Ignoring direction difference of '" <<
               percentageDifference << "%' in location '[" <<
@@ -441,7 +469,7 @@ namespace cbica
       }
       if (origin_1[d] != origin_2[d])
       {
-        auto percentageDifference = std::abs(origin_1[d] - origin_2[d]) * 100 / std::abs(origin_1[d]);
+        auto percentageDifference = ImagePropertyDifference(origin_1[d], origin_2[d]);
         if (percentageDifference > nifti2dicomOriginTolerance)
         {
           std::cerr << "Origin mismatch > " << percentageDifference <<
@@ -459,9 +487,8 @@ namespace cbica
       }
       if (spacing_1[d] != spacing_2[d])
       {
-        auto percentageDifference = std::abs(spacing_1[d] - spacing_2[d]) * 100;
-        percentageDifference /= spacing_1[d];
-        if (percentageDifference > 0.0001)
+        auto percentageDifference = ImagePropertyDifference(spacing_1[d], spacing_2[d]);
+        if (percentageDifference > nifti2dicomSpacingTolerance)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
           return false;
@@ -526,8 +553,7 @@ namespace cbica
       }
       if (imageSpacing1[d] != imageSpacing2[d])
       {
-        auto percentageDifference = std::abs(imageSpacing1[d] - imageSpacing2[d]) * 100;
-        percentageDifference /= imageSpacing1[d];
+        auto percentageDifference = ImagePropertyDifference(imageSpacing1[d], imageSpacing2[d]);
         if (percentageDifference > 0.0001)
         {
           std::cerr << "Spacing mismatch at dimension '" << d << "'\n";
@@ -557,13 +583,13 @@ namespace cbica
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {
-            auto percentageDifference = std::abs(imageDirs1[d][i] - imageDirs2[d][i]) * 100 / imageDirs1[d][i];
+            auto percentageDifference = ImagePropertyDifference(imageDirs1[d][i], imageDirs2[d][i]);
             if (percentageDifference > 0.0001)
             {
               std::cerr << "Direction mismatch at dimension '" << d << "'\n";
               return false;
             }
-            else
+            else if (percentageDifference != 0)
             {
               std::cout << "Ignoring direction difference of '" <<
                 percentageDifference << "%' in dimension '" <<

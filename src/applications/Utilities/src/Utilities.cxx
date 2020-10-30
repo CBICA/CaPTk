@@ -74,7 +74,7 @@ int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
-float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0, nifti2dicomSpacingTolerance = 0;
 int joinedImage2stackedAxis;
 
 bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false;
@@ -514,7 +514,7 @@ int algorithmsRunner()
     {
       prevOutput = true;
     }
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance);
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance, nifti2dicomSpacingTolerance);
     if (!prevOutput)
     {
       if (cbica::exists(outputImageFile))
@@ -526,6 +526,7 @@ int algorithmsRunner()
         std::cerr << "Tolerance values:\n";
         std::cerr << "  Direction: " << nifti2dicomTolerance << "%\n";
         std::cerr << "     Origin: " << nifti2dicomOriginTolerance << "%\n";
+        std::cerr << "    Spacing: " << nifti2dicomSpacingTolerance << "%\n";
         std::cerr << "Couldn't write DICOM series.\n";
         return EXIT_FAILURE;
       }
@@ -859,14 +860,12 @@ int algorithmsRunner()
     {
       thresholder->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
     }
-    thresholder->SetOutsideValue(thresholdOutsideValue);
-    thresholder->SetInsideValue(thresholdInsideValue);
+    thresholder->SetOutsideValue(1);
+    thresholder->SetInsideValue(0);
     thresholder->Update();
     std::cout << "Otsu Threshold Value: " << thresholder->GetThreshold() << "\n";
 
-    auto invertIntensityFilter = itk::InvertIntensityImageFilter< TImageType >::New();
-    invertIntensityFilter->SetInput(thresholder->GetOutput());
-    cbica::WriteImage< TImageType >(invertIntensityFilter->GetOutput(), outputImageFile);
+    cbica::WriteImage< TImageType >(thresholder->GetOutput(), outputImageFile);
   }
   else if (requestedAlgorithm == ConvertFormat)
   {
@@ -1116,8 +1115,11 @@ int algorithmsRunner()
     if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
     {
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
-      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
-      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      auto input = cbica::ReadImage< TImageType >(inputImageFile);
+      auto mask = cbica::ReadImage< TImageType >(inputMaskFile);
+      mask->CopyInformation(input); // sanity check as already passed at this point, this ensures itk filter works
+      masker->SetInput(input);
+      masker->SetMaskImage(mask);
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
     }
@@ -1136,6 +1138,8 @@ int algorithmsRunner()
       auto inputImages = cbica::GetExtractedImages<
         TImageType, TBaseImageType >(
           inputImage);
+
+      maskImage->CopyInformation(inputImages[0]); // sanity check as already passed at this point, this ensures itk filter works
 
       std::vector< typename TBaseImageType::Pointer > outputImages;
       outputImages.resize(inputImages.size());
@@ -1239,7 +1243,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file", "Pass a directory to '-o' if you want the JSON information");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
-  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
+  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting origins,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
+  parser.addOptionalParameter("ndS", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The spacing tolerance for DICOM writing", "Because NIfTI images have issues converting spacings,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomSpacingTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
@@ -1249,7 +1254,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("thA", "threshAbove", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("thB", "threshBelow", cbica::Parameter::FLOAT, "Desired_Threshold", "The intensity BELOW which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
   parser.addOptionalParameter("tAB", "threshAnB", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensities outside Lower and Upper thresholds will be", "made to OUTSIDE_VALUE (use '-tOI')", "Generates a grayscale image");
-  parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Use '-tOI' to set Outside and Inside Values", "Optional mask to localize Otsu search area");
+  parser.addOptionalParameter("thO", "threshOtsu", cbica::Parameter::BOOLEAN, "0-1", "Whether to do Otsu threshold", "Generates a binary image which has been thresholded using Otsu", "Optional mask to localize Otsu search area");
   parser.addOptionalParameter("tBn", "thrshBinary", cbica::Parameter::STRING, "Lower_Threshold,Upper_Threshold", "The intensity BELOW and ABOVE which pixels of the input image will be", "made to OUTSIDE_VALUE (use '-tOI')", "Default for OUTSIDE_VALUE=0");
   parser.addOptionalParameter("tOI", "threshOutIn", cbica::Parameter::STRING, "Outside_Value,Inside_Value", "The values that will go inside and outside the thresholded region", "Defaults to '0,1', i.e., a binary output");
   parser.addOptionalParameter("i2w", "image2world", cbica::Parameter::STRING, "x,y,z", "The image coordinates that will be converted to world coordinates for the input image", "Example: '-i2w 10,20,30'");
@@ -1357,6 +1362,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("ndO"))
     {
       parser.getParameterValue("ndO", nifti2dicomOriginTolerance);
+    }
+    if (parser.isPresent("ndS"))
+    {
+      parser.getParameterValue("ndO", nifti2dicomSpacingTolerance);
     }
   }
   else if (parser.isPresent("ds"))

@@ -1110,6 +1110,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           else
           {
             std::cerr << "Unsupported binning type selected; defaulting to FixedBinNumber.\n";
+            m_histogramBinningType = HistogramBinningType::FixedBinNumber;
           }
         }
         else if (outer_key == ParamsString[Resampling])
@@ -2616,11 +2617,24 @@ void FeatureExtraction< TImage >::Update()
                         m_Radius = m_Radius_range[r];
                         auto m_Radius_string = std::to_string(m_Radius);
 
-                        CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        bool sizeIsFine = true;
+                        auto size = currentInputImage_patch->GetLargestPossibleRegion().GetSize();
+                        for (size_t d = 0; d < TImageType::ImageDimension; d++)
+                        {
+                          if (size[d] < (m_Radius + 2)) // this is the size needs to be checked
+                          {
+                            sizeIsFine = false;
+                          }
+                        }
 
-                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
-                          "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
-                          ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (sizeIsFine)
+                        {
+                          CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+
+                          WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                            "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
+                            ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
                       } // end radius-loop
 
                       if (m_debug)
