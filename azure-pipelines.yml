@@ -22,8 +22,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
   
-  pool: 
-    vmImage: 'ubuntu-18.04'
+  pool: 'Ubuntu_18.04' # Refers to /home/cbica-devs/Workspace/captk1-docker-build/ on crete's ubuntu18.04-selfhosting VM
     
   steps:
     - task: Docker@2
