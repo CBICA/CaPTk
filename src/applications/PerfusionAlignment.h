@@ -27,6 +27,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkStatisticsImageFilter.h"
 #include "itkOtsuThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
+#include "itkChangeInformationImageFilter.h"
 
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
@@ -192,6 +193,16 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     return std::make_pair(PerfusionAlignment, maskImage);
   }
 
+  auto inputSpacing = perfImagePointerNifti->GetSpacing();
+  inputSpacing[3] = timeresolution;
+
+  auto infoChanger = itk::ChangeInformationImageFilter< PerfusionImageType >::New();
+  infoChanger->SetInput(perfImagePointerNifti);
+  infoChanger->SetOutputSpacing(inputSpacing);
+  infoChanger->ChangeSpacingOn();
+  infoChanger->Update();
+  perfImagePointerNifti = infoChanger->GetOutput();
+
   auto perfusionImageVolumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(perfImagePointerNifti);
   auto t1ceImagePointer = perfusionImageVolumes[0];
 
@@ -269,12 +280,11 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); 
     std::cout << "Started resampling.\n";
     // Resize
-    auto inputSpacing = perfImagePointerNifti->GetSpacing();
-    inputSpacing[3] = timeresolution;
     auto outputSpacing = inputSpacing;
     outputSpacing[3] = time_outputPerfTime;
 
     auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, "linear", true);
+    cbica::WriteImage< ImageTypeFloat4D >(resampledPerfusion, "C:/Users/sarth/Downloads/perfusion_test/windows3/perfusion_resampled.nii.gz");
     auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
     
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
