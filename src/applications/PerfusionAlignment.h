@@ -270,6 +270,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     std::cout << "Started resampling.\n";
     // Resize
     auto inputSpacing = perfImagePointerNifti->GetSpacing();
+    inputSpacing[3] = timeresolution;
     auto outputSpacing = inputSpacing;
     outputSpacing[3] = time_outputPerfTime;
 
