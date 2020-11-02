@@ -284,7 +284,6 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     outputSpacing[3] = time_outputPerfTime;
 
     auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, "linear", true);
-    cbica::WriteImage< ImageTypeFloat4D >(resampledPerfusion, "C:/Users/sarth/Downloads/perfusion_test/windows3/perfusion_resampled.nii.gz");
     auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
     
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
