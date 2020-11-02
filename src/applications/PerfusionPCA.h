@@ -84,13 +84,22 @@ public:
   void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
 
   //determine # PCs based on user provided variance threshold
-  void DetermineNumberOdfPCsFromVariance() {}
+  int DetermineNumberOdfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance);
+
+  void SetVarianceThreshold(float threshold);
+
+  void SetNumberOfPCs(int pcs);
 
 private:
 
 	int m_TotalTimePoints = 0;
 
 	PerfusionMapType m_PerfusionDataMap;
+
+	float m_VarianceThreshold = 0.0;
+	float m_NumberOfPCs = 0.0;
+	bool m_VarianceThresholdDefined = false;
+	bool m_NumberOfPCsDefined = false;
 
 };
 
