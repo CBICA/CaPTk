@@ -376,10 +376,9 @@ int PerfusionPCA::DetermineNumberOdfPCsFromVariance(vtkSmartPointer<vtkDoubleArr
 		int counter = 0;
 		for (vtkIdType i = 0; i < variance->GetNumberOfValues(); i++)
 		{
-			counter++; //we need to include the last component. This will increase the counter by 1
+			counter++; //we need to include the last component. 
 			if (variance->GetValue(i) > (this->m_VarianceThreshold/100.0))
 				break;
-			//counter++;
 		}
 		numberOfPCs = counter;
 	}
