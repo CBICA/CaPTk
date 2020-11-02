@@ -293,7 +293,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   //write model files
   WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv");
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
-  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv");
+  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected data in the reduced dimensionality space
   WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv");
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
@@ -319,7 +319,9 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     regionIndex[3] = 0;
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
-    for (int i = 0; i < number; i++)
+	int n = this->DetermineNumberOdfPCsFromVariance(variance);
+	std::cout << " number of PCs under given threshold: " << n << std::endl;
+    for (int i = 0; i < n; i++)
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
@@ -361,4 +363,37 @@ void PerfusionPCA::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath
 	for (vtkIdType i = 0; i < inputdata->GetNumberOfValues(); i++)
 		myfile << std::to_string(inputdata->GetValue(i)) << std::endl;
 	myfile.close();
+}
+
+int PerfusionPCA::DetermineNumberOdfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance)
+{
+	int numberOfPCs = 0;
+
+	if (this->m_NumberOfPCsDefined) //number of PCs provided by user
+		numberOfPCs = this->m_NumberOfPCs;
+	else if (this->m_VarianceThresholdDefined)//variance threshold provided by the user
+	{
+		int counter = 0;
+		for (vtkIdType i = 0; i < variance->GetNumberOfValues(); i++)
+		{
+			counter++; //we need to include the last component. This will increase the counter by 1
+			if (variance->GetValue(i) > (this->m_VarianceThreshold/100.0))
+				break;
+			//counter++;
+		}
+		numberOfPCs = counter;
+	}
+	return numberOfPCs;
+}
+
+void PerfusionPCA::SetVarianceThreshold(float threshold)
+{
+	this->m_VarianceThreshold = threshold;
+	this->m_VarianceThresholdDefined = true;
+}
+
+void PerfusionPCA::SetNumberOfPCs(int pcs)
+{
+	this->m_NumberOfPCs = pcs;
+	this->m_NumberOfPCsDefined = true;
 }
