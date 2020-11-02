@@ -77,7 +77,7 @@ float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, th
 float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0, nifti2dicomSpacingTolerance = 0;
 int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false, resampleTime = false;
 
 std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
 
@@ -317,7 +317,7 @@ int algorithmsRunner()
         outputSpacing[d] = std::atof(resolution_split[d].c_str());
       }
     }
-    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
+    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator, resampleTime);
 
     // round if user has passed '-rm 1'
     if (resamplingMasks)
@@ -1229,6 +1229,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rf", "resampleReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
   parser.addOptionalParameter("ri", "resampleInterp", cbica::Parameter::STRING, "NEAREST:NEARESTLABEL:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR", "Use NEARESTLABEL for multi-label masks");
   parser.addOptionalParameter("rm", "resampleMask", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Rounds the output of the resample, useful for resampling masks", "Defaults to '0'");
+  parser.addOptionalParameter("rt", "resampleTime", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Whether to resample the 4th dimension as well (useful for perfusion alignment)", "Defaults to '0'");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
@@ -1408,6 +1409,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rm", resamplingMasks);
     }
+    if (parser.isPresent("rt"))
+    {
+      parser.getParameterValue("rt", resampleTime);
+    }
   }
   else if (parser.isPresent("rf"))
   {
@@ -1420,6 +1425,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("rm"))
     {
       parser.getParameterValue("rm", resamplingMasks);
+    }
+    if (parser.isPresent("rt"))
+    {
+      parser.getParameterValue("rt", resampleTime);
     }
   }
   else if (parser.isPresent("s"))
