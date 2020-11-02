@@ -81,6 +81,12 @@ int main(int argc, char **argv)
   parser.getParameterValue("t", applicationType);
   parser.getParameterValue("vt", varianceThreshold);
 
+  //TBD: if user provides both n and vt, then dont run app
+  //put a msg to provide any one
+
+  //if user doesnt provide any, give a msg stating that we will provide all PCs
+  // and that the run will take quite some time and request for confirmation
+  // if they can provide n or vt, press yes or no to provide vt.
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", modelDirectoryName);
