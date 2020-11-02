@@ -83,6 +83,11 @@ int main(int argc, char **argv)
 
   //TBD: if user provides both n and vt, then dont run app
   //put a msg to provide any one
+  if (parser.isPresent("n") && parser.isPresent("vt"))
+  {
+	  std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
+	  return EXIT_FAILURE;
+  }
 
   //if user doesnt provide any, give a msg stating that we will provide all PCs
   // and that the run will take quite some time and request for confirmation
