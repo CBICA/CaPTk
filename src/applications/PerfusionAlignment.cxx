@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
   if (!PerfusionAlignment.empty())
   {
-    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment, time_outputPerfTime);
     cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputDirectoryName + "/perfusionAlignedImage.nii.gz");
 
     cbica::WriteImage< ImageTypeFloat3D >(calculatedMask, outputDirectoryName + "/calculatedMask.nii.gz");
