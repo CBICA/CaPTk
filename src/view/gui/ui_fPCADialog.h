@@ -144,6 +144,7 @@ public:
     testSubjectsDirectoryName->setSizePolicy(sizePolicy13);
     testSubjectsDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
+	//this is the blank line edit field underneath the selected subjects
     existingMaskDirectoryName = new QLineEdit(classificationGroupBox);
     existingMaskDirectoryName->setObjectName(QString::fromUtf8("existingMaskDirectoryName"));
     sizePolicy13.setHeightForWidth(existingMaskDirectoryName->sizePolicy().hasHeightForWidth());
@@ -165,6 +166,7 @@ public:
     testSubjectsDirectoryButton->setText(QString("Browse"));
     testSubjectsDirectoryButton->setToolTip(QString("Directory containing Test subjects"));
 
+	//where is this used?
     existingMasksButton = new QPushButton(classificationGroupBox);
     existingMasksButton->setObjectName(QString::fromUtf8("existingMasksButton"));
     //existingMasksButton->setIcon(ButtonIcon);
