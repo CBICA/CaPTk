@@ -90,6 +90,8 @@ public:
 
   void SetNumberOfPCs(int pcs);
 
+  void RequestPerfusionDataWholePopulation(bool request);
+
 private:
 
 	int m_TotalTimePoints = 0;
@@ -100,7 +102,7 @@ private:
 	float m_NumberOfPCs = 0.0;
 	bool m_VarianceThresholdDefined = false;
 	bool m_NumberOfPCsDefined = false;
-
+	bool m_PerfusionDataForWholePopulationRequested = false;
 };
 
 template<class PerfusionImageType, class ImageType>
