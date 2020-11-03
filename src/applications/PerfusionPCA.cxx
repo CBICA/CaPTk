@@ -74,16 +74,28 @@ int main(int argc, char **argv)
   float inputPCs = 0;
   float varianceThreshold = 0.0;
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
+  bool m_nPCsDefined = false;
+  bool m_varianceThresholdDefined = false;
 
   parser.getParameterValue("i", inputFileName);
-  parser.getParameterValue("n", inputPCs);
   parser.getParameterValue("o", outputDirectoryName);
   parser.getParameterValue("t", applicationType);
-  parser.getParameterValue("vt", varianceThreshold);
 
-  //TBD: if user provides both n and vt, then dont run app
+  if (parser.isPresent("n"))
+  {
+	  m_nPCsDefined = true;
+	  parser.getParameterValue("n", inputPCs);
+  }
+
+  if (parser.isPresent("vt"))
+  {
+	  m_varianceThresholdDefined = true;
+	  parser.getParameterValue("vt", varianceThreshold);
+  }
+
+  //if user provides both n and vt, then dont run app
   //put a msg to provide any one
-  if (parser.isPresent("n") && parser.isPresent("vt"))
+  if (m_nPCsDefined && m_varianceThresholdDefined)
   {
 	  std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
 	  return EXIT_FAILURE;
@@ -92,6 +104,23 @@ int main(int argc, char **argv)
   //if user doesnt provide any, give a msg stating that we will provide all PCs
   // and that the run will take quite some time and request for confirmation
   // if they can provide n or vt, press yes or no to provide vt.
+  if (!m_nPCsDefined && !m_varianceThresholdDefined)
+  {
+	  std::cout << "You did not provide the number of principal components or the variance threshold. \
+We will provide all principal components. The application will take a long time to run. \
+Do you want to continue? Press 'y' to contine or 'n' to exit and provide either of the parameters.";
+	  char ch = cin.get();
+	  if (ch == 'y')
+	  {
+		  m_varianceThresholdDefined = true;
+		  varianceThreshold = 100.0;
+	  }
+	  else
+	  {
+		  std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
+		  return EXIT_FAILURE;
+	  }
+  }
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", modelDirectoryName);
@@ -159,9 +188,9 @@ int main(int argc, char **argv)
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
-	  if (parser.isPresent("n"))
+	  if (m_nPCsDefined)
 		  object_pca.SetNumberOfPCs(inputPCs);
-	  if (parser.isPresent("vt"))
+	  if (m_varianceThresholdDefined)
 		  object_pca.SetVarianceThreshold(varianceThreshold);
 	  object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   }
