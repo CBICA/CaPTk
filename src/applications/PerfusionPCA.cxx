@@ -57,6 +57,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("n", "number of PCAs", cbica::Parameter::FLOAT, "", "The number of principal components.");
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The directory having PCA models");
   parser.addOptionalParameter("vt", "variance threshold", cbica::Parameter::FLOAT, "", "The variance threshold");
+  parser.addOptionalParameter("dif", "dump intermediate files", cbica::Parameter::BOOLEAN, "", "Write intermediate file containing perfusion data for whole population.");
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   parser.addExampleUsage("-t 0 -i C:/properly/formatted/inputDir -o C:/outputDir -n 5", "Trains a new model based on the samples in inputDir");
@@ -76,10 +77,20 @@ int main(int argc, char **argv)
   std::string inputFileName, inputMaskName, outputDirectoryName, modelDirectoryName;
   bool m_nPCsDefined = false;
   bool m_varianceThresholdDefined = false;
+  bool dif = false;
 
   parser.getParameterValue("i", inputFileName);
   parser.getParameterValue("o", outputDirectoryName);
   parser.getParameterValue("t", applicationType);
+  
+  if(parser.isPresent("dif"))
+  {
+	  parser.getParameterValue("dif", dif);
+  }
+  else
+	  dif = false;
+
+  std::cout << " dif: " << dif << std::endl;
 
   if (parser.isPresent("n"))
   {
@@ -194,6 +205,8 @@ Do you want to continue? Press 'y' to contine or 'n' to exit and provide either 
 		  object_pca.SetVarianceThreshold(varianceThreshold);
 	  //we won't have a situation here that both m_nPCsDefined and m_varianceThresholdDefined
 	  //are defined or not defined. These are handled upstream.
+
+	  object_pca.RequestPerfusionDataWholePopulation(dif);
 	  object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   }
   else
