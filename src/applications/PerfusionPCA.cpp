@@ -300,9 +300,10 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   //write model files
 
   //only need 3 files: mean, pca_perf and variance
-  WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv");
-  WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
-  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
+  WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv"); //t x t square matrix
+  WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //
+  if(this->m_PerfusionDataForWholePopulationRequested)
+	WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
   WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv"); //can be read from 45x45 matrix, not needed
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
@@ -404,4 +405,9 @@ void PerfusionPCA::SetNumberOfPCs(int pcs)
 {
 	this->m_NumberOfPCs = pcs;
 	this->m_NumberOfPCsDefined = true;
+}
+
+void PerfusionPCA::RequestPerfusionDataWholePopulation(bool request)
+{
+	this->m_PerfusionDataForWholePopulationRequested = request;
 }
