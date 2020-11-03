@@ -6,11 +6,15 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 
   std::vector<int> sizes;
   VectorVectorDouble CombinedPerfusionFeaturesMap;
+  std::cout << " perfusion data map size: " << PerfusionDataMap.size() << std::endl;
+  
+  int nc = 0;
   for (auto const &mapiterator : PerfusionDataMap)
   {
     VariableSizeMatrixType Features = std::get<1>(mapiterator.second);
+	std::cout << " rows in perfusiondatamap # " << nc << " = " << Features.Rows() << std::endl;
     sizes.push_back(Features.Rows());
-    for (unsigned int i = 0; i < Features.Rows(); i++)
+    for (unsigned int i = 0; i < Features.Rows(); i++) //features.rows = # number of indices in mask
     {
       VectorDouble oneVector;
 	  //Features number of columns  = total time points
@@ -18,6 +22,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
         oneVector.push_back(Features(i, j));
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
+	nc++;
   }
 
   FeatureReductionClass m_featureReduction;
@@ -104,7 +109,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], 10); //extracting 10 PCAs
+    OnePatietnPerfusionData.SetSize(sizes[index], 10); //extracting 10 PCAs?
 
     if (index != 0)
       start = start + sizes[index - 1];
@@ -122,6 +127,8 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
 
 bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
 {
+	//TBD: testing part in PsP + chiharu to provide matlab & python codes
+
   PerfusionMapType PerfusionDataMap;
 
   //Extracting perfusion data of all the patients and putting in PerfusionDataMap
@@ -291,10 +298,12 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   std::vector<int> timepointvector = { this->m_TotalTimePoints };
 
   //write model files
+
+  //only need 3 files: mean, pca_perf and variance
   WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv");
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv");
-  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected data in the reduced dimensionality space
-  WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv");
+  WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
+  WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv"); //can be read from 45x45 matrix, not needed
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
   //Putting back in images of respective patients
