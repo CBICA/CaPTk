@@ -190,8 +190,10 @@ Do you want to continue? Press 'y' to contine or 'n' to exit and provide either 
   {
 	  if (m_nPCsDefined)
 		  object_pca.SetNumberOfPCs(inputPCs);
-	  if (m_varianceThresholdDefined)
+	  else if (m_varianceThresholdDefined)
 		  object_pca.SetVarianceThreshold(varianceThreshold);
+	  //we won't have a situation here that both m_nPCsDefined and m_varianceThresholdDefined
+	  //are defined or not defined. These are handled upstream.
 	  object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
   }
   else
