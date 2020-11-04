@@ -70,17 +70,36 @@ void fTrainingSimulator::OptimizationToggled(bool on)
 {
     if (on)
     {
-        cMinimumSpinbox->setEnabled(true);
+        cMinimumSpinbox->setEnabled(true); 
         cMaximumSpinbox->setEnabled(true);
         gMinimumSpinbox->setEnabled(true);
         gMaximumSpinbox->setEnabled(true);
+        cMinimumSpinbox->setVisible(true);
+        cMaximumSpinbox->setVisible(true);
+        gMinimumSpinbox->setVisible(true);
+        gMaximumSpinbox->setVisible(true);
+
+        cMinimumLabel->setVisible(true);
+        cMaximumLabel->setVisible(true);
+        gMinimumLabel->setVisible(true);
+        gMaximumLabel->setVisible(true);
     }
     else
     {
+        // Just for indicating to the user -- the values still get passed but hopefully unused
         cMinimumSpinbox->setEnabled(false);
         cMaximumSpinbox->setEnabled(false);
         gMinimumSpinbox->setEnabled(false);
         gMaximumSpinbox->setEnabled(false);
+        cMinimumSpinbox->setVisible(false);
+        cMaximumSpinbox->setVisible(false);
+        gMinimumSpinbox->setVisible(false);
+        gMaximumSpinbox->setVisible(false);
+
+        cMinimumLabel->setVisible(false);
+        cMaximumLabel->setVisible(false);
+        gMinimumLabel->setVisible(false);
+        gMaximumLabel->setVisible(false);
     }
 }
 void fTrainingSimulator::CancelButtonPressed()

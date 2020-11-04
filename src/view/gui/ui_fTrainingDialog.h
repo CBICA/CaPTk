@@ -208,7 +208,7 @@ public:
     cMinimumSpinbox = new QDoubleSpinBox(paramsGroupBox);
     cMinimumSpinbox->setMaximum(99.9);
     cMinimumSpinbox->setMinimum(-99.9);
-    cMinimumSpinbox->setValue(5.0);
+    cMinimumSpinbox->setValue(-5.0);
     cMinimumSpinbox->setVisible(false);
     cMaximumSpinbox = new QDoubleSpinBox(paramsGroupBox);
     cMaximumSpinbox->setMaximum(99.9);
@@ -218,7 +218,7 @@ public:
     gMinimumSpinbox = new QDoubleSpinBox(paramsGroupBox);
     gMinimumSpinbox->setMaximum(99.9);
     gMinimumSpinbox->setMinimum(-99.9);
-    gMinimumSpinbox->setValue(5.0);
+    gMinimumSpinbox->setValue(-5.0);
     gMinimumSpinbox->setVisible(false);
     gMaximumSpinbox = new QDoubleSpinBox(paramsGroupBox);
     gMaximumSpinbox->setMaximum(99.9);
@@ -227,9 +227,13 @@ public:
     gMaximumSpinbox->setVisible(false);
 
     cMinimumLabel = new QLabel("C Minimum power");
+    cMinimumLabel->setVisible(false);
     cMaximumLabel = new QLabel("C Maximum power");
+    cMaximumLabel->setVisible(false);
     gMinimumLabel = new QLabel("G Minimum power");
+    gMinimumLabel->setVisible(false);
     gMaximumLabel = new QLabel("G Maximum power");
+    gMaximumLabel->setVisible(false);
 
     paramsGridLayout->addWidget(parametersLabel, 0, 0, 1, 1); 
     paramsGridLayout->addWidget(crossvalidationLabel, 0, 2, 1, 1); 

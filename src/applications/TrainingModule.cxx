@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   parser.addOptionalParameter("Cmax", "csearchmaximum", cbica::Parameter::FLOAT, "", "Log2 of the higher bound of the C hyperparameter search space (used for optimization)");
   parser.addOptionalParameter("Cmin", "csearchmaximum", cbica::Parameter::FLOAT, "", "Log2 of the lower bound of the C hyperparameter search space (used for optimization)");
   parser.addOptionalParameter("Gmax", "gsearchminimum", cbica::Parameter::FLOAT, "", "Log2 of the higher bound of the Gamma hyperparameter search space (used for optimization)");
-  parser.addOptionalParameter("Gmin", "gsearchminimum", cbica::Parameter::FLOAT, "", "Log2 of the lower bound of the Gamma hyperparameter search space (used for optimization)");
+  parser.addOptionalParameter("Gmin", "gsearchmaximum", cbica::Parameter::FLOAT, "", "Log2 of the lower bound of the Gamma hyperparameter search space (used for optimization)");
 
   parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The model directory (needed only when n=3)");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
