@@ -56,6 +56,8 @@ int main(int argc, char *argv[])
   int confType=1;
 
   TrainingModule mTrainingSimulator;
+  TrainingModuleParameters params; // Track parameters to be passed to TrainingModule with this
+
   if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
   {
     parser.echoUsage();
@@ -81,45 +83,55 @@ int main(int argc, char *argv[])
   if (parser.compareParameter("f", tempPosition))
   {
     inputFeaturesFile = argv[tempPosition + 1];
+    params.inputFeaturesFile = inputFeaturesFile;
     std::cout << "Input Features File:"<<inputFeaturesFile << std::endl;
   }
   if (parser.compareParameter("l", tempPosition))
   {
     inputLabelsFile = argv[tempPosition + 1];
+    params.inputLabelsFile = inputLabelsFile;
     std::cout << "Input Labels File:" << inputLabelsFile << std::endl;
   }
   if (parser.compareParameter("o", tempPosition))
   {
     outputDirectoryName = argv[tempPosition + 1];
+    params.outputDirectory = outputDirectoryName;
     cbica::createDir(outputDirectoryName);
   }
   if (parser.compareParameter("m", tempPosition))
   {
     modelDirectoryName = argv[tempPosition + 1];
+    params.modelDirectory = modelDirectoryName;
   }
   if (parser.compareParameter("c", tempPosition))
   {
     classifierType = atoi(argv[tempPosition + 1]);
+    params.classifierType = classifierType;
   }
   if (parser.compareParameter("s", tempPosition))
   {
     featureselectionType = atoi(argv[tempPosition + 1]);
+    params.featureSelectionType = featureselectionType;
   }
   if (parser.compareParameter("k", tempPosition))
   {
     foldType = atoi(argv[tempPosition + 1]);
+    params.folds = foldType;
   }
   if (parser.compareParameter("n", tempPosition))
   {
     confType = atoi(argv[tempPosition + 1]);
+    params.configurationType = confType;
   }
   if (parser.compareParameter("p", tempPosition))
   {
     optimizationType = atoi(argv[tempPosition + 1]);
+    params.optimizationType = optimizationType;
   }
   if (parser.compareParameter("r", tempPosition))
   {
     crossvalidationType = atoi(argv[tempPosition + 1]);
+    params.crossValidationType = crossvalidationType;
   }
   //TrainingModule mTrainingSimulator;
   std::cout << "Calling function" << std::endl;
@@ -141,7 +153,7 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
   }
-  if (mTrainingSimulator.Run(inputFeaturesFile, outputDirectoryName, inputLabelsFile, modelDirectoryName, classifierType, foldType, confType,featureselectionType,optimizationType, crossvalidationType) == true)
+  if (mTrainingSimulator.Run(params) == true)
     std::cout << "Finished successfully!!!\n";
   else
     std::cout << "Encountered an error!!!\n";

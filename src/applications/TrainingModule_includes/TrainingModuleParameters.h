@@ -46,7 +46,7 @@ public:
 	int configurationType;
 	int featureSelectionType;
 	int crossValidationType;
-	int foldType;
+	int folds;
 	int cMin, cMax;
 	int gMin, gMax;
 
