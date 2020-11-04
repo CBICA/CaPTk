@@ -32,7 +32,13 @@ int main(int argc, char *argv[])
   parser.addOptionalParameter("p", "hyperparameteroptimization", cbica::Parameter::INTEGER, "", "Whether parameters of the classifier need to be optimized or not during feature selection (1=yes, 2 =No)");
   parser.addOptionalParameter("r", "internalcrossvalidation", cbica::Parameter::INTEGER, "", "Internal cross-validation during feature selection (1=resubstitution, 2=5-fold)");
 
-  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The model direcory (needed only when n=3)");
+  // TBD: Ensure parameters list kernels/settings for which they are valid
+  parser.addOptionalParameter("Cmax", "csearchmaximum", cbica::Parameter::FLOAT, "", "Log2 of the higher bound of the C hyperparameter search space (used for optimization)");
+  parser.addOptionalParameter("Cmin", "csearchmaximum", cbica::Parameter::FLOAT, "", "Log2 of the lower bound of the C hyperparameter search space (used for optimization)");
+  parser.addOptionalParameter("Gmax", "gsearchminimum", cbica::Parameter::FLOAT, "", "Log2 of the higher bound of the Gamma hyperparameter search space (used for optimization)");
+  parser.addOptionalParameter("Gmin", "gsearchminimum", cbica::Parameter::FLOAT, "", "Log2 of the lower bound of the Gamma hyperparameter search space (used for optimization)");
+
+  parser.addOptionalParameter("m", "model", cbica::Parameter::STRING, "", "The model directory (needed only when n=3)");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("TrainingModule -f features2.csv -l labels2.csv -c 1 -o <output dir> -k 5");
   parser.addExampleUsage(" -f features2.csv -l labels2.csv -c 1 -s 1 -o <output dir> -k 5", 
@@ -54,6 +60,11 @@ int main(int argc, char *argv[])
   int crossvalidationType=1;
   int foldType=10;
   int confType=1;
+
+  double cMin = -5;
+  double cMax = 5;
+  double gMin = -5;
+  double gMax = 5;
 
   TrainingModule mTrainingSimulator;
   TrainingModuleParameters params; // Track parameters to be passed to TrainingModule with this
@@ -132,6 +143,26 @@ int main(int argc, char *argv[])
   {
     crossvalidationType = atoi(argv[tempPosition + 1]);
     params.crossValidationType = crossvalidationType;
+  }
+  if (parser.compareParameter("cMin", tempPosition))
+  {
+      cMin = atof(argv[tempPosition + 1]);
+      params.cMin = cMin;
+  }
+  if (parser.compareParameter("cMax", tempPosition))
+  {
+      cMax = atof(argv[tempPosition + 1]);
+      params.cMax = cMax;
+  }
+  if (parser.compareParameter("gMin", tempPosition))
+  {
+      gMin = atof(argv[tempPosition + 1]);
+      params.gMin = gMin;
+  }
+  if (parser.compareParameter("gMax", tempPosition))
+  {
+      gMax = atof(argv[tempPosition + 1]);
+      params.gMax = gMax;
   }
   //TrainingModule mTrainingSimulator;
   std::cout << "Calling function" << std::endl;

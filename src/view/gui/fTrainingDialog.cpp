@@ -22,6 +22,7 @@ fTrainingSimulator::fTrainingSimulator()
   connect(mCrossValidation, SIGNAL(toggled(bool)), this, SLOT(CrossValidationRadioButtonChecked()));
   connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(TrainRadioButtonChecked()));
   connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(TestRadioButtonChecked()));
+  connect(mOptimization, SIGNAL(toggled(bool)), this, SLOT(OptimizationToggled(bool)));
 
   cvLabel->setEnabled(false);
   mSplitModelDirectoryLabel->setEnabled(false);
@@ -64,6 +65,23 @@ void fTrainingSimulator::SplitTestRadioButtonChecked()
     mSplitModelDirectory->setEnabled(true);
     mSplitModelDirectoryButton->setEnabled(true);
   }
+}
+void fTrainingSimulator::OptimizationToggled(bool on)
+{
+    if (on)
+    {
+        cMinimumSpinbox->setEnabled(true);
+        cMaximumSpinbox->setEnabled(true);
+        gMinimumSpinbox->setEnabled(true);
+        gMaximumSpinbox->setEnabled(true);
+    }
+    else
+    {
+        cMinimumSpinbox->setEnabled(false);
+        cMaximumSpinbox->setEnabled(false);
+        gMinimumSpinbox->setEnabled(false);
+        gMaximumSpinbox->setEnabled(false);
+    }
 }
 void fTrainingSimulator::CancelButtonPressed()
 {
@@ -197,6 +215,10 @@ void fTrainingSimulator::ConfirmButtonPressed()
   params.inputLabelsFile = mInputTargetName.toStdString();
   params.outputDirectory = mOutputPathName.toStdString(); 
   params.modelDirectory = mModelDirectoryName.toStdString();
+  params.cMin = cMinimumSpinbox->value();
+  params.cMax = cMaximumSpinbox->value();
+  params.gMin = gMinimumSpinbox->value();
+  params.gMax = gMaximumSpinbox->value();
   emit RunTrainingSimulation(params);
   this->close();
 }

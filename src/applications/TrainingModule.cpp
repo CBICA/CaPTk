@@ -452,8 +452,8 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     double bestG = (double)1 / FinalSelectedFeatures.size();
     if (classifiertype == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
     {
-      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-        for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+      for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+        for (double gValue = params.gMin; gValue <= params.gMin; gValue = gValue + 1)
         {
           //this cross-validation mechanism trains and tests on the same dataset. 
           // we have another function avialable called 'InternalCrossValidation' that does cross-validation via 5-fold cross-validation. 
@@ -470,7 +470,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     }
     else // Linear SVM classifier
     {
-      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+      for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
       {
         VectorDouble result = InternalCrossValidationResubstitution(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), 0.1, classifiertype);
         if (result[3] > bestCV)
@@ -1256,7 +1256,8 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   double bestCV = 0;
   double bestC = 1;
-  for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
+
+  for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 2)
   {
     VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
     float value = (int)(result[0] * 10 + .5);
@@ -1536,7 +1537,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 
   double bestCV = 0;
   double bestC = 1;
-  for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
+  for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 2)
   {
     VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
     //float value = (int)(result[0] * 10 + .5);
@@ -1708,8 +1709,8 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures,
   if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
   {
     VectorDouble result;
-    for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-      for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+    for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+      for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
       {
         VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), pow(2, gValue), params.classifierType);
         if (result[3] > bestCV)
@@ -1722,7 +1723,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures,
   }
   else
   {
-    for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+    for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
     {
       VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
       if (result[3] > bestCV)
@@ -1977,8 +1978,8 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
       {
         if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
         {
-          for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-            for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+          for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+            for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
             {
               VectorDouble result;
               if (params.crossValidationType == 1)
@@ -1992,7 +1993,7 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
         }
         else // Linear SVM classifier
         {
-          for (double cValue = -5; cValue <=5; cValue = cValue + 1)
+          for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
           {
             VectorDouble result;
             if (cvtype == 1)
@@ -2092,8 +2093,8 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
       {
         //for now, we have constant ranges to search optimal values of C and Gamma parameters
         //should be changed in future to get these ranges from users
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-          for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+        for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+          for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
           {
             VectorDouble result;
             if (cvtype == 1)
@@ -2107,7 +2108,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
       }
       else // Linear SVM classifier
       {
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+        for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
         {
           VectorDouble result;
           if (cvtype == 1)

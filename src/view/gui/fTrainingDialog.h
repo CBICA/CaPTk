@@ -59,7 +59,8 @@ public slots:
   void SelectSplitModelDirectory();
   void CrossValidationRadioButtonChecked();
   void SplitTrainRadioButtonChecked();
-  void SplitTestRadioButtonChecked(); 
+  void SplitTestRadioButtonChecked();
+  void OptimizationToggled(bool);
 
 signals:
   void RunTrainingSimulation(const TrainingModuleParameters params);
