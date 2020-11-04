@@ -154,6 +154,7 @@ INCLUDE_DIRECTORIES( ${CaPTk_SOURCE_DIR}/src
   ${CaPTk_SOURCE_DIR}/src/applications
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction_includes
   ${CaPTk_SOURCE_DIR}/src/applications/WhiteStripe_includes
+  ${CaPTk_SOURCE_DIR}/src/applications/TrainingModule_includes
   ${CaPTk_SOURCE_DIR}/src/common/inc
   ${CaPTk_SOURCE_DIR}/src/applications/FeatureExtraction/src/depends
   ${CaPTk_SOURCE_DIR}/src/cbica_toolkit/src/IO/inc

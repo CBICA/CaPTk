@@ -23,6 +23,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
 #include "CaPTkEnums.h"
+#include "TrainingModuleParameters.h"
 
 
 #ifdef APP_BASE_CAPTK_H

@@ -461,7 +461,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
           }
         }
     }
-    else
+    else // Linear SVM classifier
     {
       for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
       {
@@ -1990,7 +1990,7 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
                 bestCV = result[3];
             }
         }
-        else
+        else // Linear SVM classifier
         {
           for (double cValue = -5; cValue <=5; cValue = cValue + 1)
           {
@@ -2005,7 +2005,7 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
           }
         }
       }
-      else
+      else // Optimization OFF
       {
         VectorDouble result;
         if (cvtype == 1)
@@ -2102,7 +2102,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
               bestCV = result[3];
           }
       }
-      else
+      else // Linear SVM classifier
       {
         for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
         {
@@ -2117,7 +2117,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
         }
       }
     }
-    else
+    else // Optimization OFF
     {
       VectorDouble result;
       if (cvtype == 1)
