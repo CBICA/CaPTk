@@ -33,10 +33,12 @@ class TrainingModuleParameters
 	// Pro: Localized here rather than spread across Training-related and/or GUI code
 	// Con: This is still a header change for each new parameter (recompiles).  
 
-	// TBD: Consider changing to a dictionary/map-type data structure to eliminate header changes
-	// Could use strings (or type, value string tuples) as an intermediate for conversion
+	// TBD: Consider changing to a dictionary/map-type data structure.
+	// Could use strings (or [type, default_value, shortname, description] string tuples?) as an intermediate for conversion & include default-getters
 
 public:
+	// Required
+	// These parameters must be set by the user interface generating this object.
 	int classifierType;
 	int optimizationType;
 	std::string inputFeaturesFile;
@@ -47,7 +49,11 @@ public:
 	int featureSelectionType;
 	int crossValidationType;
 	int folds;
-	int cMin, cMax;
-	int gMin, gMax;
+
+	// Options with valid defaults
+	// TrainingModule code should only use these if they are valid for the given input.
+	// (ex: don't use gamma [gmin/gmax] for any code that presupposes linear kernel SVM
+	double cMin = -5; double cMax = 5;
+	double gMin = -5; double gMax = 5;
 
 };
