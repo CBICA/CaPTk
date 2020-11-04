@@ -295,7 +295,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
 
   //create vector with 1 item representing total timepoints in input data
   //vector is needed for csv writer
-  std::vector<int> timepointvector = { this->m_TotalTimePoints };
+  //std::vector<int> timepointvector = { this->m_TotalTimePoints };
 
   //write model files
 
@@ -304,7 +304,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //
   if(this->m_PerfusionDataForWholePopulationRequested)
 	WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
-  WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv"); //can be read from 45x45 matrix, not needed
+  //WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv"); //can be read from 45x45 matrix, not needed
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
   //Putting back in images of respective patients
