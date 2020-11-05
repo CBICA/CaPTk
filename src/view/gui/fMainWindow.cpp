@@ -9057,7 +9057,7 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
   auto output = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputmaskname, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve,
-    echotime, echotimeOutput, scale, mean, 10/*stdDev*/, 100/*baseline*/);
+    echotime, echotimeOutput, scale, mean);
 
   auto PerfusionAlignment = output.first;
   auto calculatedMask = output.second;
