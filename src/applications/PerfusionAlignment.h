@@ -221,50 +221,12 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     }
     else
     {
-      if (maskFile == "1")
-      {
-        auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
-        thresholder->SetInput(t1ceImagePointer);
-        thresholder->SetOutsideValue(1);
-        thresholder->SetInsideValue(0);
-        thresholder->Update();
-        maskImage = thresholder->GetOutput();
-        auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, maskImage);
-
-        std::vector< float > stdDevNonZero;
-        for (size_t i = 0; i < stdDevImageAndVector.second.size(); i++)
-        {
-          if (stdDevImageAndVector.second[i] != 0)
-          {
-            stdDevNonZero.push_back(stdDevImageAndVector.second[i]);
-          }
-        }
-
-        cbica::Statistics< float > statsCalculator(stdDevNonZero);
-        auto thresholder_below = itk::BinaryThresholdImageFilter< ImageType, ImageType >::New();
-        thresholder_below->SetInput(stdDevImageAndVector.first);
-        thresholder_below->SetOutsideValue(0);
-        thresholder_below->SetInsideValue(1);
-        thresholder_below->SetLowerThreshold(statsCalculator.GetNthPercentileElement(10));
-        thresholder_below->Update();
-        maskImage = thresholder_below->GetOutput();
-      }
-      else if (maskFile == "2")
-      {
-        // do the other thing
-        auto stdDevImageAndVector = GetStdDevFrom4DImage< ImageType >(perfusionImageVolumes, cbica::CreateImage< ImageType >(perfusionImageVolumes[0], 1)); // create mask with all 1s
-        auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
-        thresholder->SetInput(stdDevImageAndVector.first);
-        thresholder->SetOutsideValue(1);
-        thresholder->SetInsideValue(0);
-        thresholder->Update();
-        maskImage = thresholder->GetOutput();
-      }
-      else
-      {
-        std::cerr << "Only 2 masking options are defined - please choose '1' or '2' as masking type.\n";
-        return std::make_pair(PerfusionAlignment, maskImage);
-      }
+      auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
+      thresholder->SetInput(t1ceImagePointer);
+      thresholder->SetOutsideValue(1);
+      thresholder->SetInsideValue(0);
+      thresholder->Update();
+      maskImage = thresholder->GetOutput();
     }
 
     if (maskImage.IsNull())
