@@ -86,7 +86,7 @@ public:
     const double timeresolution,
     const double time_outputPerfTime,
     const float scale_maxIntensityBeforeDrop,
-    const float scale_intensityDropInMeanCurve, const float stdDev, const float baseline);
+    const float scale_intensityDropInMeanCurve);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
@@ -175,8 +175,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   const double timeresolution,
   const double time_outputPerfTime,
   const float scale_maxIntensityBeforeDrop,
-  const float scale_intensityDropInMeanCurve,
-  const float stdDev, const float baseline)
+  const float scale_intensityDropInMeanCurve)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
