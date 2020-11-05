@@ -8,7 +8,7 @@ int main(int argc, char **argv)
   float time_inputPerfTime, time_outputPerfTime = 1.0, scale_maxIntensityBeforeDrop = 300, scale_intensityDropInMeanCurve = 100;
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "PerfusionAlignment");
   parser.addRequiredParameter("i", "input", cbica::Parameter::FILE, "File with read access", "The input DSC-MRI image.");
-  parser.addOptionalParameter("m", "mask", cbica::Parameter::STRING, "File with read access", "The mask or the type of default masking", "1: otsu+stdDev-drop; 2: stdDev-volume+otsu");
+  parser.addOptionalParameter("m", "mask", cbica::Parameter::STRING, "File with read access", "The brain mask corresponding to the input", "If not defined, it performs Otsu thresholding on input");
   parser.addRequiredParameter("t1", "tInputPerfRep", cbica::Parameter::FLOAT, "0-100", "The input perfusion repetition time");
   parser.addOptionalParameter("t2", "tOutputPerfRep", cbica::Parameter::FLOAT, "0-100", "The output perfusion repetition time", "Defaults to: " + std::to_string(time_outputPerfTime));
   parser.addRequiredParameter("t3", "tBeforeDrop", cbica::Parameter::INTEGER, "0-100", "Number of timepoints BEFORE drop (starting index '1')");
@@ -19,16 +19,8 @@ int main(int argc, char **argv)
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "Directory with write access", "The output directory.");
 
-
-  //parser.addRequiredParameter("b", "timePointsBeforeDrop", cbica::Parameter::STRING, "0-100", "The number of time-points before the drop.");
-  //parser.addRequiredParameter("a", "timePointsAfterDrop", cbica::Parameter::STRING, "0-100", "The number of time-points after the drop.");
-  //parser.addRequiredParameter("t", "timeDomainResolution", cbica::Parameter::FLOAT, "0.01-100", "The time-interval (spacing) between two consecutive volumes in time-domain (in seconds).");
-
-  //parser.addOptionalParameter("d", "dropScaling", cbica::Parameter::BOOLEAN, "0-1", "Whether to scale the value of the drop for the curve? 1=yes, 0=no; defaults to '0'");
-  //parser.addOptionalParameter("s", "stdDev", cbica::Parameter::FLOAT, "0-100", "The standard deviation threshold of time series signal above which the", "location is considered to part of brain", "Defaults to " + std::to_string(stdDev));
-  //parser.addOptionalParameter("bl", "baseLine", cbica::Parameter::FLOAT, "0-1000", "The value of the baseline to which the output gets scaled", "Only used if '-d' is '1'", "Defaults to " + std::to_string(baseline));
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
-  parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -t1 2 -t3 15 -t4 30 -o C:/testPerf", "Aligns the perfusion signal of the input image based on the time points");
+  parser.addExampleUsage("-i AAAC_PreOp_perf_pp.nii.gz -m brainMask.nii.gz -t1 2 -t3 15 -t4 30 -o C:/testPerf", "Aligns the perfusion signal of the input image based on the time points");
   parser.addApplicationDescription("Perfusion Alignment of the input based based on specified time points");
 
   // parameters to get from the command line
@@ -46,14 +38,6 @@ int main(int argc, char **argv)
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", inputMaskFileName);
-  }
-  if (!cbica::isFile(inputMaskFileName))
-  {
-    if ((inputMaskFileName != "1") && (inputMaskFileName != "2"))
-    {
-      std::cerr << "Please chose either '1' or '2' as the masking option.\n";
-      return EXIT_FAILURE;
-    }
   }
 
   if (parser.isPresent("t2"))
