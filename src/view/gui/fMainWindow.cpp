@@ -903,7 +903,7 @@ fMainWindow::fMainWindow()
   connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int, int , int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int,int , int,int)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, int, int, bool, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, int, int, bool, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -7614,13 +7614,7 @@ void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 }
 void fMainWindow::ApplicationPerfusionAlignmentCalculation()
 {
-  QString text = "This functionality has been removed from this CaPTk release, \
-and we are actively testing an optimized robust implementation that would enable \
-generalization in multi-institutional data. We expect this to be released in our \
-next patch release, expected in Q4 2020.";
-  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
-  msgBox.exec();
-  //perfalignPanel.exec();
+  perfalignPanel.exec();
 }
 void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 {
@@ -9042,7 +9036,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, bool dropscaling, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -9062,26 +9056,32 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   PerfusionAlignment objPerfusion;
 
   std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
-  //std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve, echotime, dropscaling);
+  auto output = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputmaskname, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve,
+    echotime, echotimeOutput, scale, mean);
 
-  //if (!PerfusionAlignment.empty())
-  //{
-  //  auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
-  //  cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
+  auto PerfusionAlignment = output.first;
+  auto calculatedMask = output.second;
 
-  //  WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
-  //  WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
-  //  WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
-  //  WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+  if (!PerfusionAlignment.empty())
+  {
+    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+    cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
 
-  //  QString msg;
-  //  msg = "Aligned images have been saved at the specified location.";
-  //  ShowMessage(msg.toStdString(), this);
-  //}
-  //else
-  //{
-  //  ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
-  //}
+    cbica::WriteImage< ImageTypeFloat3D >(calculatedMask, outputFolder + "/calculatedMask.nii.gz");
+
+    WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+    WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+    WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+    WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+
+    QString msg;
+    msg = "Aligned images have been saved at the specified location.";
+    ShowMessage(msg.toStdString(), this);
+  }
+  else
+  {
+    ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
+  }
 }
 
 void fMainWindow::CallTrainingSimulation(const std::string featurefilename, 
