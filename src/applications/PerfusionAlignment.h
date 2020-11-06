@@ -29,6 +29,9 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkChangeInformationImageFilter.h"
 
+#include <vtkChartXY.h>
+#include <vtkTable.h>
+
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
