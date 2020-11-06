@@ -25,9 +25,14 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkStatisticsImageFilter.h"
+#include "itkOtsuThresholdImageFilter.h"
+#include "itkBinaryThresholdImageFilter.h"
+#include "itkChangeInformationImageFilter.h"
+
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
+#include "cbicaStatistics.h"
 #ifdef APP_BASE_CaPTk_H
 #include "ApplicationBase.h"
 #endif
@@ -72,18 +77,20 @@ public:
 
   //This is the main function of PerfusionAlignment class that is called from .cxx file with all the required parameters.  
   template< class ImageType, class PerfusionImageType >
-  std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > Run(std::string perfusionFile,
+  std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > Run(std::string perfusionFile, std::string maskFile,
     int pointsbeforedrop, int pointsafterdrop,
     std::vector<double> & OriginalCurve,
     std::vector<double> & InterpolatedCurve,
     std::vector<double> & RevisedCurve,
     std::vector<double> & TruncatedCurve,
     const double timeresolution,
-    const bool dropscaling, const float stdDev, const float baseline);
+    const double time_outputPerfTime,
+    const float scale_maxIntensityBeforeDrop,
+    const float scale_intensityDropInMeanCurve);
 
   //This function calculates average 3D image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType, class PerfusionImageType >
-  std::vector<double> CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end);
+  std::vector<double> CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask);
 
   //This function shifts the baseline value of DSC-MRI curves
   template< class PerfusionImageType >
@@ -91,26 +98,84 @@ public:
 
   //This function scales the drop value of DSC-MRI curves
   template< class PerfusionImageType >
-  typename PerfusionImageType::Pointer ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, double min_curve);
+  typename PerfusionImageType::Pointer ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double max_value, double min_curve, double multiplier);
 
   //This function calculates 3D standard deviation image of the time-points of 4D DSC-MRI image specified by the start and end parameters
   template< class ImageType = ImageTypeFloat3D, class PerfusionImageType = ImageTypeFloat4D >
   typename ImageType::Pointer CalculatePerfusionVolumeStd(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer firstVolume, int start, int end, float stdDev_threshold);
 
+  //! This function calculates the std-dev of the perfusion signal across the 4D timepoints
+  template< class ImageType = ImageTypeFloat3D >
+  std::pair<typename ImageType::Pointer, std::vector< typename ImageType::PixelType > > GetStdDevFrom4DImage(std::vector< typename ImageType::Pointer > &perfusionImageVolumes, typename ImageType::Pointer maskImage)
+  {
+    auto stdDevImage = cbica::CreateImage< ImageType >(perfusionImageVolumes[0]);
+
+    auto size = maskImage->GetLargestPossibleRegion().GetSize();
+    auto totalSize = 1;
+    for (size_t d = 0; d < ImageType::ImageDimension; d++)
+    {
+      totalSize *= size[d];
+    }
+    std::vector< typename ImageType::PixelType > stdDevVector(totalSize);
+
+    using IteratorType = itk::ImageRegionConstIteratorWithIndex< ImageType >;
+    itk::ImageRegionIteratorWithIndex< ImageType > stdDevIterator(stdDevImage, stdDevImage->GetLargestPossibleRegion());
+
+    // initialize the image iterators
+    IteratorType maskIterator(maskImage, maskImage->GetLargestPossibleRegion());
+    std::vector< IteratorType > volumeIterators(perfusionImageVolumes.size());
+    for (size_t i = 0; i < perfusionImageVolumes.size(); i++)
+    {
+      volumeIterators[i] = IteratorType(perfusionImageVolumes[i], perfusionImageVolumes[i]->GetLargestPossibleRegion());
+    }
+
+    // iterate through each voxel and get 
+    size_t sizeCounter = 0;
+    for (maskIterator.GoToBegin(); !maskIterator.IsAtEnd(); ++maskIterator)
+    {
+      auto currentIndex = maskIterator.GetIndex();
+      if (maskIterator.Get() > 0)
+      {
+        std::vector< typename ImageType::PixelType > currentVoxels(volumeIterators.size());
+        for (size_t i = 0; i < volumeIterators.size(); i++)
+        {
+          volumeIterators[i].SetIndex(currentIndex);
+          currentVoxels[i] = volumeIterators[i].Get();
+        }
+
+        cbica::Statistics< float >  statsCalculator(currentVoxels);
+        auto currentStdDev = statsCalculator.GetStandardDeviation();
+        stdDevIterator.SetIndex(currentIndex);
+        stdDevIterator.Set(currentStdDev);
+        stdDevVector[sizeCounter] = currentStdDev;
+        m_nonZeroVoxelsPerVolume++;
+      }
+      else
+      {
+        stdDevVector[sizeCounter] = 0;
+      }
+      sizeCounter++;
+    }
+
+    return std::make_pair(stdDevImage, stdDevVector);
+  }
+
 private:
   bool m_negativesDetected = false;
+  size_t m_nonZeroVoxelsPerVolume = 0;
 };
 
 template< class ImageType, class PerfusionImageType >
-std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > PerfusionAlignment::Run(std::string perfusionFile,
+std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer > PerfusionAlignment::Run(std::string perfusionFile, std::string maskFile,
   int pointsbeforedrop,int pointsafterdrop,
   std::vector<double> & OriginalCurve, 
   std::vector<double> & InterpolatedCurve,
   std::vector<double> & RevisedCurve,
   std::vector<double> & TruncatedCurve,
   const double timeresolution,
-  const bool dropscaling,
-  const float stdDev, const float baseline)
+  const double time_outputPerfTime,
+  const float scale_maxIntensityBeforeDrop,
+  const float scale_intensityDropInMeanCurve)
 {
   std::vector<typename ImageType::Pointer> PerfusionAlignment;
   typename PerfusionImageType::Pointer perfImagePointerNifti;
@@ -127,6 +192,16 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     return std::make_pair(PerfusionAlignment, maskImage);
   }
 
+  auto inputSpacing = perfImagePointerNifti->GetSpacing();
+  inputSpacing[3] = timeresolution;
+
+  auto infoChanger = itk::ChangeInformationImageFilter< PerfusionImageType >::New();
+  infoChanger->SetInput(perfImagePointerNifti);
+  infoChanger->SetOutputSpacing(inputSpacing);
+  infoChanger->ChangeSpacingOn();
+  infoChanger->Update();
+  perfImagePointerNifti = infoChanger->GetOutput();
+
   auto perfusionImageVolumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(perfImagePointerNifti);
   auto t1ceImagePointer = perfusionImageVolumes[0];
 
@@ -134,63 +209,59 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
   {
     //get original curve
     std::cout << "Calculating mean and std-dev from perfusion image.\n";
-    maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev); //values do not matter here
-    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage, 0, 9); //values do not matter here
-    
-    std::cout << "Started resampling.\n";
-    // Resize
-    auto inputSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
-    auto outputSize = inputSize;
-    outputSize[3] = timeresolution * inputSize[3];
-
-    auto inputSpacing = perfImagePointerNifti->GetSpacing();
-    auto outputSpacing = inputSpacing;
-    outputSpacing[3] = inputSpacing[3] * (static_cast<double>(inputSize[3]) / static_cast<double>(outputSize[3]));
-
-    auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, outputSize);
-    auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
-    std::vector< typename ImageType::Pointer > mask_volumes(resampledPerfusion_volumes.size());
-    for (size_t i = 0; i < mask_volumes.size(); i++)
+    if (cbica::isFile(maskFile))
     {
-      mask_volumes[i] = maskImage;
-      mask_volumes[i]->DisconnectPipeline();
-    }
-    auto mask_4d = cbica::GetJoinedImage< ImageType, PerfusionImageType >(mask_volumes, resampledPerfusion->GetSpacing()[3]);
-
-    auto masker = itk::MaskImageFilter< PerfusionImageType, PerfusionImageType >::New();
-    masker->SetInput(resampledPerfusion);
-    masker->SetMaskImage(mask_4d);
-    masker->Update();
-    resampledPerfusion = masker->GetOutput();
-    resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
-    {
-      auto stats = itk::StatisticsImageFilter< ImageType >::New();
-      stats->SetInput(resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 1]);
-      stats->Update();
-      if ((stats->GetMaximum() == 0) && (stats->GetMinimum() == 0)) // somehow, the final resampled volume becomes zero - comes from ITK
+      maskImage = cbica::ReadImage< ImageType >(maskFile);
+      if (!cbica::ImageSanityCheck< ImageType >(t1ceImagePointer, maskImage, 0.1, 0))
       {
-        resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 1] = resampledPerfusion_volumes[resampledPerfusion_volumes.size() - 2];
+        std::cerr << "Mask and first perfusion volume are not in the same space, please check again or choose one of the default masking options.\n";
+        return std::make_pair(PerfusionAlignment, maskImage);
       }
     }
-    resampledPerfusion = cbica::GetJoinedImage< ImageType, PerfusionImageType >(resampledPerfusion_volumes);
-    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage, 0, 9); //values do not matter here
+    else
+    {
+      auto thresholder = itk::OtsuThresholdImageFilter< ImageType, ImageType >::New();
+      thresholder->SetInput(t1ceImagePointer);
+      thresholder->SetOutsideValue(1);
+      thresholder->SetInsideValue(0);
+      thresholder->Update();
+      maskImage = thresholder->GetOutput();
+    }
+
+    if (maskImage.IsNull())
+    {
+      std::cerr << "Mask image needs to be defined at this point.\n";
+      return std::make_pair(PerfusionAlignment, maskImage);
+    }
+
+    //maskImage = CalculatePerfusionVolumeStd<ImageType, PerfusionImageType>(perfImagePointerNifti, t1ceImagePointer, 0, 9, stdDev);
+    // put an error check here
+    // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
+    // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
+    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); 
+    std::cout << "Started resampling.\n";
+    // Resize
+    auto outputSpacing = inputSpacing;
+    outputSpacing[3] = time_outputPerfTime;
+
+    auto resampledPerfusion = cbica::ResampleImage< PerfusionImageType >(perfImagePointerNifti, outputSpacing, "linear", true);
+    auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
+    
+    InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
 
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after interpolation::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
-    if (dropscaling)
-    {
-      resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, mask_4d, base, mincurve);
-      RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage, 0, 9); //values do not matter here
-      GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
-      std::cout << "Curve characteristics after drop scaling::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
-    }
-    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, mask_4d, base, baseline);
+    resampledPerfusion = ScaleDropValue< PerfusionImageType >(resampledPerfusion, cbica::CreateImage< PerfusionImageType >(resampledPerfusion, 1), base, mincurve, scale_intensityDropInMeanCurve);
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
+    GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
+    std::cout << "Curve characteristics after drop scaling ::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
+
+    auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, cbica::CreateImage< PerfusionImageType >(resampledPerfusion, 1), base, scale_maxIntensityBeforeDrop);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
-
-    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage, 0, 9); //values do not matter here
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage); 
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base shifting::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
@@ -229,7 +300,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
 }
 
 template< class ImageType, class PerfusionImageType >
-std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask, int start, int end)
+std::vector<double> PerfusionAlignment::CalculatePerfusionVolumeMean(typename PerfusionImageType::Pointer perfImagePointerNifti, typename ImageType::Pointer ImagePointerMask)
 {
   std::vector<double> AverageCurve;
   auto perfusionImageSize = perfImagePointerNifti->GetLargestPossibleRegion().GetSize();
@@ -379,7 +450,8 @@ void PerfusionAlignment::GetParametersFromTheCurve(std::vector<double> curve, do
 template< class PerfusionImageType >
 typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNonZeroVoxels(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average, float baseLine)
 {
-  auto outputImage = cbica::CreateImage< PerfusionImageType >(perfImagePointerNifti);
+  auto outputImage = perfImagePointerNifti;
+  outputImage->DisconnectPipeline();
   itk::ImageRegionConstIterator< PerfusionImageType > inputImageIterator(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion()),
     inputMaskIterator(ImagePointerMask, ImagePointerMask->GetLargestPossibleRegion());
   itk::ImageRegionIterator< PerfusionImageType > outputImageIterator(outputImage, outputImage->GetLargestPossibleRegion());
@@ -406,10 +478,10 @@ typename PerfusionImageType::Pointer PerfusionAlignment::ShiftBaselineValueForNo
   return outputImage;
 }
 template< class PerfusionImageType >
-typename PerfusionImageType::Pointer PerfusionAlignment::ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average,double min_curve)
+typename PerfusionImageType::Pointer PerfusionAlignment::ScaleDropValue(typename PerfusionImageType::Pointer perfImagePointerNifti, typename PerfusionImageType::Pointer ImagePointerMask, double base_average, double min_curve, double multiplier)
 {
-  double multiplier = 100;
-  auto outputImage = cbica::CreateImage< PerfusionImageType >(perfImagePointerNifti);
+  auto outputImage = perfImagePointerNifti;
+  outputImage->DisconnectPipeline();
   itk::ImageRegionConstIterator< PerfusionImageType > inputImageIterator(perfImagePointerNifti, perfImagePointerNifti->GetLargestPossibleRegion()),
     inputMaskIterator(ImagePointerMask, ImagePointerMask->GetLargestPossibleRegion());
   itk::ImageRegionIterator< PerfusionImageType > outputImageIterator(outputImage, outputImage->GetLargestPossibleRegion());
