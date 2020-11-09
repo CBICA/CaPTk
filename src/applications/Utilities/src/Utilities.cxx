@@ -74,10 +74,10 @@ int testRadius = 0, testNumber = 0;
 float testThresh = 0.0, testAvgDiff = 0.0, lowerThreshold = 1, upperThreshold = std::numeric_limits<float>::max();
 std::string changeOldValues, changeNewValues, resamplingResolution_full = "1.0,1.0,1.0", resamplingReference;
 float resamplingResolution = 1.0, thresholdAbove = 0.0, thresholdBelow = 0.0, thresholdOutsideValue = 0.0, thresholdInsideValue = 1.0;
-float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0;
+float imageStack2JoinSpacing = 1.0, nifti2dicomTolerance = 0, nifti2dicomOriginTolerance = 0, nifti2dicomSpacingTolerance = 0;
 int joinedImage2stackedAxis;
 
-bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false;
+bool uniqueValsSort = true, boundingBoxIsotropic = true, collectInfoRecurse = true, resamplingMasks = false, resampleTime = false;
 
 std::string collectInfoFile, collectInfoFileExt, collectInfoProps = "0,1";
 
@@ -317,7 +317,7 @@ int algorithmsRunner()
         outputSpacing[d] = std::atof(resolution_split[d].c_str());
       }
     }
-    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator);
+    auto outputImage = cbica::ResampleImage< TImageType >(inputImage, outputSpacing, resamplingInterpolator, resampleTime);
 
     // round if user has passed '-rm 1'
     if (resamplingMasks)
@@ -514,7 +514,7 @@ int algorithmsRunner()
     {
       prevOutput = true;
     }
-    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance);
+    cbica::WriteDicomImageFromReference< TImageType >(referenceDicom, cbica::ReadImage< TImageType >(inputImageFile), outputImageFile, nifti2dicomTolerance, nifti2dicomOriginTolerance, nifti2dicomSpacingTolerance);
     if (!prevOutput)
     {
       if (cbica::exists(outputImageFile))
@@ -526,6 +526,7 @@ int algorithmsRunner()
         std::cerr << "Tolerance values:\n";
         std::cerr << "  Direction: " << nifti2dicomTolerance << "%\n";
         std::cerr << "     Origin: " << nifti2dicomOriginTolerance << "%\n";
+        std::cerr << "    Spacing: " << nifti2dicomSpacingTolerance << "%\n";
         std::cerr << "Couldn't write DICOM series.\n";
         return EXIT_FAILURE;
       }
@@ -1114,8 +1115,11 @@ int algorithmsRunner()
     if (cbica::ImageSanityCheck(inputMaskFile, inputImageFile))
     {
       auto masker = itk::MaskImageFilter< TImageType, TImageType >::New();
-      masker->SetInput(cbica::ReadImage< TImageType >(inputImageFile));
-      masker->SetMaskImage(cbica::ReadImage< TImageType >(inputMaskFile));
+      auto input = cbica::ReadImage< TImageType >(inputImageFile);
+      auto mask = cbica::ReadImage< TImageType >(inputMaskFile);
+      mask->CopyInformation(input); // sanity check as already passed at this point, this ensures itk filter works
+      masker->SetInput(input);
+      masker->SetMaskImage(mask);
       masker->Update();
       cbica::WriteImage< TImageType >(masker->GetOutput(), outputImageFile);
     }
@@ -1134,6 +1138,8 @@ int algorithmsRunner()
       auto inputImages = cbica::GetExtractedImages<
         TImageType, TBaseImageType >(
           inputImage);
+
+      maskImage->CopyInformation(inputImages[0]); // sanity check as already passed at this point, this ensures itk filter works
 
       std::vector< typename TBaseImageType::Pointer > outputImages;
       outputImages.resize(inputImages.size());
@@ -1223,6 +1229,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rf", "resampleReference", cbica::Parameter::FILE, "NIfTI image", "[Resample] Reference image on which resampling is to be done", "Resize value needs to be 100", "Use '-ri' for resize resolution");
   parser.addOptionalParameter("ri", "resampleInterp", cbica::Parameter::STRING, "NEAREST:NEARESTLABEL:LINEAR:BSPLINE:BICUBIC", "[Resample] The interpolation type to use for resampling or resizing", "Defaults to LINEAR", "Use NEARESTLABEL for multi-label masks");
   parser.addOptionalParameter("rm", "resampleMask", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Rounds the output of the resample, useful for resampling masks", "Defaults to '0'");
+  parser.addOptionalParameter("rt", "resampleTime", cbica::Parameter::BOOLEAN, "0 or 1", "[Resample] Whether to resample the 4th dimension as well (useful for perfusion alignment)", "Defaults to '0'");
   parser.addOptionalParameter("s", "sanityCheck", cbica::Parameter::FILE, "NIfTI Reference", "Do sanity check of inputImage with the file provided in with this parameter", "Performs checks on size, origin & spacing", "Pass the target image after '-s'");
   parser.addOptionalParameter("inf", "information", cbica::Parameter::BOOLEAN, "true or false", "Output the information in inputImage", "If DICOM file is detected, the tags are written out");
   parser.addOptionalParameter("c", "cast", cbica::Parameter::STRING, "(u)char, (u)int, (u)long, (u)longlong, float, double", "Change the input image type", "Examples: '-c uchar', '-c float', '-c longlong'");
@@ -1237,7 +1244,8 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("d2n", "dicom2Nifti", cbica::Parameter::FILE, "NIfTI Reference", "If path to reference is present, then image comparison is done", "Use '-i' to pass input DICOM image", "Use '-o' to pass output image file", "Pass a directory to '-o' if you want the JSON information");
   parser.addOptionalParameter("n2d", "nifi2dicom", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM directory");
   parser.addOptionalParameter("ndD", "nifi2dicomDirc", cbica::Parameter::FLOAT, "0-100", "The direction tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomTolerance) + "'");
-  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting directions,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
+  parser.addOptionalParameter("ndO", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The origin tolerance for DICOM writing", "Because NIfTI images have issues converting origins,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomOriginTolerance) + "'");
+  parser.addOptionalParameter("ndS", "nifi2dicomOrign", cbica::Parameter::FLOAT, "0-100", "The spacing tolerance for DICOM writing", "Because NIfTI images have issues converting spacings,", "Ref: https://github.com/InsightSoftwareConsortium/ITK/issues/1042", "this parameter can be used to override checks", "Defaults to '" + std::to_string(nifti2dicomSpacingTolerance) + "'");
   parser.addOptionalParameter("ds", "dcmSeg", cbica::Parameter::DIRECTORY, "DICOM Reference", "A reference DICOM is passed after this parameter", "The header information from the DICOM reference is taken to write output", "Use '-i' to pass input NIfTI image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("dsJ", "dcmSegJSON", cbica::Parameter::FILE, "JSON file for Metadata", "The extra metadata needed to generate the DICOM-Seg object", "Use http://qiicr.org/dcmqi/#/seg to create it", "Use '-i' to pass input NIfTI segmentation image", "Use '-o' to pass output DICOM file");
   parser.addOptionalParameter("or", "orient", cbica::Parameter::STRING, "Desired 3 letter orientation", "The desired orientation of the image", "See the following for supported orientations (use last 3 letters only):", "https://itk.org/Doxygen/html/namespaceitk_1_1SpatialOrientation.html#a8240a59ae2e7cae9e3bad5a52ea3496e",
@@ -1356,6 +1364,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("ndO", nifti2dicomOriginTolerance);
     }
+    if (parser.isPresent("ndS"))
+    {
+      parser.getParameterValue("ndO", nifti2dicomSpacingTolerance);
+    }
   }
   else if (parser.isPresent("ds"))
   {
@@ -1397,6 +1409,10 @@ int main(int argc, char** argv)
     {
       parser.getParameterValue("rm", resamplingMasks);
     }
+    if (parser.isPresent("rt"))
+    {
+      parser.getParameterValue("rt", resampleTime);
+    }
   }
   else if (parser.isPresent("rf"))
   {
@@ -1409,6 +1425,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("rm"))
     {
       parser.getParameterValue("rm", resamplingMasks);
+    }
+    if (parser.isPresent("rt"))
+    {
+      parser.getParameterValue("rt", resampleTime);
     }
   }
   else if (parser.isPresent("s"))
