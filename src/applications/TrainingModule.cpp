@@ -1735,7 +1735,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures,
   }
   else // Unimplemented classifier
   {
-      throw std::exception("Classifier Not Implemented.");
+      throw std::runtime_error("Classifier Not Implemented.");
   }
   std::cout << "Optimal C = " << bestC << std::endl;
   std::cout << "Optimal Gamma = " << bestG << std::endl;
