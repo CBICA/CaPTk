@@ -35,6 +35,10 @@ public:
   QLineEdit *inputImageName;
   QPushButton *inputImageButton;
 
+  QLabel *inputMaskLabel;
+  QLineEdit *inputMaskName;
+  QPushButton *inputMaskButton;
+
   QLabel *inputAfterPointsLabel;
   QLineEdit *inputAfterPointsName;
 
@@ -45,14 +49,10 @@ public:
   QLineEdit *inputEchoTimeName;
 
   QLabel *inputStdDevLabel;
-  QLineEdit *inputStdDevLine;
+  QLineEdit *inputScaleDropBeforeMeanName;
 
   QLabel *inputBaselineLabel;
   QLineEdit *inputBaselineLine;
-
-  QLabel *inputScalingLabel;
-  QCheckBox *inputScalingCheckBox;
-
 
   QGroupBox *outputGroupBox;
   QGridLayout *outputGridLayout;
@@ -61,6 +61,8 @@ public:
   QLabel *longRunningWarning;
   QPushButton *outputImageButton;
 
+  QLabel *outputEchoTimeLabel;
+  QLineEdit *outputEchoTimeName;
 
   QPushButton *confirmButton;
   QPushButton *cancelButton;
@@ -105,7 +107,22 @@ public:
     inputImageButton->setObjectName(QString::fromUtf8("inputImageButton"));
     inputImageButton->setText("...");
     inputImageButton->setToolTip("Browse and select file");
-    
+
+    inputMaskLabel = new QLabel(inputGroupBox);
+    sizePolicy.setHeightForWidth(inputMaskLabel->sizePolicy().hasHeightForWidth());
+    inputMaskLabel->setSizePolicy(sizePolicy);
+
+    inputMaskName = new QLineEdit("Select Mask File");
+    inputMaskName->setObjectName(QString::fromUtf8("inputMaskName"));
+    sizePolicy.setHeightForWidth(inputMaskName->sizePolicy().hasHeightForWidth());
+    inputMaskName->setSizePolicy(sizePolicy);
+    inputMaskName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+    inputMaskButton = new QPushButton(inputGroupBox);
+    inputMaskButton->setObjectName(QString::fromUtf8("inputImageButton"));
+    inputMaskButton->setText("...");
+    inputMaskButton->setToolTip("Browse and select Mask file");
+
     inputBeforePointsLabel = new QLabel(inputGroupBox);
     sizePolicy.setHeightForWidth(inputBeforePointsLabel->sizePolicy().hasHeightForWidth());
     inputBeforePointsLabel->setSizePolicy(sizePolicy);
@@ -141,16 +158,16 @@ public:
     inputEchoTimeName->setValidator(new QIntValidator(0, 100, inputGroupBox));
 
     inputStdDevLabel = new QLabel(inputGroupBox);
-    inputStdDevLabel->setText("Standard Deviation for masking");
-    inputStdDevLine = new QLineEdit("10");
-    inputStdDevLine->setObjectName(QString::fromUtf8("inputEchoTimeName"));
-    sizePolicy.setHeightForWidth(inputStdDevLine->sizePolicy().hasHeightForWidth());
-    inputStdDevLine->setSizePolicy(sizePolicy);
-    inputStdDevLine->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
-    inputStdDevLine->setValidator(new QIntValidator(0, 100, inputGroupBox));
+    inputStdDevLabel->setText("Intensity drop in mean curve inside ROI");
+    inputScaleDropBeforeMeanName = new QLineEdit("100");
+    inputScaleDropBeforeMeanName->setObjectName(QString::fromUtf8("inputEchoTimeName"));
+    sizePolicy.setHeightForWidth(inputScaleDropBeforeMeanName->sizePolicy().hasHeightForWidth());
+    inputScaleDropBeforeMeanName->setSizePolicy(sizePolicy);
+    inputScaleDropBeforeMeanName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    inputScaleDropBeforeMeanName->setValidator(new QIntValidator(0, 10000, inputGroupBox));
 
     inputBaselineLabel = new QLabel(inputGroupBox);
-    inputBaselineLabel->setText("Baseline value for shifting");
+    inputBaselineLabel->setText("Maximum intensity before drop in mean curve inside ROI");
     inputBaselineLine = new QLineEdit("300");
     inputBaselineLine->setObjectName(QString::fromUtf8("inputEchoTimeName"));
     sizePolicy.setHeightForWidth(inputBaselineLine->sizePolicy().hasHeightForWidth());
@@ -158,34 +175,44 @@ public:
     inputBaselineLine->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
     inputBaselineLine->setValidator(new QIntValidator(0, 20000, inputGroupBox));
 
-    inputScalingLabel = new QLabel("Scale drop value");
-    inputScalingCheckBox = new QCheckBox("");
-    inputScalingCheckBox->setChecked(false);
-
     inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
     inputGridLayout->addWidget(inputImageName, 0, 1, 1, 1);
     inputGridLayout->addWidget(inputImageButton, 0, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputBeforePointsLabel, 1, 0, 1, 1);
-    inputGridLayout->addWidget(inputBeforePointsName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputMaskLabel, 1, 0, 1, 1);
+    inputGridLayout->addWidget(inputMaskName, 1, 1, 1, 1);
+    inputGridLayout->addWidget(inputMaskButton, 1, 2, 1, 1);
 
-    inputGridLayout->addWidget(inputAfterPointsLabel, 2, 0, 1, 1);
-    inputGridLayout->addWidget(inputAfterPointsName, 2, 1, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsLabel, 2, 0, 1, 1);
+    inputGridLayout->addWidget(inputBeforePointsName, 2, 1, 1, 1);
 
-    inputGridLayout->addWidget(inputEchoTimeLabel, 3, 0, 1, 1);
-    inputGridLayout->addWidget(inputEchoTimeName, 3, 1, 1, 1);
-    inputGridLayout->addWidget(inputStdDevLabel, 4, 0, 1, 1);
-    inputGridLayout->addWidget(inputStdDevLine, 4, 1, 1, 1);
-    inputGridLayout->addWidget(inputBaselineLabel, 5, 0, 1, 1);
-    inputGridLayout->addWidget(inputBaselineLine, 5, 1, 1, 1);
-    inputGridLayout->addWidget(inputScalingLabel, 6, 0, 1, 1);
-    inputGridLayout->addWidget(inputScalingCheckBox, 6, 1, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsLabel, 3, 0, 1, 1);
+    inputGridLayout->addWidget(inputAfterPointsName, 3, 1, 1, 1);
+
+    inputGridLayout->addWidget(inputEchoTimeLabel, 4, 0, 1, 1);
+    inputGridLayout->addWidget(inputEchoTimeName, 4, 1, 1, 1);
+    inputGridLayout->addWidget(inputStdDevLabel, 5, 0, 1, 1);
+    inputGridLayout->addWidget(inputScaleDropBeforeMeanName, 5, 1, 1, 1);
+    inputGridLayout->addWidget(inputBaselineLabel, 6, 0, 1, 1);
+    inputGridLayout->addWidget(inputBaselineLine, 6, 1, 1, 1);
 
     // output
     outputGroupBox = new QGroupBox(fPerfusionAlignmentDialog);
     outputGroupBox->setTitle(QString::fromStdString("Output"));
     outputGridLayout = new QGridLayout(outputGroupBox);
     outputGridLayout->setObjectName(QString::fromUtf8("outputGridLayout"));
+
+    outputEchoTimeLabel = new QLabel(outputGroupBox);
+    sizePolicy.setHeightForWidth(outputEchoTimeLabel->sizePolicy().hasHeightForWidth());
+    outputEchoTimeLabel->setSizePolicy(sizePolicy);
+    outputEchoTimeLabel->setText("Desired Time-resolution (seconds)");
+
+    outputEchoTimeName = new QLineEdit("1");
+    outputEchoTimeName->setObjectName(QString::fromUtf8("outputEchoTimeName"));
+    sizePolicy.setHeightForWidth(outputEchoTimeName->sizePolicy().hasHeightForWidth());
+    outputEchoTimeName->setSizePolicy(sizePolicy);
+    outputEchoTimeName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+    outputEchoTimeName->setValidator(new QIntValidator(0, 100, outputGroupBox));
 
     outputImageName = new QLineEdit("");
     outputImageName->setObjectName(QString::fromUtf8("outputImageName"));
@@ -203,9 +230,11 @@ public:
     longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
-    outputGridLayout->addWidget(outputImageName, 0, 0, 1, 1);
-    outputGridLayout->addWidget(outputImageButton, 0, 1, 1, 1);
-    outputGridLayout->addWidget(longRunningWarning, 1, 0, 1, 2);
+    outputGridLayout->addWidget(outputEchoTimeLabel, 0, 0, 1, 1);
+    outputGridLayout->addWidget(outputEchoTimeName, 0, 1, 1, 1);
+    outputGridLayout->addWidget(outputImageName, 1, 0, 1, 1);
+    outputGridLayout->addWidget(outputImageButton, 1, 1, 1, 1);
+    outputGridLayout->addWidget(longRunningWarning, 2, 0, 1, 2);
 
     // put the layout in perspective
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);

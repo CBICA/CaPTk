@@ -1475,16 +1475,17 @@ namespace cbica
   \param inputImage The input image to process
   \param outputSpacing The desired output spacing
   \param interpolator The type of interpolator to use; can be Linear, BSpline or NearestNeighbor
+  \param sampleTime This parameter samples across the time series
   \return The resized image
   */
   template< class TImageType = ImageTypeFloat3D >
   typename TImageType::Pointer ResampleImage(const typename TImageType::Pointer inputImage,
     const itk::Vector< double, TImageType::ImageDimension > outputSpacing,
-    const std::string interpolator = "Linear")
+    const std::string interpolator = "Linear", const bool sampleTime = false)
   {
     auto outputSize = inputImage->GetLargestPossibleRegion().GetSize();
     auto inputSpacing = inputImage->GetSpacing();
-    if (TImageType::ImageDimension != 4)
+    if ((TImageType::ImageDimension != 4) || sampleTime)
     {
       for (size_t i = 0; i < TImageType::ImageDimension; i++)
       {
