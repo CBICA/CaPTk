@@ -16,7 +16,10 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 #include "PerfusionAlignment.h"
 
-
+#include <vtkChartXY.h>
+#include <vtkTable.h>
+#include <vtkFloatArray.h>
+#include <vtkPlot.h>
 
 void PerfusionAlignment::Createchart(vtkChartXY* chart, std::map<std::string, std::vector<float>*>* map)
 {
