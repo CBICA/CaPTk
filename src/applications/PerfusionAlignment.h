@@ -29,9 +29,6 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkChangeInformationImageFilter.h"
 
-#include <vtkChartXY.h>
-#include <vtkTable.h>
-
 #include "DicomMetadataReader.h"
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaITKUtilities.h"
@@ -51,6 +48,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 \brief Calculates Aligned Perfusion Curve
 
 */
+class vtkChartXY;
 
 class PerfusionAlignment
 #ifdef APP_BASE_CaPTk_H
@@ -162,6 +160,8 @@ public:
 
     return std::make_pair(stdDevImage, stdDevVector);
   }
+
+  void Createchart(vtkChartXY* chart, std::map<std::string, std::vector<float>*>* map);
 
 private:
   bool m_negativesDetected = false;
