@@ -48,6 +48,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 \brief Calculates Aligned Perfusion Curve
 
 */
+class vtkChartXY;
 
 class PerfusionAlignment
 #ifdef APP_BASE_CaPTk_H
@@ -159,6 +160,13 @@ public:
 
     return std::make_pair(stdDevImage, stdDevVector);
   }
+
+  /**
+  \brief fill the chart with supplied perfusion alignment data
+  \param chart pointer to vtkChartXY that will be filled
+  \param map pointer to map of data name to pointer of vector of data that needs to be plotted
+  */
+  void Createchart(vtkChartXY* chart, std::map<std::string, std::vector<float>*>* map);
 
 private:
   bool m_negativesDetected = false;
