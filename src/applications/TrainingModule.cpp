@@ -1721,7 +1721,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures,
         }
       }
   }
-  else
+  else if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_LINEAR)
   {
     for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
     {
@@ -1732,6 +1732,10 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures,
         bestCV = result[3];
       }
     }
+  }
+  else // Unimplemented classifier
+  {
+      throw std::exception("Classifier Not Implemented.");
   }
   std::cout << "Optimal C = " << bestC << std::endl;
   std::cout << "Optimal Gamma = " << bestG << std::endl;
