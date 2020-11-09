@@ -161,6 +161,11 @@ public:
     return std::make_pair(stdDevImage, stdDevVector);
   }
 
+  /**
+  \brief fill the chart with supplied perfusion alignment data
+  \param chart pointer to vtkChartXY that will be filled
+  \param map pointer to map of data name to vector of data that needs to be plotted
+  */
   void Createchart(vtkChartXY* chart, std::map<std::string, std::vector<float>*>* map);
 
 private:
