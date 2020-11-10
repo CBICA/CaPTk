@@ -900,7 +900,7 @@ fMainWindow::fMainWindow()
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int, int , int,int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int,int , int,int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
@@ -9084,15 +9084,11 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, 
-  const std::string targetfilename, 
-  const std::string outputFolder, 
-  const std::string modeldirectory, 
-  int classifier, int confType, int folds, 
-  int featureselectionType, int optimizationType, int crossvalidationType)
+void fMainWindow::CallTrainingSimulation(const TrainingModuleParameters params)
 {
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,featureselectionType, optimizationType,crossvalidationType))
+
+  if (m_trainingsimulator.Run(params))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";

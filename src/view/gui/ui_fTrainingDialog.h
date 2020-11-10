@@ -108,6 +108,15 @@ public:
   QCheckBox *mOptimization;
   QLabel *crossvalidationLabel;
 
+  QLabel* gMinimumLabel;
+  QLabel* gMaximumLabel;
+  QLabel* cMinimumLabel;
+  QLabel* cMaximumLabel;
+  QDoubleSpinBox* gMinimumSpinbox;
+  QDoubleSpinBox* gMaximumSpinbox;
+  QDoubleSpinBox* cMinimumSpinbox;
+  QDoubleSpinBox* cMaximumSpinbox;
+
   void setupUi(QDialog *fTrainingSimulator)
   {
     if (fTrainingSimulator->objectName().isEmpty())
@@ -195,11 +204,53 @@ public:
     mResubstitution->setEnabled(true);
     mFiveFold = new QRadioButton("5-fold");
     mFiveFold->setEnabled(true);
+
+    cMinimumSpinbox = new QDoubleSpinBox(paramsGroupBox);
+    cMinimumSpinbox->setMaximum(99.9);
+    cMinimumSpinbox->setMinimum(-99.9);
+    cMinimumSpinbox->setValue(-5.0);
+    cMinimumSpinbox->setVisible(false);
+    cMaximumSpinbox = new QDoubleSpinBox(paramsGroupBox);
+    cMaximumSpinbox->setMaximum(99.9);
+    cMaximumSpinbox->setMinimum(-99.9);
+    cMaximumSpinbox->setValue(5.0);
+    cMaximumSpinbox->setVisible(false);
+    gMinimumSpinbox = new QDoubleSpinBox(paramsGroupBox);
+    gMinimumSpinbox->setMaximum(99.9);
+    gMinimumSpinbox->setMinimum(-99.9);
+    gMinimumSpinbox->setValue(-5.0);
+    gMinimumSpinbox->setVisible(false);
+    gMaximumSpinbox = new QDoubleSpinBox(paramsGroupBox);
+    gMaximumSpinbox->setMaximum(99.9);
+    gMaximumSpinbox->setMinimum(-99.9);
+    gMaximumSpinbox->setValue(5.0);
+    gMaximumSpinbox->setVisible(false);
+
+    cMinimumLabel = new QLabel("C Minimum power");
+    cMinimumLabel->setVisible(false);
+    cMaximumLabel = new QLabel("C Maximum power");
+    cMaximumLabel->setVisible(false);
+    gMinimumLabel = new QLabel("G Minimum power");
+    gMinimumLabel->setVisible(false);
+    gMaximumLabel = new QLabel("G Maximum power");
+    gMaximumLabel->setVisible(false);
+
     paramsGridLayout->addWidget(parametersLabel, 0, 0, 1, 1); 
     paramsGridLayout->addWidget(crossvalidationLabel, 0, 2, 1, 1); 
     paramsGridLayout->addWidget(mOptimization, 1, 0, 1, 1);
     paramsGridLayout->addWidget(mResubstitution, 1, 2, 1, 1);
     paramsGridLayout->addWidget(mFiveFold, 1,3, 1, 1);
+    
+    paramsGridLayout->addWidget(cMinimumLabel, 3, 0, 1, 1);
+    paramsGridLayout->addWidget(cMaximumLabel, 4, 0, 1, 1);
+    paramsGridLayout->addWidget(cMinimumSpinbox, 3, 1, 1, 1);
+    paramsGridLayout->addWidget(cMaximumSpinbox, 4, 1, 1, 1);
+    paramsGridLayout->addWidget(gMinimumLabel, 3, 2, 1, 1);
+    paramsGridLayout->addWidget(gMaximumLabel, 4, 2, 1, 1);
+    paramsGridLayout->addWidget(gMinimumSpinbox, 3, 3, 1, 1);
+    paramsGridLayout->addWidget(gMaximumSpinbox, 4, 3, 1, 1);
+
+    
 
     fsGroupBox = new QGroupBox(fTrainingSimulator);
     fsGroupBox->setTitle(QString::fromStdString("Feature selection"));
