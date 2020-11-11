@@ -115,7 +115,7 @@ int main(int argc, char **argv)
   //if user doesnt provide any, give a msg stating that we will provide all PCs
   // and that the run will take quite some time and request for confirmation
   // if they can provide n or vt, press yes or no to provide vt.
-  if (!m_nPCsDefined && !m_varianceThresholdDefined)
+  if (!m_nPCsDefined && !m_varianceThresholdDefined && (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING))
   {
 	  std::cout << "You did not provide the number of principal components or the variance threshold. \
 We will provide all principal components. The application will take a long time to run. \
@@ -176,6 +176,7 @@ Do you want to continue? Press 'y' to contine or 'n' to exit and provide either 
 
   if (applicationType == CAPTK::MachineLearningApplicationSubtype::TESTING)
   {
+	  //TBD: during testing read the number of PCs from file 
     std::cout << "Model directory name:" << modelDirectoryName << std::endl;
     if (!cbica::directoryExists(modelDirectoryName))
     {
@@ -199,6 +200,7 @@ Do you want to continue? Press 'y' to contine or 'n' to exit and provide either 
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
+	  //TBD: spit a txt file : NumberofPCs having only a single number of PCs
 	  if (m_nPCsDefined)
 		  object_pca.SetNumberOfPCs(inputPCs);
 	  else if (m_varianceThresholdDefined)
