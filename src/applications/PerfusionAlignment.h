@@ -54,6 +54,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "vtkContextScene.h"
 #include "vtkRenderer.h"
 #include "vtkLookupTable.h"
+#include "vtkPlotPoints.h"
 
 /**
 \class PerfusionAlignment
@@ -199,28 +200,29 @@ public:
       }
 
       //add to chart
-      auto line = chart->AddPlot(vtkChart::POINTS);
+      auto line = chart->AddPlot(vtkChart::LINE);
       line->SetInputData(table, 0, 1);
       switch (c)
       {
       case 0:
       {
-        line->SetColor(0, 255, 0, 0);
+        line->SetColor(255, 0, 0, 255);
+        vtkPlotPoints::SafeDownCast(line)->SetMarkerStyle(vtkPlotPoints::CROSS);
         break;
       }
       case 1:
       {
-        line->SetColor(0, 0, 255, 0);
+        line->SetColor(0, 255, 0, 255);
         break;
       }
       case 2:
       {
-        line->SetColor(0, 0, 0, 255);
+        line->SetColor(0, 0, 255, 255);
         break;
       }
       case 3:
       {
-        line->SetColor(0, 0, 255, 255);
+        line->SetColor(0, 255, 255, 255);
         break;
       }
       default:
@@ -236,7 +238,7 @@ public:
     vtkNew<vtkRenderWindow> renderWindow;
     renderWindow->AddRenderer(pView->GetRenderer());
     renderWindow->SetSize(1000, 1000);
-    renderWindow->SetDPI(600);
+    //renderWindow->SetDPI(600);
     renderWindow->OffScreenRenderingOn();
     renderWindow->Render();
     vtkNew<vtkWindowToImageFilter> windowToImageFilter;
