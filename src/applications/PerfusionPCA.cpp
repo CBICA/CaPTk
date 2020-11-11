@@ -165,7 +165,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   return RevisedPerfusionMap;
 }
 
-bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
+PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
 {
 	//TBD: testing part in PsP + chiharu to provide matlab & python codes
 	std::cout << " Entering PerfusionPCA::ApplyExistingPCAModel " << std::endl;
@@ -205,6 +205,12 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
 
   //TBD: check if the timepoints in model are same as the input data
   //timepoints in model = # columns in PCA_PERF
+  if (PCA_PERF.Rows() != this->m_TotalTimePoints)
+  {
+	  std::cout << " timepoints in model: " << PCA_PERF.Rows() << std::endl;
+	  std::cout << " time points don't match." << std::endl;
+	  return ErrorCode::DifferentTimePoints;
+  }
 
   reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
   reader->Parse();
@@ -261,7 +267,7 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
       cbica::WriteImage<ImageType>(PCAsOfOnePatient[index2], filename);
     }
   }
-  return true;
+  return ErrorCode::NoError;
 }
 
 PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, std::string &inValidSubject)
