@@ -55,6 +55,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "vtkRenderer.h"
 #include "vtkLookupTable.h"
 #include "vtkPlotPoints.h"
+#include "vtkAxis.h"
 
 /**
 \class PerfusionAlignment
@@ -200,6 +201,8 @@ public:
       }
 
       chart->SetShowLegend(true);
+      chart->GetAxis(vtkAxis::BOTTOM)->SetTitle("Timepoints");
+      chart->GetAxis(vtkAxis::LEFT)->SetTitle("Mean Intensity Inside ROI");
 
       //add to chart
       auto line = chart->AddPlot(vtkChart::LINE);
@@ -242,7 +245,7 @@ public:
     pView->GetRenderer()->SetBackground(1.0, 1.0, 1.0);
     vtkNew<vtkRenderWindow> renderWindow;
     renderWindow->AddRenderer(pView->GetRenderer());
-    renderWindow->SetSize(1000, 1000);
+    renderWindow->SetSize(600, 600);
     //renderWindow->SetDPI(600);
     renderWindow->OffScreenRenderingOn();
     renderWindow->Render();
@@ -335,7 +338,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
     // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
     OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage);
-    m_curves["Original"] = OriginalCurve;
+    m_curves["0_Original"] = OriginalCurve;
     std::cout << "Started resampling.\n";
     // Resize
     auto outputSpacing = inputSpacing;
@@ -345,7 +348,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
     
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
-    m_curves["Interpolated"] = InterpolatedCurve;
+    m_curves["1_Interpolated"] = InterpolatedCurve;
 
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
@@ -360,7 +363,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
     RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage);
-    m_curves["Revised"] = RevisedCurve;
+    m_curves["2_Interpolated+Baseline-Shift"] = RevisedCurve;
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base shifting::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
@@ -388,7 +391,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       PerfusionAlignment.push_back(NewImage);
       TruncatedCurve.push_back(RevisedCurve[index]);
     }
-    m_curves["Truncated"] = TruncatedCurve;
+    m_curves["3_Truncated"] = TruncatedCurve;
   }
   catch (const std::exception& e1)
   {
