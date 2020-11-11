@@ -42,14 +42,25 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include <vector>
 #include "spline.h"
 
+#include "vtkTable.h"
+#include "vtkFloatArray.h"
+#include "vtkPlot.h"
+#include "vtkSmartPointer.h"
+#include "vtkChartXY.h"
+#include "vtkJPEGWriter.h"
+#include "vtkRenderWindow.h"
+#include "vtkContextView.h"
+#include "vtkWindowToImageFilter.h"
+#include "vtkContextScene.h"
+#include "vtkRenderer.h"
+#include "vtkLookupTable.h"
+
 /**
 \class PerfusionAlignment
 
 \brief Calculates Aligned Perfusion Curve
 
 */
-class vtkChartXY;
-
 class PerfusionAlignment
 #ifdef APP_BASE_CaPTk_H
   : public ApplicationBase
@@ -166,11 +177,81 @@ public:
   \param chart pointer to vtkChartXY that will be filled
   \param map pointer to map of data name to pointer of vector of data that needs to be plotted
   */
-  void Createchart(vtkChartXY* chart, std::map<std::string, std::vector<float>*>* map);
+  void SaveChart(const std::string &fileToSave)
+  {
+    vtkNew< vtkChartXY > chart;
+    size_t c = 0;
+    for (auto itr = m_curves.begin(); itr != m_curves.end(); ++itr, ++c)
+    {
+      vtkNew<vtkTable> table;
+      vtkNew<vtkFloatArray> a1, a2;
+      a1->SetName("X");
+      a2->SetName(itr->first.c_str());
+      table->AddColumn(a1);
+      table->AddColumn(a2);
+      table->SetNumberOfRows(itr->second.size());
+
+      for (vtkIdType i = 0; i < itr->second.size(); i++)
+      {
+        //fill table
+        table->SetValue(i, 0, i);
+        table->SetValue(i, 1, itr->second[i]);
+      }
+
+      //add to chart
+      auto line = chart->AddPlot(vtkChart::POINTS);
+      line->SetInputData(table, 0, 1);
+      switch (c)
+      {
+      case 0:
+      {
+        line->SetColor(0, 255, 0, 0);
+        break;
+      }
+      case 1:
+      {
+        line->SetColor(0, 0, 255, 0);
+        break;
+      }
+      case 2:
+      {
+        line->SetColor(0, 0, 0, 255);
+        break;
+      }
+      case 3:
+      {
+        line->SetColor(0, 0, 255, 255);
+        break;
+      }
+      default:
+        break;
+      }
+      line->SetWidth(1.0);
+    }
+
+    vtkNew<vtkContextView> pView;
+    auto temp = pView->GetScene();
+    pView->GetScene()->AddItem(chart.GetPointer());
+    pView->GetRenderer()->SetBackground(1.0, 1.0, 1.0);
+    vtkNew<vtkRenderWindow> renderWindow;
+    renderWindow->AddRenderer(pView->GetRenderer());
+    renderWindow->SetSize(1000, 1000);
+    renderWindow->SetDPI(600);
+    renderWindow->OffScreenRenderingOn();
+    renderWindow->Render();
+    vtkNew<vtkWindowToImageFilter> windowToImageFilter;
+    windowToImageFilter->SetInput(renderWindow.Get());
+
+    vtkNew<vtkJPEGWriter> writer;
+    writer->SetFileName(fileToSave.c_str());
+    writer->SetInputConnection(windowToImageFilter->GetOutputPort());
+    writer->Write();
+  }
 
 private:
   bool m_negativesDetected = false;
   size_t m_nonZeroVoxelsPerVolume = 0;
+  std::map< std::string, std::vector< double > > m_curves;
 };
 
 template< class ImageType, class PerfusionImageType >
@@ -246,7 +327,8 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     // put an error check here
     // if numberOfNonZeroVoxelsInMask > 0.5 * totalNumberOfVoxels
     // print_error << "Warning: the mask is larger than expected volume of brain, please perform quality-check after process completion.\n"
-    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage); 
+    OriginalCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(perfImagePointerNifti, maskImage);
+    m_curves["Original"] = OriginalCurve;
     std::cout << "Started resampling.\n";
     // Resize
     auto outputSpacing = inputSpacing;
@@ -256,6 +338,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     auto resampledPerfusion_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(resampledPerfusion);
     
     InterpolatedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(resampledPerfusion, maskImage);
+    m_curves["Interpolated"] = InterpolatedCurve;
 
     double base, drop, maxcurve, mincurve;
     GetParametersFromTheCurve(InterpolatedCurve, base, drop, maxcurve, mincurve);
@@ -269,7 +352,8 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
     auto shiftedImage = ShiftBaselineValueForNonZeroVoxels< PerfusionImageType >(resampledPerfusion, cbica::CreateImage< PerfusionImageType >(resampledPerfusion, 1), base, scale_maxIntensityBeforeDrop);
     auto shifted_normalized_volumes = cbica::GetExtractedImages< PerfusionImageType, ImageType >(shiftedImage);
 
-    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage); 
+    RevisedCurve = CalculatePerfusionVolumeMean<ImageType, PerfusionImageType>(shiftedImage, maskImage);
+    m_curves["Revised"] = RevisedCurve;
     GetParametersFromTheCurve(RevisedCurve, base, drop, maxcurve, mincurve);
     std::cout << "Curve characteristics after base shifting::: base = " << base << "; drop = " << drop << "; min = " << mincurve << "; max = " << maxcurve << std::endl;
 
@@ -297,6 +381,7 @@ std::pair< std::vector<typename ImageType::Pointer>, typename ImageType::Pointer
       PerfusionAlignment.push_back(NewImage);
       TruncatedCurve.push_back(RevisedCurve[index]);
     }
+    m_curves["Truncated"] = TruncatedCurve;
   }
   catch (const std::exception& e1)
   {
