@@ -96,6 +96,8 @@ private:
 
 	int m_TotalTimePoints = 0;
 
+	//map of subject id to tuple of vector of mask indices and matrix of perfusion pixel data 
+	//size of perfusion data map is equal to the number of subjects
 	PerfusionMapType m_PerfusionDataMap;
 
 	float m_VarianceThreshold = 0.0;
