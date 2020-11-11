@@ -380,7 +380,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     regionIndex[3] = 0;
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
-	int n = this->DetermineNumberOdfPCsFromVariance(variance);
+	int n = this->DetermineNumberOfPCsFromVariance(variance);
 	std::cout << " number of PCs under given threshold: " << n << std::endl;
     for (int i = 0; i < n; i++)
     {
@@ -426,7 +426,7 @@ void PerfusionPCA::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath
 	myfile.close();
 }
 
-int PerfusionPCA::DetermineNumberOdfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance)
+int PerfusionPCA::DetermineNumberOfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance)
 {
 	int numberOfPCs = 0;
 
