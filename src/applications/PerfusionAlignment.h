@@ -176,8 +176,9 @@ public:
 
   /**
   \brief fill the chart with supplied perfusion alignment data
-  \param chart pointer to vtkChartXY that will be filled
-  \param map pointer to map of data name to pointer of vector of data that needs to be plotted
+  \param fileToSave File name to save
+
+  ToDo: plot each figure in separate figure
   */
   void SaveChart(const std::string &fileToSave)
   {
