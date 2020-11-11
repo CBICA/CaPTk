@@ -55,8 +55,12 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
 {
   //data(:, i) = (data(:, i) - min(data(:, i))). / (max(data(:, i) - min(data(:, i))));
 
-  int NumberOfSamples = inputdata.Rows();
-  int NumberOfFeatures = inputdata.Cols();
+  int NumberOfSamples = inputdata.Rows(); //this is number of voxels in each mask
+  int NumberOfFeatures = inputdata.Cols(); //this is same as 'n' number of PC
+
+  std::cout << " # samples = " << NumberOfSamples << std::endl;
+  std::cout << " # features = " << NumberOfFeatures << std::endl;
+
   VariableSizeMatrixType outputdata;
   outputdata.SetSize(NumberOfSamples, NumberOfFeatures);
 
@@ -66,19 +70,37 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
   minVector.SetSize(NumberOfFeatures);
   maxVector.SetSize(NumberOfFeatures);
 
+  //for each column
+  //go over each value in each row, find min and max and rescale between 0 and 255
   for (int featureNo = 0; featureNo < NumberOfFeatures; featureNo++)
   {
     double min = inputdata(0, featureNo);
     double max = inputdata(0, featureNo);
     for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
     {
+		//if( sampleNo < 100)
+		//std::cout << inputdata(sampleNo, featureNo) << " ";
       if (inputdata(sampleNo, featureNo) < min)
         min = inputdata(sampleNo, featureNo);
       if (inputdata(sampleNo, featureNo) > max)
         max = inputdata(sampleNo, featureNo);
     }
-    for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
-      outputdata(sampleNo, featureNo) = ((inputdata(sampleNo, featureNo) - min) * 255) / (max - min);
+	std::cout << std::endl;
+
+	//std::cout << " max: " << max << std::endl;
+	//std::cout << " min: " << min << std::endl;
+
+	//std::cout << " scaled data " << std::endl;
+
+	for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
+	{
+		//rescaling to 0 - 255
+		outputdata(sampleNo, featureNo) = ((inputdata(sampleNo, featureNo) - min) * 255) / (max - min);
+		//std::cout << outputdata(sampleNo, featureNo) << " ";
+	}
+	std::cout << std::endl;
+
+	//exit(1);
   }
 
   return outputdata;
@@ -86,26 +108,44 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
 
 PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
+	std::cout << " Entering PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData " << std::endl;
   PerfusionMapType RevisedPerfusionMap;
 
-  std::vector<int> sizes;
+  std::vector<int> sizes; // number of subjects
   VectorVectorDouble CombinedPerfusionFeaturesMap;
+  //size of perfusion data map is equal to the number of subjects
   for (auto const &mapiterator : PerfusionDataMap)
   {
     VariableSizeMatrixType Features = std::get<1>(mapiterator.second);
     sizes.push_back(Features.Rows());
+	std::cout << " Features rows: " << Features.Rows() << std::endl;
+
+	//Features.Rows() = total number of voxels in the mask
+	//we are filling the onevector with intensities of each pixel of the perfusion data
+	//see definition of perfusion data map
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
       for (unsigned int j = 0; j < 45; j++) //45 time points
         oneVector.push_back(Features(i, j));
+
+	  //combined Perfusion Features map contains intensities of all pixels of all masks
+	  //provided by the user
       CombinedPerfusionFeaturesMap.push_back(oneVector);
     }
   }
+
+  
+  std::cout << " combined perfusion features map size: " << CombinedPerfusionFeaturesMap.size() << std::endl;
+  std::cout << " sizes: " << sizes.size() << std::endl;
+
   FeatureReductionClass m_featureReduction;
   VectorVectorDouble ReducedPCAs = m_featureReduction.ApplyPCAOnTestDataWithGivenTransformations(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
   int start = 0;
+
+  //iterate over all subjects  (sizes.size = number of subjects)
+  //sizes[0] = number of voxels in first mask and so on
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
@@ -114,11 +154,11 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
     if (index != 0)
       start = start + sizes[index - 1];
 
-    for (int i = start; i < start + sizes[index]; i++)
+    for (int i = start; i < start + sizes[index]; i++) //for all voxels in mask
       for (unsigned int j = 0; j < 10; j++)
-        OnePatietnPerfusionData(i - start, j) = ReducedPCAs[i][j];
+        OnePatietnPerfusionData(i - start, j) = ReducedPCAs[i][j]; //fill matrix with projected PCA data
 
-    OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);
+    OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);//scale the columns between 0 and 255
     PerfusionTupleType new_tuple(std::get<0>(PerfusionDataMap[index]), OnePatietnPerfusionData);
     RevisedPerfusionMap[index] = new_tuple;
   }
@@ -128,22 +168,22 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
 bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects, const std::string modelDirectoryName)
 {
 	//TBD: testing part in PsP + chiharu to provide matlab & python codes
+	std::cout << " Entering PerfusionPCA::ApplyExistingPCAModel " << std::endl;
+  //PerfusionMapType PerfusionDataMap;
 
-  PerfusionMapType PerfusionDataMap;
+  ////Extracting perfusion data of all the patients and putting in PerfusionDataMap
+  //for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
+  //{
+  //  std::cout << "Loading Perfusion Image: " << sid << std::endl;
+  //  std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
+  //  ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
+  //  auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+  //  std::vector<ImageType::IndexType> indices;
 
-  //Extracting perfusion data of all the patients and putting in PerfusionDataMap
-  for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
-  {
-    std::cout << "Loading Perfusion Image: " << sid << std::endl;
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-    ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-    auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    std::vector<ImageType::IndexType> indices;
-
-    VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
-    PerfusionTupleType new_tuple(indices, perfusionData);
-    PerfusionDataMap[sid] = new_tuple;
-  }
+  //  VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
+  //  PerfusionTupleType new_tuple(indices, perfusionData);
+  //  PerfusionDataMap[sid] = new_tuple;
+  //}
 
   //read all the model parameters
   VariableSizeMatrixType PCA_PERF;
@@ -163,6 +203,9 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     for (unsigned int j = 0; j < dataMatrix.cols(); j++)
       PCA_PERF(i, j) = dataMatrix(i, j);
 
+  //TBD: check if the timepoints in model are same as the input data
+  //timepoints in model = # columns in PCA_PERF
+
   reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
   reader->Parse();
   dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
@@ -171,12 +214,13 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
     Mean_PERF[i] = dataMatrix(0, i);
 
   //Apply existing PCA model to the test patient
-  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(PerfusionDataMap, PCA_PERF, Mean_PERF);
+  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 
   for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
   {
-    std::cout << "Revising Perfusion Image: " << sid << std::endl;
+    std::cout << "Revising Perfusion Image number: " << sid << std::endl;
+	std::cout << " size: " << trainingsubjects.size() << std::endl;
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
 
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
@@ -206,13 +250,14 @@ bool PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inp
   }
   for (int index = 0; index < RevisedPerfusionImagesOfAllPatients.size(); index++)
   {
-    std::cout << "Writing Perfusion Image: " << index << std::endl;
+    std::cout << "Writing Perfusion Image number: " << index << std::endl;
     std::vector<ImageType::Pointer> PCAsOfOnePatient = RevisedPerfusionImagesOfAllPatients[index];
     std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[index];
 
     for (int index2 = 0; index2 < PCAsOfOnePatient.size(); index2++)
     {
       std::string filename = outputdirectory + "/" + static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "_PCA_" + std::to_string(index2) + ".nii.gz";
+	  std::cout << "file written at path: " << filename << std::endl;
       cbica::WriteImage<ImageType>(PCAsOfOnePatient[index2], filename);
     }
   }
