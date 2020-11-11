@@ -70,7 +70,7 @@ public:
 */
   ErrorCode LoadData(std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects, std::string &inValidSubject);
   bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory,std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
-  bool ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects,const std::string ModelDirectoryName);
+  ErrorCode ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects,const std::string ModelDirectoryName);
   
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
