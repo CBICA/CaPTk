@@ -199,9 +199,12 @@ public:
         table->SetValue(i, 1, itr->second[i]);
       }
 
+      chart->SetShowLegend(true);
+
       //add to chart
       auto line = chart->AddPlot(vtkChart::LINE);
       line->SetInputData(table, 0, 1);
+      line->SetWidth(1.0);
       switch (c)
       {
       case 0:
@@ -213,22 +216,24 @@ public:
       case 1:
       {
         line->SetColor(0, 255, 0, 255);
+        vtkPlotPoints::SafeDownCast(line)->SetMarkerStyle(vtkPlotPoints::CIRCLE);
         break;
       }
       case 2:
       {
         line->SetColor(0, 0, 255, 255);
+        vtkPlotPoints::SafeDownCast(line)->SetMarkerStyle(vtkPlotPoints::SQUARE);
         break;
       }
       case 3:
       {
         line->SetColor(0, 255, 255, 255);
+        vtkPlotPoints::SafeDownCast(line)->SetMarkerStyle(vtkPlotPoints::DIAMOND);
         break;
       }
       default:
         break;
       }
-      line->SetWidth(1.0);
     }
 
     vtkNew<vtkContextView> pView;
