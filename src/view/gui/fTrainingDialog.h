@@ -19,6 +19,7 @@
 
 #include "CaPTkEnums.h"
 #include "ui_fTrainingDialog.h"
+#include "TrainingModuleParameters.h"
 
 /**
 \class fTrainingSimulator
@@ -58,15 +59,11 @@ public slots:
   void SelectSplitModelDirectory();
   void CrossValidationRadioButtonChecked();
   void SplitTrainRadioButtonChecked();
-  void SplitTestRadioButtonChecked(); 
+  void SplitTestRadioButtonChecked();
+  void OptimizationToggled(bool);
 
 signals:
-  void RunTrainingSimulation(const std::string inputImageFile,
-    const std::string inputMaskFile,
-    const std::string outputFolder,
-    const std::string modelFolder,
-    int classifier, int configuration, int folds,
-    int featureselectionType, int optimizationType, int crossvalidationType);
+  void RunTrainingSimulation(const TrainingModuleParameters params);
 };
 
 
