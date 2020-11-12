@@ -346,7 +346,10 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
 
   //create vector with 1 item representing total timepoints in input data
   //vector is needed for csv writer
-  //std::vector<int> timepointvector = { this->m_TotalTimePoints };
+  //std::vector<int> nPCs = { this->DetermineNumberOfPCsFromVariance(variance)};
+
+  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
+  std::cout << " number of PCs under given threshold: " << nPCs << std::endl;
 
   //write model files
 
@@ -355,7 +358,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //
   if(this->m_PerfusionDataForWholePopulationRequested)
 	WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
-  //WriteCSVFiles(timepointvector, outputdirectory + "/TotalTimePoints.csv"); //can be read from 45x45 matrix, not needed
+  this->WriteNumberOfPCs(nPCs, outputdirectory + "/NumberOfPCs.csv"); //# PCs saved as part of the model
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
   //Putting back in images of respective patients
@@ -380,9 +383,8 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     regionIndex[3] = 0;
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
-	int n = this->DetermineNumberOfPCsFromVariance(variance);
-	std::cout << " number of PCs under given threshold: " << n << std::endl;
-    for (int i = 0; i < n; i++)
+	
+    for (int i = 0; i < nPCs; i++)
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
@@ -461,4 +463,12 @@ void PerfusionPCA::SetNumberOfPCs(int pcs)
 void PerfusionPCA::RequestPerfusionDataWholePopulation(bool request)
 {
 	this->m_PerfusionDataForWholePopulationRequested = request;
+}
+
+void PerfusionPCA::WriteNumberOfPCs(int n, std::string filepath)
+{
+	std::ofstream myfile;
+	myfile.open(filepath);
+	myfile << std::to_string(n);
+	myfile.close();
 }
