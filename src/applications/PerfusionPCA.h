@@ -92,6 +92,8 @@ public:
 
   void RequestPerfusionDataWholePopulation(bool request);
 
+  void WriteNumberOfPCs(int n, std::string filepath);
+
 private:
 
 	int m_TotalTimePoints = 0;
