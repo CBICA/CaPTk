@@ -810,6 +810,7 @@ public slots:
   /**
   \brief Call the Diffusion Measures application with the inputs
 
+  \param params The TrainingModuleParameters object containing the following:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
@@ -818,12 +819,7 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, 
-    const std::string targetfile, 
-    const std::string outputFolder, 
-    const std::string modeldirectory, 
-    int classifier, int conf, int folds, 
-    int featureselectionType, int optimizationType, int crossvalidationType);
+  void CallTrainingSimulation(const TrainingModuleParameters params);
 
   /**
   \brief Call the PCA calculation application with the inputs
