@@ -94,6 +94,8 @@ public:
 
   void WriteNumberOfPCs(int n, std::string filepath);
 
+  int ReadNumberOfPCsFromModel(std::string filepath);
+
 private:
 
 	int m_TotalTimePoints = 0;

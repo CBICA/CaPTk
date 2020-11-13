@@ -185,6 +185,10 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   //  PerfusionDataMap[sid] = new_tuple;
   //}
 
+
+	int nPCs = this->ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.csv");
+	std::cout << " number of PCs in model: " << nPCs << std::endl;
+
   //read all the model parameters
   VariableSizeMatrixType PCA_PERF;
   VariableLengthVectorType Mean_PERF;
@@ -218,6 +222,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   Mean_PERF.SetSize(dataMatrix.size());
   for (unsigned int i = 0; i < dataMatrix.size(); i++)
     Mean_PERF[i] = dataMatrix(0, i);
+
 
   //Apply existing PCA model to the test patient
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
@@ -471,4 +476,14 @@ void PerfusionPCA::WriteNumberOfPCs(int n, std::string filepath)
 	myfile.open(filepath);
 	myfile << std::to_string(n);
 	myfile.close();
+}
+
+int PerfusionPCA::ReadNumberOfPCsFromModel(std::string filepath)
+{
+	int n;
+	std::ifstream myfile;
+	myfile.open(filepath);
+	myfile >> n;
+	myfile.close();
+	return n;
 }
