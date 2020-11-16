@@ -222,7 +222,17 @@ Press 'y' to contine or 'n' to exit";
 		inputPCs = object_pca.ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
 	}
 	//TBD: based on error output a msg
-    object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+    PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
+	{
+		std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
+		return EXIT_FAILURE;
+	}
+	else if (code == PerfusionPCA::ErrorCode::NoError)
+	{
+		std::cout << "principal components have been saved at the specified locations.\n";
+		std::cout << "Finished successfully.\n";
+	}
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
