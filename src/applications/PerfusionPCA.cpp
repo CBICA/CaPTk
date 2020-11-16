@@ -126,7 +126,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
     for (unsigned int i = 0; i < Features.Rows(); i++)
     {
       VectorDouble oneVector;
-      for (unsigned int j = 0; j < 45; j++) //45 time points
+      for (unsigned int j = 0; j < this->m_TotalTimePoints; j++) //45 time points
         oneVector.push_back(Features(i, j));
 
 	  //combined Perfusion Features map contains intensities of all pixels of all masks
