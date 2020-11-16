@@ -186,8 +186,8 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   //}
 
 
-	int nPCs = this->ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
-	std::cout << " number of PCs in model: " << nPCs << std::endl;
+	//int nPCs = this->ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
+	//std::cout << " number of PCs in model: " << nPCs << std::endl;
 
   //read all the model parameters
   VariableSizeMatrixType PCA_PERF;
@@ -212,6 +212,8 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   if (PCA_PERF.Rows() != this->m_TotalTimePoints)
   {
 	  std::cout << " timepoints in model: " << PCA_PERF.Rows() << std::endl;
+	  std::cout << " total timepoints in data: " << this->m_TotalTimePoints << std::endl;
+
 	  std::cout << " time points don't match." << std::endl;
 	  return ErrorCode::DifferentTimePoints;
   }
