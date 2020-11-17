@@ -105,7 +105,7 @@ private:
 	PerfusionMapType m_PerfusionDataMap;
 
 	float m_VarianceThreshold = 0.0;
-	float m_NumberOfPCs = 0.0;
+	int m_NumberOfPCs = 0;
 	bool m_VarianceThresholdDefined = false;
 	bool m_NumberOfPCsDefined = false;
 	bool m_PerfusionDataForWholePopulationRequested = false;
