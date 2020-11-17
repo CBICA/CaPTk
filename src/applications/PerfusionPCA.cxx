@@ -124,7 +124,7 @@ Do you want to continue? Press 'y' to contine or 'n' to exit and provide either 
 	  if (ch == 'y')
 	  {
 		  m_varianceThresholdDefined = true;
-		  varianceThreshold = 100.0;
+		  varianceThreshold = 100.0; //set variance threshold at 100 so as to provide all PCs.
 	  }
 	  else
 	  {
