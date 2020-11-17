@@ -205,6 +205,8 @@ Press 'y' to contine or 'n' to exit";
 		inputPCs = object_pca.ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
 	}
 	//TBD: based on error output a msg
+	//set number of PCs on the object
+	object_pca.SetNumberOfPCs(inputPCs);
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
 	{
