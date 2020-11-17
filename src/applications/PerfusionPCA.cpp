@@ -149,13 +149,13 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], 10); //extracting 10 PCAs?
+    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); //was 10 for extracting 10 PCs?
 
     if (index != 0)
       start = start + sizes[index - 1];
 
     for (int i = start; i < start + sizes[index]; i++) //for all voxels in mask
-      for (unsigned int j = 0; j < 10; j++)
+      for (unsigned int j = 0; j < this->m_NumberOfPCs; j++)
         OnePatietnPerfusionData(i - start, j) = ReducedPCAs[i][j]; //fill matrix with projected PCA data
 
     OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);//scale the columns between 0 and 255
