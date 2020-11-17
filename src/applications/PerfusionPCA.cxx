@@ -112,26 +112,7 @@ int main(int argc, char **argv)
 	  return EXIT_FAILURE;
   }
 
-  //if user doesnt provide any, give a msg stating that we will provide all PCs
-  // and that the run will take quite some time and request for confirmation
-  // if they can provide n or vt, press yes or no to provide vt.
-  if (!m_nPCsDefined && !m_varianceThresholdDefined && (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING))
-  {
-	  std::cout << "You did not provide the number of principal components or the variance threshold. \
-We will provide all principal components. The application will take a long time to run. \
-Do you want to continue? Press 'y' to contine or 'n' to exit and provide either of the parameters.";
-	  char ch = cin.get();
-	  if (ch == 'y')
-	  {
-		  m_varianceThresholdDefined = true;
-		  varianceThreshold = 100.0; //set variance threshold at 100 so as to provide all PCs.
-	  }
-	  else
-	  {
-		  std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
-		  return EXIT_FAILURE;
-	  }
-  }
+
   if (parser.isPresent("m"))
   {
     parser.getParameterValue("m", modelDirectoryName);
@@ -232,20 +213,53 @@ Press 'y' to contine or 'n' to exit";
 	{
 		std::cout << "principal components have been saved at the specified locations.\n";
 		std::cout << "Finished successfully.\n";
+		return EXIT_SUCCESS;
 	}
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
+		//if user doesnt provide n or vt, give a msg stating that we will provide all PCs
+		// and that the run will take quite some time and request for confirmation
+		// press y to continue or n to exit and provide n or vt.
+	  if (!m_nPCsDefined && !m_varianceThresholdDefined)
+	  {
+		  std::cout << "You did not provide the number of principal components or the variance threshold. \
+We will provide all principal components. The application will take a long time to run. \
+Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit and provide either of the parameters.";
+		  char ch = cin.get();
+		  if (ch == 'y')
+		  {
+			  m_varianceThresholdDefined = true;
+			  varianceThreshold = 100.0; //set variance threshold at 100 so as to provide all PCs.
+		  }
+		  else
+		  {
+			  std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
+			  return EXIT_FAILURE;
+		  }
+	  }
+
 	  //TBD: spit a txt file : NumberofPCs having only a single number of PCs
 	  if (m_nPCsDefined)
 		  object_pca.SetNumberOfPCs(inputPCs);
 	  else if (m_varianceThresholdDefined)
 		  object_pca.SetVarianceThreshold(varianceThreshold);
 	  //we won't have a situation here that both m_nPCsDefined and m_varianceThresholdDefined
-	  //are defined or not defined. These are handled upstream.
+	  //are defined. This is handled upstream.
 
-	  object_pca.RequestPerfusionDataWholePopulation(dif);
-	  object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects);
+	  object_pca.RequestPerfusionDataWholePopulation(dif);//dump intermediate files or not
+
+	  if (object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects))
+	  {
+		  std::cout << "principal components have been saved at the specified locations.\n";
+		  std::cout << "Finished successfully.\n";
+		  return EXIT_SUCCESS;
+	  }
+	  else
+	  {
+		  std::cout << "Something went wrong during the calculation. Please contact software@cbica.upenn.edu \n";
+		  return EXIT_FAILURE;
+	  }
   }
   else
   {
@@ -253,8 +267,4 @@ Press 'y' to contine or 'n' to exit";
     return EXIT_SUCCESS;
   }
 
-  std::cout<<"principal components have been saved at the specified locations.\n"; 
-  std::cout << "Finished successfully.\n";
-
-  return EXIT_SUCCESS;
 }
