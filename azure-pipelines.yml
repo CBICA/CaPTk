@@ -570,7 +570,7 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-
+      lfs: true # May be explicitly needed now as of 11/17/2020
     # submodule 
     - bash: |
         git submodule update --init --recursive
