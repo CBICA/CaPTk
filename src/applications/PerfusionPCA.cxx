@@ -243,7 +243,7 @@ Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit a
 		  }
 	  }
 
-	  //TBD: spit a txt file : NumberofPCs having only a single number of PCs
+	  //spit a txt file : NumberofPCs having only a single number of PCs
 	  if (nPCsDefined)
 		  object_pca.SetNumberOfPCs(inputPCs);
 	  else if (varianceThresholdDefined)
