@@ -29,19 +29,25 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
   //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
   ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsDynamic(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector, variance);
 
+  if (!this->m_NumberOfPCsDefined)
+  {
+	  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
+	  this->SetNumberOfPCs(nPCs);
+  }
+
   std::cout << " written files " << std::endl;
 
   int start = 0;
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], 10);
+    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); //was 10 for extracting 10 PCs?
 
     if (index != 0)
       start = start + sizes[index - 1];
 
     for (int i = start; i < start + sizes[index]; i++)
-      for (unsigned int j = 0; j < 10; j++)
+      for (unsigned int j = 0; j < this->m_NumberOfPCs; j++)
         OnePatietnPerfusionData(i - start, j) = ReducedPCAs->GetValue(i, j).ToDouble();
 
     OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);
