@@ -222,8 +222,8 @@ Press 'y' to contine or 'n' to exit";
   }
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
-		//if user doesnt provide n or vt, give a msg stating that we will provide all PCs
-		// and that the run will take quite some time and request for confirmation
+		//if user doesnt provide n or vt, give a msg stating that we will provide only PCA parameters 
+		// and not the PCA images and that the run will take quite some time and request for confirmation
 		// press y to continue or n to exit and provide n or vt.
 	  if (!nPCsDefined && !varianceThresholdDefined)
 	  {
