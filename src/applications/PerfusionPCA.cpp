@@ -371,7 +371,6 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //
   if(this->m_PerfusionDataForWholePopulationRequested)
 	WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
-  this->WriteNumberOfPCs(nPCs, outputdirectory + "/NumberOfPCs.txt"); //# PCs saved as part of the model
   this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
 
   //Putting back in images of respective patients
