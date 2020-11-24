@@ -20,8 +20,8 @@ fTrainingSimulator::fTrainingSimulator()
   connect(mSplitModelDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectSplitModelDirectory()));
 
   connect(mCrossValidation, SIGNAL(toggled(bool)), this, SLOT(CrossValidationRadioButtonChecked()));
-  connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(TrainRadioButtonChecked()));
-  connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(TestRadioButtonChecked()));
+  connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(SplitTrainRadioButtonChecked()));
+  connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(SplitTestRadioButtonChecked()));
   connect(mOptimization, SIGNAL(toggled(bool)), this, SLOT(OptimizationToggled(bool)));
 
   cvLabel->setEnabled(false);
