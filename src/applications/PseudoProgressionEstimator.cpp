@@ -3,6 +3,7 @@
 #include "cbicaStatistics.h"
 #include "CaPTkEnums.h"
 #include "vtkDoubleArray.h"
+#include "TrainingModuleLegacyUtils.h"
 
 #include "cbicaITKSafeImageIO.h"
 
@@ -202,7 +203,7 @@ bool PseudoProgressionEstimator::TrainNewModelOnGivenData(const std::vector<std:
   mFeatureExtractionLocalPtr.FormulatePseudoprogressionTrainingData(traininglabels, PseudoModelLabels, RecurrenceModelLabels);
 
   //select pseudo-model and recurrence-model features using routines of training module
-  TrainingModule mTrainingModule;
+  TrainingModuleLegacyUtils mTrainingModule;
   VectorDouble EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, PseudoModelLabels);
   for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
   {
