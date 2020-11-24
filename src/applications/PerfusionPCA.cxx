@@ -228,13 +228,13 @@ Press 'y' to contine or 'n' to exit";
 	  if (!nPCsDefined && !varianceThresholdDefined)
 	  {
 		  std::cout << "You did not provide the number of principal components or the variance threshold. \
-We will provide all principal components. The application will take a long time to run. \
+We will provide only the PCA parameters and not any PCA images. The application will take a long time to run. \
 Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit and provide either of the parameters.";
 		  char ch = cin.get();
 		  if (ch == 'y')
 		  {
-			  varianceThresholdDefined = true;
-			  varianceThreshold = 100.0; //set variance threshold at 100 so as to provide all PCs.
+			  nPCsDefined = true;
+			  inputPCs = 0; //we don't provide any PCA images
 		  }
 		  else
 		  {
