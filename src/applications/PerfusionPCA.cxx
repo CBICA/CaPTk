@@ -165,10 +165,9 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
     }
     if (!cbica::fileExists(modelDirectoryName +"/PCA_PERF.csv") || 
-		!cbica::fileExists(modelDirectoryName + "/Mean_PERF.csv") ||
-		!cbica::fileExists(modelDirectoryName + "/NumberOfPCs.txt"))
+		!cbica::fileExists(modelDirectoryName + "/Mean_PERF.csv"))
     {
-      std::cout << "The required model files PCA_PERF.csv, Mean_PERF.csv and NumberOfPCs.txt do not exist in the model directory:" <<  modelDirectoryName << std::endl;
+      std::cout << "The required model files PCA_PERF.csv, Mean_PERF.csv do not exist in the model directory:" <<  modelDirectoryName << std::endl;
       return EXIT_FAILURE;
     }
     if (cbica::isFile(modelDirectoryName + "/VERSION.yaml"))
