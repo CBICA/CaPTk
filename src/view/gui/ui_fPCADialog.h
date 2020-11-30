@@ -390,7 +390,7 @@ public:
   {
     fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Estimator", 0));
     //rdNewClassification->setText(QApplication::translate("fPCADialog", "Loaded subject: Near&Far", 0));
-    rdExistingClassification->setText(QApplication::translate("fPCADialog", "PCA estimation on a batch of subjects", 0));
+    rdExistingClassification->setText(QApplication::translate("fPCADialog", "Apply PCA", 0));
     rdCreateModel->setText(QApplication::translate("fPCADialog", "Extract PCA Parameters", 0));
     confirmButton->setText(QApplication::translate("fPCADialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPCADialog", "Cancel", 0));
