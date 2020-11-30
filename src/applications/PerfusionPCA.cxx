@@ -178,34 +178,10 @@ int main(int argc, char **argv)
             return EXIT_FAILURE;
         }
     }
-	if (nPCsDefined)
-	{
-		int n = object_pca.ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
-		if (inputPCs != n)
-		{
-			std::cout << " Number of PCs you provided doesn't match with that in the model. \
-Do you want to proceed with the number of PCs in the model? \
-Press 'y' to contine or 'n' to exit";
 
-			char ch = cin.get();
-			if (ch == 'y')
-			{
-				inputPCs = n;
-			}
-			else
-			{
-				std::cout << "Please re-run the application without providing the number of PCs." << std::endl;
-				return EXIT_FAILURE;
-			}
-		}
-	}
-	else
-	{
-		inputPCs = object_pca.ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
-	}
-	//TBD: based on error output a msg
 	//set number of PCs on the object
-	object_pca.SetNumberOfPCs(inputPCs);
+	if (nPCsDefined)
+		object_pca.SetNumberOfPCs(inputPCs);
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
 	{
