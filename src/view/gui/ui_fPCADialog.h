@@ -78,6 +78,12 @@ public:
 
   QHBoxLayout * horizontalLayout;
 
+  QGridLayout *overallGridLayout;
+  QRadioButton *extractPCA, *applyPCA;
+  QLabel *inputDirLabel, *outputDirLabel, *nPCsLabel, *varLabel, *pcaParamsLabel;
+  QLineEdit *inputDirLE, *outputDirLE, *nPCsLE, *varLE, *pcaParamsLE;
+  QPushButton *pbInput, *pbOutput, *pbParams;
+
   void setupUi(QDialog *fPCADialog)
   {
 
@@ -92,13 +98,46 @@ public:
     fPCADialog->setSizePolicy(sizePolicy);
     fPCADialog->setMinimumSize(QSize(0, 0));
 
+	overallGridLayout = new QGridLayout(fPCADialog);
+	extractPCA = new QRadioButton("Extract PCA",fPCADialog);
+	applyPCA = new QRadioButton("Apply PCA Parameters",fPCADialog);
+	inputDirLabel = new QLabel("Input Directory",fPCADialog);
+	outputDirLabel = new QLabel("Output Directory",fPCADialog);
+	nPCsLabel = new QLabel("Number of PCA images to produce (optional)",fPCADialog);
+	varLabel = new QLabel("Variance threshold (optional)",fPCADialog);
+	pcaParamsLabel = new QLabel("PCA Parameters Directory", fPCADialog);
+	inputDirLE = new QLineEdit(fPCADialog);
+	outputDirLE = new QLineEdit(fPCADialog);
+	nPCsLE = new QLineEdit(fPCADialog);
+	varLE = new QLineEdit(fPCADialog);
+	pcaParamsLE = new QLineEdit(fPCADialog);
+	pbInput = new QPushButton("Browse",fPCADialog);
+	pbOutput = new QPushButton("Browse",fPCADialog);
+	pbParams = new QPushButton("Browse",fPCADialog);
+
+	overallGridLayout->addWidget(extractPCA, 0, 0/*, 1, 2*/);
+	overallGridLayout->addWidget(applyPCA, 0, 1/*, 1, 2*/);
+	overallGridLayout->addWidget(inputDirLabel, 1, 0);
+	overallGridLayout->addWidget(inputDirLE, 1, 1);
+	overallGridLayout->addWidget(pbInput, 1, 2);
+	overallGridLayout->addWidget(outputDirLabel, 2, 0);
+	overallGridLayout->addWidget(outputDirLE, 2, 1);
+	overallGridLayout->addWidget(pbOutput, 2, 2);
+	overallGridLayout->addWidget(pcaParamsLabel, 3, 0);
+	overallGridLayout->addWidget(pcaParamsLE, 3, 1);
+	overallGridLayout->addWidget(pbParams, 3, 2);
+	overallGridLayout->addWidget(nPCsLabel, 4, 0, 1, 2);
+	overallGridLayout->addWidget(nPCsLE, 4, 2, 1, 1);
+	overallGridLayout->addWidget(varLabel, 5, 0, 1, 2);
+	overallGridLayout->addWidget(varLE, 5, 2, 1, 1);
+
     //fPCADialog->setModal(true);
-    gridLayout_3 = new QGridLayout(fPCADialog);
+    gridLayout_3 = new QGridLayout(/*fPCADialog*/);
     gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
 
     //--------------------------------------------------------------------
 
-    classificationGroupBox = new QGroupBox(fPCADialog);
+    classificationGroupBox = new QGroupBox(/*fPCADialog*/);
     classificationGroupBox->setTitle(QString::fromStdString("PCA Estimation"));
     classificationGridLayout = new QGridLayout(classificationGroupBox);
     classificationGridLayout->setObjectName(QString::fromUtf8("imagestabgridLayout3"));
@@ -327,7 +366,7 @@ public:
     //--------------------------output-------------------------------------------------------
 
 
-    outputGroupBox = new QGroupBox(fPCADialog);
+    outputGroupBox = new QGroupBox(/*fPCADialog*/);
     outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
 
     longRunningWarning = new QLabel(outputGroupBox);
@@ -380,6 +419,9 @@ public:
 
     gridLayout_3->addWidget(confirmButton, 2, 0, 1, 1);
     gridLayout_3->addWidget(cancelButton, 2, 1, 1, 1);
+
+	overallGridLayout->addWidget(confirmButton, 6, 1);
+	overallGridLayout->addWidget(cancelButton, 6, 2);
 
     retranslateUi(fPCADialog);
 
