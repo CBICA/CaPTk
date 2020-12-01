@@ -272,7 +272,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
 
 	//blah.....
-    for (int i = 0; i < number; i++)
+    for (int i = 0; i < nPCs; i++)
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
