@@ -31,8 +31,9 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 
   if (!this->m_NumberOfPCsDefined)
   {
+	  //we need to set the m_NumberOfPCs variable that is used further down
 	  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
-	  this->SetNumberOfPCs(nPCs);
+	  this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
   }
 
   std::cout << " written files " << std::endl;
