@@ -231,7 +231,30 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   for (unsigned int i = 0; i < dataMatrix.size(); i++)
     Mean_PERF[i] = dataMatrix(0, i);
 
+  vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
+  reader->SetFileName(modelDirectoryName + "/PCCumulativeVariance.csv");
+  reader->UseStringDelimiterCharacterOff();
+  reader->Parse();
+  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
+  unsigned int nvar = dataMatrix.size();
+
+  variance->SetNumberOfValues(nvar);
+
+  for (vtkIdType i = 0; i < nvar; i++)
+  {
+	  variance->SetValue(i, dataMatrix(i, 0));
+  }
+
+  //this->WritevtkArray(variance, "readVariance.csv");
+
+  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
+
+  if (!this->m_NumberOfPCsDefined)
+  {
+	  //we need to set the m_NumberOfPCs variable that is used from function CombineAndCalculatePerfusionPCAForTestData
+	  this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
+  }
   //Apply existing PCA model to the test patient
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
