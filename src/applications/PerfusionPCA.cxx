@@ -182,6 +182,8 @@ int main(int argc, char **argv)
 	//set number of PCs on the object
 	if (nPCsDefined)
 		object_pca.SetNumberOfPCs(inputPCs);
+	else if (varianceThresholdDefined)
+		object_pca.SetVarianceThreshold(varianceThreshold);
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
 	{
