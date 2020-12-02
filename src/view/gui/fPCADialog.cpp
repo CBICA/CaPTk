@@ -16,16 +16,19 @@ fPCADialog::fPCADialog()
   mode = -1;
   //this->setFixedWidth(400);
   //this->setFixedHeight(300);
+
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
-  connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
-  connect(svmModelButton1, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile1()));
-  connect(svmModelButton2, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile2()));
-  connect(testSubjectsDirectoryButton, SIGNAL(clicked()), this, SLOT(OpenTestSubjectsDirectory()));
-  connect(outputDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
-  connect(rdExistingClassification, SIGNAL(toggled(bool)), this, SLOT(ExistingClassificationRadioButtonChecked()));
-  connect(rdLoadedClassification, SIGNAL(toggled(bool)), this, SLOT(LoadedClassificationRadioButtonChecked()));
-  connect(rdCreateModel, SIGNAL(toggled(bool)), this, SLOT(NewModelRadioButtonChecked()));
+
+  //disable all previous connections - we don't need them anymore
+  //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
+  //connect(svmModelButton1, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile1()));
+  //connect(svmModelButton2, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile2()));
+  //connect(testSubjectsDirectoryButton, SIGNAL(clicked()), this, SLOT(OpenTestSubjectsDirectory()));
+  //connect(outputDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
+  //connect(rdExistingClassification, SIGNAL(toggled(bool)), this, SLOT(ExistingClassificationRadioButtonChecked()));
+  //connect(rdLoadedClassification, SIGNAL(toggled(bool)), this, SLOT(LoadedClassificationRadioButtonChecked()));
+  //connect(rdCreateModel, SIGNAL(toggled(bool)), this, SLOT(NewModelRadioButtonChecked()));
   //connect(disclaimerButton, SIGNAL(clicked()), this, SLOT(CheckForDisclaimer()));
 
   //  connect(rdNewClassification, SIGNAL(toggled(bool)), this, SLOT(CurrentSubjectRadioButtonChecked()));
