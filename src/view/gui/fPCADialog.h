@@ -73,6 +73,9 @@ public slots:
 signals:
   void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
   void TrainNewPCAModel(std::string directory, std::string outputdirectory);
+
+private:
+	QButtonGroup *modeButtons;
 };
 
 
