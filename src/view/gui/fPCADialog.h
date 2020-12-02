@@ -34,6 +34,12 @@ class fPCADialog : public QDialog, private Ui::fPCADialog
   Q_OBJECT
 
 public:
+	enum PCAModeType
+	{
+		Extract = 0,
+		Apply
+	};
+
   fPCADialog();
   ~fPCADialog();
   int mode;
