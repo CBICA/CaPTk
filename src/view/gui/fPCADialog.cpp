@@ -17,6 +17,10 @@ fPCADialog::fPCADialog()
   //this->setFixedWidth(400);
   //this->setFixedHeight(300);
 
+  modeButtons = new QButtonGroup(this);
+  modeButtons->addButton(extractPCA, fPCADialog::PCAModeType::Extract);
+  modeButtons->addButton(applyPCA, fPCADialog::PCAModeType::Apply);
+
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
 
