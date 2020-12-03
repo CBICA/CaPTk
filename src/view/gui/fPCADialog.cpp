@@ -23,6 +23,7 @@ fPCADialog::fPCADialog()
 
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
+  connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
 
   //disable all previous connections - we don't need them anymore
   //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
