@@ -248,8 +248,20 @@ void fPCADialog::CurrentSubjectRadioButtonChecked()
   //}
 }
 
-void fPCADialog::OnPCAModeChanged(int)
+void fPCADialog::OnPCAModeChanged(int mode)
 {
+	if (mode == (int)fPCADialog::PCAModeType::Extract)
+	{
+		this->pcaParamsLabel->hide();
+		this->pcaParamsLE->hide();
+		this->pbParams->hide();
+	}
+	else if (mode == (int)fPCADialog::PCAModeType::Apply)
+	{
+		this->pcaParamsLabel->show();
+		this->pcaParamsLE->show();
+		this->pbParams->show();
+	}
 }
 
 //void fPCADialog::CheckForDisclaimer()
