@@ -70,6 +70,7 @@ public slots:
   void CurrentSubjectRadioButtonChecked();
   void OnPCAModeChanged(int);
   void OnVarianceChangeStarted(const QString &);
+  void OnNumberPCsChangeStarted(const QString &);
 
   //void CheckForDisclaimer();
 
