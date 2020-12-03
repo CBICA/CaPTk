@@ -247,6 +247,10 @@ void fPCADialog::CurrentSubjectRadioButtonChecked()
   //}
 }
 
+void fPCADialog::OnPCAModeChanged(int)
+{
+}
+
 //void fPCADialog::CheckForDisclaimer()
 //{
 //  QString volumeString;
