@@ -8118,12 +8118,8 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
-  ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
-  octantImage->SetRegions(roi1Image->GetLargestPossibleRegion());
-  octantImage->Allocate();
-  octantImage->SetSpacing(roi1Image->GetSpacing());
-  octantImage->SetOrigin(roi1Image->GetOrigin());
-  octantImage->SetDirection(roi1Image->GetDirection());
+  auto  octantImage = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
+  octantImage->DisconnectPipeline();
 
   auto size_1 = roi1Image->GetLargestPossibleRegion().GetSize();
   auto size_2 = roi2Image->GetLargestPossibleRegion().GetSize();
@@ -8232,11 +8228,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
     roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
     roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
-
-  for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
-    octantIt.Set(0);
-
-
+  
   for (roi2It.GoToBegin(); !roi2It.IsAtEnd(); ++roi2It)
   {
     if (roi2It.Get() > 0)
@@ -8245,6 +8237,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       roi1It.SetIndex(currentIndex);
       roiNew.SetIndex(currentIndex);
+      roiComputed.SetIndex(currentIndex);
 
       //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
@@ -9073,6 +9066,8 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
     WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
     WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+
+    objPerfusion.SaveChart(outputFolder + "/plot.jpg");
 
     QString msg;
     msg = "Aligned images have been saved at the specified location.";
