@@ -279,6 +279,10 @@ void fPCADialog::OnVarianceChangeStarted(const QString & text)
 	}
 }
 
+void fPCADialog::OnNumberPCsChangeStarted(const QString &)
+{
+}
+
 //void fPCADialog::CheckForDisclaimer()
 //{
 //  QString volumeString;
