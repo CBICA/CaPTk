@@ -25,6 +25,7 @@ fPCADialog::fPCADialog()
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
   connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChanged(const QString &)));
+  connect(nPCsLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnNumberPCAImagesChanged(const QString &)));
 
   //disable all previous connections - we don't need them anymore
   //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
