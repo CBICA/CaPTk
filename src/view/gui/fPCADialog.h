@@ -69,6 +69,7 @@ public slots:
   void OpenTestSubjectsDirectory();
   void CurrentSubjectRadioButtonChecked();
   void OnPCAModeChanged(int);
+  void OnVarianceChangeStarted(const QString &);
 
   //void CheckForDisclaimer();
 
