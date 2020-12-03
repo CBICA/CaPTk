@@ -68,6 +68,8 @@ public slots:
   void NewModelRadioButtonChecked();
   void OpenTestSubjectsDirectory();
   void CurrentSubjectRadioButtonChecked();
+  void OnPCAModeChanged(int);
+
   //void CheckForDisclaimer();
 
 signals:
