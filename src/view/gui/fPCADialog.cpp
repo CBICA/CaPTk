@@ -24,6 +24,7 @@ fPCADialog::fPCADialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
+  connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChangeStarted(const QString &)));
 
   //disable all previous connections - we don't need them anymore
   //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
@@ -261,6 +262,20 @@ void fPCADialog::OnPCAModeChanged(int mode)
 		this->pcaParamsLabel->show();
 		this->pcaParamsLE->show();
 		this->pbParams->show();
+	}
+}
+
+void fPCADialog::OnVarianceChangeStarted(const QString & text)
+{
+	if (!text.isEmpty())
+	{
+		this->nPCsLE->hide();
+		this->nPCsLabel->hide();
+	}
+	else
+	{
+		this->nPCsLE->show();
+		this->nPCsLabel->show();
 	}
 }
 
