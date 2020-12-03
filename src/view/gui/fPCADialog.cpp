@@ -266,7 +266,7 @@ void fPCADialog::OnPCAModeChanged(int mode)
 	}
 }
 
-void fPCADialog::OnVarianceChanged(const QString & text)
+void fPCADialog::OnVarianceChanged(const QString &text)
 {
 	if (!text.isEmpty())
 	{
@@ -280,8 +280,18 @@ void fPCADialog::OnVarianceChanged(const QString & text)
 	}
 }
 
-void fPCADialog::OnNumberPCAImagesChanged(const QString &)
+void fPCADialog::OnNumberPCAImagesChanged(const QString &text)
 {
+	if (!text.isEmpty())
+	{
+		this->varLabel->hide();
+		this->varLE->hide();
+	}
+	else
+	{
+		this->varLabel->show();
+		this->varLE->show();
+	}
 }
 
 //void fPCADialog::CheckForDisclaimer()
