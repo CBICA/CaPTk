@@ -9074,6 +9074,8 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
     WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
 
+    objPerfusion.SaveChart(outputFolder + "/plot.jpg");
+
     QString msg;
     msg = "Aligned images have been saved at the specified location.";
     ShowMessage(msg.toStdString(), this);
