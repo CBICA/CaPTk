@@ -28,12 +28,12 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the DSC-MRI Image.");
     return;
   }
-  if ((inputBeforePointsLabel->text().isEmpty()))
+  if ((inputBeforePointsName->text().isEmpty()))
   {
 	  ShowErrorMessage("Please specify the number of points to pick before the drop.");
 	  return;
   }
-  if ((inputAfterPointsLabel->text().isEmpty()))
+  if ((inputAfterPointsName->text().isEmpty()))
   {
     ShowErrorMessage("Please specify the number of points to pick after the drop.");
     return;
@@ -43,12 +43,23 @@ void fPerfusionAligner::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the echo time.");
     return;
   }
+  if ((inputBaselineLine->text().isEmpty()))
+  {
+    ShowErrorMessage("Please specify the echo time.");
+    return;
+  }
+  if ((inputScaleDropBeforeMeanName->text().isEmpty()))
+  {
+    ShowErrorMessage("Please specify the echo time.");
+    return;
+  }
   if (outputImageName->text().isEmpty())
   {
     ShowErrorMessage("Please specify the output folder.");
     return;
   }
-  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toInt(),inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), inputScalingCheckBox->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
+  emit RunPerfusionAlignmentCalculation(inputEchoTimeName->text().toDouble(), outputEchoTimeName->text().toDouble(), inputBeforePointsName->text().toInt(), inputAfterPointsName->text().toInt(), inputScaleDropBeforeMeanName->text().toInt(),
+    inputBaselineLine->text().toInt(), inputImageName->text().toStdString(), inputMaskName->text().toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }

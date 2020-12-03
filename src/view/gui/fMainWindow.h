@@ -773,11 +773,12 @@ public slots:
   \param echotime The echo time of the input Perfusion image
   \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
   \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
-  \param dropscaling Whether to scale the drop or not
+  \param mean intensity drop in mean curve inside ROI
+  \param scale maximum intensity before drop in mean curve inside ROI
   \param inputfilename The input perfusion image file name
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, bool dropscaling, const std::string inputfilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -809,6 +810,7 @@ public slots:
   /**
   \brief Call the Diffusion Measures application with the inputs
 
+  \param params The TrainingModuleParameters object containing the following:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
@@ -817,12 +819,7 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, 
-    const std::string targetfile, 
-    const std::string outputFolder, 
-    const std::string modeldirectory, 
-    int classifier, int conf, int folds, 
-    int featureselectionType, int optimizationType, int crossvalidationType);
+  void CallTrainingSimulation(const TrainingModuleParameters params);
 
   /**
   \brief Call the PCA calculation application with the inputs
