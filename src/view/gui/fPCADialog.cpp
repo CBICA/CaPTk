@@ -24,7 +24,7 @@ fPCADialog::fPCADialog()
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
-  connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChangeStarted(const QString &)));
+  connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChanged(const QString &)));
 
   //disable all previous connections - we don't need them anymore
   //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
@@ -265,7 +265,7 @@ void fPCADialog::OnPCAModeChanged(int mode)
 	}
 }
 
-void fPCADialog::OnVarianceChangeStarted(const QString & text)
+void fPCADialog::OnVarianceChanged(const QString & text)
 {
 	if (!text.isEmpty())
 	{
@@ -279,7 +279,7 @@ void fPCADialog::OnVarianceChangeStarted(const QString & text)
 	}
 }
 
-void fPCADialog::OnNumberPCsChangeStarted(const QString &)
+void fPCADialog::OnNumberPCAImagesChanged(const QString &)
 {
 }
 
