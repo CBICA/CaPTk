@@ -518,3 +518,45 @@ int PerfusionPCA::ReadNumberOfPCsFromModel(std::string filepath)
 	myfile.close();
 	return n;
 }
+
+void PerfusionPCA::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
+{
+	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;
+	std::vector<std::string> subjectNames = cbica::subdirectoriesInDirectory(directoryname);
+	std::sort(subjectNames.begin(), subjectNames.end());
+
+	for (unsigned int sid = 0; sid < subjectNames.size(); sid++)
+	{
+		std::string subjectPath = directoryname + "/" + subjectNames[sid];
+
+		std::string perfFilePath = "";
+		std::string labelPath = "";
+
+		std::vector<std::string> files;
+		files = cbica::filesInDirectory(subjectPath + "", false);
+
+		for (unsigned int i = 0; i < files.size(); i++)
+		{
+			std::string filePath = subjectPath + "/" + files[i], filePath_lower;
+			std::string extension = cbica::getFilenameExtension(filePath, false);
+			filePath_lower = filePath;
+			std::transform(filePath_lower.begin(), filePath_lower.end(), filePath_lower.begin(), ::tolower);
+			if ((filePath_lower.find("label") != std::string::npos || filePath_lower.find("segmentation") != std::string::npos)
+				&& (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+				labelPath = subjectPath + "/" + files[i];
+			else if ((filePath_lower.find("perf") != std::string::npos || filePath_lower.find("PERF") != std::string::npos || filePath_lower.find("DSC") != std::string::npos)
+				&& (extension == HDR_EXT || extension == NII_EXT || extension == NII_GZ_EXT))
+				perfFilePath = subjectPath + "/" + files[i];
+		}
+
+		if (labelPath.empty() || perfFilePath.empty())
+			continue;
+
+		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] = perfFilePath;
+		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG] = labelPath;
+		OneQualifiedSubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID] = subjectNames[sid];
+
+		m_ValidSubjectList.push_back(OneQualifiedSubject);
+	}
+}

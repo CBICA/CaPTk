@@ -96,6 +96,8 @@ public:
 
   int ReadNumberOfPCsFromModel(std::string filepath);
 
+  void LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
+
 private:
 
 	int m_TotalTimePoints = 0;
@@ -109,6 +111,8 @@ private:
 	bool m_VarianceThresholdDefined = false;
 	bool m_NumberOfPCsDefined = false;
 	bool m_PerfusionDataForWholePopulationRequested = false;
+
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> m_ValidSubjectList;
 };
 
 template<class PerfusionImageType, class ImageType>
