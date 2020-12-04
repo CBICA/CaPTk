@@ -172,7 +172,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   return RevisedPerfusionMap;
 }
 
-PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory/*, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects*/, const std::string modelDirectoryName)
+PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, const std::string modelDirectoryName)
 {
 	//TBD: testing part in PsP + chiharu to provide matlab & python codes
 	std::cout << " Entering PerfusionPCA::ApplyExistingPCAModel " << std::endl;
@@ -260,11 +260,11 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
 
-  for (unsigned int sid = 0; sid < /*trainingsubjects.size()*/this->m_ValidSubjectList.size(); sid++)
+  for (unsigned int sid = 0; sid < this->m_ValidSubjectList.size(); sid++)
   {
     std::cout << "Revising Perfusion Image number: " << sid << std::endl;
-	std::cout << " size: " <</* trainingsubjects.size()*/ this->m_ValidSubjectList .size()<< std::endl;
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = /*trainingsubjects[sid]*/this->m_ValidSubjectList[sid];
+	std::cout << " size: " << this->m_ValidSubjectList .size()<< std::endl;
+    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[sid];
 
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
     std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
@@ -295,7 +295,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   {
     std::cout << "Writing Perfusion Image number: " << index << std::endl;
     std::vector<ImageType::Pointer> PCAsOfOnePatient = RevisedPerfusionImagesOfAllPatients[index];
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = /*trainingsubjects[index]*/this->m_ValidSubjectList[index];
+    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[index];
 
     for (int index2 = 0; index2 < PCAsOfOnePatient.size(); index2++)
     {
@@ -307,14 +307,14 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
   return ErrorCode::NoError;
 }
 
-PerfusionPCA::ErrorCode PerfusionPCA::LoadData(/*std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects,*/ std::string &inValidSubject)
+PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::string &inValidSubject)
 {
 	//PerfusionMapType PerfusionDataMap;
 	//Extracting perfusion data of all the patients and putting in PerfusionDataMap
-	for (unsigned int sid = 0; sid < /*trainingsubjects.size()*/ this->m_ValidSubjectList.size(); sid++)
+	for (unsigned int sid = 0; sid < this->m_ValidSubjectList.size(); sid++)
 	{
 		std::cout << "Loading Perfusion Image: " << sid << std::endl;
-		std::map<CAPTK::ImageModalityType, std::string> currentsubject = /*trainingsubjects[sid];*/ this->m_ValidSubjectList[sid];
+		std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[sid];
 		ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
 		auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
 		std::vector<ImageType::IndexType> indices;
@@ -342,7 +342,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(/*std::vector<std::map<CAPTK::Ima
 	return ErrorCode::NoError;
 }
 
-bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory/*, std::vector<std::map<CAPTK::ImageModalityType, std::string>> trainingsubjects*/)
+bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory)
 {
   //PerfusionMapType PerfusionDataMap;
 
@@ -399,10 +399,10 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
 
   //Putting back in images of respective patients
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
-  for (unsigned int sid = 0; sid < /*trainingsubjects.size()*/this->m_ValidSubjectList.size(); sid++)
+  for (unsigned int sid = 0; sid < this->m_ValidSubjectList.size(); sid++)
   {
     std::cout << "Revising current perfusion image: " << sid << std::endl;
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = /*trainingsubjects[sid]*/this->m_ValidSubjectList[sid];
+    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[sid];
     auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
     std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
 
@@ -443,7 +443,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
   {
     std::cout << "Writing Perfusion Image: " << index << std::endl;
     std::vector<ImageType::Pointer> PCAsOfOnePatient = RevisedPerfusionImagesOfAllPatients[index];
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = /*trainingsubjects[index]*/this->m_ValidSubjectList[index];
+    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[index];
 
     for (int index2 = 0; index2 < PCAsOfOnePatient.size(); index2++)
     {
