@@ -346,14 +346,20 @@ void fPCADialog::OnConfirmButtonPressed()
 
 void fPCADialog::OnSelectInputDirectory()
 {
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->inputDirLE->setText(dir);
 }
 
 void fPCADialog::OnSelectOutputDirectory()
 {
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->outputDirLE->setText(dir);
 }
 
 void fPCADialog::OnSelectPCAParametersDirectory()
 {
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->pcaParamsLE->setText(dir);
 }
 
 //void fPCADialog::CheckForDisclaimer()
