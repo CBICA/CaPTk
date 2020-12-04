@@ -294,6 +294,56 @@ void fPCADialog::OnNumberPCAImagesChanged(const QString &text)
 	}
 }
 
+void fPCADialog::OnConfirmButtonPressed()
+{
+	QString inputDir, outputDir, pcaParamDir, nPCAImages, variance;
+	inputDir = this->inputDirLE->text();
+	outputDir = this->outputDirLE->text();
+	pcaParamDir = this->pcaParamsLE->text();
+	nPCAImages = this->nPCsLE->text();
+	variance = this->varLE->text();
+
+	//check if the user specified the input and output dirs
+	if (inputDir.isEmpty())
+	{
+		ShowErrorMessage("Please specify the input directory.");
+		return;
+	}
+	if (outputDir.isEmpty())
+	{
+		ShowErrorMessage("Please specify the output directory.");
+		return;
+	}
+
+	//if dirs do not exist, create them
+	if (!cbica::directoryExists(inputDir.toStdString()))
+	{
+		if (!cbica::createDirectory(inputDir.toStdString()))
+		{
+			ShowErrorMessage("The input directory can not be created.");
+			return;
+		}
+	}
+
+	if (!cbica::directoryExists(outputDir.toStdString()))
+	{
+		if (!cbica::createDirectory(outputDir.toStdString()))
+		{
+			ShowErrorMessage("The output directory can not be created.");
+			return;
+		}
+	}
+
+	if (this->extractPCA->isChecked()) //extract PCA mode
+	{
+		emit TrainNewPCAModel(inputDir, outputDir, nPCAImages, variance);
+	}
+	else if (this->applyPCA->isChecked()) //Apply PCA mode
+	{
+
+	}
+}
+
 //void fPCADialog::CheckForDisclaimer()
 //{
 //  QString volumeString;
