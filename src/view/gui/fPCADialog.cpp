@@ -135,7 +135,7 @@ void fPCADialog::ConfirmButtonPressed()
     }
   }
   else
-    emit TrainNewPCAModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
+    //emit TrainNewPCAModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
   this->close();
 }
 
