@@ -21,6 +21,9 @@ fPCADialog::fPCADialog()
   modeButtons->addButton(extractPCA, fPCADialog::PCAModeType::Extract);
   modeButtons->addButton(applyPCA, fPCADialog::PCAModeType::Apply);
 
+  connect(pbInput, SIGNAL(clicked()), this, SLOT(OnSelectInputDirectory()));
+  connect(pbOutput, SIGNAL(clicked()), this, SLOT(OnSelectOutputDirectory()));
+  connect(pbParams, SIGNAL(clicked()), this, SLOT(OnSelectPCAParametersDirectory()));
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(OnConfirmButtonPressed()));
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
