@@ -344,6 +344,18 @@ void fPCADialog::OnConfirmButtonPressed()
 	}
 }
 
+void fPCADialog::OnSelectInputDirectory()
+{
+}
+
+void fPCADialog::OnSelectOutputDirectory()
+{
+}
+
+void fPCADialog::OnSelectPCAParametersDirectory()
+{
+}
+
 //void fPCADialog::CheckForDisclaimer()
 //{
 //  QString volumeString;
