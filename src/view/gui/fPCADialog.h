@@ -71,12 +71,14 @@ public slots:
   void OnPCAModeChanged(int);
   void OnVarianceChanged(const QString &);
   void OnNumberPCAImagesChanged(const QString &);
+  void OnConfirmButtonPressed();
+
 
   //void CheckForDisclaimer();
 
 signals:
   void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
-  void TrainNewPCAModel(std::string directory, std::string outputdirectory);
+  void TrainNewPCAModel(QString& inputdir, QString& outputdir, QString& npcaimages, QString& variance);
 
 private:
 	QButtonGroup *modeButtons;
