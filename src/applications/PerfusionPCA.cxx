@@ -139,17 +139,20 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
+  //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
+  PerfusionPCA object_pca;
+  object_pca.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
 
-  if (QualifiedSubjects.size() == 0)
+  //if (QualifiedSubjects.size() == 0)
+  if(!object_pca.HasValidSubjects())
   {
     std::cout << "There is no subject with the required input in the given directory." << std::endl;
     return EXIT_FAILURE;
   }
-  std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
-  PerfusionPCA object_pca;
+  //std::cout << "Number of subjects with the required input: " << QualifiedSubjects.size() << std::endl;
+
   std::string inValidSubject;
-  if (object_pca.LoadData(QualifiedSubjects, inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  if (object_pca.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
 	  std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
 	  return EXIT_FAILURE;
@@ -185,7 +188,7 @@ int main(int argc, char **argv)
 		object_pca.SetNumberOfPCs(inputPCs);
 	else if (varianceThresholdDefined)
 		object_pca.SetVarianceThreshold(varianceThreshold);
-    PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects,modelDirectoryName);
+    PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName/*, QualifiedSubjects*/,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
 	{
 		std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
@@ -231,7 +234,7 @@ Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit a
 
 	  object_pca.RequestPerfusionDataWholePopulation(dif);//dump intermediate files or not
 
-	  if (object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName, QualifiedSubjects))
+	  if (object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName/*, QualifiedSubjects*/))
 	  {
 		  std::cout << "principal components have been saved at the specified locations.\n";
 		  std::cout << "Finished successfully.\n";
