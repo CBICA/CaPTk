@@ -72,7 +72,9 @@ public slots:
   void OnVarianceChanged(const QString &);
   void OnNumberPCAImagesChanged(const QString &);
   void OnConfirmButtonPressed();
-
+  void OnSelectInputDirectory();
+  void OnSelectOutputDirectory();
+  void OnSelectPCAParametersDirectory();
 
   //void CheckForDisclaimer();
 
