@@ -22,7 +22,7 @@ fPCADialog::fPCADialog()
   modeButtons->addButton(applyPCA, fPCADialog::PCAModeType::Apply);
 
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
-  connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
+  connect(confirmButton, SIGNAL(clicked()), this, SLOT(OnConfirmButtonPressed()));
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
   connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChanged(const QString &)));
   connect(nPCsLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnNumberPCAImagesChanged(const QString &)));
