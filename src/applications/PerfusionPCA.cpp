@@ -560,3 +560,14 @@ void PerfusionPCA::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::stri
 		m_ValidSubjectList.push_back(OneQualifiedSubject);
 	}
 }
+
+bool PerfusionPCA::HasValidSubjects()
+{
+	bool retVal = false;
+	if (this->m_ValidSubjectList.size() == 0)
+		retVal = false;
+	else
+		retVal = true;
+
+	return retVal;
+}
