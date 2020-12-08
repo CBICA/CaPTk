@@ -895,7 +895,7 @@ fMainWindow::fMainWindow()
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
-  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(QString &, QString &, QString &, QString &, QString &)), this, SLOT(PCAEstimateOnExistingModel(QString &, QString &, QString &, QString &, QString &)));
   connect(&pcaPanel, SIGNAL(TrainNewPCAModel(QString &, QString &, QString &, QString &)), this, SLOT(TrainNewPCAModelOnGivenData(QString &, QString &, QString &, QString &)));
 
 
