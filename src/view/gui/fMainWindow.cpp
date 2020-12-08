@@ -5307,42 +5307,58 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
 }
 
 
-void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImags, QString &variance)
 {
   std::string errorMsg;
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide input directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide output directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory", this);
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  //if (inputdirectory.empty())
+  //{
+  //  ShowErrorMessage("Please provide input directory.", this);
+  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //  return;
+  //}
+  //if (outputdirectory.empty())
+  //{
+  //  ShowErrorMessage("Please provide output directory.", this);
+  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //  return;
+  //}
+  //if (!cbica::isDir(outputdirectory))
+  //{
+  //  if (!cbica::createDir(outputdirectory))
+  //  {
+  //    ShowErrorMessage("Unable to create the output directory", this);
+  //    //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //    return;
+  //  }
+  //}
 
+  std::cout << " fMainWindow::TrainNewPCAModelOnGivenData " << std::endl;
   std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
 
-  if (QualifiedSubjects.size() == 0)
+  std::cout << " input dir: " << inputdirectory.toStdString() << std::endl;
+  PerfusionPCA mPCAEstimator;
+  mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
+  if (/*QualifiedSubjects.size()*/mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
+
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  {
+	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
+  }
+
+  if (!nPCAImags.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImags.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  std::cout << " calling TrainNewPerfusionModel method " << std::endl;
+  if (mPCAEstimator.TrainNewPerfusionModel(nPCAImags.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
     ShowMessage("Trained PCA model has been saved at the specified location.", this);
   else
     ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
