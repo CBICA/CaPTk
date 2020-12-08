@@ -4540,53 +4540,66 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
 
 void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance)
 {
-  if (modeldirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having PCA model");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
-  {
-      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
-      {
-          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
-          return;
-      }
-  }
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having input images");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory to save output");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory");
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  //if (modeldirectory.empty())
+  //{
+  //  ShowErrorMessage("Please provide path of a directory having PCA model");
+  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //  return;
+  //}
+  //if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
+  //{
+  //    if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
+  //    {
+  //        ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
+  //        return;
+  //    }
+  //}
+  //if (inputdirectory.empty())
+  //{
+  //  ShowErrorMessage("Please provide path of a directory having input images");
+  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //  return;
+  //}
+  //if (outputdirectory.empty())
+  //{
+  //  ShowErrorMessage("Please provide path of a directory to save output");
+  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //  return;
+  //}
+  //if (!cbica::isDir(outputdirectory))
+  //{
+  //  if (!cbica::createDir(outputdirectory))
+  //  {
+  //    ShowErrorMessage("Unable to create the output directory");
+  //    //help_contextual("Glioblastoma_Pseudoprogression.html");
+  //    return;
+  //  }
+  //}
 
   std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
-  if (QualifiedSubjects.size() == 0)
+  //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  PerfusionPCA mPCAEstimator;
+  mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
+  if (/*QualifiedSubjects.size()*/mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
     //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
 
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.ApplyExistingPCAModel(10, inputdirectory,outputdirectory,QualifiedSubjects,modeldirectory))
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  {
+	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
+  }
+
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  //PerfusionPCA mPCAEstimator;
+  if (mPCAEstimator.ApplyExistingPCAModel(10, inputdirectory,outputdirectory,/*QualifiedSubjects,*/modeldirectory))
     ShowMessage("PCA features have been saved at the specified location.", this);
   else
   {
