@@ -835,7 +835,7 @@ public slots:
   \param inputdirectory The input folder containing the image(s)
   \param outputdirectory The folder to save the trained model
   */
-  void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
 
