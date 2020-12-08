@@ -17,6 +17,7 @@ fPCADialog::fPCADialog()
   //this->setFixedWidth(400);
   //this->setFixedHeight(300);
 
+
   modeButtons = new QButtonGroup(this);
   modeButtons->addButton(extractPCA, fPCADialog::PCAModeType::Extract);
   modeButtons->addButton(applyPCA, fPCADialog::PCAModeType::Apply);
@@ -29,6 +30,9 @@ fPCADialog::fPCADialog()
   connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
   connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChanged(const QString &)));
   connect(nPCsLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnNumberPCAImagesChanged(const QString &)));
+
+  //by default extract pca params is selected
+  this->extractPCA->setChecked(true);
 
   //disable all previous connections - we don't need them anymore
   //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
