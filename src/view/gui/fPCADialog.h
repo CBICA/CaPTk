@@ -79,7 +79,7 @@ public slots:
   //void CheckForDisclaimer();
 
 signals:
-  void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void ExistingModelBasedPCAEstimate(QString& inputdir, QString& outputdir, QString& pcaParamsDir, QString& npcaimages, QString& variance);
   void TrainNewPCAModel(QString& inputdir, QString& outputdir, QString& npcaimages, QString& variance);
 
 private:
