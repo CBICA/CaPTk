@@ -128,9 +128,10 @@ void fPCADialog::ConfirmButtonPressed()
       ShowErrorMessage("Please specify the directory of SVM model.");
       return;
     }
-    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
-      emit ExistingModelBasedPCAEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
+	if (cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
+		;
+      //emit ExistingModelBasedPCAEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
     else
     {
       ShowErrorMessage("The specified directory does not have model files.");
@@ -343,7 +344,12 @@ void fPCADialog::OnConfirmButtonPressed()
 	}
 	else if (this->applyPCA->isChecked()) //Apply PCA mode
 	{
-
+		if (!cbica::directoryExists(pcaParamDir.toStdString()))
+		{
+			ShowErrorMessage("The PCA parameters directory doesn't exist.");
+			return;
+		}
+		emit ExistingModelBasedPCAEstimate(inputDir, outputDir, pcaParamDir, nPCAImages, variance);
 	}
 	this->close();
 }
