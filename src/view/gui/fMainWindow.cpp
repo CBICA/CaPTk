@@ -5307,7 +5307,7 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
 }
 
 
-void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImags, QString &variance)
+void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance)
 {
   std::string errorMsg;
   //if (inputdirectory.empty())
@@ -5352,13 +5352,13 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
 	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
   }
 
-  if (!nPCAImags.isEmpty())
-	  mPCAEstimator.SetNumberOfPCs(nPCAImags.toInt());
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
   else if (!variance.isEmpty())
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
   std::cout << " calling TrainNewPerfusionModel method " << std::endl;
-  if (mPCAEstimator.TrainNewPerfusionModel(nPCAImags.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
+  if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
     ShowMessage("Trained PCA model has been saved at the specified location.", this);
   else
     ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
