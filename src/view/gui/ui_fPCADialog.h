@@ -99,13 +99,15 @@ public:
     fPCADialog->setMinimumSize(QSize(0, 0));
 
 	overallGridLayout = new QGridLayout(fPCADialog);
-	extractPCA = new QRadioButton("Extract PCA",fPCADialog);
-	applyPCA = new QRadioButton("Apply PCA Parameters",fPCADialog);
+	extractPCA = new QRadioButton("Extract new parameters",fPCADialog);
+	applyPCA = new QRadioButton("Apply extracted Parameters",fPCADialog);
 	inputDirLabel = new QLabel("Input Directory",fPCADialog);
 	outputDirLabel = new QLabel("Output Directory",fPCADialog);
-	nPCsLabel = new QLabel("Number of PCA images to produce (optional)",fPCADialog);
-	varLabel = new QLabel("Variance threshold (optional)",fPCADialog);
-	pcaParamsLabel = new QLabel("PCA Parameters Directory", fPCADialog);
+	//TBD: add line here
+	//TBD:: add text 'optional parameters'
+	nPCsLabel = new QLabel("Number of PCA images to produce",fPCADialog);
+	varLabel = new QLabel("Variance threshold",fPCADialog);
+	pcaParamsLabel = new QLabel("Extracted parameters directory", fPCADialog);
 	inputDirLE = new QLineEdit(fPCADialog);
 	outputDirLE = new QLineEdit(fPCADialog);
 	nPCsLE = new QLineEdit(fPCADialog);
@@ -123,7 +125,8 @@ public:
 	overallGridLayout->addWidget(outputDirLabel, 2, 0);
 	overallGridLayout->addWidget(outputDirLE, 2, 1);
 	overallGridLayout->addWidget(pbOutput, 2, 2);
-	overallGridLayout->addWidget(pcaParamsLabel, 3, 0);
+	//TBD: in case of apply, this(pcaParamsLabel) should appear on the top ( do it if easy enough)
+	overallGridLayout->addWidget(pcaParamsLabel, 3, 0); 
 	overallGridLayout->addWidget(pcaParamsLE, 3, 1);
 	overallGridLayout->addWidget(pbParams, 3, 2);
 	overallGridLayout->addWidget(nPCsLabel, 4, 0, 1, 2);
@@ -430,7 +433,7 @@ public:
 
   void retranslateUi(QDialog *fPCADialog)
   {
-    fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Estimator", 0));
+    fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Parameter Extractor", 0));
     //rdNewClassification->setText(QApplication::translate("fPCADialog", "Loaded subject: Near&Far", 0));
     rdExistingClassification->setText(QApplication::translate("fPCADialog", "Apply PCA", 0));
     rdCreateModel->setText(QApplication::translate("fPCADialog", "Extract PCA Parameters", 0));
