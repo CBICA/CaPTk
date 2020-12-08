@@ -4599,7 +4599,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
   //PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.ApplyExistingPCAModel(10, inputdirectory,outputdirectory,/*QualifiedSubjects,*/modeldirectory))
+  if (mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(),outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString()))
     ShowMessage("PCA features have been saved at the specified location.", this);
   else
   {
