@@ -380,7 +380,7 @@ public:
     longRunningWarning = new QLabel(outputGroupBox);
     sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
     longRunningWarning->setSizePolicy(sizePolicy);
-    longRunningWarning->setAlignment(Qt::AlignRight);
+    //longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
     outputGridLayout = new QGridLayout(outputGroupBox);
@@ -428,8 +428,9 @@ public:
     gridLayout_3->addWidget(confirmButton, 2, 0, 1, 1);
     gridLayout_3->addWidget(cancelButton, 2, 1, 1, 1);
 
-	overallGridLayout->addWidget(confirmButton, 5, 0);
-	overallGridLayout->addWidget(cancelButton, 5, 1);
+	overallGridLayout->addWidget(longRunningWarning, 5, 0, 1, 4);
+	overallGridLayout->addWidget(confirmButton, 6, 0);
+	overallGridLayout->addWidget(cancelButton, 6, 1);
 
     retranslateUi(fPCADialog);
 
