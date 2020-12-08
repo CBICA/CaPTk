@@ -824,16 +824,21 @@ public slots:
   /**
   \brief Call the PCA calculation application with the inputs
 
-  \param modeldirectory The trained model directory
-  \param outputdirectory The folder to save results
+  \param inputdirectory The input folder containing the image(s)
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param pcaparamsdirectory The directory containing the extracted PCA parameters
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
-  void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance);
   
   /**
   \brief Call the PCA calculation application with the inputs
 
   \param inputdirectory The input folder containing the image(s)
-  \param outputdirectory The folder to save the trained model
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
   void TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance);
   /**
