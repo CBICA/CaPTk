@@ -345,6 +345,7 @@ void fPCADialog::OnConfirmButtonPressed()
 	{
 
 	}
+	this->close();
 }
 
 void fPCADialog::OnSelectInputDirectory()
