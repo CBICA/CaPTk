@@ -4538,7 +4538,7 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
   return;
 }
 
-void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance)
 {
   if (modeldirectory.empty())
   {
