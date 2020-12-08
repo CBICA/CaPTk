@@ -78,11 +78,12 @@ public:
 
   QHBoxLayout * horizontalLayout;
 
-  QGridLayout *overallGridLayout;
+  QGridLayout *overallGridLayout, *optionalgroupBoxLayout;
   QRadioButton *extractPCA, *applyPCA;
   QLabel *inputDirLabel, *outputDirLabel, *nPCsLabel, *varLabel, *pcaParamsLabel;
   QLineEdit *inputDirLE, *outputDirLE, *nPCsLE, *varLE, *pcaParamsLE;
   QPushButton *pbInput, *pbOutput, *pbParams;
+  QGroupBox *optionalGroupBox;
 
   void setupUi(QDialog *fPCADialog)
   {
@@ -103,6 +104,8 @@ public:
 	applyPCA = new QRadioButton("Apply extracted Parameters",fPCADialog);
 	inputDirLabel = new QLabel("Input Directory",fPCADialog);
 	outputDirLabel = new QLabel("Output Directory",fPCADialog);
+	optionalGroupBox = new QGroupBox("Optional Parameters", fPCADialog);
+	optionalgroupBoxLayout = new QGridLayout(optionalGroupBox);
 	//TBD: add line here
 	//TBD:: add text 'optional parameters'
 	nPCsLabel = new QLabel("Number of PCA images to produce",fPCADialog);
@@ -129,10 +132,12 @@ public:
 	overallGridLayout->addWidget(pcaParamsLabel, 3, 0); 
 	overallGridLayout->addWidget(pcaParamsLE, 3, 1);
 	overallGridLayout->addWidget(pbParams, 3, 2);
-	overallGridLayout->addWidget(nPCsLabel, 4, 0, 1, 2);
-	overallGridLayout->addWidget(nPCsLE, 4, 2, 1, 1);
-	overallGridLayout->addWidget(varLabel, 5, 0, 1, 2);
-	overallGridLayout->addWidget(varLE, 5, 2, 1, 1);
+	
+	overallGridLayout->addWidget(optionalGroupBox, 4, 0, 1, 4);
+	optionalgroupBoxLayout->addWidget(nPCsLabel, 0, 0, 1, 2);
+	optionalgroupBoxLayout->addWidget(nPCsLE, 0, 2, 1, 1);
+	optionalgroupBoxLayout->addWidget(varLabel, 1, 0, 1, 2);
+	optionalgroupBoxLayout->addWidget(varLE, 1, 2, 1, 1);
 
     //fPCADialog->setModal(true);
     gridLayout_3 = new QGridLayout(/*fPCADialog*/);
@@ -423,8 +428,8 @@ public:
     gridLayout_3->addWidget(confirmButton, 2, 0, 1, 1);
     gridLayout_3->addWidget(cancelButton, 2, 1, 1, 1);
 
-	overallGridLayout->addWidget(confirmButton, 6, 1);
-	overallGridLayout->addWidget(cancelButton, 6, 2);
+	overallGridLayout->addWidget(confirmButton, 5, 0);
+	overallGridLayout->addWidget(cancelButton, 5, 1);
 
     retranslateUi(fPCADialog);
 
