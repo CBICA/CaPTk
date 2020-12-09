@@ -6,13 +6,11 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 
   std::vector<int> sizes;
   VectorVectorDouble CombinedPerfusionFeaturesMap;
-  std::cout << " perfusion data map size: " << PerfusionDataMap.size() << std::endl;
   
   int nc = 0;
   for (auto const &mapiterator : PerfusionDataMap)
   {
     VariableSizeMatrixType Features = std::get<1>(mapiterator.second);
-	std::cout << " rows in perfusiondatamap # " << nc << " = " << Features.Rows() << std::endl;
     sizes.push_back(Features.Rows());
     for (unsigned int i = 0; i < Features.Rows(); i++) //features.rows = # number of indices in mask
     {
@@ -26,9 +24,9 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
   }
 
   FeatureReductionClass m_featureReduction;
-  //ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePoints(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
   ReducedPCAs = m_featureReduction.GetDiscerningPerfusionTimePointsDynamic(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector, variance);
 
+  //set number of PCA images on the object, it is used in calculation further down
   if (!this->m_NumberOfPCsDefined)
   {
 	  //we need to set the m_NumberOfPCs variable that is used further down
@@ -36,22 +34,23 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
 	  this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
   }
 
-  std::cout << " written files " << std::endl;
-
   int start = 0;
+
+  //iterate over all subjects  (sizes.size = number of subjects)
+ //sizes[0] = number of voxels in first mask and so on
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); //was 10 for extracting 10 PCs?
+    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); 
 
     if (index != 0)
       start = start + sizes[index - 1];
 
-    for (int i = start; i < start + sizes[index]; i++)
+    for (int i = start; i < start + sizes[index]; i++)//for all voxels in mask
       for (unsigned int j = 0; j < this->m_NumberOfPCs; j++)
-        OnePatietnPerfusionData(i - start, j) = ReducedPCAs->GetValue(i, j).ToDouble();
+        OnePatietnPerfusionData(i - start, j) = ReducedPCAs->GetValue(i, j).ToDouble();//fill matrix with projected PCA data
 
-    OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);
+    OnePatietnPerfusionData = ColumnWiseScaling(OnePatietnPerfusionData);//scale the columns between 0 and 255
     PerfusionTupleType new_tuple(std::get<0>(PerfusionDataMap[index]), OnePatietnPerfusionData);
     RevisedPerfusionMap[index] = new_tuple;
   }
@@ -100,17 +99,16 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
 
 PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
-	std::cout << " Entering PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData " << std::endl;
   PerfusionMapType RevisedPerfusionMap;
 
   std::vector<int> sizes; // number of subjects
   VectorVectorDouble CombinedPerfusionFeaturesMap;
+
   //size of perfusion data map is equal to the number of subjects
   for (auto const &mapiterator : PerfusionDataMap)
   {
     VariableSizeMatrixType Features = std::get<1>(mapiterator.second);
     sizes.push_back(Features.Rows());
-	std::cout << " Features rows: " << Features.Rows() << std::endl;
 
 	//Features.Rows() = total number of voxels in the mask
 	//we are filling the onevector with intensities of each pixel of the perfusion data
@@ -127,10 +125,6 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
     }
   }
 
-  
-  std::cout << " combined perfusion features map size: " << CombinedPerfusionFeaturesMap.size() << std::endl;
-  std::cout << " sizes: " << sizes.size() << std::endl;
-
   FeatureReductionClass m_featureReduction;
   VectorVectorDouble ReducedPCAs = m_featureReduction.ApplyPCAOnTestDataWithGivenTransformations(CombinedPerfusionFeaturesMap, TransformationMatrix, MeanVector);
 
@@ -141,7 +135,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
   for (unsigned int index = 0; index<sizes.size(); index++)// for (auto const &mapiterator : PerfusionDataMap) 
   {
     VariableSizeMatrixType OnePatietnPerfusionData;
-    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); //was 10 for extracting 10 PCs?
+    OnePatietnPerfusionData.SetSize(sizes[index], this->m_NumberOfPCs); 
 
     if (index != 0)
       start = start + sizes[index - 1];
