@@ -4621,15 +4621,16 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
   //actual call to the algo
-  if (mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(),outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString()))
-    ShowMessage("PCA features have been saved at the specified location.", this);
-  else
+  PerfusionPCA::ErrorCode code = mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(), outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString());
+  if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
   {
-    std::string msg;
-    msg = "There was an error in applying the PCA model on new data: " + loggerFile;
-    ShowErrorMessage(msg, this);
+	  ShowMessage("Number of time points in the input does not match with the pca parameters. Cannot proceed.", this);
   }
-  return;
+  else if (code == PerfusionPCA::ErrorCode::NoError)
+  {
+	  ShowMessage("PCA components have been saved at the specified location.", this);
+  }
+
 }
 
 
