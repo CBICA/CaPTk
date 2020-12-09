@@ -33,15 +33,15 @@ fPCADialog::fPCADialog()
   //by default extract pca params is selected
   this->extractPCA->click();
 
-  //disable all previous connections - we don't need them anymore
-  //connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
-  //connect(svmModelButton1, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile1()));
-  //connect(svmModelButton2, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile2()));
-  //connect(testSubjectsDirectoryButton, SIGNAL(clicked()), this, SLOT(OpenTestSubjectsDirectory()));
-  //connect(outputDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
-  //connect(rdExistingClassification, SIGNAL(toggled(bool)), this, SLOT(ExistingClassificationRadioButtonChecked()));
-  //connect(rdLoadedClassification, SIGNAL(toggled(bool)), this, SLOT(LoadedClassificationRadioButtonChecked()));
-  //connect(rdCreateModel, SIGNAL(toggled(bool)), this, SLOT(NewModelRadioButtonChecked()));
+  //old connections - we don't need them anymore
+  connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
+  connect(svmModelButton1, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile1()));
+  connect(svmModelButton2, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile2()));
+  connect(testSubjectsDirectoryButton, SIGNAL(clicked()), this, SLOT(OpenTestSubjectsDirectory()));
+  connect(outputDirectoryButton, SIGNAL(clicked()), this, SLOT(SelectOutputDirectory()));
+  connect(rdExistingClassification, SIGNAL(toggled(bool)), this, SLOT(ExistingClassificationRadioButtonChecked()));
+  connect(rdLoadedClassification, SIGNAL(toggled(bool)), this, SLOT(LoadedClassificationRadioButtonChecked()));
+  connect(rdCreateModel, SIGNAL(toggled(bool)), this, SLOT(NewModelRadioButtonChecked()));
   //connect(disclaimerButton, SIGNAL(clicked()), this, SLOT(CheckForDisclaimer()));
 
   //  connect(rdNewClassification, SIGNAL(toggled(bool)), this, SLOT(CurrentSubjectRadioButtonChecked()));
@@ -347,6 +347,7 @@ void fPCADialog::OnConfirmButtonPressed()
 	}
 	else if (this->applyPCA->isChecked()) //Apply PCA mode
 	{
+		//check if pca parameter dir exists
 		if (!cbica::directoryExists(pcaParamDir.toStdString()))
 		{
 			ShowErrorMessage("The PCA parameters directory doesn't exist.");
