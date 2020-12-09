@@ -313,30 +313,28 @@ void fPCADialog::OnConfirmButtonPressed()
 	//check if the user specified the input and output dirs
 	if (inputDir.isEmpty())
 	{
-		ShowErrorMessage("Please specify the input directory.");
+		ShowErrorMessage("Please specify a valid input directory.");
 		return;
 	}
 	if (outputDir.isEmpty())
 	{
-		ShowErrorMessage("Please specify the output directory.");
+		ShowErrorMessage("Please specify a valid output directory.");
 		return;
 	}
 
-	//if dirs do not exist, create them
+	//check if input dir exists
 	if (!cbica::directoryExists(inputDir.toStdString()))
 	{
-		if (!cbica::createDirectory(inputDir.toStdString()))
-		{
-			ShowErrorMessage("The input directory can not be created.");
-			return;
-		}
+		ShowErrorMessage("The input directory does not exist. Please specify a valid input directory.");
+		return;
 	}
 
+	//if output dir does not exist, create it
 	if (!cbica::directoryExists(outputDir.toStdString()))
 	{
 		if (!cbica::createDirectory(outputDir.toStdString()))
 		{
-			ShowErrorMessage("The output directory can not be created.");
+			ShowErrorMessage("The output directory can not be created.Please specify a valid output directory.");
 			return;
 		}
 	}
