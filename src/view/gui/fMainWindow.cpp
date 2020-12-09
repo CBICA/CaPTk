@@ -4587,7 +4587,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   else if (!variance.isEmpty())
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
-  //actual call to the algo
+  //calling the algorithm 
   PerfusionPCA::ErrorCode code = mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(), outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString());
   if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
   {
