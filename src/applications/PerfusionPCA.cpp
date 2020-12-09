@@ -174,137 +174,118 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCAForTestData(Perfus
 
 PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, const std::string modelDirectoryName)
 {
-	//TBD: testing part in PsP + chiharu to provide matlab & python codes
-	std::cout << " Entering PerfusionPCA::ApplyExistingPCAModel " << std::endl;
-  //PerfusionMapType PerfusionDataMap;
+	//aka Testing
+	//testing part same as in PsP 
 
-  ////Extracting perfusion data of all the patients and putting in PerfusionDataMap
-  //for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
-  //{
-  //  std::cout << "Loading Perfusion Image: " << sid << std::endl;
-  //  std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
-  //  ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
-  //  auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-  //  std::vector<ImageType::IndexType> indices;
+    //read all the model parameters
+	VariableSizeMatrixType PCA_PERF;
+	VariableLengthVectorType Mean_PERF;
+	CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
+	MatrixType dataMatrix;
+	VariableLengthVectorType meanMatrix;
+	reader->SetFieldDelimiterCharacter(',');
+	reader->HasColumnHeadersOff();
+	reader->HasRowHeadersOff();
 
-  //  VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
-  //  PerfusionTupleType new_tuple(indices, perfusionData);
-  //  PerfusionDataMap[sid] = new_tuple;
-  //}
+	//read square matrix from PCA_PERV.csv
+	reader->SetFileName(modelDirectoryName + "/PCA_PERF.csv");
+	reader->Parse();
+	dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+	PCA_PERF.SetSize(dataMatrix.rows(), dataMatrix.cols());
+	for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+		for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+			PCA_PERF(i, j) = dataMatrix(i, j);
 
+	//check if the timepoints in pca parameters are same as in the input data
+	//timepoints in pca parameters = # rows in PCA_PERF.csv which is a square matrix
+	if (PCA_PERF.Rows() != this->m_TotalTimePoints)
+	{
+		return ErrorCode::MismatchedTimePoints;
+	}
 
-	//int nPCs = this->ReadNumberOfPCsFromModel(modelDirectoryName + "/NumberOfPCs.txt");
-	//std::cout << " number of PCs in model: " << nPCs << std::endl;
+	//read mean
+	reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
+	reader->Parse();
+	dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+	Mean_PERF.SetSize(dataMatrix.size());
+	for (unsigned int i = 0; i < dataMatrix.size(); i++)
+		Mean_PERF[i] = dataMatrix(0, i);
 
-  //read all the model parameters
-  VariableSizeMatrixType PCA_PERF;
-  VariableLengthVectorType Mean_PERF;
-  CSVFileReaderType::Pointer reader = CSVFileReaderType::New();
-  MatrixType dataMatrix;
-  VariableLengthVectorType meanMatrix;
-  reader->SetFieldDelimiterCharacter(',');
-  reader->HasColumnHeadersOff();
-  reader->HasRowHeadersOff();
+	//read cumulative variance
+	vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
+	reader->SetFileName(modelDirectoryName + "/PCCumulativeVariance.csv");
+	reader->UseStringDelimiterCharacterOff();
+	reader->Parse();
+	dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
 
-  reader->SetFileName(modelDirectoryName + "/PCA_PERF.csv");
-  reader->Parse();
-  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-  PCA_PERF.SetSize(dataMatrix.rows(), dataMatrix.cols());
-  for (unsigned int i = 0; i < dataMatrix.rows(); i++)
-    for (unsigned int j = 0; j < dataMatrix.cols(); j++)
-      PCA_PERF(i, j) = dataMatrix(i, j);
+	//fill vtkDoubleArray variance with cumulative variance read from file
+	unsigned int nvar = dataMatrix.size();
+	variance->SetNumberOfValues(nvar);
+	for (vtkIdType i = 0; i < nvar; i++)
+	{
+		variance->SetValue(i, dataMatrix(i, 0));
+	}
 
-  //TBD: check if the timepoints in model are same as the input data
-  //timepoints in model = # columns in PCA_PERF
-  if (PCA_PERF.Rows() != this->m_TotalTimePoints)
-  {
-	  std::cout << " timepoints in model: " << PCA_PERF.Rows() << std::endl;
-	  std::cout << " total timepoints in data: " << this->m_TotalTimePoints << std::endl;
+	//get number of PCA images to produce
+	int nPCs = this->DetermineNumberOfPCs(variance);
 
-	  std::cout << " time points don't match." << std::endl;
-	  return ErrorCode::MismatchedTimePoints;
-  }
+	//set number of PCA images on the object, this is need further in calculation
+	if (!this->m_NumberOfPCsDefined)
+	{
+		//we need to set the m_NumberOfPCs variable that is used from function CombineAndCalculatePerfusionPCAForTestData
+		this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
+	}
 
-  reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
-  reader->Parse();
-  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
-  Mean_PERF.SetSize(dataMatrix.size());
-  for (unsigned int i = 0; i < dataMatrix.size(); i++)
-    Mean_PERF[i] = dataMatrix(0, i);
+	//Apply existing PCA parameters to the test patient
+	PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
 
-  vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
-  reader->SetFileName(modelDirectoryName + "/PCCumulativeVariance.csv");
-  reader->UseStringDelimiterCharacterOff();
-  reader->Parse();
-  dataMatrix = reader->GetArray2DDataObject()->GetMatrix();
+	//Putting back in images of respective patients
+	std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
+	for (unsigned int sid = 0; sid < this->m_ValidSubjectList.size(); sid++)
+	{
+		std::cout << "Revising Perfusion Image number: " << sid << std::endl;
+		std::cout << " size: " << this->m_ValidSubjectList.size() << std::endl;
+		std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[sid];
 
-  unsigned int nvar = dataMatrix.size();
+		auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
+		std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
 
-  variance->SetNumberOfValues(nvar);
+		std::vector<ImageType::Pointer> OnePatientperfusionImages;
 
-  for (vtkIdType i = 0; i < nvar; i++)
-  {
-	  variance->SetValue(i, dataMatrix(i, 0));
-  }
+		for (int i = 0; i < nPCs; i++) //if nPCs is 0, we don't write any images
+		{
+			ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
+			itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
+			imageIt.GoToBegin();
+			while (!imageIt.IsAtEnd())
+			{
+				imageIt.Set(0);
+				++imageIt;
+			}
+			std::vector<ImageType::IndexType> indices = std::get<0>(perfFeatures[sid]);
+			VariableSizeMatrixType revisedPerfData = std::get<1>(perfFeatures[sid]);
+			for (int j = 0; j < indices.size(); j++)
+				CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
 
-  //this->WritevtkArray(variance, "readVariance.csv");
+			OnePatientperfusionImages.push_back(CurrentTimePoint);
+		}
+		RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
+	}
 
-  int nPCs = this->DetermineNumberOfPCs(variance);
+	//write revised PCA images
+	for (int index = 0; index < RevisedPerfusionImagesOfAllPatients.size(); index++)
+	{
+		std::cout << "Writing Perfusion Image number: " << index << std::endl;
+		std::vector<ImageType::Pointer> PCAsOfOnePatient = RevisedPerfusionImagesOfAllPatients[index];
+		std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[index];
 
-  if (!this->m_NumberOfPCsDefined)
-  {
-	  //we need to set the m_NumberOfPCs variable that is used from function CombineAndCalculatePerfusionPCAForTestData
-	  this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
-  }
-  //Apply existing PCA model to the test patient
-  PerfusionMapType perfFeatures = CombineAndCalculatePerfusionPCAForTestData(this->m_PerfusionDataMap, PCA_PERF, Mean_PERF);
-  std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
-
-  for (unsigned int sid = 0; sid < this->m_ValidSubjectList.size(); sid++)
-  {
-    std::cout << "Revising Perfusion Image number: " << sid << std::endl;
-	std::cout << " size: " << this->m_ValidSubjectList .size()<< std::endl;
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[sid];
-
-    auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
-    std::vector<ImageType::Pointer> PerfusionImageVector = cbica::GetExtractedImages<PerfusionImageType, ImageType>(perfImagePointerNifti);
-
-    std::vector<ImageType::Pointer> OnePatientperfusionImages;
-
-	//blah.....
-    for (int i = 0; i < nPCs; i++)
-    {
-      ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
-      itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
-      imageIt.GoToBegin();
-      while (!imageIt.IsAtEnd())
-      {
-        imageIt.Set(0);
-        ++imageIt;
-      }
-      std::vector<ImageType::IndexType> indices = std::get<0>(perfFeatures[sid]);
-      VariableSizeMatrixType revisedPerfData = std::get<1>(perfFeatures[sid]);
-      for (int j = 0; j < indices.size(); j++)
-        CurrentTimePoint.GetPointer()->SetPixel(indices[j], revisedPerfData(j, i));
-
-      OnePatientperfusionImages.push_back(CurrentTimePoint);
-    }
-    RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
-  }
-  for (int index = 0; index < RevisedPerfusionImagesOfAllPatients.size(); index++)
-  {
-    std::cout << "Writing Perfusion Image number: " << index << std::endl;
-    std::vector<ImageType::Pointer> PCAsOfOnePatient = RevisedPerfusionImagesOfAllPatients[index];
-    std::map<CAPTK::ImageModalityType, std::string> currentsubject = this->m_ValidSubjectList[index];
-
-    for (int index2 = 0; index2 < PCAsOfOnePatient.size(); index2++)
-    {
-      std::string filename = outputdirectory + "/" + static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "_PCA_" + std::to_string(index2) + ".nii.gz";
-	  std::cout << "file written at path: " << filename << std::endl;
-      cbica::WriteImage<ImageType>(PCAsOfOnePatient[index2], filename);
-    }
-  }
-  return ErrorCode::NoError;
+		for (int index2 = 0; index2 < PCAsOfOnePatient.size(); index2++)
+		{
+			std::string filename = outputdirectory + "/" + static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SUDOID]) + "_PCA_" + std::to_string(index2) + ".nii.gz";
+			cbica::WriteImage<ImageType>(PCAsOfOnePatient[index2], filename);
+		}
+	}
+	return ErrorCode::NoError;
 }
 
 PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::string &inValidSubject)
