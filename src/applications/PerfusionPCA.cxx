@@ -184,6 +184,12 @@ int main(int argc, char **argv)
         }
     }
 
+	if (!nPCsDefined && !varianceThresholdDefined)
+	{
+		std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	//set number of PCs on the object
 	if (nPCsDefined)
 		object_pca.SetNumberOfPCs(inputPCs);
