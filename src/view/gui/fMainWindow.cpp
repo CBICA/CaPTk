@@ -5365,6 +5365,12 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
 	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
   }
 
+  //when both number of pca images and variance are not specified
+  if (nPCAImages.isEmpty() && variance.isEmpty())
+  {
+	  nPCAImages = "0"; //assign zero since in this case, we don't want to produce any PCA images
+  }
+
   if (!nPCAImages.isEmpty())
 	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
   else if (!variance.isEmpty())
