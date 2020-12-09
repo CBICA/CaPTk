@@ -68,10 +68,20 @@ public:
   /*template<class ImageTypeFloat4D, class ImageTypeFloat3D>
   std::vector<typename ImageTypeFloat3D::Pointer> Run(typename ImageTypeFloat3D::Pointer maskImagePointerNifti, typename ImageTypeFloat4D::Pointer perfImagePointerNifti);
 */
+  /*
+  \brief Load Perfusion and Segmentation images into Perfusion Data Map
+  \return ErrorCode Indicating the status of load operation
+  \return inValidSubject If unable to load, path of the invalid subject
+  */
   ErrorCode LoadData(std::string &inValidSubject);
+
+  //Extract PCA Parameters
   bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory);
+
+  //Apply extracted PCA paramters
   ErrorCode ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory,const std::string ModelDirectoryName);
   
+  //Load perfusion data into vector and matrix
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
 
@@ -86,18 +96,23 @@ public:
   //determine # PCs based on user provided variance threshold
   int DetermineNumberOfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance);
 
+  //setter for Variance theshold
   void SetVarianceThreshold(float threshold);
 
+  //setter for number of PCA images to produce
   void SetNumberOfPCs(int pcs);
 
+  //setter to request intermediate perfusion data for whole population
   void RequestPerfusionDataWholePopulation(bool request);
 
   void WriteNumberOfPCs(int n, std::string filepath);
 
   int ReadNumberOfPCsFromModel(std::string filepath);
 
+  //sort and arrange valid input data
   void LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
 
+  //check if there are any valid subjects in input data
   bool HasValidSubjects();
 private:
 
@@ -113,6 +128,7 @@ private:
 	bool m_NumberOfPCsDefined = false;
 	bool m_PerfusionDataForWholePopulationRequested = false;
 
+	//vector of valid subjects in input
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> m_ValidSubjectList;
 };
 
