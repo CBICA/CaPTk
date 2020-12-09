@@ -63,10 +63,7 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
   //data(:, i) = (data(:, i) - min(data(:, i))). / (max(data(:, i) - min(data(:, i))));
 
   int NumberOfSamples = inputdata.Rows(); //this is number of voxels in each mask
-  int NumberOfFeatures = inputdata.Cols(); //this is same as 'n' number of PC
-
-  std::cout << " # samples = " << NumberOfSamples << std::endl;
-  std::cout << " # features = " << NumberOfFeatures << std::endl;
+  int NumberOfFeatures = inputdata.Cols(); //this is same as 'n' number of PCA images
 
   VariableSizeMatrixType outputdata;
   outputdata.SetSize(NumberOfSamples, NumberOfFeatures);
@@ -85,29 +82,17 @@ VariableSizeMatrixType PerfusionPCA::ColumnWiseScaling(VariableSizeMatrixType in
     double max = inputdata(0, featureNo);
     for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
     {
-		//if( sampleNo < 100)
-		//std::cout << inputdata(sampleNo, featureNo) << " ";
       if (inputdata(sampleNo, featureNo) < min)
         min = inputdata(sampleNo, featureNo);
       if (inputdata(sampleNo, featureNo) > max)
         max = inputdata(sampleNo, featureNo);
     }
-	std::cout << std::endl;
-
-	//std::cout << " max: " << max << std::endl;
-	//std::cout << " min: " << min << std::endl;
-
-	//std::cout << " scaled data " << std::endl;
 
 	for (int sampleNo = 0; sampleNo < NumberOfSamples; sampleNo++)
 	{
 		//rescaling to 0 - 255
 		outputdata(sampleNo, featureNo) = ((inputdata(sampleNo, featureNo) - min) * 255) / (max - min);
-		//std::cout << outputdata(sampleNo, featureNo) << " ";
 	}
-	std::cout << std::endl;
-
-	//exit(1);
   }
 
   return outputdata;
@@ -309,10 +294,8 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::string &inValidSubject)
 		//if time points don't match, quit with error message.
 		if (timepoints != m_TotalTimePoints)
 		{
-			//TBD: throw name of data with incorrect time points
-			//std::cout << "incorrect subject: " << currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] << std::endl;
+			//return path of data with incorrect time points
 			inValidSubject = currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION];
-			std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
 			return ErrorCode::MismatchedTimePoints;
 		}
 
