@@ -105,10 +105,6 @@ public:
   //setter to request intermediate perfusion data for whole population
   void RequestPerfusionDataWholePopulation(bool request);
 
-  void WriteNumberOfPCs(int n, std::string filepath);
-
-  int ReadNumberOfPCsFromModel(std::string filepath);
-
   //sort and arrange valid input data
   void LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
 

@@ -501,24 +501,6 @@ void PerfusionPCA::RequestPerfusionDataWholePopulation(bool request)
 	this->m_PerfusionDataForWholePopulationRequested = request;
 }
 
-void PerfusionPCA::WriteNumberOfPCs(int n, std::string filepath)
-{
-	std::ofstream myfile;
-	myfile.open(filepath);
-	myfile << std::to_string(n);
-	myfile.close();
-}
-
-int PerfusionPCA::ReadNumberOfPCsFromModel(std::string filepath)
-{
-	int n;
-	std::ifstream myfile;
-	myfile.open(filepath);
-	myfile >> n;
-	myfile.close();
-	return n;
-}
-
 void PerfusionPCA::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
