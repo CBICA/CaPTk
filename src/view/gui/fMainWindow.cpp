@@ -4592,6 +4592,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   {
 	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
 	  ShowMessage(msg, this);
+	  return;
   }
 
   //check if pca parameter dir has valid files
@@ -5386,6 +5387,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
   {
 	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
 	  ShowMessage(msg, this);
+	  return;
   }
 
   //when both number of pca images and variance are not specified
