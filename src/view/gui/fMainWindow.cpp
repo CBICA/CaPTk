@@ -5349,7 +5349,6 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
   std::vector<double> finalresult;
   //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
 
-  std::cout << " input dir: " << inputdirectory.toStdString() << std::endl;
   PerfusionPCA mPCAEstimator;
   mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
   if (/*QualifiedSubjects.size()*/mPCAEstimator.HasValidSubjects() == 0)
@@ -5376,7 +5375,6 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
   else if (!variance.isEmpty())
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
-  std::cout << " calling TrainNewPerfusionModel method " << std::endl;
   if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
     ShowMessage("PCA parameters and images have been saved at the specified location.", this);
   else
