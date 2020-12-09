@@ -5378,9 +5378,9 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
 
   std::cout << " calling TrainNewPerfusionModel method " << std::endl;
   if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
-    ShowMessage("Trained PCA model has been saved at the specified location.", this);
+    ShowMessage("PCA parameters and images have been saved at the specified location.", this);
   else
-    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("Something went wrong during the calculation. Please contact software@cbica.upenn.edu", this);
 }
 
 
