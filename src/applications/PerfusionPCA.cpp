@@ -222,7 +222,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
 	  std::cout << " total timepoints in data: " << this->m_TotalTimePoints << std::endl;
 
 	  std::cout << " time points don't match." << std::endl;
-	  return ErrorCode::DifferentTimePoints;
+	  return ErrorCode::MismatchedTimePoints;
   }
 
   reader->SetFileName(modelDirectoryName + "/Mean_PERF.csv");
@@ -332,7 +332,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::string &inValidSubject)
 			//std::cout << "incorrect subject: " << currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION] << std::endl;
 			inValidSubject = currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION];
 			std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
-			return ErrorCode::DifferentTimePoints;
+			return ErrorCode::MismatchedTimePoints;
 		}
 
 		VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);

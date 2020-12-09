@@ -4554,7 +4554,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
 
   //load the input dataset
   std::string inValidSubject;
-  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
   {
 	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
 	  ShowMessage(msg, this);
@@ -4589,7 +4589,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
 
   //calling the algorithm 
   PerfusionPCA::ErrorCode code = mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(), outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString());
-  if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
+  if (code == PerfusionPCA::ErrorCode::MismatchedTimePoints)
   {
 	  ShowMessage("Number of time points in the input does not match with the pca parameters. Cannot proceed.", this);
   }
@@ -5326,7 +5326,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
 
   //load the input dataset
   std::string inValidSubject;
-  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
   {
 	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
 	  ShowMessage(msg, this);

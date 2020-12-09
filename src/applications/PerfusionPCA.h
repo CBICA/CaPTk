@@ -53,7 +53,7 @@ public:
 	enum ErrorCode
 	{
 		IncorrectInputStructure = 0,
-		DifferentTimePoints,
+		MismatchedTimePoints,
 		NoError
 	};
 

@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
   //load the input dataset
   std::string inValidSubject;
-  if (object_pca.LoadData(inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  if (object_pca.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
   {
 	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
 	  std::cout << msg << std::endl;
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 
 	//call the algorithm
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName/*, QualifiedSubjects*/,modelDirectoryName);
-	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
+	if (code == PerfusionPCA::ErrorCode::MismatchedTimePoints)
 	{
 		std::cout << "Number of time points in the input does not match with the pca parameters. Cannot proceed." << std::endl;
 		return EXIT_FAILURE;
