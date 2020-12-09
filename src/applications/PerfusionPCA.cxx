@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  //loads the input dataset
+  //load the input dataset
   std::string inValidSubject;
   if (object_pca.LoadData(inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
