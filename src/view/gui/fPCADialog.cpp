@@ -264,12 +264,14 @@ void fPCADialog::OnPCAModeChanged(int mode)
 		this->pcaParamsLabel->hide();
 		this->pcaParamsLE->hide();
 		this->pbParams->hide();
+		this->optionalGroupBox->setTitle("Optional Parameters");
 	}
 	else if (mode == (int)fPCADialog::PCAModeType::Apply)
 	{
 		this->pcaParamsLabel->show();
 		this->pcaParamsLE->show();
 		this->pbParams->show();
+		this->optionalGroupBox->setTitle("Additional Parameters");
 	}
 }
 
@@ -350,6 +352,14 @@ void fPCADialog::OnConfirmButtonPressed()
 			ShowErrorMessage("The PCA parameters directory doesn't exist.");
 			return;
 		}
+
+		//if variance and number of PCA images to produce are both not specified
+		if (variance.isEmpty() && nPCAImages.isEmpty())
+		{
+			ShowErrorMessage("Please specify either the number of PCA images to produce or the variance threshold to continue.");
+			return;
+		}
+
 		emit ExistingModelBasedPCAEstimate(inputDir, outputDir, pcaParamDir, nPCAImages, variance);
 	}
 	this->close();
