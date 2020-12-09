@@ -51,9 +51,6 @@ public:
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkDoubleArray> &variance);
   vtkSmartPointer< vtkTable >  GetDiscerningPerfusionTimePoints(vnl_matrix<double> &intensities);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
-  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemoved(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
-  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemoved2(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
-  vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsHardcodingRemovedMuliloop(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   vtkSmartPointer<vtkTable> GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
   /**
   \brief Applies the exsiting PCA model (developed on training data) on test data
