@@ -93,8 +93,8 @@ public:
   //write vtk array
   void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
 
-  //determine # PCs based on user provided variance threshold
-  int DetermineNumberOfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance);
+  //determine # PCs
+  int DetermineNumberOfPCs(vtkSmartPointer<vtkDoubleArray> variance);
 
   //setter for Variance theshold
   void SetVarianceThreshold(float threshold);

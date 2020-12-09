@@ -32,7 +32,7 @@ PerfusionMapType PerfusionPCA::CombineAndCalculatePerfusionPCA(PerfusionMapType 
   if (!this->m_NumberOfPCsDefined)
   {
 	  //we need to set the m_NumberOfPCs variable that is used further down
-	  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
+	  int nPCs = this->DetermineNumberOfPCs(variance);
 	  this->SetNumberOfPCs(nPCs); //set the m_NumberOfPCs
   }
 
@@ -249,7 +249,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::ApplyExistingPCAModel(const int number, co
 
   //this->WritevtkArray(variance, "readVariance.csv");
 
-  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
+  int nPCs = this->DetermineNumberOfPCs(variance);
 
   if (!this->m_NumberOfPCsDefined)
   {
@@ -344,31 +344,7 @@ PerfusionPCA::ErrorCode PerfusionPCA::LoadData(std::string &inValidSubject)
 
 bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory)
 {
-  //PerfusionMapType PerfusionDataMap;
-
-  //Extracting perfusion data of all the patients and putting in PerfusionDataMap
- // for (unsigned int sid = 0; sid < trainingsubjects.size(); sid++)
- // {
- //   std::cout << "Loading Perfusion Image: " << sid << std::endl;
- //   std::map<CAPTK::ImageModalityType, std::string> currentsubject = trainingsubjects[sid];
- //   ImageType::Pointer LabelImagePointer = cbica::ReadImage<ImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_SEG]));
- //   auto perfImagePointerNifti = cbica::ReadImage<PerfusionImageType>(static_cast<std::string>(currentsubject[CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION]));
- //   std::vector<ImageType::IndexType> indices;
-	//int timepoints = perfImagePointerNifti->GetLargestPossibleRegion().GetSize()[3];
-	//if(m_TotalTimePoints == 0)
-	//	m_TotalTimePoints = timepoints;
-	//if (timepoints != m_TotalTimePoints)
-	//{
-	//	std::cout << " Number of time points for all subjects are not equal. Cannot Proceed. Please make sure all subjects have the same number of time points. " << std::endl;
-	//	return EXIT_FAILURE;
-	//}
-
- //   VariableSizeMatrixType perfusionData = LoadPerfusionData<PerfusionImageType, ImageType>(LabelImagePointer, perfImagePointerNifti, indices);
- //   PerfusionTupleType new_tuple(indices, perfusionData);
- //   PerfusionDataMap[sid] = new_tuple;
- // }
-
-  //combining perfusion data, calcualting PCA
+  //combining perfusion data, calculating PCA
   VariableSizeMatrixType TransformationMatrix;
   VariableLengthVectorType MeanVector;
   vtkSmartPointer<vtkTable> TransformedData;
@@ -381,21 +357,16 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     for (unsigned int index2 = 0; index2 < TransformedData.GetPointer()->GetNumberOfColumns(); index2++)
       TransformedDataMatrix(index1, index2) = TransformedData->GetValue(index1, index2).ToDouble();
 
-  //create vector with 1 item representing total timepoints in input data
-  //vector is needed for csv writer
-  //std::vector<int> nPCs = { this->DetermineNumberOfPCsFromVariance(variance)};
-
-  int nPCs = this->DetermineNumberOfPCsFromVariance(variance);
-  std::cout << " number of PCs under given threshold: " << nPCs << std::endl;
+  //determine number of PCAs
+  int nPCs = this->DetermineNumberOfPCs(variance);
 
   //write model files
-
   //only need 3 files: mean, pca_perf and variance
   WriteCSVFiles(TransformationMatrix, outputdirectory + "/PCA_PERF.csv"); //t x t square matrix
-  WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //
-  if(this->m_PerfusionDataForWholePopulationRequested)
+  WriteCSVFiles(MeanVector, outputdirectory + "/Mean_PERF.csv"); //mean
+  if(this->m_PerfusionDataForWholePopulationRequested) //if the user wants the intermediate files, write it
 	WriteCSVFiles(TransformedDataMatrix, outputdirectory + "/PCA_Data.csv"); //projected perf data in the reduced dimensionality space for whole population, should be extracted if user asks
-  this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv");
+  this->WritevtkArray(variance, outputdirectory + "/PCCumulativeVariance.csv"); //variance
 
   //Putting back in images of respective patients
   std::vector<std::vector<ImageType::Pointer>> RevisedPerfusionImagesOfAllPatients;
@@ -420,7 +391,7 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
 
     std::vector<ImageType::Pointer> OnePatientperfusionImages;
 	
-    for (int i = 0; i < nPCs; i++)
+    for (int i = 0; i < nPCs; i++) //if nPCs is 0, we don't write any images
     {
       ImageType::Pointer CurrentTimePoint = PerfusionImageVector[i];
       itk::ImageRegionIteratorWithIndex <ImageType> imageIt(CurrentTimePoint, CurrentTimePoint->GetLargestPossibleRegion());
@@ -439,6 +410,8 @@ bool PerfusionPCA::TrainNewPerfusionModel(const int number, const std::string in
     }
     RevisedPerfusionImagesOfAllPatients.push_back(OnePatientperfusionImages);
   }
+
+  //write revised PCA images
   for (int index = 0; index < RevisedPerfusionImagesOfAllPatients.size(); index++)
   {
     std::cout << "Writing Perfusion Image: " << index << std::endl;
@@ -464,7 +437,7 @@ void PerfusionPCA::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath
 	myfile.close();
 }
 
-int PerfusionPCA::DetermineNumberOfPCsFromVariance(vtkSmartPointer<vtkDoubleArray> variance)
+int PerfusionPCA::DetermineNumberOfPCs(vtkSmartPointer<vtkDoubleArray> variance)
 {
 	int numberOfPCs = 0;
 
