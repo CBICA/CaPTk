@@ -4540,43 +4540,7 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
 
 void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance)
 {
-  //if (modeldirectory.empty())
-  //{
-  //  ShowErrorMessage("Please provide path of a directory having PCA model");
-  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
-  //  return;
-  //}
-  //if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
-  //{
-  //    if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
-  //    {
-  //        ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
-  //        return;
-  //    }
-  //}
-  //if (inputdirectory.empty())
-  //{
-  //  ShowErrorMessage("Please provide path of a directory having input images");
-  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
-  //  return;
-  //}
-  //if (outputdirectory.empty())
-  //{
-  //  ShowErrorMessage("Please provide path of a directory to save output");
-  //  //help_contextual("Glioblastoma_Pseudoprogression.html");
-  //  return;
-  //}
-  //if (!cbica::isDir(outputdirectory))
-  //{
-  //  if (!cbica::createDir(outputdirectory))
-  //  {
-  //    ShowErrorMessage("Unable to create the output directory");
-  //    //help_contextual("Glioblastoma_Pseudoprogression.html");
-  //    return;
-  //  }
-  //}
-
-  std::vector<double> finalresult;
+   std::vector<double> finalresult;
   //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
   PerfusionPCA mPCAEstimator;
   mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
