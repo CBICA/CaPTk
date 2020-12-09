@@ -5310,25 +5310,23 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
 
 void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance)
 {
-  std::string errorMsg;
+  PerfusionPCA mPCAEstimator; //PCA algorithm object
 
-  std::cout << " fMainWindow::TrainNewPCAModelOnGivenData " << std::endl;
-  std::vector<double> finalresult;
-  //std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
-
-  PerfusionPCA mPCAEstimator;
+  //sort and arrange input data
   mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
-  if (/*QualifiedSubjects.size()*/mPCAEstimator.HasValidSubjects() == 0)
+
+  //check if input has valid subjects
+  if (mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
 
+  //load the input dataset
   std::string inValidSubject;
-  if (mPCAEstimator.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
-	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
 	  ShowMessage(msg, this);
 	  return;
   }
@@ -5339,11 +5337,13 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
 	  nPCAImages = "0"; //assign zero since in this case, we don't want to produce any PCA images
   }
 
+  //pass params to object
   if (!nPCAImages.isEmpty())
 	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
   else if (!variance.isEmpty())
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
+  //calling the algorithm 
   if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
     ShowMessage("PCA parameters and images have been saved at the specified location.", this);
   else
