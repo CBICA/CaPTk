@@ -4593,12 +4593,33 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
 	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
   }
 
+  //check if pca parameter dir has valid files
+  if (!cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCA_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/Mean_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCCumulativeVariance.csv"))
+  {
+	  std::string msg = "The required files PCA_PERF.csv, Mean_PERF.csv and PCCumulativeVariance.csv do not exist in the directory:" + pcaparamsdirectory.toStdString();
+	  ShowErrorMessage(msg,this);
+	  return;
+  }
+
+  //check if version compatible
+  if (cbica::isFile(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+  {
+	  if (!cbica::IsCompatible(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+	  {
+		  ShowErrorMessage("The version of pca parameters is incompatible with this version of CaPTk.",this);
+		  return;
+	  }
+  }
+
+  //pass params
   if (!nPCAImages.isEmpty())
 	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
   else if (!variance.isEmpty())
 	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
 
-  //PerfusionPCA mPCAEstimator;
+  //actual call to the algo
   if (mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(),outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString()))
     ShowMessage("PCA features have been saved at the specified location.", this);
   else
