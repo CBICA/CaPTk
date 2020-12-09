@@ -2996,16 +2996,10 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
-	//TBD:: probably number of samples = # pixels in mask
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
-  
-  std::cout << "FeatureReductionClass::GetDiscerningPerfusionTimePoints" << std::endl;
-  std::cout << "# features: " << NumberOfFeatures << std::endl;
-  std::cout << "# samples: " << NumberOfSamples << std::endl;
-  
- // to comment
+ 
   vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
   vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
   vtkSmartPointer<vtkDoubleArray> A1 = vtkSmartPointer<vtkDoubleArray>::New();
@@ -3240,7 +3234,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   datasetTable->AddColumn(V0);
   datasetTable->AddColumn(V1);
   datasetTable->AddColumn(W0);
-  // to comment
 
   vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
 #if VTK_MAJOR_VERSION <= 5
@@ -3249,7 +3242,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
 #endif
 
-  //to comment
   pcaStatistics->SetColumnStatus("a0", 1);
   pcaStatistics->SetColumnStatus("a1", 1);
   pcaStatistics->SetColumnStatus("b0", 1);
@@ -3295,7 +3287,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   pcaStatistics->SetColumnStatus("v0", 1);
   pcaStatistics->SetColumnStatus("v1", 1);
   pcaStatistics->SetColumnStatus("w0", 1);
-  //to comment
 
   pcaStatistics->RequestSelectedColumns();
   pcaStatistics->SetDeriveOption(true);
@@ -3307,7 +3298,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
   vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
   pcaStatistics->GetEigenvectors(eigenvectors);
 
-   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+  vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
     vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
