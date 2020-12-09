@@ -217,8 +217,6 @@ for (int i = 0; i < NumberOfFeatures; i++)
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkDoubleArray> &variance)
 {
-	std::cout << " Entering FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic " << std::endl;
-
 	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
 	size_t NumberOfTimePoints;
 	size_t NumberOfFeatures = NumberOfTimePoints = intensities[0].size();
@@ -238,6 +236,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 #endif
 
 	size_t i = 0;
+	//fill up the table
 	//nested for loops will create a max of 26*26*10 = 6760 distinct names and double arrays to fill the vtkTable
 	//as input to vtkpcastatistics class. Names should be distinct and non-numerical
 	for (char k = 'a'; (k <= 'z') && (i < NumberOfTimePoints); k++)
@@ -271,25 +270,14 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	VariableSizeMatrixType transposePCAMatrix;
 	transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
 
-	//variance calculation
-		//init vector = amtvar
+	//pseudo code - variance calculation
 	//get sum of all eigen vals = sumeigenvals
 	//cumsum = 0;
 	//for loop across eigenvals
 	// cumsum = cumsum + eigenval[i];
 	//amtvar[i] = cumsum/sumeigenvals;
-
-	//write as vector in csv format to give amount of variance per PC ( always write ) - filename - PCCumulativeVariance.csv
-
-	// only when user asks i.e. gives the threshold on CLI/GUI
-	//ask user for % threshold for variance (amtvar)
-	//this should write out all PCs under the given threshold
-
-
 	//sanity check - see eigenvals and amtvar(should be in increasing order and cannot be over 100%)
 	//eigenvals should be in decreasing order and sum cannot be over 100
-
-	//std::cout << " getting eigen values " << std::endl;
 
 	vtkSmartPointer<vtkDoubleArray> eigenvalues = vtkSmartPointer<vtkDoubleArray>::New();
 	pcaStatistics->GetEigenvalues(eigenvalues);
@@ -298,31 +286,18 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 	double sumEigenValues = 0.0;
 	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
 		sumEigenValues = sumEigenValues + eigenvalues->GetValue(i);
-	//std::cout << " sum of all eigen values: " << sumEigenValues << std::endl;
 
 	//array to store variance
-	//vtkSmartPointer<vtkDoubleArray> variance = vtkSmartPointer<vtkDoubleArray>::New();
 	variance = vtkSmartPointer<vtkDoubleArray>::New();
 	variance->SetNumberOfValues(eigenvalues->GetNumberOfValues());
 
-	//std::cout << " calculating variance " << std::endl;
-
+	//fill variance array
 	double cumulativeSum = 0.0; //cumulative sum
 	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
 	{
 		cumulativeSum = cumulativeSum + eigenvalues->GetValue(i);
 		variance->SetValue(i,cumulativeSum / sumEigenValues);
 	}
-
-	//write eigen values
-	//std::cout << " write eigen values " << std::endl;
-	//eigenvalues->Print(std::cout);
-	//this->WritevtkArray(eigenvalues, "eigenvalues.csv");
-
-	//write variance
-	//std::cout << " write variance " << std::endl;
-	//variance->Print(std::cout);
-	//this->WritevtkArray(variance, "variance.csv");
 	
 	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
 	pcaStatistics->GetEigenvectors(eigenvectors);
@@ -2985,11 +2960,14 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
 
+  //subtract mean
   for (size_t index = 0; index < NumberOfSamples; index++)
   {
     for (size_t timepoint = 0; timepoint < NumberOfFeatures; timepoint++)
       intensities[index][timepoint] = intensities[index][timepoint] - MeanVector[timepoint];
   }
+
+  //where is this used???
   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
@@ -3000,6 +2978,7 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   }
   VectorVectorDouble projectedData;
 
+  //apply transformation( PCA_PERF ) from model
   for (size_t i = 0; i < NumberOfSamples; i++)
   {
     VectorDouble oneDataPoint;
@@ -3012,7 +2991,7 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
     }
     projectedData.push_back(oneDataPoint);
   }
-  return projectedData;
+  return projectedData;//return transformed data
 }
 
 void FeatureReductionClass::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath)
