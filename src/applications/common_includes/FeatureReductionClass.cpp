@@ -2994,67 +2994,6 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   return projectedData;//return transformed data
 }
 
-void FeatureReductionClass::WritevtkArray(vtkDoubleArray* inputdata, std::string filepath)
-{
-	std::ofstream myfile;
-	myfile.open(filepath);
-	//for (unsigned int index1 = 0; index1 < inputdata.size(); index1++)
-	//{
-	//	for (unsigned int index2 = 0; index2 < inputdata[0].size(); index2++)
-	//	{
-	//		if (index2 == 0)
-	//			myfile << std::to_string(inputdata[index1][index2]);
-	//		else
-	//			myfile << "," << std::to_string(inputdata[index1][index2]);
-	//	}
-	//	myfile << "\n";
-	//}
-	for (vtkIdType i = 0; i < inputdata->GetNumberOfValues(); i++)
-		myfile << std::to_string(inputdata->GetValue(i)) << std::endl;
-	myfile.close();
-}
-
-void FeatureReductionClass::WriteEigenVector(vtkDoubleArray * input, std::string filepath)
-{
-	std::ofstream myfile;
-	myfile.open(filepath);
-
-	//std::cout << " number of tuples in eigen vector: " << input->GetNumberOfTuples() << std::endl;
-	//std::cout << " number of components in eigen vector: " << input->GetNumberOfComponents() << std::endl;
-
-	for (vtkIdType i = 0; i < input->GetNumberOfTuples(); i++)
-	{
-		//myfile << "Eigenvector " << i << " : ";
-		double* evec = new double[input->GetNumberOfComponents()];
-		input->GetTuple(i, evec);
-		for (vtkIdType j = 0; j < input->GetNumberOfComponents(); j++)
-		{
-			myfile << evec[j] << ",";
-		}
-		delete[] evec;
-		myfile << "\n";
-	}
-	myfile.close();
-}
-
-void FeatureReductionClass::WriteVTKTable(vtkTable * t, std::string filepath)
-{
-	std::ofstream myfile;
-	myfile.open(filepath);
-	for (vtkIdType i = 0; i < t->GetNumberOfRows(); i++)
-	{
-		for (vtkIdType j = 0; j < t->GetNumberOfColumns(); j++)
-		{
-			//vtkDoubleArray*da = vtkDoubleArray::SafeDownCast(t->GetColumn(i));
-			//std::string fname = "col" + std::to_string(i) + ".csv";
-			//this->WritevtkArray(da, fname);
-			myfile << t->GetValue(i, j) << ",";
-		}
-		myfile << "\n";
-	}
-	myfile.close();
-}
-
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
 	//TBD:: probably number of samples = # pixels in mask

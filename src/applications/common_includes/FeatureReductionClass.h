@@ -110,12 +110,6 @@ public:
     mPMeanvector.SetSize(0);
   }
 
-  void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
-
-  void WriteEigenVector(vtkDoubleArray* input, std::string filepath);
-
-  void WriteVTKTable(vtkTable *t, std::string filepath);
-
 private:
   VariableSizeMatrixType PCATransformationMatrix;
   VariableLengthVectorType mPMeanvector;
