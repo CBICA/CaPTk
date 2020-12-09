@@ -184,7 +184,8 @@ int main(int argc, char **argv)
         }
     }
 
-	//when both number of PCA imagea and variance threshold are not provided by the user
+	//when both number of PCA images and variance threshold are not provided by the user,
+	//ask the user to provide any one
 	if (!nPCsDefined && !varianceThresholdDefined)
 	{
 		std::cout << "Please provide either the number of principal components or the variance threshold and re-run the application." << std::endl;
@@ -214,7 +215,7 @@ int main(int argc, char **argv)
   else if (applicationType == CAPTK::MachineLearningApplicationSubtype::TRAINING)
   {
 		//if user doesn't provide n or vt, give a msg stating that we will provide only PCA parameters 
-		// and not the PCA images and that the run will take quite some time and request for confirmation
+		// and not the PCA images and that the run may take quite some time and request for confirmation
 		// press y to continue or n to exit(and provide n or vt).
 	  if (!nPCsDefined && !varianceThresholdDefined)
 	  {
