@@ -432,7 +432,7 @@ void PerfusionPCA::RequestPerfusionDataWholePopulation(bool request)
 	this->m_PerfusionDataForWholePopulationRequested = request;
 }
 
-void PerfusionPCA::LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname)
+void PerfusionPCA::SortValidSubjectsFromGivenDirectory(const std::string directoryname)
 {
 	std::map<CAPTK::ImageModalityType, std::string> OneQualifiedSubject;
 	std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects;

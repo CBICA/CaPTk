@@ -4543,7 +4543,7 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   PerfusionPCA mPCAEstimator;//PCA algorithm object
 
   //sort and arrange input data
-  mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
 
   //check if input has valid subjects
   if (mPCAEstimator.HasValidSubjects() == 0)
@@ -5315,7 +5315,7 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
   PerfusionPCA mPCAEstimator; //PCA algorithm object
 
   //sort and arrange input data
-  mPCAEstimator.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory.toStdString());
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
 
   //check if input has valid subjects
   if (mPCAEstimator.HasValidSubjects() == 0)

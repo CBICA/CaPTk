@@ -138,7 +138,7 @@ int main(int argc, char **argv)
   PerfusionPCA object_pca; //pca algorithm object
 
   //sort and arrange input data
-  object_pca.LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputFileName);
+  object_pca.SortValidSubjectsFromGivenDirectory(inputFileName);
 
   //check if input has valid subjects
   if(!object_pca.HasValidSubjects())

@@ -106,7 +106,7 @@ public:
   void RequestPerfusionDataWholePopulation(bool request);
 
   //sort and arrange valid input data
-  void LoadQualifiedSubjectsFromGivenDirectoryForPCA(const std::string directoryname);
+  void SortValidSubjectsFromGivenDirectory(const std::string directoryname);
 
   //check if there are any valid subjects in input data
   bool HasValidSubjects();
