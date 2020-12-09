@@ -4590,7 +4590,8 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   std::string inValidSubject;
   if (mPCAEstimator.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
-	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
+	  ShowMessage(msg, this);
   }
 
   //check if pca parameter dir has valid files
@@ -5382,7 +5383,8 @@ void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &
   std::string inValidSubject;
   if (mPCAEstimator.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
-	  ShowMessage("Could not load data. Please check that all input data has the same number of time points.", this);
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
+	  ShowMessage(msg, this);
   }
 
   //when both number of pca images and variance are not specified
