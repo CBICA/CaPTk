@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	  parser.getParameterValue("vt", varianceThreshold);
   }
 
-  //if user provides both n and vt, then dont run app
+  //if user provides both n and vt, then don't run app
   //put a msg to provide any one
   if (nPCsDefined && varianceThresholdDefined)
   {
@@ -154,7 +154,8 @@ int main(int argc, char **argv)
   std::string inValidSubject;
   if (object_pca.LoadData(/*QualifiedSubjects,*/ inValidSubject) == PerfusionPCA::DifferentTimePoints)
   {
-	  std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Look at file: " + inValidSubject;
+	  std::cout << msg << std::endl;
 	  return EXIT_FAILURE;
   }
 
@@ -191,7 +192,7 @@ int main(int argc, char **argv)
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName/*, QualifiedSubjects*/,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::DifferentTimePoints)
 	{
-		std::cout << "Could not load data. Please check that all input data has the same number of time points." << std::endl;
+		std::cout << "Number of time points in the input does not match with the pca parameters. Cannot proceed." << std::endl;
 		return EXIT_FAILURE;
 	}
 	else if (code == PerfusionPCA::ErrorCode::NoError)
