@@ -106,8 +106,6 @@ public:
 	outputDirLabel = new QLabel("Output Directory",fPCADialog);
 	optionalGroupBox = new QGroupBox("Optional Parameters", fPCADialog);
 	optionalgroupBoxLayout = new QGridLayout(optionalGroupBox);
-	//TBD: add line here
-	//TBD:: add text 'optional parameters'
 	nPCsLabel = new QLabel("Number of PCA images to produce",fPCADialog);
 	varLabel = new QLabel("Variance threshold",fPCADialog);
 	pcaParamsLabel = new QLabel("Extracted parameters directory", fPCADialog);
@@ -120,15 +118,14 @@ public:
 	pbOutput = new QPushButton("Browse",fPCADialog);
 	pbParams = new QPushButton("Browse",fPCADialog);
 
-	overallGridLayout->addWidget(extractPCA, 0, 0/*, 1, 2*/);
-	overallGridLayout->addWidget(applyPCA, 0, 1/*, 1, 2*/);
+	overallGridLayout->addWidget(extractPCA, 0, 0);
+	overallGridLayout->addWidget(applyPCA, 0, 1);
 	overallGridLayout->addWidget(inputDirLabel, 1, 0);
 	overallGridLayout->addWidget(inputDirLE, 1, 1);
 	overallGridLayout->addWidget(pbInput, 1, 2);
 	overallGridLayout->addWidget(outputDirLabel, 2, 0);
 	overallGridLayout->addWidget(outputDirLE, 2, 1);
 	overallGridLayout->addWidget(pbOutput, 2, 2);
-	//TBD: in case of apply, this(pcaParamsLabel) should appear on the top ( do it if easy enough)
 	overallGridLayout->addWidget(pcaParamsLabel, 3, 0); 
 	overallGridLayout->addWidget(pcaParamsLE, 3, 1);
 	overallGridLayout->addWidget(pbParams, 3, 2);
@@ -191,7 +188,6 @@ public:
     testSubjectsDirectoryName->setSizePolicy(sizePolicy13);
     testSubjectsDirectoryName->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
 
-	//this is the blank line edit field underneath the selected subjects
     existingMaskDirectoryName = new QLineEdit(classificationGroupBox);
     existingMaskDirectoryName->setObjectName(QString::fromUtf8("existingMaskDirectoryName"));
     sizePolicy13.setHeightForWidth(existingMaskDirectoryName->sizePolicy().hasHeightForWidth());
