@@ -59,7 +59,7 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/Getting_Started.html#gs_FAQ)
 
 ## Contact
-For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>. 
+For more information or any support, please post on the [Discussions](https://github.com/CBICA/CaPTk/discussions) section or contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
 
 ## GitHub Distribution
 
