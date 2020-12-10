@@ -199,6 +199,7 @@ int main(int argc, char **argv)
 		object_pca.SetVarianceThreshold(varianceThreshold);
 
 	//call the algorithm
+	std::cout << " Applying extracted PCA parameters." << std::endl;
     PerfusionPCA::ErrorCode code = object_pca.ApplyExistingPCAModel(inputPCs, inputFileName, outputDirectoryName/*, QualifiedSubjects*/,modelDirectoryName);
 	if (code == PerfusionPCA::ErrorCode::MismatchedTimePoints)
 	{
@@ -246,6 +247,7 @@ Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit a
 	  object_pca.RequestPerfusionDataWholePopulation(dif);//dump intermediate files or not
 
 	  //calling the algorithm 
+	  std::cout << " Extracting PCA parameters." << std::endl;
 	  if (object_pca.TrainNewPerfusionModel(inputPCs, inputFileName, outputDirectoryName))
 	  {
 		  std::cout << "principal components have been saved at the specified locations.\n";
