@@ -1391,7 +1391,6 @@ namespace cbica
 
       if (dirp->d_type == DT_DIR)
       {
-        allDirectories.push_back(dirName + "/" + dirp->d_name);
         if (returnFullPath)
         {
           allDirectories.push_back(dirName + "/" + dirp->d_name);
