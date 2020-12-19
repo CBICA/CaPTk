@@ -81,7 +81,7 @@ fnins.2013.00031
 \section gs_imageLoading Image & Mask Loading
 The <b>File -> Load -> Images</b> menu is used to load all image types. Images can also be loaded by dragging and dropping onto the application. In case of DICOM images, loading/dragging a single image loads the entire dicom series. 
 <br>
-Mask must be loaded via <b>File -> Load -> ROI</b> menu.
+Mask must be loaded via <b>File -> Load -> ROI</b> menu and also by dragging and dropping onto the application.
 
 \image html imageLoading_resize.png "Loading images & mask for visualization/processing"
 \image latex imageLoading_resize.png "Loading images & mask for visualization/processing"
