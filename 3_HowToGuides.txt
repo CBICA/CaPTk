@@ -1151,7 +1151,7 @@ ${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.c
 
 - \subpage BraTS_Metrics "BraTS Similarity Metrics Computation"
 
-This is a command line executable containing the following functionalities (with corresponding examples):
+This is a [command line executable](https://cbica.github.io/CaPTk/FAQ.html#gs_FAQ_3) containing the following functionalities (with corresponding examples):
 - Resizing
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear
