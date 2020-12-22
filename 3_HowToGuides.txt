@@ -1172,6 +1172,10 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un
 	\endverbatim
+- Change values in image: The following command will change all voxels of value 1 & 2 to 2 & 4, respectively:
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -cv 1x2,2x4
+	\endverbatim
 - Get smallest bounding box in mask (optional isotropic bounding box)
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -b C:/testMask.nii.gz -o C:/output.nii.gz
