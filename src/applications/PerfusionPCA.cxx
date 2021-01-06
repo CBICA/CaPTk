@@ -265,5 +265,4 @@ Do you want to continue? Press 'y' to contine or 'n' (and press Enter) to exit a
     parser.echoVersion();
     return EXIT_SUCCESS;
   }
-
 }
