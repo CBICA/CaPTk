@@ -215,6 +215,7 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
   features.SetVerticallyConcatenatedOutput(verticalConc);
   features.SetWriteFeatureMaps(featureMaps);
   features.SetNumberOfThreads(threads);
+  features.SetSkipSanityCheck(true);
   features.Update();
   outputFilename = features.GetOutputFile();
 }
