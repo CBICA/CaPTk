@@ -512,6 +512,23 @@ docker run -it \
 
 Please see the [Feature Extraction FAQ](https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions).
 
+\section gs_FAQ_10 I am having issues running CaPTk on Ubuntu 20.04
+
+This is a well-known problem, documented in the following GitHub issues:
+- https://github.com/CBICA/CaPTk/issues/1336
+- https://github.com/AppImage/AppImageKit/issues/1076#issuecomment-702059005
+
+A possible solution is to revert the default GCC to version 5 using the following steps [[ref](https://github.com/CBICA/CaPTk/issues/1336#issuecomment-769290424)]
+\verbatim
+echo "deb http://archive.ubuntu.com/ubuntu xenial main" | sudo tee /etc/apt/sources.list.d/xenial.list
+sudo apt-get update
+sudo update-alternatives --remove-all gcc
+sudo update-alternatives --remove-all g++
+sudo apt-get install gcc-5 g++-5
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10
+\endverbatim
+
 \section gs_FAQ_10 What if I am having an issue not listed here?
   
 Please [open a new issue](https://github.com/CBICA/CaPTk/issues/new?assignees=&labels=&template=bug-report.md&title=) with us and we will do our best to resolve it.
