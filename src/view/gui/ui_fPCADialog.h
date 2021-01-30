@@ -78,6 +78,13 @@ public:
 
   QHBoxLayout * horizontalLayout;
 
+  QGridLayout *overallGridLayout, *optionalgroupBoxLayout;
+  QRadioButton *extractPCA, *applyPCA;
+  QLabel *inputDirLabel, *outputDirLabel, *nPCsLabel, *varLabel, *pcaParamsLabel;
+  QLineEdit *inputDirLE, *outputDirLE, *nPCsLE, *varLE, *pcaParamsLE;
+  QPushButton *pbInput, *pbOutput, *pbParams;
+  QGroupBox *optionalGroupBox;
+
   void setupUi(QDialog *fPCADialog)
   {
 
@@ -92,13 +99,50 @@ public:
     fPCADialog->setSizePolicy(sizePolicy);
     fPCADialog->setMinimumSize(QSize(0, 0));
 
+	overallGridLayout = new QGridLayout(fPCADialog);
+	extractPCA = new QRadioButton("Extract new parameters",fPCADialog);
+	applyPCA = new QRadioButton("Apply extracted Parameters",fPCADialog);
+	inputDirLabel = new QLabel("Input Directory",fPCADialog);
+	outputDirLabel = new QLabel("Output Directory",fPCADialog);
+	optionalGroupBox = new QGroupBox("Optional Parameters", fPCADialog);
+	optionalgroupBoxLayout = new QGridLayout(optionalGroupBox);
+	nPCsLabel = new QLabel("Number of PCA images to produce",fPCADialog);
+	varLabel = new QLabel("Variance threshold",fPCADialog);
+	pcaParamsLabel = new QLabel("Extracted parameters directory", fPCADialog);
+	inputDirLE = new QLineEdit(fPCADialog);
+	outputDirLE = new QLineEdit(fPCADialog);
+	nPCsLE = new QLineEdit(fPCADialog);
+	varLE = new QLineEdit(fPCADialog);
+	pcaParamsLE = new QLineEdit(fPCADialog);
+	pbInput = new QPushButton("Browse",fPCADialog);
+	pbOutput = new QPushButton("Browse",fPCADialog);
+	pbParams = new QPushButton("Browse",fPCADialog);
+
+	overallGridLayout->addWidget(extractPCA, 0, 0);
+	overallGridLayout->addWidget(applyPCA, 0, 1);
+	overallGridLayout->addWidget(inputDirLabel, 1, 0);
+	overallGridLayout->addWidget(inputDirLE, 1, 1);
+	overallGridLayout->addWidget(pbInput, 1, 2);
+	overallGridLayout->addWidget(outputDirLabel, 2, 0);
+	overallGridLayout->addWidget(outputDirLE, 2, 1);
+	overallGridLayout->addWidget(pbOutput, 2, 2);
+	overallGridLayout->addWidget(pcaParamsLabel, 3, 0); 
+	overallGridLayout->addWidget(pcaParamsLE, 3, 1);
+	overallGridLayout->addWidget(pbParams, 3, 2);
+	
+	overallGridLayout->addWidget(optionalGroupBox, 4, 0, 1, 4);
+	optionalgroupBoxLayout->addWidget(nPCsLabel, 0, 0, 1, 2);
+	optionalgroupBoxLayout->addWidget(nPCsLE, 0, 2, 1, 1);
+	optionalgroupBoxLayout->addWidget(varLabel, 1, 0, 1, 2);
+	optionalgroupBoxLayout->addWidget(varLE, 1, 2, 1, 1);
+
     //fPCADialog->setModal(true);
-    gridLayout_3 = new QGridLayout(fPCADialog);
+    gridLayout_3 = new QGridLayout(/*fPCADialog*/);
     gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
 
     //--------------------------------------------------------------------
 
-    classificationGroupBox = new QGroupBox(fPCADialog);
+    classificationGroupBox = new QGroupBox(/*fPCADialog*/);
     classificationGroupBox->setTitle(QString::fromStdString("PCA Estimation"));
     classificationGridLayout = new QGridLayout(classificationGroupBox);
     classificationGridLayout->setObjectName(QString::fromUtf8("imagestabgridLayout3"));
@@ -165,6 +209,7 @@ public:
     testSubjectsDirectoryButton->setText(QString("Browse"));
     testSubjectsDirectoryButton->setToolTip(QString("Directory containing Test subjects"));
 
+	//where is this used?
     existingMasksButton = new QPushButton(classificationGroupBox);
     existingMasksButton->setObjectName(QString::fromUtf8("existingMasksButton"));
     //existingMasksButton->setIcon(ButtonIcon);
@@ -325,13 +370,13 @@ public:
     //--------------------------output-------------------------------------------------------
 
 
-    outputGroupBox = new QGroupBox(fPCADialog);
+    outputGroupBox = new QGroupBox(/*fPCADialog*/);
     outputGroupBox->setTitle(QString::fromStdString("Output Directory"));
 
     longRunningWarning = new QLabel(outputGroupBox);
     sizePolicy.setHeightForWidth(longRunningWarning->sizePolicy().hasHeightForWidth());
     longRunningWarning->setSizePolicy(sizePolicy);
-    longRunningWarning->setAlignment(Qt::AlignRight);
+    //longRunningWarning->setAlignment(Qt::AlignRight);
     longRunningWarning->setText("NOTE: CaPTk will not let you interact with the UI while this application runs.");
 
     outputGridLayout = new QGridLayout(outputGroupBox);
@@ -379,6 +424,10 @@ public:
     gridLayout_3->addWidget(confirmButton, 2, 0, 1, 1);
     gridLayout_3->addWidget(cancelButton, 2, 1, 1, 1);
 
+	overallGridLayout->addWidget(longRunningWarning, 5, 0, 1, 4);
+	overallGridLayout->addWidget(confirmButton, 6, 0);
+	overallGridLayout->addWidget(cancelButton, 6, 1);
+
     retranslateUi(fPCADialog);
 
     QMetaObject::connectSlotsByName(fPCADialog);
@@ -386,10 +435,10 @@ public:
 
   void retranslateUi(QDialog *fPCADialog)
   {
-    fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Estimator", 0));
+    fPCADialog->setWindowTitle(QApplication::translate("fPCADialog", "PCA Parameter Extractor", 0));
     //rdNewClassification->setText(QApplication::translate("fPCADialog", "Loaded subject: Near&Far", 0));
-    rdExistingClassification->setText(QApplication::translate("fPCADialog", "PCA estimation on a batch of subjects", 0));
-    rdCreateModel->setText(QApplication::translate("fPCADialog", "Train new model", 0));
+    rdExistingClassification->setText(QApplication::translate("fPCADialog", "Apply PCA", 0));
+    rdCreateModel->setText(QApplication::translate("fPCADialog", "Extract PCA Parameters", 0));
     confirmButton->setText(QApplication::translate("fPCADialog", "Confirm", 0));
     cancelButton->setText(QApplication::translate("fPCADialog", "Cancel", 0));
 

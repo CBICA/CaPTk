@@ -27,6 +27,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "vtkPCAStatistics.h"
 #include "vtkStatisticsAlgorithm.h"
 #include "CaPTkDefines.h"
+#include "vtkStringArray.h"
 
 FeatureReductionClass::FeatureReductionClass()
 {
@@ -214,6 +215,133 @@ for (int i = 0; i < NumberOfFeatures; i++)
   return projectedDatasetTable;
 }
 
+vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsDynamic(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkDoubleArray> &variance)
+{
+	mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
+	size_t NumberOfTimePoints;
+	size_t NumberOfFeatures = NumberOfTimePoints = intensities[0].size();
+	size_t NumberOfSamples = intensities.size();
+
+	vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
+	std::vector<vtkSmartPointer<vtkDoubleArray>> VectorOfVariables;
+	int counter = 0;
+	int var_Counter = 0;
+	std::string var_string;
+
+	vtkSmartPointer<vtkPCAStatistics> pcaStatistics = vtkSmartPointer<vtkPCAStatistics>::New();
+#if VTK_MAJOR_VERSION <= 5
+	pcaStatistics->SetInput(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#else
+	pcaStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, datasetTable);
+#endif
+
+	size_t i = 0;
+	//fill up the table
+	//nested for loops will create a max of 26*26*10 = 6760 distinct names and double arrays to fill the vtkTable
+	//as input to vtkpcastatistics class. Names should be distinct and non-numerical
+	for (char k = 'a'; (k <= 'z') && (i < NumberOfTimePoints); k++)
+	{
+		for (char c = 'A'; (c <= 'Z') && (i < NumberOfTimePoints); c++)
+		{
+			for (int cc = 0; (cc <= 9) && (i < NumberOfTimePoints); cc++)
+			{
+				vtkSmartPointer<vtkDoubleArray> da = vtkSmartPointer<vtkDoubleArray>::New();
+				da->SetNumberOfComponents(1);
+
+				//names constructed as: aA0, aA1..aA9, aB0, aB1..
+				std::string name = std::string(1, k) + std::string(1, c) + std::to_string(cc);
+				da->SetName(name.c_str());
+
+				//fill the array
+				for (size_t index = 0; index < NumberOfSamples; index++)
+					da->InsertNextValue(intensities[index][i]);
+
+				datasetTable->AddColumn(da);
+				pcaStatistics->SetColumnStatus(name.c_str(), 1);
+
+				i++; //timepoint counter
+			}
+		}
+	}
+	pcaStatistics->RequestSelectedColumns();
+	pcaStatistics->SetDeriveOption(true);
+	pcaStatistics->Update();
+
+	VariableSizeMatrixType transposePCAMatrix;
+	transposePCAMatrix.SetSize(NumberOfFeatures, NumberOfFeatures);
+
+	//pseudo code - variance calculation
+	//get sum of all eigen vals = sumeigenvals
+	//cumsum = 0;
+	//for loop across eigenvals
+	// cumsum = cumsum + eigenval[i];
+	//amtvar[i] = cumsum/sumeigenvals;
+	//sanity check - see eigenvals and amtvar(should be in increasing order and cannot be over 100%)
+	//eigenvals should be in decreasing order and sum cannot be over 100
+
+	vtkSmartPointer<vtkDoubleArray> eigenvalues = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvalues(eigenvalues);
+
+	//get sum of all eigen values
+	double sumEigenValues = 0.0;
+	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
+		sumEigenValues = sumEigenValues + eigenvalues->GetValue(i);
+
+	//array to store variance
+	variance = vtkSmartPointer<vtkDoubleArray>::New();
+	variance->SetNumberOfValues(eigenvalues->GetNumberOfValues());
+
+	//fill variance array
+	double cumulativeSum = 0.0; //cumulative sum
+	for (vtkIdType i = 0; i < eigenvalues->GetNumberOfValues(); i++)
+	{
+		cumulativeSum = cumulativeSum + eigenvalues->GetValue(i);
+		variance->SetValue(i,cumulativeSum / sumEigenValues);
+	}
+	
+	vtkSmartPointer<vtkDoubleArray> eigenvectors = vtkSmartPointer<vtkDoubleArray>::New();
+	pcaStatistics->GetEigenvectors(eigenvectors);
+
+	for (vtkIdType i = 0; i < static_cast<vtkIdType>(NumberOfFeatures); i++)
+	{
+		double* evec = new double[eigenvectors->GetNumberOfComponents()];
+		eigenvectors->GetTuple(i, evec);
+		for (vtkIdType j = 0; j < eigenvectors->GetNumberOfComponents(); j++)
+			transposePCAMatrix[i][j] = evec[j];
+		delete evec;
+	}
+
+	PCATransformationMatrix = this->MatrixTranspose(transposePCAMatrix);
+
+	vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
+	for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
+	{
+		vtkSmartPointer<vtkDoubleArray> col = vtkSmartPointer<vtkDoubleArray>::New();
+		for (vtkIdType c = 0; c < static_cast<vtkIdType>(NumberOfSamples); c++)
+			col->InsertNextValue(0);
+		projectedDatasetTable->AddColumn(col);
+	}
+
+	for (size_t i = 0; i < NumberOfSamples; i++)
+	{
+		for (size_t j = 0; j < NumberOfFeatures; j++)
+		{
+			double sum = 0;
+			for (size_t k = 0; k < NumberOfFeatures; k++)
+				sum = sum + datasetTable->GetValue(i, k).ToDouble()*PCATransformationMatrix[k][j];
+			projectedDatasetTable->SetValue(i, j, vtkVariant(sum));
+		}
+	}
+	VariableLengthVectorType mMeanVector = this->ComputeMeanOfGivenFeatureVectors(projectedDatasetTable);
+	for (size_t c = 0; c < NumberOfFeatures; c++)
+		for (size_t r = 0; r < NumberOfSamples; r++)
+			projectedDatasetTable->SetValue(r, c, projectedDatasetTable->GetValue(r, c).ToDouble() - mMeanVector[c]);
+
+	TransformationMatrix = PCATransformationMatrix; //returned as reference
+	MeanVector = mPMeanvector; //returned as reference
+
+	return projectedDatasetTable;
+}
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities)
 {
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
@@ -2832,11 +2960,14 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
 
+  //subtract mean
   for (size_t index = 0; index < NumberOfSamples; index++)
   {
     for (size_t timepoint = 0; timepoint < NumberOfFeatures; timepoint++)
       intensities[index][timepoint] = intensities[index][timepoint] - MeanVector[timepoint];
   }
+
+  //where is this used???
   vtkSmartPointer<vtkTable> projectedDatasetTable = vtkSmartPointer<vtkTable>::New();
   for (vtkIdType r = 0; r < static_cast<vtkIdType>(NumberOfFeatures); r++)
   {
@@ -2847,6 +2978,7 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
   }
   VectorVectorDouble projectedData;
 
+  //apply transformation( PCA_PERF ) from model
   for (size_t i = 0; i < NumberOfSamples; i++)
   {
     VectorDouble oneDataPoint;
@@ -2859,16 +2991,15 @@ VectorVectorDouble FeatureReductionClass::ApplyPCAOnTestDataWithGivenTransformat
     }
     projectedData.push_back(oneDataPoint);
   }
-  return projectedData;
+  return projectedData;//return transformed data
 }
-
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePoints(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
   mPMeanvector = ComputeMeanOfGivenFeatureVectors(intensities);
   size_t NumberOfFeatures = intensities[0].size();
   size_t NumberOfSamples = intensities.size();
-
+ 
   vtkSmartPointer<vtkTable> datasetTable = vtkSmartPointer<vtkTable>::New();
   vtkSmartPointer<vtkDoubleArray> A0 = vtkSmartPointer<vtkDoubleArray>::New();
   vtkSmartPointer<vtkDoubleArray> A1 = vtkSmartPointer<vtkDoubleArray>::New();
@@ -3057,6 +3188,7 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
     V1->InsertNextValue(intensities[index][43]);
     W0->InsertNextValue(intensities[index][44]);
   }
+  
   datasetTable->AddColumn(A0);
   datasetTable->AddColumn(A1);
   datasetTable->AddColumn(B0);
@@ -3212,7 +3344,6 @@ vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePo
 
   return projectedDatasetTable;
 }
-
 
 vtkSmartPointer< vtkTable >  FeatureReductionClass::GetDiscerningPerfusionTimePointsForPSU(VectorVectorDouble &intensities, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector)
 {
