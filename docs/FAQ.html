@@ -75,7 +75,7 @@ $(document).ready(function(){initNavTree('FAQ.html',''); initResizable(); });
 <li class="level1"><a href="#gs_FAQ_7">Where can I find the CaPTk Docker Image?</a></li>
 <li class="level1"><a href="#gs_FAQ_8">How do I run the CaPTk Docker Image to show the interface?</a></li>
 <li class="level1"><a href="#gs_FAQ_9">Is there something wrong with Feature Extraction?</a></li>
-<li class="level1"><a href="#gs_FAQ_10">What if I am having an issue not listed here?</a></li>
+<li class="level1"><a href="#gs_FAQ_10">I am having issues running CaPTk on Ubuntu 20.04</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="gs_FAQ_1"></a>
@@ -197,7 +197,20 @@ How do I run the CaPTk Docker Image to show the interface?</h1>
 Is there something wrong with Feature Extraction?</h1>
 <p>Please see the <a href="https://github.com/sarthakpati/CaPTk/tree/featureExtraction/src/applications/FeatureExtraction#frequently-asked-questions">Feature Extraction FAQ</a>.</p>
 <h1><a class="anchor" id="gs_FAQ_10"></a>
-What if I am having an issue not listed here?</h1>
+I am having issues running CaPTk on Ubuntu 20.04</h1>
+<p>This is a well-known problem, documented in the following GitHub issues:</p><ul>
+<li><a href="https://github.com/CBICA/CaPTk/issues/1336">https://github.com/CBICA/CaPTk/issues/1336</a></li>
+<li><a href="https://github.com/AppImage/AppImageKit/issues/1076#issuecomment-702059005">https://github.com/AppImage/AppImageKit/issues/1076#issuecomment-702059005</a></li>
+</ul>
+<p>A possible solution is to revert the default GCC to version 5 using the following steps [<a href="https://github.com/CBICA/CaPTk/issues/1336#issuecomment-769290424">ref</a>] </p><pre class="fragment">echo "deb http://archive.ubuntu.com/ubuntu xenial main" | sudo tee /etc/apt/sources.list.d/xenial.list
+sudo apt-get update
+sudo update-alternatives --remove-all gcc
+sudo update-alternatives --remove-all g++
+sudo apt-get install gcc-5 g++-5
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10
+</pre><h1><a class="anchor" id="gs_FAQ_10"></a>
+I am having issues running CaPTk on Ubuntu 20.04</h1>
 <p>Please <a href="https://github.com/CBICA/CaPTk/issues/new?assignees=&amp;labels=&amp;template=bug-report.md&amp;title=">open a new issue</a> with us and we will do our best to resolve it. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
