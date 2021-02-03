@@ -810,6 +810,7 @@ public slots:
   /**
   \brief Call the Diffusion Measures application with the inputs
 
+  \param params The TrainingModuleParameters object containing the following:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
@@ -818,28 +819,28 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, 
-    const std::string targetfile, 
-    const std::string outputFolder, 
-    const std::string modeldirectory, 
-    int classifier, int conf, int folds, 
-    int featureselectionType, int optimizationType, int crossvalidationType);
+  void CallTrainingSimulation(const TrainingModuleParameters params);
 
   /**
   \brief Call the PCA calculation application with the inputs
 
-  \param modeldirectory The trained model directory
-  \param outputdirectory The folder to save results
+  \param inputdirectory The input folder containing the image(s)
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param pcaparamsdirectory The directory containing the extracted PCA parameters
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
-  void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance);
   
   /**
   \brief Call the PCA calculation application with the inputs
 
   \param inputdirectory The input folder containing the image(s)
-  \param outputdirectory The folder to save the trained model
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
-  void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
 

@@ -92,6 +92,8 @@ int main(int argc, char **argv)
     WriteCSVFiles(RevisedCurve, outputDirectoryName + "/revised_curve.csv");
     WriteCSVFiles(TruncatedCurve, outputDirectoryName + "/truncated_curve.csv");
 
+    objPerfusion.SaveChart(outputDirectoryName + "/plot.jpg");
+
     std::cout << "Finished successfully.\n";
     std::cout << "\nPress any key to continue............\n";
   }

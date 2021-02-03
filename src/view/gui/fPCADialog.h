@@ -34,6 +34,12 @@ class fPCADialog : public QDialog, private Ui::fPCADialog
   Q_OBJECT
 
 public:
+	enum PCAModeType
+	{
+		Extract = 0,
+		Apply
+	};
+
   fPCADialog();
   ~fPCADialog();
   int mode;
@@ -62,11 +68,22 @@ public slots:
   void NewModelRadioButtonChecked();
   void OpenTestSubjectsDirectory();
   void CurrentSubjectRadioButtonChecked();
+  void OnPCAModeChanged(int);
+  void OnVarianceChanged(const QString &);
+  void OnNumberPCAImagesChanged(const QString &);
+  void OnConfirmButtonPressed();
+  void OnSelectInputDirectory();
+  void OnSelectOutputDirectory();
+  void OnSelectPCAParametersDirectory();
+
   //void CheckForDisclaimer();
 
 signals:
-  void ExistingModelBasedPCAEstimate(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
-  void TrainNewPCAModel(std::string directory, std::string outputdirectory);
+  void ExistingModelBasedPCAEstimate(QString& inputdir, QString& outputdir, QString& pcaParamsDir, QString& npcaimages, QString& variance);
+  void TrainNewPCAModel(QString& inputdir, QString& outputdir, QString& npcaimages, QString& variance);
+
+private:
+	QButtonGroup *modeButtons;
 };
 
 

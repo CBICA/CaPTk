@@ -22,6 +22,7 @@ fTrainingSimulator::fTrainingSimulator()
   connect(mCrossValidation, SIGNAL(toggled(bool)), this, SLOT(CrossValidationRadioButtonChecked()));
   connect(mSplitTrain, SIGNAL(toggled(bool)), this, SLOT(TrainRadioButtonChecked()));
   connect(mSplitTest, SIGNAL(toggled(bool)), this, SLOT(TestRadioButtonChecked()));
+  connect(mOptimization, SIGNAL(toggled(bool)), this, SLOT(OptimizationToggled(bool)));
 
   cvLabel->setEnabled(false);
   mSplitModelDirectoryLabel->setEnabled(false);
@@ -64,6 +65,42 @@ void fTrainingSimulator::SplitTestRadioButtonChecked()
     mSplitModelDirectory->setEnabled(true);
     mSplitModelDirectoryButton->setEnabled(true);
   }
+}
+void fTrainingSimulator::OptimizationToggled(bool on)
+{
+    if (on)
+    {
+        cMinimumSpinbox->setEnabled(true); 
+        cMaximumSpinbox->setEnabled(true);
+        gMinimumSpinbox->setEnabled(true);
+        gMaximumSpinbox->setEnabled(true);
+        cMinimumSpinbox->setVisible(true);
+        cMaximumSpinbox->setVisible(true);
+        gMinimumSpinbox->setVisible(true);
+        gMaximumSpinbox->setVisible(true);
+
+        cMinimumLabel->setVisible(true);
+        cMaximumLabel->setVisible(true);
+        gMinimumLabel->setVisible(true);
+        gMaximumLabel->setVisible(true);
+    }
+    else
+    {
+        // Just for indicating to the user -- the values still get passed but hopefully unused
+        cMinimumSpinbox->setEnabled(false);
+        cMaximumSpinbox->setEnabled(false);
+        gMinimumSpinbox->setEnabled(false);
+        gMaximumSpinbox->setEnabled(false);
+        cMinimumSpinbox->setVisible(false);
+        cMaximumSpinbox->setVisible(false);
+        gMinimumSpinbox->setVisible(false);
+        gMaximumSpinbox->setVisible(false);
+
+        cMinimumLabel->setVisible(false);
+        cMaximumLabel->setVisible(false);
+        gMinimumLabel->setVisible(false);
+        gMaximumLabel->setVisible(false);
+    }
 }
 void fTrainingSimulator::CancelButtonPressed()
 {
@@ -146,6 +183,7 @@ void fTrainingSimulator::ConfirmButtonPressed()
     }
   }
 
+  // Defaults
   int classifierType = 1;
   int featureselectionType = 1;
   int optimizationType = 0;
@@ -155,41 +193,52 @@ void fTrainingSimulator::ConfirmButtonPressed()
 
   std::string modelpath ="";
 
+  TrainingModuleParameters params; // parameter object passed through
+
   if (mLinearKernel->isChecked())
-    classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_LINEAR;
+    params.classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_LINEAR;
   else
-    classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF;
+    params.classifierType = CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF;
 
   if (mSVMFFS->isChecked())
-    featureselectionType = CAPTK::FeatureSelectionType::FS_TYPE_FFS;
+    params.featureSelectionType = CAPTK::FeatureSelectionType::FS_TYPE_FFS;
   else
-    featureselectionType = CAPTK::FeatureSelectionType::FS_TYPE_ES;
+    params.featureSelectionType = CAPTK::FeatureSelectionType::FS_TYPE_ES;
 
   if (mResubstitution->isChecked())
-    crossvalidationType = CAPTK::CrossValidationType::CV_TYPE_RESUBSTITUTION;
+    params.crossValidationType = CAPTK::CrossValidationType::CV_TYPE_RESUBSTITUTION;
   else
-    crossvalidationType = CAPTK::CrossValidationType::CV_TYPE_FiveFold;
+    params.crossValidationType = CAPTK::CrossValidationType::CV_TYPE_FiveFold;
 
   if (mOptimization->isChecked())
-    optimizationType = CAPTK::OptimizationType::OPT_TYPE_ON;
+    params.optimizationType = CAPTK::OptimizationType::OPT_TYPE_ON;
   else
-    optimizationType = CAPTK::OptimizationType::OPT_TYPE_OFF;
+    params.optimizationType = CAPTK::OptimizationType::OPT_TYPE_OFF;
 
   if (mCrossValidation->isChecked())
   {
-    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV;
-    foldType = cvValue->text().toInt();
+    params.configurationType = CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV;
+    params.folds = cvValue->text().toInt();
   }
   else if (mSplitTrain->isChecked())
   {
-    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
+    params.configurationType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
   }
   else
   {
-    confType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
-    modelpath = mSplitModelDirectory->text().toStdString();
+    params.configurationType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
+    params.modelDirectory = mSplitModelDirectory->text().toStdString();
   }
-  emit RunTrainingSimulation(mInputFeaturesName.toStdString(), mInputTargetName.toStdString(), mOutputPathName.toStdString(),mModelDirectoryName.toStdString(), classifierType, confType, foldType, featureselectionType, optimizationType,crossvalidationType);
+
+  params.inputFeaturesFile = mInputFeaturesName.toStdString();
+  params.inputLabelsFile = mInputTargetName.toStdString();
+  params.outputDirectory = mOutputPathName.toStdString(); 
+  params.modelDirectory = mModelDirectoryName.toStdString();
+  params.cMin = cMinimumSpinbox->value();
+  params.cMax = cMaximumSpinbox->value();
+  params.gMin = gMinimumSpinbox->value();
+  params.gMax = gMaximumSpinbox->value();
+  emit RunTrainingSimulation(params);
   this->close();
 }
 
