@@ -897,34 +897,13 @@ namespace cbica
 
     auto dictionary = dicomIO->GetMetaDataDictionary();
 
-    std::string seriesDescription;
-
-    auto itr = dictionary.Begin();
-    auto end = dictionary.End();
-    while (itr != end)
-    {
-      itk::MetaDataObjectBase::Pointer entry = itr->second;
-
-      auto entryvalue = dynamic_cast<itk::MetaDataObject<std::string> *>(entry.GetPointer());
-
-      if (entryvalue)
-      {
-        std::string tagkey = itr->first;
-        if (tagkey == "0008|103e")
-        {
-          seriesDescription = entryvalue->GetMetaDataObjectValue();
-          break;
-        }
-      }
-      ++itr;
-    }
-
     itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
-    itk::EncapsulateMetaData<std::string>(dictionary, "0008|103e", seriesDescription); // # Series Description
-    itk::EncapsulateMetaData<std::string>(dictionary, "0008|0030", cbica::getCurrentLocalTime()); // # Study Time
+    itk::EncapsulateMetaData<std::string>(dictionary, "0008|103e", "Processed-CaPTk"); // # Series Description
+    itk::EncapsulateMetaData<std::string>(dictionary, "0008|0030", cbica::getCurrentLocalTimestamp()); // # Study Time - ensures unique string
 
+    dicomIO->SetMetaDataDictionary(dictionary);
 
-    auto seriesWriter = itk::ImageSeriesWriter< DicomImageType, itk::Image<typename DicomImageType::PixelType, 2> >::New();
+    auto seriesWriter = itk::ImageSeriesWriter< DicomImageType, itk::Image<typename DicomImageType::PixelType, 2> >::New(); // always write in 2D series
 
     cbica::createDir(outputDir);
 
