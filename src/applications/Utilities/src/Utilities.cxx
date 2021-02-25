@@ -1354,7 +1354,19 @@ int main(int argc, char** argv)
   else if (parser.isPresent("n2d"))
   {
     requestedAlgorithm = Nifti2Dicom;
-    parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
+    int tempPosition;
+    if (parser.compareParameter("n2d", tempPosition))
+    {
+      std::string tempValue;
+      if (argc > tempPosition + 1)
+      {
+        tempValue = argv[tempPosition + 1];
+        if (cbica::exists(tempValue))
+        {
+          targetImageFile = tempValue; // in this case, it is the DICOM reference file
+        }
+      }
+    }
     parser.getParameterValue("o", outputImageFile);
     if (parser.isPresent("ndD"))
     {
