@@ -115,6 +115,11 @@ public:
     return mMask;
   }
 
+  void SetPathFileName(std::string file)
+  {
+    mPathFileName = file;
+  }
+
   //! Get the full file path of input image
   std::string GetPathFileName()
   {
