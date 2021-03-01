@@ -625,7 +625,7 @@ namespace cbica
 
     for (size_t N = 0; N < inputImages.size(); N++)
     {
-      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N], 0, 0, 5))
       {
         std::cerr << "Image Sanity check failed in index '" << N << "'\n";
         //return typename TOutputImageType::New();
