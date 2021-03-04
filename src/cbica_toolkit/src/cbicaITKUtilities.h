@@ -610,9 +610,10 @@ namespace cbica
 
   \param inputImage The vector of images from which the larger image is to be extracted
   \param newSpacing The spacing in the new dimension
+  \param spacingTolerance The spacing tolerance when processing individual images
   */
   template< class TInputImageType, class TOutputImageType >
-  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0, double spacingTolerance = 5.0)
   {
     if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
     {
@@ -625,7 +626,7 @@ namespace cbica
 
     for (size_t N = 0; N < inputImages.size(); N++)
     {
-      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N], 0, 0, 5))
+      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N], 0, 0, spacingTolerance))
       {
         std::cerr << "Image Sanity check failed in index '" << N << "'\n";
         //return typename TOutputImageType::New();
