@@ -4,6 +4,7 @@
     <img src="https://raw.githubusercontent.com/CBICA/CaPTk/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://app.codacy.com/gh/CBICA/CaPTk?utm_source=github.com&utm_medium=referral&utm_content=CBICA/CaPTk&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/4388874394474ce38d6e6586255ef645"</a>
     <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk"></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
