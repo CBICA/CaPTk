@@ -1,5 +1,7 @@
 # CaPTk:  Cancer Imaging Phenomics Toolkit 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4388874394474ce38d6e6586255ef645)](https://app.codacy.com/gh/CBICA/CaPTk?utm_source=github.com&utm_medium=referral&utm_content=CBICA/CaPTk&utm_campaign=Badge_Grade_Settings)
+
 <p align="center">
     <img src="https://raw.githubusercontent.com/CBICA/CaPTk/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
     <br></br>
