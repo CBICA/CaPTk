@@ -5,11 +5,11 @@
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once
@@ -23,6 +23,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "CaPTkDefines.h"
 #include "cbicaLogging.h"
 #include "CaPTkEnums.h"
+#include "TrainingModuleParameters.h"
 
 
 #ifdef APP_BASE_CAPTK_H
@@ -58,23 +59,16 @@ public:
   TrainingModule() {};
   ~TrainingModule() {};
 
-  VectorDouble TestData(const VariableSizeMatrixType inputFeatures, const std::string modelfolder, const int classifiertype, const std::string outputfolder);
-  VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-    const std::string outputfolder, const int classifiertype);
+  VectorDouble TestData(const VariableSizeMatrixType inputFeatures, const TrainingModuleParameters& params);
+  VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, 
+      const TrainingModuleParameters& params);
 
   bool TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-    const std::string outputfolder, const int classifiertype,const int featureselectiontype,
-     const int optimizationType, const int crossvalidationType);
+    const TrainingModuleParameters& params);
 
   std::vector<int> UpdateUnselectedFeatures(std::vector<int> SelectedFeatures, int size);
 
-  bool Run(const std::string inputFeaturesFile,
-    const std::string outputdirectory,
-    const std::string inputLabelsFile,
-    const std::string modeldirectory,
-    const int classifiertype, const int foldtype,
-    const int confType, const int featureselectiontype,
-    const int optimizationType, const int crossvalidationType);
+  bool Run(const TrainingModuleParameters& params);
 
 
   std::string mEighteenTrainedFile, mSixTrainedFile;
@@ -84,15 +78,13 @@ public:
   bool CheckPerformanceStatus(double ist, double second, double third, double fourth, double fifth, double sixth, double seventh, double eighth, double ninth, double tenth);
   VectorDouble CalculatePerformanceMeasures(VectorDouble predictedLabels, VectorDouble GivenLabels);
 
-  VectorDouble CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder,
-    const int classifiertype, const int foldtype,const int featureselectiontype,
-    const int optimizationType, const int crossvalidationType);
+  VectorDouble CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const TrainingModuleParameters& params);
 
   VectorDouble InternalCrossValidation(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue,int kerneltype);
 
   VectorDouble InternalCrossValidationResubstitution(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype);
 
-  VectorDouble SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int training_size);
+  VectorDouble SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const TrainingModuleParameters& params, const int training_size);
 
   VectorDouble trainOpenCVSVM(const VariableSizeMatrixType &trainingDataAndLabels, const std::string &outputModelName, bool considerWeights, int ApplicationCallingSVM, double bestc, double bestg);
 
@@ -106,9 +98,8 @@ public:
 
   VectorDouble InternalCrossValidationSplitTrainTest(VariableSizeMatrixType inputFeatures, std::vector<double> inputLabels, double cValue, double gValue, int kerneltype, int counter, std::string outputfolder);
   
-  std::vector<int> EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype, const int optimizationtype, const int cvtype, VectorDouble & crossvalidatedaccuracies);
-  std::vector<int> SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype, 
-    const int optimizationtype, const int cvtype, 
+  std::vector<int> EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const TrainingModuleParameters& params, VectorDouble & crossvalidatedaccuracies);
+  std::vector<int> SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const TrainingModuleParameters& params, 
     VectorDouble &crossvalidatedaccuracies);
 //  std::vector<int> CorrelationBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels);
 

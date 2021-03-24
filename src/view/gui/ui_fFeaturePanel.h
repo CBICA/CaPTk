@@ -63,6 +63,7 @@ public:
   QCheckBox* m_GLRLM;
   QCheckBox* m_GLCM;
   QCheckBox* m_LBP;
+  QCheckBox* m_Collage;
   QCheckBox* m_NGTDM;
   QCheckBox* m_NGLDM;
   QCheckBox* m_GLSZM;
@@ -100,6 +101,7 @@ public:
     m_featureCheckBoxMap["Volumetric"] = m_Volumetric;
     m_featureCheckBoxMap["GLCM"] = m_GLCM;
     m_featureCheckBoxMap["LBP"] = m_LBP;
+    m_featureCheckBoxMap["Collage"] = m_Collage;
     m_featureCheckBoxMap["NGTDM"] = m_NGTDM;
     m_featureCheckBoxMap["NGLDM"] = m_NGLDM;
     m_featureCheckBoxMap["GLSZM"] = m_GLSZM;
@@ -179,6 +181,10 @@ public:
     m_LBP->setToolTip(QString("Calculates LBPs for image and given mask."));
     m_LBP->setCheckState(Qt::CheckState::Unchecked);
     m_LBP->setEnabled(false);
+    m_Collage = new QCheckBox("Collage Features");
+    m_Collage->setToolTip(QString("Calculates Collag Features [from CWRU] for image and given mask."));
+    m_Collage->setCheckState(Qt::CheckState::Unchecked);
+    m_Collage->setEnabled(false);
     m_NGTDM = new QCheckBox("NGTDM (Tone Difference)");
     m_NGTDM->setToolTip(QString("Calculates Neighborhood Gray-Tone Difference Matrix."));
     m_NGLDM = new QCheckBox("NGLDM (Level Dependence)");
@@ -232,6 +238,7 @@ public:
     featureLayout4->addWidget(m_NGTDM);
     featureLayout4->addWidget(m_NGLDM);
     featureLayout4->addWidget(m_LBP);
+    featureLayout4->addWidget(m_Collage);
     featureLayout4->addStretch();
 
     featureLayout5->addWidget(m_Laws);

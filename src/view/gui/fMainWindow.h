@@ -3,11 +3,11 @@
 
 \brief Declaration of fMainWindow class
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 
@@ -70,6 +70,7 @@ See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
 #include "GeodesicTrainingCaPTkApp.h"
 
 #include <QMessageBox>
+#include <QUrl>
 
 #include "itkJoinSeriesImageFilter.h"
 #include "itkExtractImageFilter.h"
@@ -87,6 +88,7 @@ class SimpleImageManager;
 class fHelpDialog;
 class PreferencesDialog;
 class SystemInformationDisplayWidget;
+class DownloadManager;
 
 #define USE_PROCESSDIALOG
 
@@ -385,6 +387,8 @@ private:
   QTableWidget * m_imagesTable;
   QTableWidget * m_nonVisImagesTable;
 
+  //download
+  DownloadManager* m_DownloadManager;
 public:
   //! Default constructor
   fMainWindow();
@@ -769,12 +773,12 @@ public slots:
   \param echotime The echo time of the input Perfusion image
   \param before Number of time-points before the standard perfusion curve that we want our image to be aligned with.
   \param after Number of time-points after the standard perfusion curve that we want our image to be aligned with.
+  \param mean intensity drop in mean curve inside ROI
+  \param scale maximum intensity before drop in mean curve inside ROI
   \param inputfilename The input perfusion image file name
-  \param inputt1cefilename The input T1-Gd file name
-  \param inputdicomfilename The input DICOM slide
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -806,6 +810,7 @@ public slots:
   /**
   \brief Call the Diffusion Measures application with the inputs
 
+  \param params The TrainingModuleParameters object containing the following:
   \param featuresfile The input features 
   \param targetfile The labels, rows should be same as those in featuresfile
   \param outputFolder The output folder to write all results
@@ -814,23 +819,28 @@ public slots:
   \param conf The configuration type
   \param folds The number of folds
   */
-  void CallTrainingSimulation(const std::string featuresfile, const std::string targetfile, const std::string outputFolder, const std::string modeldirectory, int classifier, int conf, int folds);
+  void CallTrainingSimulation(const TrainingModuleParameters params);
 
   /**
   \brief Call the PCA calculation application with the inputs
 
-  \param modeldirectory The trained model directory
-  \param outputdirectory The folder to save results
+  \param inputdirectory The input folder containing the image(s)
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param pcaparamsdirectory The directory containing the extracted PCA parameters
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
-  void PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory);
+  void PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance);
   
   /**
   \brief Call the PCA calculation application with the inputs
 
   \param inputdirectory The input folder containing the image(s)
-  \param outputdirectory The folder to save the trained model
+  \param outputdirectory The folder to save the extracted PCA parameters and images
+  \param nPCAImages Number of PCA images to produce
+  \param variance The variance threshold
   */
-  void TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory);
+  void TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance);
   /**
   \brief Call DCM2NII for DICOM conversion and load the image into CaPTk
 
@@ -957,6 +967,11 @@ public slots:
   {
     m_skipTutorialOnNextRun = flag;
   }
+
+  /**
+  \brief download data from given URL
+  */
+  void downloadFromURL(QUrl url);
 
   /**
   \brief Help for downloading Sample Data
@@ -1392,14 +1407,12 @@ public slots:
   //! GUI control for Imaging Subtype
   void ApplicationImagingSubtype();
 #endif
-#ifdef BUILD_MSUBTYPE
   //! GUI control for Molecular Subtype
   void ApplicationMolecularSubtype();
 #endif
 #ifdef BUILD_SURVIVAL
   //! GUI control for Survival
   void ApplicationSurvival();
-#endif
 #ifdef BUILD_EGFRvIIISVM
   //! GUI control for EGFRvIII SVM
   void ApplicationEGFRvIIISVM();
@@ -1496,7 +1509,7 @@ public slots:
   void closeEvent(QCloseEvent * event);
 
   // Progress Update
-  void updateProgress(int progress, std::string message = "", int max = 100);
+  void updateProgress(qint64 progress, std::string message = "", qint64 max = 100);
 
   //! Enables "advanced mode" - no image checks are done - disabled by default
   void EnableAdvancedVisualizer()

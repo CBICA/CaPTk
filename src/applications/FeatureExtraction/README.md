@@ -91,6 +91,20 @@ Calculating features (using the same parameter file) for a list of subjects (wit
 6. ```Column F```: ROI, is the corresponding naming of the label(s) you chose in Column E
 7. [OPTIONAL] ```Column G```: OUTPUT, the optional output file, if you want each subject's output to be written into a different file
 
+
+## Feature Extraction on the Image Processing Portal
+
+You may also use Feature Extraction from the CBICA Image Processing Portal ("IPP"), accessible [here](https://ipp.cbica.upenn.edu/) .
+
+The Multi-subject Feature Extraction experiment allows you to upload batches of images and ROIs. The experiment will automatically detect subject groupings, based on the filenames of the uploaded images and masks.
+
+For example, if you upload AAAA_01012021_T2_LPS.nii.gz and AAAA_01012021_T1CE_LPS.nii.gz as images, and AAAA_01012021_mask_LPS.nii.gz as an ROI, those images will automatically be grouped in the output, using the same ROI for each modality. You may include multiple subjects with separate ROIs; subjects with different names will not interfere with one another. Even BBBB_T1_01012020.nii.gz and BBBB_T1_02022020.nii.gz will be detected as different subjects and will require separate ROI masks.
+You must also specify ROI label values and names as you would with the Feature Extraction command-line interface.
+
+This approach uses one single parameter file that is applied to all uploaded images/subjects. Please see the [sample parameter file](https://github.com/CBICA/CaPTk/blob/master/src/applications/FeatureExtraction/data/1_params_default.csv) .
+
+Modality detection in the filenames relies on a known list of modality names. We detect some modalities by default (see the IPP page for details), but you can also specify custom modality names that will be detected in the "Filename Parsing" section.
+
 ## Frequently Asked Questions
 
 - What do the various parameters mean and how do I customize them?

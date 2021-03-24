@@ -25,15 +25,16 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("b", "brainTumor", cbica::Parameter::BOOLEAN, "0 or 1", "Flag whether to segment brain tumors or not", "Defaults to 1", "This uses DeepMedic: https://cbica.github.io/CaPTk/seg_DL.html");
   parser.addOptionalParameter("d", "debug", cbica::Parameter::BOOLEAN, "0 or 1", "Print debugging information", "Defaults to 1");
   parser.addOptionalParameter("i", "interFiles", cbica::Parameter::BOOLEAN, "0 or 1", "Save intermediate files", "Defaults to 1");
+  parser.addOptionalParameter("p", "patientID", cbica::Parameter::STRING, "PatientID", "Patient ID to pre-pend to final output file names", "If empty, final output is of the form ${modality}_to_SRI.nii.gz");
 
   parser.addExampleUsage("-t1c C:/input/t1ce/image.dcm -t1 C:/input/t1/image.dcm -t2 C:/input/t2/image.dcm -fl C:/input/flair/image.dcm -o C:/input/output", "Run full BraTS pipeline for specified DICOM images");
   parser.addExampleUsage("-t1c C:/input/t1ce.nii.gz -t1 C:/input/t1.nii.gz -t2 C:/input/t2.nii.gz -fl C:/input/flair.nii.gz -o C:/input/output", "Run full BraTS pipeline for specified (raw) NIfTI images");
 
-  parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline. Please delete contents of output directory or fresh run.");
+  parser.addApplicationDescription("This application performs the BraTS challenge preprocessing pipeline. Please delete contents of output directory for fresh run.");
 
   std::map< std::string, std::string > inputFiles;
 
-  std::string outputDir;
+  std::string outputDir, patientID;
 
   bool debug = true, intermediateFiles = true, skullStrip = true, brainTumor = true;
 
@@ -51,6 +52,14 @@ int main(int argc, char** argv)
   if (parser.isPresent("s"))
   {
     parser.getParameterValue("s", skullStrip);
+  }
+  if (parser.isPresent("p"))
+  {
+    parser.getParameterValue("p", patientID);
+    if (patientID.back() != '_')
+    {
+      patientID += "_";
+    }
   }
   if (parser.isPresent("b"))
   {
@@ -126,7 +135,7 @@ int main(int argc, char** argv)
       {
         std::cerr << "Something went wrong with the DICOM to NIfTI conversion for modality '" <<
           modality << "' with filename '" << it->second << "'"
-          << ", please use another package to conver to NIfTI and try again.\n";
+          << ", please use another package for NIfTI conversion and try again.\n";
         return EXIT_FAILURE;
       }
       else
@@ -198,11 +207,11 @@ int main(int argc, char** argv)
 
     if (modality != "T1CE")
     {
-      outputNames[modality] = modality + "_to_T1CE"; // all output names can be controlled from here
+      outputNames[modality] = patientID + modality + "_to_T1CE"; // all output names can be controlled from here
     }
     else
     {
-      outputNames[modality] = modality + "_to_SRI"; // all output names can be controlled from here
+      outputNames[modality] = patientID + modality + "_to_SRI"; // all output names can be controlled from here
     }
   } // end inputFiles iterator
   

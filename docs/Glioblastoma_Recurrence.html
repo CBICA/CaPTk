@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.8.0.Beta</span>
+   &#160;<span id="projectnumber">1.8.1</span>
    </div>
   </td>
  </tr>
@@ -61,100 +61,8 @@ $(document).ready(function(){initNavTree('Glioblastoma_Recurrence.html',''); ini
 <div class="title">Brain Cancer: Glioblastoma Infiltration Index (Recurrence) </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application provides a probability map of deeply infiltrating tumor in the peritumoral edema/invasion region that largely agrees with subsequent recurrence in <em>de novo</em> glioblastoma patients, via multi-parametric MRI analysis, as shown in [1-3].</p>
-<p><b>REQUIREMENTS:</b></p><ol type="1">
-<li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DSC-MRI, DTI-AX, DTI-FA, DTI-RAD, DTI-TR. Ensure that these are the identified modalities in the drop-down menus next to each loaded image.</li>
-<li>Segmentation labels of the tumor sub-regions in a single NIfTI (.nii.gz) file: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2)</li>
-<li>(For training only) Segmentation labels of the near-region and far-region within the Edema. ROI (Label=1), other (Label=0)</li>
-<li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must i nclude words in <b>BOLD</b> to be identified as respective required files.<ul>
-<li>Subject_ID<ol type="a">
-<li><b>features.csv</b></li>
-<li>CONVENTIONAL<ul>
-<li>my_<b>t1</b>_file.nii.gz</li>
-<li>my_<b>t2</b>_file.nii.gz</li>
-<li>my_<b>t1ce</b>_file.nii.gz</li>
-<li>my_<b>flair</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>DTI<ul>
-<li>my_<b>axial</b>_file.nii.gz</li>
-<li>my_<b>fractional</b>_file.nii.gz</li>
-<li>my_<b>radial</b>_file.nii.gz</li>
-<li>my_<b>trace</b>_file.nii.gz</li>
-</ul>
-</li>
-<li>PERFUSION<ul>
-<li>my_<b>perf</b>usion_file.nii.gz</li>
-</ul>
-</li>
-<li>SEGMENTATION<ul>
-<li>my_tumor_segmentation_<b>label</b>_file.nii.gz</li>
-<li>my_<b>near</b>_region_file.nii.gz (only for training a new model)</li>
-<li>my_<b>far</b>_region_file.nii.gz (only for training a new model)</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>The data of single or multiple patients should be organized in the above mentioned structure and reside under the same folder, e.g.:<ul>
-<li>Input_Directory<ol type="a">
-<li>Subject_ID1</li>
-<li>Subject_ID2</li>
-<li>...</li>
-<li>Subject_IDn</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<p><b>USAGE:</b></p><ul>
-<li>Infiltration prediction on loaded subject.<ol type="1">
-<li>Load the required images in CaPTk and correctly assign the modality label in the drop-down menu.</li>
-<li>Load the segmentation labels of the tumor sub-regions from a single NIfTI (.nii.gz) file. The labels included in the file should represent the Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), and Edema (Label=2).</li>
-<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
-<li>Select the "Output Directory" and click on "Confirm".</li>
-<li>The result is saved in the output folder and also loaded in the list of modalities (within ~2 minutes).</li>
-</ol>
-</li>
-<li>Infiltration prediction on a batch of subjects.<ul>
-<li>Train a new model:<ol type="1">
-<li>Select the "Training Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
-<li>Select the "Output Directory" where the trained model should be saved.</li>
-<li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of model training (~1.5*NoOfSubjects minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around. <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 0 -i C:/RecurrenceSubjects -o C:/RecurrenceModel
-</pre></li>
-</ul>
-</li>
-<li>Use existing model:<ol type="1">
-<li>Select the "Model Directory". Note that a model trained on a cohort of HUP can be found in <a href="ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip">ftp://www.nitrc.org/home/groups/captk/downloads/models/recurrence.zip</a></li>
-<li>Select the "Test Directory", e.g., Data_of_multiple_patients (confirm the data follows the structure instructed above).</li>
-<li>Select the "Output Directory", where the user wants to save the infiltration maps.</li>
-<li>Click on 'Confirm'.</li>
-<li>A pop-up window will confirm the completion of infiltration map calculations (~1.5*NoOfSubjects minutes).</li>
-</ol>
-<ul>
-<li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around: <pre class="fragment">${CaPTk_InstallDir}/bin/RecurrenceEstimator.exe -t 1 -i C:/RecurrenceSubjects -o C:/RecurrenceOutput -m C:/RecurrenceModel
-</pre></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><br  />
-</p>
-<hr  />
-<p>References:</p>
-<ol type="1">
-<li>H.Akbari, L.Macyszyn, X.Da, R.L.Wolf, M.Bilello, R.Verma, D.M.O'Rourke, C.Davatzikos, "Pattern analysis of dynamic susceptibility contrast-enhanced MR imaging demonstrates peritumoral tissue heterogeneity", Radiology. 273(2):502-10, 2014, DOI:10.1148/radiol.14132458</li>
-<li>H.Akbari, L.Macyszyn, J.Pisapia, X.Da, M.Attiah, Y.Bi, S.Pal, R.Davuluri, L.Roccograndi, N.Dahmane, R.Wolf, M.Bilello, D.M.O'Rourke, C.Davatzikos, "Survival Prediction in Glioblastoma Patients Using Multi-parametric MRI Biomarkers and Machine Learning Methods", American Society of Neuroradiology, O-525:2042-2044, 2015. (<a href="http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf">http://www.asnr.org/sites/default/files/proceedings/2015_Proceedings.pdf</a>)</li>
-<li>H.Akbari, L.Macyszyn, X.Da, M.Bilello, R.L.Wolf, M.Martinez-Lage, G.Biros, M.Alonso-Basanta, D.M.O'Rourke, C.Davatzikos. "Imaging Surrogates of Infiltration Obtained Via Multiparametric Imaging Pattern Analysis Predict Subsequent Location of Recurrence of Glioblastoma", Neurosurgery. 78(4):572-80, 2016, DOI:10.1227/NEU.0000000000001202</li>
-</ol>
-<hr  />
- </div></div><!-- contents -->
+<div class="textblock"><p>This functionality has been removed from this CaPTk release, and we are actively working on a more optimized robust implementation that should enable generalization in multi-institutional data. </p>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

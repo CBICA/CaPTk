@@ -5,11 +5,11 @@
 Author: Saima Rathore
 Library Dependecies: ITK 4.7+ <br>
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edutri
 
 Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software/license.html
+See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 */
 
@@ -345,9 +345,16 @@ VectorDouble TrainingModule::InternalCrossValidationSplitTrainTest(VariableSizeM
   return results;
 }
 
-VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const std::string outputfolder, const int classifiertype, const int number_of_folds, const int featureselectiontype,const int optimizationType, const int crossvalidationType)
+VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, const TrainingModuleParameters& params)
 {
   MapType FoldingDataMap;
+  int number_of_folds = params.folds;
+  auto featureselectiontype = params.featureSelectionType;
+  auto classifiertype = params.classifierType;
+  auto optimizationType = params.optimizationType;
+  auto crossvalidationType = params.crossValidationType;
+  auto outputfolder = params.outputDirectory;
+
   int fold_size = inputLabels.Size() / number_of_folds;
   int remainder = inputLabels.Size() % number_of_folds;
 
@@ -364,7 +371,6 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     std::vector<double> predictedlabels;
     std::vector<double> predicteddistances;
     VariableSizeMatrixType testingfeatures;
-
 
     for (int index2 = 0; index2 < fold_size; index2++)
     {
@@ -419,22 +425,14 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     VariableSizeMatrixType scaledFeatureSet = std::get<2>(FoldingDataMap[index]);
     std::vector<double> traininglabels = std::get<1>(FoldingDataMap[index]);
 
-
     std::vector<int> FinalSelectedFeatures;
     VectorDouble crossvalidatedAccuracies;
-    if (featureselectiontype == 1)
-      FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype, optimizationType,crossvalidationType, crossvalidatedAccuracies);
-    //else if (featureselectiontype == 2)
-    //  FinalSelectedFeatures = CorrelationBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
-    else if (featureselectiontype == 3)
-      FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype, optimizationType, crossvalidationType, crossvalidatedAccuracies);
-    //else if (featureselectiontype == 4)
-    //  FinalSelectedFeatures = SVMRFEBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
-    //else
-    //{
-    //  std::cout << "The selected feature selection method is not avaialble inside CaPTk. Please select another method..." << std::endl;
-    //}
-
+    if (featureselectiontype == CAPTK::FeatureSelectionType::FS_TYPE_ES)
+      FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet, traininglabels, params, crossvalidatedAccuracies);
+    else if (featureselectiontype == CAPTK::FeatureSelectionType::FS_TYPE_FFS)
+      FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, params, crossvalidatedAccuracies);
+    else
+      std::cout << "The selected feature selection method is not avaialble inside CaPTk. Please select another method..." << std::endl;
 
     //Write the selected features
      WriteCSVFiles(FinalSelectedFeatures, outputfolder + "/SelectedFeatures_FoldNo_" + std::to_string(index + 1) + ".csv");
@@ -451,11 +449,11 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
 
     double bestCV = 0;
     double bestC = 1;
-    double bestG = 1 / FinalSelectedFeatures.size();
-    if (classifiertype == 2)
+    double bestG = (double)1 / FinalSelectedFeatures.size();
+    if (classifiertype == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
     {
-      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-        for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+      for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+        for (double gValue = params.gMin; gValue <= params.gMin; gValue = gValue + 1)
         {
           //this cross-validation mechanism trains and tests on the same dataset. 
           // we have another function avialable called 'InternalCrossValidation' that does cross-validation via 5-fold cross-validation. 
@@ -470,9 +468,9 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
           }
         }
     }
-    else
+    else // Linear SVM classifier
     {
-      for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+      for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
       {
         VectorDouble result = InternalCrossValidationResubstitution(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), 0.1, classifiertype);
         if (result[3] > bestCV)
@@ -484,11 +482,6 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     }
     std::cout << "Optimal C=" << bestC << std::endl;
     std::cout << "Optimal gamma=" << bestG << std::endl;
-
-
-
-
-
 
     //train a new model on selcted features and optimal values of classifiers' parameters
     //copy training and test data from given dataset
@@ -511,7 +504,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
       for (int copyDataCounter2 = 0; copyDataCounter2 <testingData.cols; copyDataCounter2++)
         testingData.ptr< float >(copyDataCounter)[copyDataCounter2] = std::get<5>(FoldingDataMap[index])(copyDataCounter, FinalSelectedFeatures[copyDataCounter2]);
     }
-    if (classifiertype == 2)
+    if (classifiertype == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
       // std::cout << "index=" << index << ", Best C = " << bestC << ", Best G=" << bestG << ", Best CV=" << bestCV << ", Features=" << numberOfSelectedFeatures << std::endl;
       cbica::Logging(loggerFile, "index=" + std::to_string(index) + ", Best C = " + std::to_string(bestC) + ", Best G = " + std::to_string(bestG) + ", Best CV = " + std::to_string(bestCV) + ", Features=" + std::to_string(FinalSelectedFeatures.size()) + "\n");
     else
@@ -523,7 +516,7 @@ VectorDouble TrainingModule::CrossValidation(const VariableSizeMatrixType inputF
     svm->setType(cv::ml::SVM::C_SVC);
     svm->setC(bestC);
 
-    if (classifiertype == 2)
+    if (classifiertype == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
     {
       svm->setGamma(bestG);
       svm->setKernel(cv::ml::SVM::RBF);
@@ -905,13 +898,7 @@ VectorDouble TrainingModule::testOpenCVSVM(const VariableSizeMatrixType &testing
 
 
 
-bool TrainingModule::Run(const std::string inputFeaturesFile,
-  const std::string outputdirectory,
-  const std::string inputLabelsFile,
-  const std::string modeldirectory,
-  const int classifiertype, const int foldtype,
-  const int confType, const int featureselectiontype,
-  const int optimizationType, const int crossvalidationType)
+bool TrainingModule::Run(const TrainingModuleParameters& params)
 {
   std::cout << "Training module." << std::endl;
   //reading features and labels from the input data
@@ -923,7 +910,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   try
   {
     CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
-    readerMean->SetFileName(inputFeaturesFile);
+    readerMean->SetFileName(params.inputFeaturesFile);
     readerMean->SetFieldDelimiterCharacter(',');
     readerMean->HasColumnHeadersOff();
     readerMean->HasRowHeadersOff();
@@ -976,12 +963,13 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   //    FeaturesOfAllSubjectsAfterRemovingStaticFeatures(sampleNo, featureCounter) = FeaturesOfAllSubjects(sampleNo, featureNo);
   //  featureCounter++;
   //}
-  if (confType != CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST)
+  if (params.configurationType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN |
+    params.configurationType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {
     try
     {
       CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
-      readerMean->SetFileName(inputLabelsFile);
+      readerMean->SetFileName(params.inputLabelsFile);
       readerMean->SetFieldDelimiterCharacter(',');
       readerMean->HasColumnHeadersOff();
       readerMean->HasRowHeadersOff();
@@ -1004,7 +992,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
   TrainingModule mTrainingSimulator;
   VectorDouble FinalResult;
 
-  if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
+  if (params.configurationType == CAPTK::ClassificationConfigurationType::CONF_TYPE_KFOLD_CV)
   {  
     //z-scoring of input features and saving corresponding mean and standard deviation in the output directory
     FeatureScalingClass mFeaturesScaling;
@@ -1029,79 +1017,79 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
       if (std::isnan(stdVector[index1]))
         stdVector[index1] = 0;
     }
-    WriteCSVFiles(scaledFeatureSet, outputdirectory + "/scaled_feature_set.csv");
-    WriteCSVFiles(meanVector,outputdirectory + "/zscore_mean.csv");
-    WriteCSVFiles(stdVector, outputdirectory + "/zscore_std.csv");
+    WriteCSVFiles(scaledFeatureSet, params.outputDirectory + "/scaled_feature_set.csv");
+    WriteCSVFiles(meanVector, params.outputDirectory + "/zscore_mean.csv");
+    WriteCSVFiles(stdVector, params.outputDirectory + "/zscore_std.csv");
 
     std::cout << "Scaling parameters written." << std::endl;
-    FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype,featureselectiontype,optimizationType,crossvalidationType);
+    FinalResult = mTrainingSimulator.CrossValidation(scaledFeatureSet, LabelsOfAllSubjects, params);
   }
-  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE)
+  //else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_DOUBLE)
+  //{
+  //  //scaling of input features and saving corresponding mean and standard deviation in the output directory
+  //  FeatureScalingClass mFeaturesScaling;
+  //  VariableSizeMatrixType scaledFeatureSet;
+  //  VariableLengthVectorType meanVector;
+  //  VariableLengthVectorType stdVector;
+  //  mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
+
+
+  //  //remove the nan values
+  //  for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
+  //  {
+  //    for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
+  //    {
+  //      if (std::isnan(scaledFeatureSet[index1][index2]))
+  //        scaledFeatureSet[index1][index2] = 0;
+  //    }
+  //  }
+  //  for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
+  //  {
+  //    if (std::isnan(meanVector[index1]))
+  //      meanVector[index1] = 0;
+  //    if (std::isnan(stdVector[index1]))
+  //      stdVector[index1] = 0;
+  //  }
+
+
+
+  //  std::ofstream myfile;
+  //  myfile.open(outputdirectory + "/scaled_feature_set.csv");
+  //  for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
+  //  {
+  //    std::string onerow = "";
+  //    for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
+  //    {
+  //      if (index2 == 0)
+  //        onerow = std::to_string(scaledFeatureSet[index1][index2]);
+  //      else
+  //        onerow = onerow + "," + std::to_string(scaledFeatureSet[index1][index2]);
+  //    }
+  //    onerow = onerow + "\n";
+  //    myfile << onerow;
+  //  }
+  //  myfile.close();
+
+  //  myfile.open(outputdirectory + "/zscore_mean.csv");
+  //  for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
+  //    myfile << std::to_string(meanVector[index1]) + "\n";
+  //  myfile.close();
+  //  myfile.open(outputdirectory + "/zscore_std.csv");
+  //  for (unsigned int index1 = 0; index1 < stdVector.Size(); index1++)
+  //    myfile << std::to_string(stdVector[index1]) + "\n";
+  //  myfile.close();
+  //  std::cout << "Scaling parameters written." << std::endl;
+  //  FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
+  //}
+  else if (params.configurationType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN)   //train
   {
-    //scaling of input features and saving corresponding mean and standard deviation in the output directory
-    FeatureScalingClass mFeaturesScaling;
-    VariableSizeMatrixType scaledFeatureSet;
-    VariableLengthVectorType meanVector;
-    VariableLengthVectorType stdVector;
-    mFeaturesScaling.ScaleGivenTrainingFeatures(FeaturesOfAllSubjects, scaledFeatureSet, meanVector, stdVector);
-
-
-    //remove the nan values
-    for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
-    {
-      for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
-      {
-        if (std::isnan(scaledFeatureSet[index1][index2]))
-          scaledFeatureSet[index1][index2] = 0;
-      }
-    }
-    for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
-    {
-      if (std::isnan(meanVector[index1]))
-        meanVector[index1] = 0;
-      if (std::isnan(stdVector[index1]))
-        stdVector[index1] = 0;
-    }
-
-
-
-    std::ofstream myfile;
-    myfile.open(outputdirectory + "/scaled_feature_set.csv");
-    for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
-    {
-      std::string onerow = "";
-      for (unsigned int index2 = 0; index2 < scaledFeatureSet.Cols(); index2++)
-      {
-        if (index2 == 0)
-          onerow = std::to_string(scaledFeatureSet[index1][index2]);
-        else
-          onerow = onerow + "," + std::to_string(scaledFeatureSet[index1][index2]);
-      }
-      onerow = onerow + "\n";
-      myfile << onerow;
-    }
-    myfile.close();
-
-    myfile.open(outputdirectory + "/zscore_mean.csv");
-    for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
-      myfile << std::to_string(meanVector[index1]) + "\n";
-    myfile.close();
-    myfile.open(outputdirectory + "/zscore_std.csv");
-    for (unsigned int index1 = 0; index1 < stdVector.Size(); index1++)
-      myfile << std::to_string(stdVector[index1]) + "\n";
-    myfile.close();
-    std::cout << "Scaling parameters written." << std::endl;
-    FinalResult = mTrainingSimulator.SplitTrainTest(scaledFeatureSet, LabelsOfAllSubjects, outputdirectory, classifiertype, foldtype);
-  }
-  else if (confType == CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN)   //train
-  {
-    if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, outputdirectory, classifiertype,featureselectiontype,optimizationType, crossvalidationType) == true)
+    if (mTrainingSimulator.TrainData2(FeaturesOfAllSubjects, LabelsOfAllSubjects, params) == true)
       std::cout << "Training finished successfully: Trained model saved in the specified output directory." << std::endl;
   }
   else   //test
   {
     std::cout << "testing code calling" << std::endl;
-    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjects, modeldirectory, classifiertype, outputdirectory);
+    FinalResult = mTrainingSimulator.TestData(FeaturesOfAllSubjects, params);
   }
   //std::cout << "Accuray=" << FinalResult[0] << std::endl;
   //std::cout << "Sensitivity=" << Finalresult[3] << std::endl;
@@ -1125,7 +1113,7 @@ bool TrainingModule::Run(const std::string inputFeaturesFile,
 
 
 VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-  const std::string outputfolder, const int classifiertype, const int training_size)
+  const TrainingModuleParameters& params, const int training_size)
 {
   MapType FoldingDataMap;
   std::vector<double> trainingindices;
@@ -1180,7 +1168,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   std::vector<size_t> indices = sort_indexes(EffectSize);
 
   std::ofstream myfile;
-  myfile.open(outputfolder + "/effctsizes.csv");
+  myfile.open(params.outputDirectory + "/effctsizes.csv");
   for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
@@ -1247,7 +1235,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
 
   //Write the selected features
-  myfile.open(outputfolder + "/selectedfeatures.csv");
+  myfile.open(params.outputDirectory + "/selectedfeatures.csv");
   for (int index1 = 0; index1 < maxFeatureNumber; index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
@@ -1268,9 +1256,10 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
   double bestCV = 0;
   double bestC = 1;
-  for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
+
+  for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 2)
   {
-    VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
+    VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
     float value = (int)(result[0] * 10 + .5);
     double currentcv = (float)value / 100;
 
@@ -1340,7 +1329,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
   try
   {
     res = svm->train(trainingData, cv::ml::ROW_SAMPLE, trainingLabels);
-    svm->save(outputfolder + "/SVM_Model.xml");
+    svm->save(params.outputDirectory + "/SVM_Model.xml");
   }
   catch (cv::Exception ex)
   {
@@ -1369,7 +1358,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
 
 
-  myfile.open(outputfolder + "/predicted_distances.csv");
+  myfile.open(params.outputDirectory + "/predicted_distances.csv");
   for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
     myfile << std::to_string(std::abs(predictedDistances[index1])*predictedLabels[index1]) + "," + std::to_string(std::get<4>(FoldingDataMap[0])[index1]) + "\n";
   myfile.close();
@@ -1380,7 +1369,7 @@ VectorDouble TrainingModule::SplitTrainTest(const VariableSizeMatrixType inputFe
 
 
 VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-  const std::string outputdirectory, const int classifiertype)
+  const TrainingModuleParameters& params)
 {
 
   //feature scaling mechanism
@@ -1411,7 +1400,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   }
   std::cout << "Starting writing scaled parameters." << std::endl;
   std::ofstream myfile;
-  myfile.open(outputdirectory + "/scaled_feature_set.csv");
+  myfile.open(params.outputDirectory + "/scaled_feature_set.csv");
   for (unsigned int index1 = 0; index1 < scaledFeatureSet.Rows(); index1++)
   {
     std::string onerow = "";
@@ -1427,11 +1416,11 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   }
   myfile.close();
 
-  myfile.open(outputdirectory + "/zscore_mean.csv");
+  myfile.open(params.outputDirectory + "/zscore_mean.csv");
   for (unsigned int index1 = 0; index1 < meanVector.Size(); index1++)
     myfile << std::to_string(meanVector[index1]) + "\n";
   myfile.close();
-  myfile.open(outputdirectory + "/zscore_std.csv");
+  myfile.open(params.outputDirectory + "/zscore_std.csv");
   for (unsigned int index1 = 0; index1 < stdVector.Size(); index1++)
     myfile << std::to_string(stdVector[index1]) + "\n";
   myfile.close();
@@ -1457,7 +1446,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   }
   std::vector<size_t> indices = sort_indexes(EffectSize);
 
-  myfile.open(outputdirectory + "/effctsizes.csv");
+  myfile.open(params.outputDirectory + "/effctsizes.csv");
   for (unsigned int index1 = 0; index1 < EffectSize.size(); index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
@@ -1527,7 +1516,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 
 
   //Write the selected features
-  myfile.open(outputdirectory + "/selectedfeatures.csv");
+  myfile.open(params.outputDirectory + "/selectedfeatures.csv");
   for (int index1 = 0; index1 <= maxFeatureNumber; index1++)
     myfile << std::to_string(EffectSize[indices[index1]]) + "," + std::to_string(indices[index1]) + "\n";
   myfile.close();
@@ -1548,9 +1537,9 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
 
   double bestCV = 0;
   double bestC = 1;
-  for (double cValue = 1; cValue <= 5; cValue = cValue + 2)
+  for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 2)
   {
-    VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
+    VectorDouble result = InternalCrossValidation(reducedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
     //float value = (int)(result[0] * 10 + .5);
     //double currentcv = (float)value / 100;
 
@@ -1612,7 +1601,7 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   try
   {
     res = svm->train(trainingData, cv::ml::ROW_SAMPLE, trainingLabels);
-    svm->save(outputdirectory + "/SVM_Model.xml");
+    svm->save(params.outputDirectory + "/SVM_Model.xml");
   }
   catch (cv::Exception ex)
   {
@@ -1650,17 +1639,16 @@ VectorDouble TrainingModule::TrainData(const VariableSizeMatrixType inputFeature
   return FinalPerformance;
 }
 
-bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels,
-  const std::string outputdirectory, const int classifiertype,const int featureselectiontype,
-  const int optimizationType, const int crossvalidationType)
+bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, 
+  const VariableLengthVectorType inputLabels,
+  const TrainingModuleParameters& params)
 {
   //scaling of the given features
   //---------------------------
-  std::cout << "Scaling started" << std::endl;
+  std::cout << "Scaling started..." << std::endl;
   FeatureScalingClass mFeaturesScaling;
   VariableSizeMatrixType scaledFeatureSet;
-  VariableLengthVectorType meanVector;
-  VariableLengthVectorType stdVector;
+  VariableLengthVectorType meanVector, stdVector;
   mFeaturesScaling.ScaleGivenTrainingFeatures(inputFeatures, scaledFeatureSet, meanVector, stdVector);
 
   //remove the nan values introduced after the scaling process
@@ -1679,38 +1667,32 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
     if (std::isnan(stdVector[index1]))
       stdVector[index1] = 0;
   }
-  WriteCSVFiles(scaledFeatureSet,outputdirectory + "/scaled_feature_set.csv");
-  WriteCSVFiles(meanVector,outputdirectory + "/zscore_mean.csv");
-  WriteCSVFiles(stdVector, outputdirectory + "/zscore_std.csv");
+  WriteCSVFiles(scaledFeatureSet, params.outputDirectory + "/scaled_feature_set.csv");
+  WriteCSVFiles(meanVector, params.outputDirectory + "/zscore_mean.csv");
+  WriteCSVFiles(stdVector, params.outputDirectory + "/zscore_std.csv");
   std::cout << "Scaling parameters written." << std::endl;
   
   //copy the training labels
   //---------------------------
-  std::vector<double> trainingindices;
-  std::vector<double> traininglabels;
+  std::vector<double> trainingindices, traininglabels;
   for (unsigned int index = 0; index < inputLabels.Size(); index++)
     traininglabels.push_back(inputLabels[index]);
 
   std::vector<int> FinalSelectedFeatures;
   VectorDouble crossvalidatedAccuracies; 
-  if (featureselectiontype == 1)
-    FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype, optimizationType,crossvalidationType, crossvalidatedAccuracies);
-  //else if (featureselectiontype == 2)
-  //  FinalSelectedFeatures = CorrelationBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype); 
-  else if (featureselectiontype == 3)
-  FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, classifiertype, optimizationType,crossvalidationType, crossvalidatedAccuracies);
-  //else if (featureselectiontype == 4)
-  //  FinalSelectedFeatures = SVMRFEBasedFeatureSelection(scaledFeatureSet,traininglabels,classifiertype);
+  if (params.featureSelectionType == CAPTK::FeatureSelectionType::FS_TYPE_ES)
+    FinalSelectedFeatures = EffectSizeBasedFeatureSelection(scaledFeatureSet,traininglabels, params, crossvalidatedAccuracies);
+  else if (params.featureSelectionType == CAPTK::FeatureSelectionType::FS_TYPE_FFS)
+    FinalSelectedFeatures = SVMFFSBasedFeatureSelection(scaledFeatureSet, traininglabels, params, crossvalidatedAccuracies);
   else
   {
     std::cout << "The selected feature selection method is not avaialble inside CaPTk. Please select another method..." << std::endl;
     return false;
   }
 
-
   //Write the selected features and crossvalidated accuracies
-  WriteCSVFiles(FinalSelectedFeatures,outputdirectory + "/SelectedFeatures.csv");
-  WriteCSVFiles(crossvalidatedAccuracies, outputdirectory + "/CrossValidatedAccuracies.csv");
+  WriteCSVFiles(FinalSelectedFeatures, params.outputDirectory + "/SelectedFeatures.csv");
+  WriteCSVFiles(crossvalidatedAccuracies, params.outputDirectory + "/CrossValidatedAccuracies.csv");
 
   //optimize classifiers parameters on the selected feature set
   VariableSizeMatrixType FinalSelectedFeatureSet;
@@ -1724,13 +1706,13 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   double bestCV = 0;
   double bestC = 1;
   double bestG = 1 / FinalSelectedFeatures.size();
-  if (classifiertype == 2)
+  if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
   {
     VectorDouble result;
-    for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-      for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+    for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+      for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
       {
-        VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), pow(2, gValue), classifiertype);
+        VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), pow(2, gValue), params.classifierType);
         if (result[3] > bestCV)
         {
           bestC = pow(2, cValue);
@@ -1739,11 +1721,11 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
         }
       }
   }
-  else
+  else if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_LINEAR)
   {
-    for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+    for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
     {
-      VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), 0.01, classifiertype);
+      VectorDouble result = InternalCrossValidation(FinalSelectedFeatureSet, traininglabels, pow(2, cValue), 0.01, params.classifierType);
       if (result[3] > bestCV)
       {
         bestC = pow(2, cValue);
@@ -1751,8 +1733,12 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
       }
     }
   }
-  std::cout << "Optimal C=" << bestC << std::endl;
-  std::cout << "Optimal gamma=" << bestG << std::endl;
+  else // Unimplemented classifier
+  {
+      throw std::runtime_error("Classifier Not Implemented.");
+  }
+  std::cout << "Optimal C = " << bestC << std::endl;
+  std::cout << "Optimal Gamma = " << bestG << std::endl;
 
   //model training and testing
   cv::Mat trainingData = cv::Mat::zeros(FinalSelectedFeatureSet.Rows(), FinalSelectedFeatureSet.Cols(), CV_32FC1);
@@ -1772,7 +1758,7 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   svm->setType(cv::ml::SVM::C_SVC);
   svm->setC(bestC);
 
-  if (classifiertype == 2)
+  if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
   {
     svm->setGamma(bestG);
     svm->setKernel(cv::ml::SVM::RBF);
@@ -1782,17 +1768,17 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
 
   bool res;
   std::string msg;
-  VectorDouble predictedLabels;
-  VectorDouble predictedDistances;
+  VectorDouble predictedLabels, predictedDistances;
   try
   {
     res = svm->train(trainingData, cv::ml::ROW_SAMPLE, trainingLabels);
-    svm->save(outputdirectory + "/SVM_Model.xml");
+    svm->save(params.outputDirectory + "/SVM_Model.xml");
   }
   catch (cv::Exception ex)
   {
     msg = ex.what();
   }
+
   //apply SVM model on training data
   cv::Mat predicted(1, 1, CV_32F);
   for (int i = 0; i < trainingData.rows; i++)
@@ -1805,15 +1791,16 @@ bool TrainingModule::TrainData2(const VariableSizeMatrixType inputFeatures, cons
   }
   for (int i = 0; i < predictedLabels.size(); i++)
     predictedDistances[i] = std::abs(predictedDistances[i])*predictedLabels[i];
+
   //Write the selected features and crossvalidated accuracies
-  WriteCSVFiles(predictedLabels, outputdirectory + "/predicted_labels_training.csv");
-  WriteCSVFiles(predictedDistances, outputdirectory + "/predicted_distances_training.csv");
+  WriteCSVFiles(predictedLabels, params.outputDirectory + "/predicted_labels_training.csv");
+  WriteCSVFiles(predictedDistances, params.outputDirectory + "/predicted_distances_training.csv");
 
   return res;
 }
 
 
-VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures,  const std::string modeldirectory, const int classifiertype, const std::string outputfolder)
+VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures,  const TrainingModuleParameters& params)
 {
   typedef itk::CSVArray2DFileReader<double> ReaderType;
   VectorDouble results;
@@ -1824,7 +1811,7 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
   VariableLengthVectorType stddevition;
   try
   {
-    reader->SetFileName(modeldirectory + "/zscore_mean.csv");
+    reader->SetFileName(params.modelDirectory + "/zscore_mean.csv");
     reader->SetFieldDelimiterCharacter(',');
     reader->HasColumnHeadersOff();
     reader->HasRowHeadersOff();
@@ -1837,13 +1824,13 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Error in reading the file: " + modeldirectory + "/zscore_mean.csv. Error code : " + std::string(e1.what()));
+    logger.WriteError("Error in reading the file: " + params.modelDirectory + "/zscore_mean.csv. Error code : " + std::string(e1.what()));
   }
 
   MatrixType stdMatrix;
   try
   {
-    reader->SetFileName(modeldirectory + "/zscore_std.csv");
+    reader->SetFileName(params.modelDirectory + "/zscore_std.csv");
     reader->SetFieldDelimiterCharacter(',');
     reader->HasColumnHeadersOff();
     reader->HasRowHeadersOff();
@@ -1856,7 +1843,7 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Error in reading the file: " + modeldirectory + "/zscore_std.csv. Error code : " + std::string(e1.what()));
+    logger.WriteError("Error in reading the file: " + params.modelDirectory + "/zscore_std.csv. Error code : " + std::string(e1.what()));
   }
 
   //feature selection process for test data
@@ -1864,7 +1851,7 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
   MatrixType dataMatrix;
   try
   {
-    reader->SetFileName(modeldirectory + "/SelectedFeatures.csv");
+    reader->SetFileName(params.modelDirectory + "/SelectedFeatures.csv");
     reader->SetFieldDelimiterCharacter(',');
     reader->HasColumnHeadersOff();
     reader->HasRowHeadersOff();
@@ -1876,14 +1863,14 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
   }
   catch (const std::exception& e1)
   {
-    logger.WriteError("Error in reading the file: " + modeldirectory + "/selectedfeatures.csv. Error code : " + std::string(e1.what()));
+    logger.WriteError("Error in reading the file: " + params.modelDirectory + "/selectedfeatures.csv. Error code : " + std::string(e1.what()));
   }
-
 
   FeatureScalingClass mFeatureScalingLocalPtr;
   VariableSizeMatrixType ScaledTestingData = mFeatureScalingLocalPtr.ScaleGivenTestingFeatures(inputFeatures, mean, stddevition);
-
+  WriteCSVFiles(ScaledTestingData, params.outputDirectory + "/ScaledTestingData.csv");
   std::cout << "Testing data scaled." << std::endl;
+
   VariableSizeMatrixType FinalSelectedFeatureSet;
   FinalSelectedFeatureSet.SetSize(ScaledTestingData.Rows(), selectedfeaturesindices.size());
 
@@ -1895,12 +1882,9 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
 
   MapType FoldingDataMap;
   //read from csv the selected features
-  std::vector<double> testingindices;
-  std::vector<double> testinglabels;
+  std::vector<double> testingindices, testinglabels, predictedlabels;
 
-  std::vector<double> predictedlabels;
-
-  auto svm = cv::Algorithm::load<cv::ml::SVM>(modeldirectory +"/SVM_Model.xml" );
+  auto svm = cv::Algorithm::load<cv::ml::SVM>(params.modelDirectory +"/SVM_Model.xml" );
   cv::Mat testingData = cv::Mat::zeros(FinalSelectedFeatureSet.Rows(), FinalSelectedFeatureSet.Cols(), CV_32FC1);
   cv::Mat testingLabels = cv::Mat::zeros(FinalSelectedFeatureSet.Rows(), 1, CV_32FC1);
 
@@ -1910,53 +1894,9 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
     for (int copyDataCounter2 = 0; copyDataCounter2 < testingData.cols; copyDataCounter2++)
       testingData.ptr< float >(copyDataCounter)[copyDataCounter2] = FinalSelectedFeatureSet(copyDataCounter, copyDataCounter2);
   }
-  //////--------------------just to write in files
-  std::ofstream myfile;
-  VariableSizeMatrixType datatowrite;
-  datatowrite.SetSize(testingData.rows, testingData.cols);
-  for (int copyDataCounter = 0; copyDataCounter < testingData.rows; copyDataCounter++)
-  {
-    for (int copyDataCounter2 = 0; copyDataCounter2 < testingData.cols; copyDataCounter2++)
-    {
-      datatowrite[copyDataCounter][copyDataCounter2] = FinalSelectedFeatureSet(copyDataCounter, copyDataCounter2);
-      //std::cout<<"Selected feature index: "<<indices[copyDataCounter2]<<std::endl;
-    }
-  }
-  myfile.open(outputfolder + "/ScaledTestingData.csv");
-  for(unsigned int index1=0;index1<datatowrite.Rows();index1++)
-  {
-    for (unsigned int index2=0;index2<datatowrite.Cols();index2++)
-    {
-      if (index2 == 0)
-        myfile << std::to_string(datatowrite[index1][index2]);
-      else
-        myfile << "," << std::to_string(datatowrite[index1][index2]);
-    }
-    myfile << "\n";
-  }
-  myfile.close();
-  ////------------------------------------------
 
-  //trainingLabels.convertTo(trainingLabels, CV_32SC1);
-  //auto svm = cv::ml::SVM::create();
-  //svm->setType(cv::ml::SVM::C_SVC);
-  //svm->setC(bestC);
-  //svm->setKernel(cv::ml::SVM::LINEAR);
-
-  //bool res = true;
-  //std::string msg;
   VectorDouble predictedLabels;
   VectorDouble predictedDistances;
-  //try
-  //{
-  //  res = svm->train(trainingData, cv::ml::ROW_SAMPLE, trainingLabels);
-  //  svm->save(outputfolder + "/SVM_Model.xml");
-  //}
-  //catch (cv::Exception ex)
-  //{
-  //  msg = ex.what();
-  //}
-  
 
   //apply SVM model on test data
   cv::Mat predicted(1, 1, CV_32F);
@@ -1968,28 +1908,13 @@ VectorDouble TrainingModule::TestData(const VariableSizeMatrixType inputFeatures
     svm->predict(sample, predicted, true);
     predictedDistances.push_back(predicted.ptr< float >(0)[0]);
   }
-  //calculate final performance and write in the csv file
-  //VectorDouble FinalPerformance = CalculatePerformanceMeasures(predictedLabels, std::get<4>(FoldingDataMap[0]));
+  for (int i = 0; i < predictedLabels.size(); i++)
+    predictedDistances[i] = std::abs(predictedDistances[i])*predictedLabels[i];
 
+  WriteCSVFiles(predictedDistances , params.outputDirectory + "/predicted_distances.csv");
+  WriteCSVFiles(predictedLabels, params.outputDirectory + "/predicted_labels.csv");
 
-  //CrossValidatedPerformances(featureNo, 4) = FinalPerformance[0];
-  //CrossValidatedPerformances(featureNo, 5) = FinalPerformance[1];
-  //CrossValidatedPerformances(featureNo, 6) = FinalPerformance[2];
-  //CrossValidatedPerformances(featureNo, 7) = FinalPerformance[3];
-  //std::cout << "predicted balanced" << FinalPerformance[3] << std::endl;
-
-
-
-  myfile.open(outputfolder + "/predicted_distances.csv");
-  for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
-    myfile << std::to_string(std::abs(predictedDistances[index1])*predictedLabels[index1]) + "\n";
-  myfile.close();
-  myfile.open(outputfolder + "/predicted_labels.csv");
-  for (unsigned int index1 = 0; index1 < predictedDistances.size(); index1++)
-    myfile << std::to_string(predictedLabels[index1]) + "\n";
-  myfile.close();
-
-  return results;
+return results;
 }
 //----------------------------------------------------------------------------------------------------------
 std::vector<int> TrainingModule::UpdateUnselectedFeatures(std::vector<int> SelectedFeatures,int featuresize)
@@ -2011,9 +1936,13 @@ std::vector<int> TrainingModule::UpdateUnselectedFeatures(std::vector<int> Selec
   }
   return UnselectedFeatures;
 }
+
 //-----------------------------------------------------------------------------------------------------------
-std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const int classifiertype,const int optimizationtype,const int cvtype,VectorDouble &crossvalidatedaccuracies)
+std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels, const TrainingModuleParameters& params, VectorDouble &crossvalidatedaccuracies)
 {
+  auto optimizationType = params.optimizationType;
+  auto cvtype = params.crossValidationType;
+  auto classifiertype = params.classifierType;
   std::vector<int> SelectedFeatures;
   std::vector<double> CrossValidatedBalancedAccuraciesFinal;
   std::vector<int> UnselectedFeatures = UpdateUnselectedFeatures(SelectedFeatures, inputdata.Cols());
@@ -2048,44 +1977,44 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
       //check crossvalidated performance after adding the current feature
       double bestCV = 0;
       double bestC = 1;
-      double bestG = 1 / reducedFeatureSet.Cols();
-      if (optimizationtype == 1)
+      double bestG = (double)1 / reducedFeatureSet.Cols();
+      if (params.optimizationType == CAPTK::OptimizationType::OPT_TYPE_ON)
       {
-        if (classifiertype == 2)
+        if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
         {
-          for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-            for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+          for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+            for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
             {
               VectorDouble result;
-              if (cvtype == 1)
-                result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), pow(2, gValue), classifiertype);
+              if (params.crossValidationType == 1)
+                result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), pow(2, gValue), params.classifierType);
               else
-                result = InternalCrossValidation(reducedFeatureSet, labels, pow(2, cValue), pow(2, gValue), classifiertype);
+                result = InternalCrossValidation(reducedFeatureSet, labels, pow(2, cValue), pow(2, gValue), params.classifierType);
 
               if (result[3] > bestCV)
                 bestCV = result[3];
             }
         }
-        else
+        else // Linear SVM classifier
         {
-          for (double cValue = -5; cValue <=5; cValue = cValue + 1)
+          for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
           {
             VectorDouble result;
             if (cvtype == 1)
-              result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), 0.01, classifiertype);
+              result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, pow(2, cValue), 0.01, params.classifierType);
             else
-              result = InternalCrossValidation(reducedFeatureSet, labels, pow(2, cValue), 0.01, classifiertype);
+              result = InternalCrossValidation(reducedFeatureSet, labels, pow(2, cValue), 0.01, params.classifierType);
 
             if (result[3] > bestCV)
               bestCV = result[3];
           }
         }
       }
-      else
+      else // Optimization OFF
       {
         VectorDouble result;
         if (cvtype == 1)
-          result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, bestC, bestG, classifiertype);
+          result = InternalCrossValidationResubstitution(reducedFeatureSet, labels, bestC, bestG, params.classifierType);
         else
           result = InternalCrossValidation(reducedFeatureSet, labels, bestC, bestG, classifiertype);
         bestCV = result[3];
@@ -2103,11 +2032,6 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
       if (CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 1] == 1 && CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 2] == 1 && CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 3] == 1)
         break;
     }
-    //if (sizeofcvaccuracies >= 2)
-    //{
-    //  if (CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 1]< CrossValidatedBalancedAccuraciesFinal[sizeofcvaccuracies - 2] )
-    //    break;
-    //}
 
     SelectedFeatures.push_back(UnselectedFeatures[index]);
     std::cout << "CurrentSize=" << SelectedFeatures.size() << " Performance=" << CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures[index] << std::endl;
@@ -2123,7 +2047,7 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
   //TODO: consider selecting the first feature out of the three features involved in moving average
   VariableLengthVectorType MovingAverageOnCrossValidatedPerformance;
   MovingAverageOnCrossValidatedPerformance.SetSize(CrossValidatedBalancedAccuraciesFinal.size());
-  for (int index = 0; index < MovingAverageOnCrossValidatedPerformance.Size(); index++)
+  for (unsigned int index = 0; index < MovingAverageOnCrossValidatedPerformance.Size(); index++)
     MovingAverageOnCrossValidatedPerformance[index] = 0;
 
   for (unsigned int index = 1; index < CrossValidatedBalancedAccuraciesFinal.size() - 1; index++)
@@ -2131,12 +2055,15 @@ std::vector<int> TrainingModule::SVMFFSBasedFeatureSelection(const VariableSizeM
 
   int max_performance_counter = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
   std::vector<int> FinalSelectedFeatures;
-  for (int index = 0; index <= max_performance_counter; index++)
+  for (unsigned int index = 0; index <= max_performance_counter; index++)
     FinalSelectedFeatures.push_back(SelectedFeatures[index]);
   return FinalSelectedFeatures;
 }
-std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels,const int classifiertype,const int optimizationtype, const int cvtype,VectorDouble & crossvalidatedaccuracies)
+std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableSizeMatrixType inputdata, const VectorDouble labels,const TrainingModuleParameters& params,VectorDouble & crossvalidatedaccuracies)
 {
+  auto optimizationtype = params.optimizationType;
+  auto classifiertype = params.classifierType;
+  auto cvtype = params.crossValidationType;
   double numberOfSelectedFeatures = 0;
   VectorDouble EffectSize = EffectSizeFeatureSelection(inputdata, labels);
   for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
@@ -2164,14 +2091,14 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
     double bestC = 1;
     double numerator = 1;
     double bestG = numerator / ((double)currentFeatureSet.Cols());
-    if (optimizationtype == 1)
+    if (optimizationtype == CAPTK::OptimizationType::OPT_TYPE_ON)
     {
-      if (classifiertype == 2)
+      if (classifiertype == CAPTK::ClassifierType::CLASS_TYPE_SVM_RBF)
       {
         //for now, we have constant ranges to search optimal values of C and Gamma parameters
         //should be changed in future to get these ranges from users
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
-          for (double gValue = -5; gValue <= 5; gValue = gValue + 1)
+        for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
+          for (double gValue = params.gMin; gValue <= params.gMax; gValue = gValue + 1)
           {
             VectorDouble result;
             if (cvtype == 1)
@@ -2183,9 +2110,9 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
               bestCV = result[3];
           }
       }
-      else
+      else // Linear SVM classifier
       {
-        for (double cValue = -5; cValue <= 5; cValue = cValue + 1)
+        for (double cValue = params.cMin; cValue <= params.cMax; cValue = cValue + 1)
         {
           VectorDouble result;
           if (cvtype == 1)
@@ -2198,7 +2125,7 @@ std::vector<int> TrainingModule::EffectSizeBasedFeatureSelection(const VariableS
         }
       }
     }
-    else
+    else // Optimization OFF
     {
       VectorDouble result;
       if (cvtype == 1)

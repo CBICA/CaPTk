@@ -2,11 +2,11 @@
 //
 //brief Implementation of fMainWindow class
 //
-//https://www.med.upenn.edu/sbia/software/ <br>
+//https://www.med.upenn.edu/cbica/captk/ <br>
 //software@cbica.upenn.edu
 //
 //Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-//See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+//See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 //
 //*/
 /////
@@ -69,6 +69,7 @@
 #include "CaPTkDockWidget.h"
 #include "SystemInformationDisplayWidget.h"
 #include "SystemInformation.h"
+#include "DownloadManager.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -170,6 +171,8 @@ fMainWindow::fMainWindow()
   setupUi(this);
 
   m_downloadLinks = YAML::LoadFile(getCaPTkDataDir() + "/links.yaml");
+
+  this->m_DownloadManager = new DownloadManager();
 
   //! load preferences
   ApplicationPreferences::GetInstance()->DeSerializePreferences();
@@ -379,7 +382,11 @@ fMainWindow::fMainWindow()
   }
 
   // TBD: this needs to be controlled from CMake and not hard-coded here
-  auto brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator SurvivalPredictor MolecularSubtypePredictor PopulationAtlases WhiteStripe confetti";
+  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator";
+#ifdef BUILD_MSUBTYPE
+  //brainAppList += " MolecularSubtypePredictor ";
+#endif
+  brainAppList += "SurvivalPredictor PopulationAtlases WhiteStripe confetti";
   std::string breastAppList = "";
 
 #ifndef __APPLE__
@@ -609,12 +616,12 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfGBMApps[i].name.find("PseudoProgression") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-Progression Estimator"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Pseudo-progression Index"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationPseudoProgression()));
     }
     else if (vectorOfGBMApps[i].name.find("Survival") != std::string::npos)
     {
-      vectorOfGBMApps[i].action->setText("  Glioblastoma Survival Prediction Index"); // TBD set at source
+      vectorOfGBMApps[i].action->setText("  Glioblastoma Overall Survival Prediction"); // TBD set at source
       connect(vectorOfGBMApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationSurvival()));
     }
     else if (vectorOfGBMApps[i].name.find("PopulationAtlases") != std::string::npos)
@@ -716,7 +723,7 @@ fMainWindow::fMainWindow()
     }
     else if (vectorOfSegmentationApps[i].name.find("breastSegment") != std::string::npos)
     {
-      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation of FFDM using LIBRA"); //TBD set at source
+      vectorOfSegmentationApps[i].action->setText("  Breast Segmentation in FFDM"); //TBD set at source
       connect(vectorOfSegmentationApps[i].action, SIGNAL(triggered()), this, SLOT(ApplicationBreastSegmentation()));
     }
   }
@@ -863,21 +870,23 @@ fMainWindow::fMainWindow()
   connect(&recurrencePanel, SIGNAL(SubjectBasedExistingRecurrenceEstimate(std::string, std::string, bool, bool, bool, bool)), this, SLOT(LoadedSubjectExistingRecurrenceEstimate(const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(ExistingModelBasedRecurrenceEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(RecurrenceEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&recurrencePanel, SIGNAL(TrainNewModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
+  connect(&recurrencePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&pseudoPanel, SIGNAL(ExistingModelBasedPseudoprogressionEstimate(std::string, std::string, std::string, bool, bool, bool, bool)), this, SLOT(PseudoprogressionEstimateOnExistingModel(const std::string &, const std::string &, const std::string &, bool, bool, bool, bool)));
   connect(&pseudoPanel, SIGNAL(TrainNewPseudoModel(std::string, std::string, bool, bool, bool, bool)), this, SLOT(TrainNewPseudoprogressionModelOnGivenData(const std::string &, const std::string &, bool, bool, bool, bool)));
-
+  connect(&pseudoPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&survivalPanel, SIGNAL(SurvivalPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForSurvivalPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&survivalPanel, SIGNAL(TrainNewSurvivalPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewSurvivalPredictionModelFromMain(const std::string, const std::string)));
+  connect(&survivalPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&egfrv3Panel, SIGNAL(EGFRvIIIPredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForEGFRvIIIPredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&egfrv3Panel, SIGNAL(PrepareNewEGFRvIIIPredictionModel(const std::string, const std::string)), this, SLOT(CallForNewEGFRvIIIPredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&egfrv3Panel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&msubtypePanel, SIGNAL(MolecularSubtypePredictionOnExistingModel(const std::string, const std::string, const std::string)), this, SLOT(CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string, const std::string, const std::string)));
   connect(&msubtypePanel, SIGNAL(PrepareNewMolecularSubtypePredictionModel(const std::string, const std::string)), this, SLOT(CallForNewMolecularSubtypePredictionModelFromMain(const std::string, const std::string)));
-
+  connect(&msubtypePanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&skullStrippingPanel, SIGNAL(RunSkullStripping(const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallImageSkullStripping(const std::string, const std::string, const std::string, const std::string)));
   connect(&dcmConverter, SIGNAL(RunDICOMConverter(const std::string, const std::string)), this, SLOT(CallDCM2NIfTIConversion(const std::string, const std::string)));
@@ -886,15 +895,15 @@ fMainWindow::fMainWindow()
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
-  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
-  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(QString &, QString &, QString &, QString &, QString &)), this, SLOT(PCAEstimateOnExistingModel(QString &, QString &, QString &, QString &, QString &)));
+  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(QString &, QString &, QString &, QString &)), this, SLOT(TrainNewPCAModelOnGivenData(QString &, QString &, QString &, QString &)));
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)), this, SLOT(CallTrainingSimulation(const std::string, const std::string, const std::string, const std::string, int, int, int)));
+  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double,int, int,const std::string, const std::string,  const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double,int, int, const std::string, const std::string,  const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -905,6 +914,7 @@ fMainWindow::fMainWindow()
   connect(&atlasPanel, SIGNAL(GeneratePopualtionAtlas(const std::string, const std::string, const std::string)), this, SLOT(CallGeneratePopualtionAtlas(const std::string, const std::string, const std::string)));
 
   connect(&nodulePanel, SIGNAL(SBRTNoduleParamReady(const std::string, const int)), this, SLOT(CallSBRTNodule(const std::string, const int)));
+  connect(&analysisPanel, SIGNAL(DownloadUrl(QUrl)), this, SLOT(downloadFromURL(QUrl)));
 
   connect(&deepMedicDialog, SIGNAL(RunDeepMedic(const std::string, const std::string)), this, SLOT(CallDeepMedicSegmentation(const std::string, const std::string)));
   connect(&texturePipelineDialog, SIGNAL(RunTextureFeaturePipeline(const std::string)), this, SLOT(CallTexturePipeline(const std::string)));
@@ -916,6 +926,8 @@ fMainWindow::fMainWindow()
 
   connect(&biascorrectionPanel, SIGNAL(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)),
       this, SLOT(CallBiasCorrection(const std::string, QString, int, int, int, int, float, float)));
+
+  connect(this->m_DownloadManager, SIGNAL(progress(qint64, std::string, qint64)), this, SLOT(updateProgress(qint64, std::string, qint64)));
 
   AxialViewWidget->hide();
   CoronalViewWidget->hide();
@@ -1022,6 +1034,9 @@ fMainWindow::~fMainWindow()
 
   if (mHelpDlg)
     delete mHelpDlg;
+
+  if (this->m_DownloadManager)
+	  delete this->m_DownloadManager;
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
@@ -1148,6 +1163,18 @@ void fMainWindow::help_Interactions()
   mHelpDlg->show();
 }
 
+void fMainWindow::downloadFromURL(QUrl url)
+{
+	QString basefilename = this->m_DownloadManager->saveFileName(url);
+	QString downloaddirpath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+	QString saveFileName = getSaveFile(this,
+		downloaddirpath + "/" + basefilename, "",
+		tr("Files (*.zip)"));
+
+	this->m_DownloadManager->setFilename(saveFileName);
+	this->m_DownloadManager->append(url);
+}
+
 void fMainWindow::help_Download(QAction* action)
 {
   auto currentApp = action->text().toStdString();
@@ -1155,14 +1182,17 @@ void fMainWindow::help_Download(QAction* action)
   if (!currentLink.empty() && (currentLink != "N.A."))
   {
     cbica::Logging(loggerFile, currentLink);
-    if (!openLink(currentLink))
-    {
-      ShowErrorMessage("CaPTk couldn't open the browser to download specified sample data.", this);
-      return;
-    }
+
+	//if it's a zip file i.e. it is a data/model
+	if (QFileInfo(currentLink.c_str()).suffix() == "zip")
+		this->downloadFromURL(QUrl(currentLink.c_str()));
+	else
+		//if it is a webpage
+		openLink(currentLink);
   }
   else
   {
+	  //bad link
     ShowErrorMessage("CaPTk couldn't open the link for the selected dataset/model; please contact software@cbica.upenn.edu for details.", this);
     return;
   }
@@ -4162,18 +4192,13 @@ void fMainWindow::StartRecurrenceEstimate(const std::string &outputdirectory, bo
   updateProgress(0, "Recurrence estimate for the given subject has been saved and loaded.");
 }
 
-
-
-
-
-
-
 void fMainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
   if (event->mimeData()->hasFormat("text/uri-list")) {
     event->acceptProposedAction();
   }
 }
+
 void fMainWindow::dropEvent(QDropEvent *event)
 {
   QList<QUrl> urls = event->mimeData()->urls();
@@ -4182,9 +4207,32 @@ void fMainWindow::dropEvent(QDropEvent *event)
   {
     vectorOfFiles.push_back(urls[i].toLocalFile());
   }
-  openImages(vectorOfFiles);
+  // if more than 1 files are dropped, assume they are images
+  if ((vectorOfFiles.size() > 1) || mSlicerManagers.empty())
+  {
+    openImages(vectorOfFiles);
+  }
+  else
+  {
+    // ask if it is an image or roi
+    QMessageBox *box = new QMessageBox(QMessageBox::Question,
+      "Image Type",
+      "Please select the type of image being loaded", QMessageBox::Ok | QMessageBox::Cancel);
+    box->button(QMessageBox::Ok)->setText("Image");
+    box->button(QMessageBox::Cancel)->setText("ROI");
+    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+    box->setWindowModality(Qt::NonModal);
+    QCoreApplication::processEvents();
+    if (box->exec() == QMessageBox::Ok)
+    {
+      openImages(vectorOfFiles);
+    }
+    else
+    {
+      readMaskFile(vectorOfFiles[0].toStdString());
+    }
+  }
 }
-
 
 void fMainWindow::CloseNonViewingDTIImage(QTableWidgetItem* item)
 {
@@ -4508,63 +4556,66 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
   return;
 }
 
-void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance)
 {
-  if (modeldirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having PCA model");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
-  {
-      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
-      {
-          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
-          return;
-      }
-  }
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having input images");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory to save output");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory");
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  PerfusionPCA mPCAEstimator;//PCA algorithm object
 
-  std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
-  if (QualifiedSubjects.size() == 0)
+  //sort and arrange input data
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
+
+  //check if input has valid subjects
+  if (mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
 
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.ApplyExistingPCAModel(10, inputdirectory,outputdirectory,QualifiedSubjects,modeldirectory))
-    ShowMessage("PCA features have been saved at the specified location.", this);
-  else
+  //load the input dataset
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
   {
-    std::string msg;
-    msg = "There was an error in applying the PCA model on new data: " + loggerFile;
-    ShowErrorMessage(msg, this);
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
+	  ShowMessage(msg, this);
+	  return;
   }
-  return;
+
+  //check if pca parameter dir has valid files
+  if (!cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCA_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/Mean_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCCumulativeVariance.csv"))
+  {
+	  std::string msg = "The required files PCA_PERF.csv, Mean_PERF.csv and PCCumulativeVariance.csv do not exist in the directory:" + pcaparamsdirectory.toStdString();
+	  ShowErrorMessage(msg,this);
+	  return;
+  }
+
+  //check if version compatible
+  if (cbica::isFile(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+  {
+	  if (!cbica::IsCompatible(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+	  {
+		  ShowErrorMessage("The version of pca parameters is incompatible with this version of CaPTk.",this);
+		  return;
+	  }
+  }
+
+  //pass params to object
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  //calling the algorithm 
+  PerfusionPCA::ErrorCode code = mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(), outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString());
+  if (code == PerfusionPCA::ErrorCode::MismatchedTimePoints)
+  {
+	  ShowMessage("Number of time points in the input does not match with the pca parameters. Cannot proceed.", this);
+  }
+  else if (code == PerfusionPCA::ErrorCode::NoError)
+  {
+	  ShowMessage("PCA components have been saved at the specified location.", this);
+  }
+
 }
 
 
@@ -5277,45 +5328,46 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
 }
 
 
-void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance)
 {
-  std::string errorMsg;
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide input directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide output directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory", this);
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  PerfusionPCA mPCAEstimator; //PCA algorithm object
 
-  std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  //sort and arrange input data
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
 
-  if (QualifiedSubjects.size() == 0)
+  //check if input has valid subjects
+  if (mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
-    ShowMessage("Trained PCA model has been saved at the specified location.", this);
+
+  //load the input dataset
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
+  {
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
+	  ShowMessage(msg, this);
+	  return;
+  }
+
+  //when both number of pca images and variance are not specified
+  if (nPCAImages.isEmpty() && variance.isEmpty())
+  {
+	  nPCAImages = "0"; //assign zero since in this case, we don't want to produce any PCA images
+  }
+
+  //pass params to object
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  //calling the algorithm 
+  if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
+    ShowMessage("PCA parameters and images have been saved at the specified location.", this);
   else
-    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("Something went wrong during the calculation. Please contact software@cbica.upenn.edu", this);
 }
 
 
@@ -6635,11 +6687,12 @@ void fMainWindow::ApplicationEGFR()
 #ifdef BUILD_RECURRENCE
 void fMainWindow::ApplicationRecurrence()
 {
-  {
-    recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
-    recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
-    recurrencePanel.exec();
-  }
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on a more optimized robust implementation that should enable generalization in multi-institutional data.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //recurrencePanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+  //recurrencePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["RecurrenceEstimator"]["Model"].as<std::string>());
+  //recurrencePanel.exec();
 }
 #endif
 
@@ -6647,11 +6700,12 @@ void fMainWindow::ApplicationRecurrence()
 #ifdef BUILD_PSEUDOPROGRESSION
 void fMainWindow::ApplicationPseudoProgression()
 {
-  {
-    pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
-    pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
-    pseudoPanel.exec();
-  }
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that should enable generalization in multi-institutional data. We expect this to be released in our next patch release, in Q4 2020.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //pseudoPanel.SetCurrentImagePath(m_tempFolderLocation.c_str());
+  //pseudoPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["PseudoProgressionEstimator"]["Model"].as<std::string>());
+  //pseudoPanel.exec();
 }
 #endif
 
@@ -6821,23 +6875,26 @@ void fMainWindow::ApplicationImagingSubtype()
 }
 #endif
 
-#ifdef BUILD_MSUBTYPE
 void fMainWindow::ApplicationMolecularSubtype()
 {
+#ifdef BUILD_MSUBTYPE
   msubtypePanel.SetCurrentImagePath(mInputPathName);
   msubtypePanel.SetTrainedModelLink(m_downloadLinks["inputs"]["MolecularSubtypePredictor"]["Model"].as<std::string>());
   msubtypePanel.exec();
-}
 #endif
+}
 
 
 #ifdef BUILD_SURVIVAL
 void fMainWindow::ApplicationSurvival()
 {
-  survivalPanel.SetCurrentImagePath(mInputPathName);
-  survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
-  survivalPanel.setModal(false);
-  survivalPanel.exec();
+  QString text = "This functionality has been removed from this CaPTk release, and we are actively working on an optimized robust implementation that would enable generalization in multi-institutional data.";
+  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
+  msgBox.exec();
+  //survivalPanel.SetCurrentImagePath(mInputPathName);
+  //survivalPanel.SetTrainedModelLink(m_downloadLinks["inputs"]["SurvivalPredictor"]["Model"].as<std::string>());
+  //survivalPanel.setModal(false);
+  //survivalPanel.exec();
 }
 #endif
 
@@ -8077,12 +8134,8 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
-  ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
-  octantImage->SetRegions(roi1Image->GetLargestPossibleRegion());
-  octantImage->Allocate();
-  octantImage->SetSpacing(roi1Image->GetSpacing());
-  octantImage->SetOrigin(roi1Image->GetOrigin());
-  octantImage->SetDirection(roi1Image->GetDirection());
+  auto  octantImage = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
+  octantImage->DisconnectPipeline();
 
   auto size_1 = roi1Image->GetLargestPossibleRegion().GetSize();
   auto size_2 = roi2Image->GetLargestPossibleRegion().GetSize();
@@ -8191,11 +8244,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
     roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
     roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
-
-  for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
-    octantIt.Set(0);
-
-
+  
   for (roi2It.GoToBegin(); !roi2It.IsAtEnd(); ++roi2It)
   {
     if (roi2It.Get() > 0)
@@ -8204,6 +8253,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       roi1It.SetIndex(currentIndex);
       roiNew.SetIndex(currentIndex);
+      roiComputed.SetIndex(currentIndex);
 
       //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
@@ -8958,6 +9008,14 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
     ShowErrorMessage("Input image passed is not a valid file, please re-check", this);
     return;
   }
+
+  auto tester = cbica::ImageInfo(inputfilename);
+  if (tester.GetImageDimensions() != 4)
+  {
+    ShowErrorMessage("Perfusion derivatives requires a perfusion (i.e., 4D image) as input");
+    return;
+  }
+
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
@@ -8966,7 +9024,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
   if (perfusionDerivatives.size() == 0)
   {
     std::string message;
-    message = "Perfusion derivatives were not calculated as expected, please see the log file for details: ";
+    message = "Perfusion derivatives were not calculated as expected. Please make sure that the input image does not contain negative values. Please see the log file for details: ";
     message = message + loggerFile;
     ShowErrorMessage(message, this);
   }
@@ -8987,16 +9045,18 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const int before, const int after, const std::string inputfilename, const std::string inputt1cefilename, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
     ShowErrorMessage("Input DSC-MRI Image passed is not a valid file, please re-check", this);
     return;
   }
-  if (!cbica::isFile(inputt1cefilename))
+
+  auto tester = cbica::ImageInfo(inputfilename);
+  if (tester.GetImageDimensions() != 4)
   {
-    ShowErrorMessage("Input T1ce Image passed is not a valid file, please re-check", this);
+    ShowErrorMessage("Perfusion alignment requires a perfusion (i.e., 4D image) as input");
     return;
   }
 
@@ -9004,38 +9064,42 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
 
   PerfusionAlignment objPerfusion;
 
-  std::vector<double> OriginalCurve, RevisedCurve;
-  std::vector<typename ImageTypeFloat3D::Pointer> PerfusionAlignment = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename,  inputt1cefilename, before, after, OriginalCurve, RevisedCurve,echotime);
-  for (int index = 0; index < PerfusionAlignment.size(); index++)
+  std::vector<double> OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve;
+  auto output = objPerfusion.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, inputmaskname, before, after, OriginalCurve, InterpolatedCurve, RevisedCurve, TruncatedCurve,
+    echotime, echotimeOutput, scale, mean);
+
+  auto PerfusionAlignment = output.first;
+  auto calculatedMask = output.second;
+
+  if (!PerfusionAlignment.empty())
   {
-    std::cout << "Writing time-point: " << index + 1 << "/" << PerfusionAlignment.size() << std::endl;
-    cbica::WriteImage<ImageTypeFloat3D>(PerfusionAlignment[index], outputFolder + std::to_string(index + 1 + before) + ".nii.gz");
+    auto joinedImage = cbica::GetJoinedImage< ImageTypeFloat3D, ImageTypeFloat4D >(PerfusionAlignment);
+    cbica::WriteImage< ImageTypeFloat4D >(joinedImage, outputFolder + "/perfusionAlignedImage.nii.gz");
+
+    cbica::WriteImage< ImageTypeFloat3D >(calculatedMask, outputFolder + "/calculatedMask.nii.gz");
+
+    WriteCSVFiles(OriginalCurve, outputFolder + "/original_curve.csv");
+    WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
+    WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
+    WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+
+    objPerfusion.SaveChart(outputFolder + "/plot.jpg");
+
+    QString msg;
+    msg = "Aligned images have been saved at the specified location.";
+    ShowMessage(msg.toStdString(), this);
   }
-
-  std::ofstream myfile;
-  myfile.open(outputFolder + "/original_curve.csv");
-  for (unsigned int index1 = 0; index1 < OriginalCurve.size(); index1++)
-    myfile << std::to_string(OriginalCurve[index1]) << "\n";
-  myfile.close();
-
-  myfile.open(outputFolder + "/revised_curve.csv");
-  for (unsigned int index1 = 0; index1 < RevisedCurve.size(); index1++)
-    myfile << std::to_string(RevisedCurve[index1]) << "\n";
-  myfile.close();
-
-  QString msg;
-  msg = "Aligned images have been saved at the specified location.";
-  ShowMessage(msg.toStdString(), this);
+  else
+  {
+    ShowErrorMessage("Something went wrong and CaPTk could not align the perfusion signal correctly. Please use CLI for detailed error report.", this);
+  }
 }
 
-void fMainWindow::CallTrainingSimulation(const std::string featurefilename, const std::string targetfilename, const std::string outputFolder, const std::string modeldirectory, int classifier, int confType, int folds)
+void fMainWindow::CallTrainingSimulation(const TrainingModuleParameters params)
 {
-  int defaultfeatureselectiontype = 3;
-  int defaultoptimizationtype = 0;
-  int defaultcvtype = 1;
-
   TrainingModule m_trainingsimulator;
-  if (m_trainingsimulator.Run(featurefilename, outputFolder, targetfilename, modeldirectory, classifier, folds, confType,defaultfeatureselectiontype, defaultoptimizationtype,defaultcvtype))
+
+  if (m_trainingsimulator.Run(params))
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
@@ -9662,7 +9726,7 @@ void fMainWindow::closeEvent(QCloseEvent* event)
   }
 }
 
-void fMainWindow::updateProgress(int progress, std::string message, int max)
+void fMainWindow::updateProgress(qint64 progress, std::string message, qint64 max)
 {
 #ifdef USE_PROCESSDIALOG
   m_progressBar->setMaximum(max);
@@ -10148,6 +10212,7 @@ std::vector<std::map<CAPTK::ImageModalityType, std::string>>  fMainWindow::LoadQ
 
 void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const std::string modeldirectory, const std::string inputdirectory, const std::string outputdirectory)
 {
+#ifdef BUILD_MSUBTYPE
   if (modeldirectory == "")
   {
     ShowErrorMessage("Please provide path of a directory having SVM model");
@@ -10240,12 +10305,13 @@ void fMainWindow::CallForMolecularSubtypePredictionOnExistingModelFromMain(const
     msg = msg + "Input Directory = " + QString::fromStdString(inputdirectory) + "\nOutput Directory = " + QString::fromStdString(outputdirectory) + "\nModel Directory = " + QString::fromStdString(modeldirectory);
   }
   ShowMessage(msg.toStdString(), this);
+#endif
 }
 
 void fMainWindow::CallForNewMolecularSubtypePredictionModelFromMain(const std::string inputdirectory, const std::string outputdirectory)
 {
+#ifdef BUILD_MSUBTYPE
   std::vector<double> finalresult;
-
 
   if (inputdirectory.empty())
   {
@@ -10297,6 +10363,7 @@ void fMainWindow::CallForNewMolecularSubtypePredictionModelFromMain(const std::s
   {
     ShowMessage("A Molecular Subtype Prediction model has been prepared and saved. \n\nInput Directory = " + inputdirectory + "\nOutput Directory = " + outputdirectory, this);
   }
+#endif
 }
 
 bool fMainWindow::isMaskDefined()

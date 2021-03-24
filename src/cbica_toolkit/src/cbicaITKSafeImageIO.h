@@ -5,11 +5,11 @@
 
 Read and Write itk::Image data in a safe manner. Header-only
 
-https://www.cbica.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
-Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.cbica.upenn.edu/sbia/software/license.html
+Copyright (c) 2016 University of Pennsylvania. All rights reserved. <br>
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #pragma once
@@ -753,7 +753,7 @@ namespace cbica
   template <typename ComputedImageType = ImageTypeFloat3D>
   void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, 
     typename ComputedImageType::Pointer imageToWrite, 
-    const std::string &outputDir, const float nifti2dicomTolerance = 0.0, const float nifti2dicomOriginTolerance = 0.0,
+    const std::string &outputDir, const float nifti2dicomTolerance = 0.0, const float nifti2dicomOriginTolerance = 0.0, const float nifti2dicomSpacingTolerance = 0.0,
     const std::string& outputPrefix = "image")
   {
     if (cbica::isDir(dicomImageReferenceDir))
@@ -767,7 +767,7 @@ namespace cbica
       caster->SetInput(imageToWrite);
       caster->Update();
       auto imageToWrite_casted = caster->GetOutput();
-      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted, nifti2dicomTolerance, nifti2dicomOriginTolerance))
+      if (!cbica::ImageSanityCheck< DicomImageType >(referenceDicom, imageToWrite_casted, nifti2dicomTolerance, nifti2dicomOriginTolerance, nifti2dicomSpacingTolerance))
       {
         std::cerr << "The reference DICOM image and image to write are not consistent.\n";
         return;
@@ -826,7 +826,7 @@ namespace cbica
       // get the default series description and add some information to make it unique
       std::string seriesDescription;
       itk::ExposeMetaData< std::string >(*dictArray->at(0), "0008|103e", seriesDescription);
-      seriesDescription += ": Processed_CaPTk";
+      seriesDescription += "_Processed-CaPTk";
 
       for (size_t i = 0; i < dictArray->size(); i++)
       {

@@ -364,6 +364,66 @@ void FeatureExtraction< TImage >::CalculateNGTDM(const typename TImage::Pointer 
 
 
 template< class TImage >
+void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointer itkImage,
+  const typename TImage::Pointer maskImage, std::map<std::string, double>& featurevec)
+{
+  // this is a special case where the features are extracted via a python executable
+  auto collage_cli = cbica::getExecutablePath() + "/collageradiomics"
+#ifdef _WIN32
+    + ".exe"
+#else
+
+#endif
+    ;
+  if (!cbica::isFile(collage_cli))
+  {
+    std::cerr << "Could not find the Collage CLI, so cannot extract collage features.\n";
+    return;
+  }
+  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
+
+  auto tempDir = cbica::createTemporaryDirectory();
+  auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
+  auto inputMask = cbica::normPath(tempDir + "/inputMask.nii.gz");
+  auto outputCSV = cbica::normPath(tempDir + "/output_collage.csv");
+
+  // write input images to temp dir
+  cbica::WriteImage< TImage >(itkImage, inputImage);
+  cbica::WriteImage< TImage >(maskImage, inputMask);
+
+  // construct the command and call it
+  auto command = collage_cli + " -i " + inputImage + " -m " + inputMask + " -s " + std::to_string(m_Radius) + " -b " + std::to_string(m_Bins) + " -o " + outputCSV;
+  auto console_output = cbica::getStdoutFromCommand(command);
+  if (!cbica::isFile(outputCSV))
+  {
+    auto outputLog = cbica::normPath(tempDir + "/collage_output.log");
+    std::ofstream out(outputLog);
+    out << console_output;
+    out.close();
+    std::cerr << "Something went wrong while running COLLAGE, please see log file at '" << outputLog << "' for more details.\n";
+    return;
+  }
+
+  // read contents of output file and populate collage features
+  std::ifstream file(outputCSV);
+  std::map< std::string, float > featureNamesAndValues;
+  std::string line = "";
+  // Iterate through each line and split the content using delimeter
+  while (getline(file, line))
+  {
+    if (line.find("FeatureName") == std::string::npos)
+    {
+      auto temp = cbica::stringSplit(line, ",");
+      auto featureName = cbica::replaceString(temp[0], "Collage", "");
+      featurevec[featureName] = std::atof(temp[1].c_str());
+    }
+  }
+  file.close();
+  cbica::removeDirectoryRecursively(tempDir, true); // delete the directory
+}
+
+
+template< class TImage >
 void FeatureExtraction< TImage >::CalculateGLSZM(const typename TImage::Pointer itkImage, const typename TImage::Pointer maskImage, OffsetVectorPointer offset, std::map<std::string, double>& featurevec)
 {
   GLSZMFeatures< TImage > glszmCalculator;
@@ -1050,6 +1110,7 @@ void FeatureExtraction< TImage >::SetFeatureParam(std::string featureFamily)
           else
           {
             std::cerr << "Unsupported binning type selected; defaulting to FixedBinNumber.\n";
+            m_histogramBinningType = HistogramBinningType::FixedBinNumber;
           }
         }
         else if (outer_key == ParamsString[Resampling])
@@ -1676,6 +1737,18 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
+      // get the quantization properties, if any
+      {
+        auto temp = m_Features.find(FeatureFamilyString[Generic]);
+        if (temp != m_Features.end())
+        {
+          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
+          {
+            SetFeatureParam(FeatureFamilyString[Generic]);
+          }
+        }
+      }
+
       /// sanity checks for required generic options
       if (m_histogramBinningType < 0)
       {
@@ -1696,18 +1769,6 @@ void FeatureExtraction< TImage >::Update()
       if (m_resamplingInterpolator_Mask.empty())
       {
         std::cerr << "Image resampling interpolator type needs to be defined in the parameter file, please see default parameter file for example.\n";
-      }
-
-      // get the quantization properties, if any
-      {
-        auto temp = m_Features.find(FeatureFamilyString[Generic]);
-        if (temp != m_Features.end())
-        {
-          if (std::get<0>(temp->second)) // if the feature family has been selected in the GUI
-          {
-            SetFeatureParam(FeatureFamilyString[Generic]);
-          }
-        }
       }
 
       if (m_resamplingResolution > 0)
@@ -2556,11 +2617,24 @@ void FeatureExtraction< TImage >::Update()
                         m_Radius = m_Radius_range[r];
                         auto m_Radius_string = std::to_string(m_Radius);
 
-                        CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+                        bool sizeIsFine = true;
+                        auto size = currentInputImage_patch->GetLargestPossibleRegion().GetSize();
+                        for (size_t d = 0; d < TImageType::ImageDimension; d++)
+                        {
+                          if (size[d] < (m_Radius + 2)) // this is the size needs to be checked
+                          {
+                            sizeIsFine = false;
+                          }
+                        }
 
-                        WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
-                          "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
-                          ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        if (sizeIsFine)
+                        {
+                          CalculateGaborWavelets(currentInputImage_patch, std::get<4>(temp->second), allROIs[j].latticeGridPoint);
+
+                          WriteFeatures(m_modality[i], allROIs[j].label, std::string(FeatureFamilyString[f]) + "_Radius-" + m_Radius_string, std::get<4>(temp->second),
+                            "Radius=" + std::to_string(m_Radius) + ";FMax=" + std::to_string(m_gaborFMax) + ";Gamma=" + std::to_string(m_gaborGamma) +
+                            ";Directions=" + m_Radius_string + ";Level=" + std::to_string(m_gaborLevel), m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
                       } // end radius-loop
 
                       if (m_debug)
@@ -2720,6 +2794,80 @@ void FeatureExtraction< TImage >::Update()
                 }
               }
               break;
+            }
+            case COLLAGE:
+            {
+              // this is a special case, where a pre-compiled python binary is called for every image/mask
+              if (!allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
+              { // start lattice check
+                auto temp = m_Features.find(FeatureFamilyString[f]);
+                if (temp != m_Features.end())
+                {
+                  if (std::get<0>(temp->second))
+                  {
+                    auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                    std::get<2>(temp->second) = m_modality[i];
+                    std::get<3>(temp->second) = allROIs[j].label;
+
+                    for (size_t r = 0; r < m_Radius_range.size(); r++)
+                    {
+                      m_Radius = m_Radius_range[r];
+                      auto m_Radius_string = std::to_string(m_Radius);
+
+                      auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                      //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                      for (size_t b = 0; b < m_Bins_range.size(); b++)
+                      {
+                        m_Bins = m_Bins_range[b];
+                        auto m_Bins_string = std::to_string(m_Bins);
+                        std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                        if (TImage::ImageDimension == 3)
+                        {
+                          std::string currentFeatureFamily = FeatureFamilyString[f];
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                            "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                          {
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                              "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                              "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                            CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                            WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                              "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                              ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                          }
+                        }
+                        else
+                        {
+                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                            "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                        }
+                      } // end bin-loop
+                    } // end radius-loop
+
+                    if (m_debug)
+                    {
+                      auto tempT2 = std::chrono::high_resolution_clock::now();
+                      m_logger.Write("Collage Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                    }
+                  }
+                }
+                break;
+              } // end lattice check
             }
             default: // undefined Feature
               break;

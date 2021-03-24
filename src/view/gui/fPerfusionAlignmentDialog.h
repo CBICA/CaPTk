@@ -10,7 +10,7 @@
 //
 // Contact details: software@cbica.upenn.edu
 //
-// License Agreement: https://www.med.upenn.edu/sbia/software-agreement.html
+// License Agreement: https://www.med.upenn.edu/cbica/software-agreement.html
 ///////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef _fPerfusionAlignmentDialog_h_
@@ -41,19 +41,16 @@ public:
   }
 
   QString mInputPathName;
-  QString mInputT1cePathName;
   QString mOutputPathName;
-
 
   public slots:
   void CancelButtonPressed();
   void ConfirmButtonPressed();
   void SelectOutputImage();
   void SelectInputImage();
-  void SelectT1ceInputImage();
 
 signals:
-  void RunPerfusionAlignmentCalculation(double echotime, int before,int after, const std::string inputfile, const std::string inputt1cefile, std::string outputFolder);
+  void RunPerfusionAlignmentCalculation(double echotime, double echoOutput, int before, int after, int mean, int scale, const std::string inputfile, const std::string maskfile, std::string outputFolder);
 };
 
 

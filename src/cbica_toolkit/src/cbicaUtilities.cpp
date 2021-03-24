@@ -5,11 +5,11 @@
 
 Dependecies: OpenMP
 
-https://www.med.upenn.edu/sbia/software/ <br>
+https://www.med.upenn.edu/cbica/captk/ <br>
 software@cbica.upenn.edu
 
 Copyright (c) 2018 University of Pennsylvania. All rights reserved. <br>
-See COPYING file or https://www.med.upenn.edu/sbia/software-agreement.html
+See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 
 */
 #if (_WIN32)
@@ -63,6 +63,7 @@ static const char  cSeparator = '/';
 #include <stdexcept>
 #include <algorithm>
 #include <string>
+#include <array>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -1235,6 +1236,29 @@ namespace cbica
     return returnVector;
   }
 
+  std::string getStdoutFromCommand(const std::string command)
+  {
+  std::array<char, 256> buffer;
+  std::string result;
+#ifdef WIN32
+#define PCLOSE _pclose
+#define POPEN _popen
+#else
+#define PCLOSE pclose
+#define POPEN popen
+#endif
+  std::unique_ptr<FILE, decltype(&PCLOSE)> pipe(POPEN(command.c_str(), "r"), PCLOSE);
+  if (!pipe) 
+  {
+    throw std::runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
+  {
+    result += buffer.data();
+  }
+  return result;
+  }
+
   std::vector< std::string > filesInDirectory(const std::string &dirName, bool returnFullPath)
   {
     if (!cbica::directoryExists(dirName))
@@ -1367,7 +1391,6 @@ namespace cbica
 
       if (dirp->d_type == DT_DIR)
       {
-        allDirectories.push_back(dirName + "/" + dirp->d_name);
         if (returnFullPath)
         {
           allDirectories.push_back(dirName + "/" + dirp->d_name);

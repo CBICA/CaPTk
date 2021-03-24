@@ -4,6 +4,7 @@
     <img src="https://raw.githubusercontent.com/CBICA/CaPTk/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://app.codacy.com/gh/CBICA/CaPTk?utm_source=github.com&utm_medium=referral&utm_content=CBICA/CaPTk&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/4388874394474ce38d6e6586255ef645"</a>
     <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk"></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
@@ -30,22 +31,13 @@ This work is in part supported by the grant U24-CA189523, awarded by the Nationa
 
 ## Disclaimer
 - The software has been designed for research purposes only and has neither been reviewed nor approved for clinical use by the Food and Drug Administration (FDA) or by any other federal/state agency.
-- This code (excluding dependent libraries) is governed by the license provided in https://www.med.upenn.edu/sbia/software-agreement.html unless otherwise specified.
+- This code (excluding dependent libraries) is governed by the license provided in https://www.med.upenn.edu/cbica/software-agreement.html unless otherwise specified.
 
 ## Downloads
 
 By downloading CaPTk, you agree to our [License](./LICENSE). You can review Installation Instructions [here](https://cbica.github.io/CaPTk/Installation.html).
 
-## Latest Stable (1.7.6)
-
-| Platform (x64) | Link                                             |
-|:--------------:|:------------------------------------------------:|
-| Windows        | https://www.nitrc.org/frs/downloadlink.php/11652 |
-| Linux          | https://www.nitrc.org/frs/downloadlink.php/11651 |
-| macOS          | https://www.nitrc.org/frs/downloadlink.php/11650 |
-| Archive        | https://www.nitrc.org/frs/?group_id=1059         |
-
-## Test Build (1.8.0.Beta)
+## Latest Stable (1.8.1)
 
 | Platform (x64) | Link                                             |
 |:--------------:|:------------------------------------------------:|
@@ -68,7 +60,7 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/Getting_Started.html#gs_FAQ)
 
 ## Contact
-For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
+For more information or any support, please post on the [Discussions](https://github.com/CBICA/CaPTk/discussions) section or contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
 
 ## GitHub Distribution
 
