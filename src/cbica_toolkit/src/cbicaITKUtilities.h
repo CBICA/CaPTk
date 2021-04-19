@@ -371,20 +371,20 @@ namespace cbica
     // perform an absolute check when either of the direction cosine location is zero
     if ((input_1 == 0) || (input_2 == 0))
     {
-      if (percentageDifference < threshold)
+      if (percentageDifference <= threshold)
       {
         percentageDifference = 0;
       }
       else
       {
         // otherwise, calculate the percentage based on the non-zero cosine
-        if (input_1 == 0)
+        if (input_2 != 0)
         {
-          percentageDifference /= input_1;
+          percentageDifference /= std::abs(input_2);
         }
-        else if (input_2 == 0)
+        else if (input_1 != 0)
         {
-          percentageDifference /= input_1;
+          percentageDifference /= std::abs(input_1);
         }
       }
     }
@@ -441,6 +441,10 @@ namespace cbica
         if (directions_1[i][j] != directions_2[i][j])
         {
           auto percentageDifference = ImagePropertyDifference(directions_1[i][j], directions_2[i][j]);
+          if (std::isinf(percentageDifference)
+          {
+
+          }
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
