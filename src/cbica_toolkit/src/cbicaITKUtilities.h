@@ -441,10 +441,6 @@ namespace cbica
         if (directions_1[i][j] != directions_2[i][j])
         {
           auto percentageDifference = ImagePropertyDifference(directions_1[i][j], directions_2[i][j]);
-          if (std::isinf(percentageDifference)
-          {
-
-          }
           if (percentageDifference > nifti2dicomTolerance)
           {
             std::cerr << "Direction mismatch > " << nifti2dicomTolerance << 
