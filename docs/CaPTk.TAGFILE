@@ -37,7 +37,7 @@
     <docanchor file="FAQ.html" title="Where can I find the CaPTk Docker Image?">gs_FAQ_7</docanchor>
     <docanchor file="FAQ.html" title="How do I run the CaPTk Docker Image to show the interface?">gs_FAQ_8</docanchor>
     <docanchor file="FAQ.html" title="Is there something wrong with Feature Extraction?">gs_FAQ_9</docanchor>
-    <docanchor file="FAQ.html" title="What if I am having an issue not listed here?">gs_FAQ_10</docanchor>
+    <docanchor file="FAQ.html" title="I am having issues running CaPTk on Ubuntu 20.04">gs_FAQ_10</docanchor>
   </compound>
   <compound kind="page">
     <name>How_To_Guides</name>

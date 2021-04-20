@@ -1815,11 +1815,14 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      // sanity check for the generated ROIs and image to ensure they are in same physical space
-      if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+      if (!m_skipSanityCheck)
       {
-        std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
-        exit(EXIT_FAILURE);
+        // sanity check for the generated ROIs and image to ensure they are in same physical space
+        if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+        {
+          std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
+          exit(EXIT_FAILURE);
+        }
       }
 
       if (m_debug)
