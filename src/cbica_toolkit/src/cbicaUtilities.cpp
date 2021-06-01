@@ -2232,7 +2232,9 @@ namespace cbica
         return 0L;			/* Failed? */
     
     #endif
-  #endif
+#else
+    return 0;
+#endif
   }
 
   size_t getCurrentlyUsedMemory()

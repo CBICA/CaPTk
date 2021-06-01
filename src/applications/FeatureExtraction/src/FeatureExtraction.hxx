@@ -753,6 +753,16 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImage::PixelType >& nonZeroVoxels, std::map< std::string, double >& featurevec, bool latticePatch)
 {
   cbica::Statistics< typename TImage::PixelType > statisticsCalculatorToUse;
+  if (m_QuantizationExtent.empty())
+  {
+    std::cerr << "'Quantization_Extent' needs to be defined under 'Generic'.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (m_histogramBinningType == -1)
+  {
+    std::cerr << "'Quantization_Type' needs to be defined under 'Generic'.\n";
+    exit(EXIT_FAILURE);
+  }
   if (m_QuantizationExtent == "Image")
   {
     statisticsCalculatorToUse = m_statistics_global[m_currentROIValue];
