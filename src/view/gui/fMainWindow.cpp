@@ -5749,38 +5749,39 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   /**** Image Loading ****/
 
   int i = 0, fileSizeCheck = files.size() + 1;
+  auto fileForSanityCheck = files[0].toStdString();
   if (mSlicerManagers.empty())
   {
+    std::string fileName = files[i].toStdString();
+    fileName = cbica::normPath(fileName);
+    updateProgress(i + 1, "Opening " + fileName, files.size());
+    //auto extension = cbica::getFilenameExtension(fileName);
+    //if (!extension.empty())
+    //{
+    //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    //}
+    //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+    //  (extension == ".ima"))
+    if (cbica::IsDicom(fileName))
     {
-      std::string fileName = files[i].toStdString();
-      fileName = cbica::normPath(fileName);
-      updateProgress(i + 1, "Opening " + fileName, files.size());
-      //auto extension = cbica::getFilenameExtension(fileName);
-      //if (!extension.empty())
-      //{
-      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      //}
-      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-      //  (extension == ".ima"))
-      if (cbica::IsDicom(fileName))
-      {
-        QDir d = QFileInfo(fileName.c_str()).absoluteDir();
-        QString fname = d.absolutePath();
-        dicomfilename = fileName;
-        this->openDicomImages(fname);
-      }
-      else
-      {
-        LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
-      }
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      QString fname = d.absolutePath();
+      dicomfilename = fileName;
+      this->openDicomImages(fname);
+    }
+    else
+    {
+      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
     }
     fileSizeCheck = 1;
   }
   else
   {
     fileSizeCheck = 0;
+    fileForSanityCheck = mSlicerManagers[0]->GetPathFileName();
   }
 
+  bool c = false;
   // basic sanity check
   if (files.size() > fileSizeCheck)
   {
@@ -5800,7 +5801,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         unsupportedExtension += fileName + "\n";
       }
-      else if (!cbica::ImageSanityCheck(files[0].toStdString(), files[i].toStdString()))
+      else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
       {
         erroredFiles += fileName + "\n";
       }
@@ -5822,7 +5823,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     }
     if (!erroredFiles.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+      ShowErrorMessage("Sanity check (dimensions/size/origin/spacing/directions with original image) for the following files did not pass, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
     }
 
     for (int i = 0; i < basicSanityChecksPassedFiles.size(); i++)
@@ -5916,6 +5917,8 @@ void fMainWindow::openDicomImages(QString dir)
   QDir d(dir);
   seriesDescValue = d.dirName().toStdString(); 
   imageManager->SetFilename(seriesDescValue);
+  auto filesInDir = cbica::filesInDirectory(dir.toStdString());
+  imageManager->SetPathFileName(filesInDir[0].c_str());
 
   QString id = QString(seriesDescValue.c_str()) + QString::number(mSlicerManagers.size() - 1);
   //

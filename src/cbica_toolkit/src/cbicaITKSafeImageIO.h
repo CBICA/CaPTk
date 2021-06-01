@@ -751,11 +751,79 @@ namespace cbica
   \return itk::Image of specified pixel and dimension type
   */
   template <typename ComputedImageType = ImageTypeFloat3D>
+  void WriteDicomImage(typename ComputedImageType::Pointer imageToWrite, const std::string &outputDir, const std::string& outputPrefix = "image")
+  {
+    using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >; // dicom currently doesn't support float properly
+
+    typedef itk::CastImageFilter<ComputedImageType, DicomImageType> CastFilterType;
+    typename CastFilterType::Pointer castFilter = CastFilterType::New();
+    castFilter->SetInput(imageToWrite);
+    castFilter->Update();
+
+    // initialize the image io
+    auto dicomIO = itk::GDCMImageIO::New();
+    dicomIO->SetComponentType(itk::ImageIOBase::IOComponentType::INT);
+
+    auto dictionary = dicomIO->GetMetaDataDictionary();
+
+    itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", "DERIVED\\SECONDARY"); // Image Type
+    itk::EncapsulateMetaData<std::string>(dictionary, "0008|103e", "Processed-CaPTk"); // # Series Description
+    itk::EncapsulateMetaData<std::string>(dictionary, "0008|0030", cbica::getCurrentLocalTimestamp()); // # Study Time - ensures unique string
+
+    dicomIO->SetMetaDataDictionary(dictionary);
+
+    auto seriesWriter = itk::ImageSeriesWriter< DicomImageType, itk::Image<typename DicomImageType::PixelType, 2> >::New(); // always write in 2D series
+
+    cbica::createDir(outputDir);
+
+    auto namesGenerator = itk::NumericSeriesFileNames::New();
+    //namesGenerator->SetUseSeriesDetails(false);
+    auto start = imageToWrite->GetLargestPossibleRegion().GetIndex();
+    auto size = imageToWrite->GetLargestPossibleRegion().GetSize();
+    namesGenerator->SetSeriesFormat((outputDir + "/" + outputPrefix + "%03d.dcm").c_str());
+    namesGenerator->SetStartIndex(start[2]);
+    namesGenerator->SetEndIndex(start[2] + size[2] - 1);
+    namesGenerator->SetIncrementIndex(1);
+
+    seriesWriter->SetInput(castFilter->GetOutput());
+    seriesWriter->SetFileNames(namesGenerator->GetFileNames());
+    seriesWriter->SetImageIO(dicomIO);
+    seriesWriter->SetMetaDataDictionary(dictionary);
+
+    try
+    {
+      seriesWriter->Write();
+    }
+    catch (itk::ExceptionObject &e)
+    {
+      std::cerr << "Error occurred while trying to write the image '" << outputDir << "': " << e.what() << "\n";
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  /**
+  \brief Write itk::ImageReader as DICOM to specified directory
+
+  This uses the dictionary created by the reference DICOM image
+
+  \param dicomImageReferenceDir Reference DICOM image
+  \param imageToWrite Pointer to processed image data which is to be written
+  \param outputDir File containing the image
+  \param nifti2dicomTolerance The direction tolerance for sanity check
+  \param outputPrefix The prefix for the output filenames
+  \return itk::Image of specified pixel and dimension type
+  */
+  template <typename ComputedImageType = ImageTypeFloat3D>
   void WriteDicomImageFromReference(const std::string dicomImageReferenceDir, 
     typename ComputedImageType::Pointer imageToWrite, 
     const std::string &outputDir, const float nifti2dicomTolerance = 0.0, const float nifti2dicomOriginTolerance = 0.0, const float nifti2dicomSpacingTolerance = 0.0,
     const std::string& outputPrefix = "image")
   {
+    if (dicomImageReferenceDir.empty()) // when no reference is present, switch to using default dicomIO
+    {
+      return WriteDicomImage< ComputedImageType >(imageToWrite, outputDir, outputPrefix);
+    }
+
     if (cbica::isDir(dicomImageReferenceDir))
     {
       using DicomImageType = itk::Image< int, ComputedImageType::ImageDimension >;
