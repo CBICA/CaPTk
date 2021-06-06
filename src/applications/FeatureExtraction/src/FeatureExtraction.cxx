@@ -526,7 +526,7 @@ int main(int argc, char** argv)
       }
 
       // sanity checks
-      if (!cbica::ImageSanityCheck< ImageType >(inputImages[0], maskImage))
+      if (!cbica::ImageSanityCheck< ImageType >(inputImages[0], maskImage, 1, 1, 1))
       {
         std::cerr << "The input image(s) and mask do not have consistent physical dimensions. Please resample and re-try.\n";
         exit(EXIT_FAILURE);
