@@ -3,7 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
-#include "DicomMetadataReader.h"
+#include "DicomMetadataReader.h" 
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
