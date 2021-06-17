@@ -895,8 +895,8 @@ fMainWindow::fMainWindow()
   connect(&directionalityEstimator, SIGNAL(RunDirectionalityEstimator(const std::string, const std::string, const std::string)), this, SLOT(CallDirectionalityEstimator(const std::string, const std::string, const std::string)));
   connect(&bratsPipelineDialog, SIGNAL(RunBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)), this, SLOT(CallBraTSPipeline(const std::string, const std::string, const std::string, const std::string, const std::string)));
 
-  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(std::string, std::string, std::string)), this, SLOT(PCAEstimateOnExistingModel(const std::string &, const std::string &, const std::string &)));
-  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(std::string, std::string)), this, SLOT(TrainNewPCAModelOnGivenData(const std::string &, const std::string &)));
+  connect(&pcaPanel, SIGNAL(ExistingModelBasedPCAEstimate(QString &, QString &, QString &, QString &, QString &)), this, SLOT(PCAEstimateOnExistingModel(QString &, QString &, QString &, QString &, QString &)));
+  connect(&pcaPanel, SIGNAL(TrainNewPCAModel(QString &, QString &, QString &, QString &)), this, SLOT(TrainNewPCAModelOnGivenData(QString &, QString &, QString &, QString &)));
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
@@ -4192,18 +4192,13 @@ void fMainWindow::StartRecurrenceEstimate(const std::string &outputdirectory, bo
   updateProgress(0, "Recurrence estimate for the given subject has been saved and loaded.");
 }
 
-
-
-
-
-
-
 void fMainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
   if (event->mimeData()->hasFormat("text/uri-list")) {
     event->acceptProposedAction();
   }
 }
+
 void fMainWindow::dropEvent(QDropEvent *event)
 {
   QList<QUrl> urls = event->mimeData()->urls();
@@ -4212,9 +4207,32 @@ void fMainWindow::dropEvent(QDropEvent *event)
   {
     vectorOfFiles.push_back(urls[i].toLocalFile());
   }
-  openImages(vectorOfFiles);
+  // if more than 1 files are dropped, assume they are images
+  if ((vectorOfFiles.size() > 1) || mSlicerManagers.empty())
+  {
+    openImages(vectorOfFiles);
+  }
+  else
+  {
+    // ask if it is an image or roi
+    QMessageBox *box = new QMessageBox(QMessageBox::Question,
+      "Image Type",
+      "Please select the type of image being loaded", QMessageBox::Ok | QMessageBox::Cancel);
+    box->button(QMessageBox::Ok)->setText("Image");
+    box->button(QMessageBox::Cancel)->setText("ROI");
+    box->setAttribute(Qt::WA_DeleteOnClose); //makes sure the msgbox is deleted automatically when closed
+    box->setWindowModality(Qt::NonModal);
+    QCoreApplication::processEvents();
+    if (box->exec() == QMessageBox::Ok)
+    {
+      openImages(vectorOfFiles);
+    }
+    else
+    {
+      readMaskFile(vectorOfFiles[0].toStdString());
+    }
+  }
 }
-
 
 void fMainWindow::CloseNonViewingDTIImage(QTableWidgetItem* item)
 {
@@ -4538,63 +4556,66 @@ void fMainWindow::PseudoprogressionEstimateOnExistingModel(const std::string &mo
   return;
 }
 
-void fMainWindow::PCAEstimateOnExistingModel(const std::string &modeldirectory, const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &outputdirectory, QString &pcaparamsdirectory, QString &nPCAImages, QString &variance)
 {
-  if (modeldirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having PCA model");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (cbica::isFile(modeldirectory + "/VERSION.yaml"))
-  {
-      if (!cbica::IsCompatible(modeldirectory + "/VERSION.yaml"))
-      {
-          ShowErrorMessage("The version of model is incompatible with this version of CaPTk.");
-          return;
-      }
-  }
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory having input images");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide path of a directory to save output");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory");
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  PerfusionPCA mPCAEstimator;//PCA algorithm object
 
-  std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
-  if (QualifiedSubjects.size() == 0)
+  //sort and arrange input data
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
+
+  //check if input has valid subjects
+  if (mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
 
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.ApplyExistingPCAModel(10, inputdirectory,outputdirectory,QualifiedSubjects,modeldirectory))
-    ShowMessage("PCA features have been saved at the specified location.", this);
-  else
+  //load the input dataset
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
   {
-    std::string msg;
-    msg = "There was an error in applying the PCA model on new data: " + loggerFile;
-    ShowErrorMessage(msg, this);
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
+	  ShowMessage(msg, this);
+	  return;
   }
-  return;
+
+  //check if pca parameter dir has valid files
+  if (!cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCA_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/Mean_PERF.csv") ||
+	  !cbica::fileExists(pcaparamsdirectory.toStdString() + "/PCCumulativeVariance.csv"))
+  {
+	  std::string msg = "The required files PCA_PERF.csv, Mean_PERF.csv and PCCumulativeVariance.csv do not exist in the directory:" + pcaparamsdirectory.toStdString();
+	  ShowErrorMessage(msg,this);
+	  return;
+  }
+
+  //check if version compatible
+  if (cbica::isFile(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+  {
+	  if (!cbica::IsCompatible(pcaparamsdirectory.toStdString() + "/VERSION.yaml"))
+	  {
+		  ShowErrorMessage("The version of pca parameters is incompatible with this version of CaPTk.",this);
+		  return;
+	  }
+  }
+
+  //pass params to object
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  //calling the algorithm 
+  PerfusionPCA::ErrorCode code = mPCAEstimator.ApplyExistingPCAModel(nPCAImages.toInt(), inputdirectory.toStdString(), outputdirectory.toStdString(),/*QualifiedSubjects,*/pcaparamsdirectory.toStdString());
+  if (code == PerfusionPCA::ErrorCode::MismatchedTimePoints)
+  {
+	  ShowMessage("Number of time points in the input does not match with the pca parameters. Cannot proceed.", this);
+  }
+  else if (code == PerfusionPCA::ErrorCode::NoError)
+  {
+	  ShowMessage("PCA components have been saved at the specified location.", this);
+  }
+
 }
 
 
@@ -5307,45 +5328,46 @@ void fMainWindow::TrainNewPseudoprogressionModelOnGivenData(const std::string &i
 }
 
 
-void fMainWindow::TrainNewPCAModelOnGivenData(const std::string &inputdirectory, const std::string &outputdirectory)
+void fMainWindow::TrainNewPCAModelOnGivenData(QString &inputdirectory, QString &outputdirectory, QString &nPCAImages, QString &variance)
 {
-  std::string errorMsg;
-  if (inputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide input directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (outputdirectory.empty())
-  {
-    ShowErrorMessage("Please provide output directory.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
-    return;
-  }
-  if (!cbica::isDir(outputdirectory))
-  {
-    if (!cbica::createDir(outputdirectory))
-    {
-      ShowErrorMessage("Unable to create the output directory", this);
-      //help_contextual("Glioblastoma_Pseudoprogression.html");
-      return;
-    }
-  }
+  PerfusionPCA mPCAEstimator; //PCA algorithm object
 
-  std::vector<double> finalresult;
-  std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects = LoadQualifiedSubjectsFromGivenDirectoryForPCA(inputdirectory);
+  //sort and arrange input data
+  mPCAEstimator.SortValidSubjectsFromGivenDirectory(inputdirectory.toStdString());
 
-  if (QualifiedSubjects.size() == 0)
+  //check if input has valid subjects
+  if (mPCAEstimator.HasValidSubjects() == 0)
   {
     ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.", this);
-    //help_contextual("Glioblastoma_Pseudoprogression.html");
     return;
   }
-  PerfusionPCA mPCAEstimator;
-  if (mPCAEstimator.TrainNewPerfusionModel(10,inputdirectory,outputdirectory,QualifiedSubjects))
-    ShowMessage("Trained PCA model has been saved at the specified location.", this);
+
+  //load the input dataset
+  std::string inValidSubject;
+  if (mPCAEstimator.LoadData(inValidSubject) == PerfusionPCA::MismatchedTimePoints)
+  {
+	  std::string msg = "Could not load data. Please check that all input data has the same number of time points. Check file: " + inValidSubject;
+	  ShowMessage(msg, this);
+	  return;
+  }
+
+  //when both number of pca images and variance are not specified
+  if (nPCAImages.isEmpty() && variance.isEmpty())
+  {
+	  nPCAImages = "0"; //assign zero since in this case, we don't want to produce any PCA images
+  }
+
+  //pass params to object
+  if (!nPCAImages.isEmpty())
+	  mPCAEstimator.SetNumberOfPCs(nPCAImages.toInt());
+  else if (!variance.isEmpty())
+	  mPCAEstimator.SetVarianceThreshold(variance.toFloat());
+
+  //calling the algorithm 
+  if (mPCAEstimator.TrainNewPerfusionModel(nPCAImages.toInt(),inputdirectory.toStdString(),outputdirectory.toStdString()/*,QualifiedSubjects*/))
+    ShowMessage("PCA parameters and images have been saved at the specified location.", this);
   else
-    ShowErrorMessage("PCA model wasn't able to save the PCA matrices as expected. See log file for details: " + loggerFile, this);
+    ShowErrorMessage("Something went wrong during the calculation. Please contact software@cbica.upenn.edu", this);
 }
 
 
@@ -5727,38 +5749,39 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
   /**** Image Loading ****/
 
   int i = 0, fileSizeCheck = files.size() + 1;
+  auto fileForSanityCheck = files[0].toStdString();
   if (mSlicerManagers.empty())
   {
+    std::string fileName = files[i].toStdString();
+    fileName = cbica::normPath(fileName);
+    updateProgress(i + 1, "Opening " + fileName, files.size());
+    //auto extension = cbica::getFilenameExtension(fileName);
+    //if (!extension.empty())
+    //{
+    //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    //}
+    //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
+    //  (extension == ".ima"))
+    if (cbica::IsDicom(fileName))
     {
-      std::string fileName = files[i].toStdString();
-      fileName = cbica::normPath(fileName);
-      updateProgress(i + 1, "Opening " + fileName, files.size());
-      //auto extension = cbica::getFilenameExtension(fileName);
-      //if (!extension.empty())
-      //{
-      //  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-      //}
-      //if ((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-      //  (extension == ".ima"))
-      if (cbica::IsDicom(fileName))
-      {
-        QDir d = QFileInfo(fileName.c_str()).absoluteDir();
-        QString fname = d.absolutePath();
-        dicomfilename = fileName;
-        this->openDicomImages(fname);
-      }
-      else
-      {
-        LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
-      }
+      QDir d = QFileInfo(fileName.c_str()).absoluteDir();
+      QString fname = d.absolutePath();
+      dicomfilename = fileName;
+      this->openDicomImages(fname);
+    }
+    else
+    {
+      LoadSlicerImages(fileName, CAPTK::ImageExtension::NIfTI);
     }
     fileSizeCheck = 1;
   }
   else
   {
     fileSizeCheck = 0;
+    fileForSanityCheck = mSlicerManagers[0]->GetPathFileName();
   }
 
+  bool c = false;
   // basic sanity check
   if (files.size() > fileSizeCheck)
   {
@@ -5778,7 +5801,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         unsupportedExtension += fileName + "\n";
       }
-      else if (!cbica::ImageSanityCheck(files[0].toStdString(), files[i].toStdString()))
+      else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
       {
         erroredFiles += fileName + "\n";
       }
@@ -5800,7 +5823,7 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
     }
     if (!erroredFiles.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+      ShowErrorMessage("Sanity check (dimensions/size/origin/spacing/directions with original image) for the following files did not pass, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
     }
 
     for (int i = 0; i < basicSanityChecksPassedFiles.size(); i++)
@@ -5894,6 +5917,8 @@ void fMainWindow::openDicomImages(QString dir)
   QDir d(dir);
   seriesDescValue = d.dirName().toStdString(); 
   imageManager->SetFilename(seriesDescValue);
+  auto filesInDir = cbica::filesInDirectory(dir.toStdString());
+  imageManager->SetPathFileName(filesInDir[0].c_str());
 
   QString id = QString(seriesDescValue.c_str()) + QString::number(mSlicerManagers.size() - 1);
   //
@@ -7600,13 +7625,7 @@ void fMainWindow::ApplicationPCA()
   //  ShowErrorMessage(msg, this);
   //}
 
-  QString text = "This functionality has been removed from this CaPTk release, \
-and we are actively testing an optimized robust implementation that would enable \
-generalization in multi-institutional data. We expect this to be released in our \
-next patch release, expected in Q4 2020.";
-  QMessageBox msgBox(QMessageBox::Information, "Information", text, QMessageBox::Ok, this);
-  msgBox.exec();
-  //pcaPanel.exec();
+  pcaPanel.exec();
 }
 void fMainWindow::ApplicationPerfusionMeasuresCalculation()
 {
@@ -8118,12 +8137,8 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   auto newMaskImage_computed = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
   newROIImage->DisconnectPipeline();
 
-  ImageTypeFloat3D::Pointer octantImage = ImageTypeFloat3D::New();
-  octantImage->SetRegions(roi1Image->GetLargestPossibleRegion());
-  octantImage->Allocate();
-  octantImage->SetSpacing(roi1Image->GetSpacing());
-  octantImage->SetOrigin(roi1Image->GetOrigin());
-  octantImage->SetDirection(roi1Image->GetDirection());
+  auto  octantImage = cbica::CreateImage< ImageTypeFloat3D >(roi1Image);
+  octantImage->DisconnectPipeline();
 
   auto size_1 = roi1Image->GetLargestPossibleRegion().GetSize();
   auto size_2 = roi2Image->GetLargestPossibleRegion().GetSize();
@@ -8232,11 +8247,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
   ImageTypeFloat3DIterator roi1It(roi1Image, roi1Image->GetLargestPossibleRegion()), roi2It(roi2Image, roi2Image->GetLargestPossibleRegion()), 
     roiNew(newROIImage, newROIImage->GetLargestPossibleRegion()), octantIt(octantImage, octantImage->GetLargestPossibleRegion()),
     roiComputed(newMaskImage_computed, newMaskImage_computed->GetLargestPossibleRegion());
-
-  for (octantIt.GoToBegin(); !octantIt.IsAtEnd(); ++octantIt)
-    octantIt.Set(0);
-
-
+  
   for (roi2It.GoToBegin(); !roi2It.IsAtEnd(); ++roi2It)
   {
     if (roi2It.Get() > 0)
@@ -8245,6 +8256,7 @@ void fMainWindow::CallDirectionalityEstimator(const std::string roi1File, const 
 
       roi1It.SetIndex(currentIndex);
       roiNew.SetIndex(currentIndex);
+      roiComputed.SetIndex(currentIndex);
 
       //float* pData = (float*)this->mSlicerManagers[0]->GetSlicer(0)->mMask->GetScalarPointer((int)currentIndex[0], (int)currentIndex[1], (int)currentIndex[2]);
 
@@ -9073,6 +9085,8 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
     WriteCSVFiles(InterpolatedCurve, outputFolder + "/interpolated_curve.csv");
     WriteCSVFiles(RevisedCurve, outputFolder + "/revised_curve.csv");
     WriteCSVFiles(TruncatedCurve, outputFolder + "/truncated_curve.csv");
+
+    objPerfusion.SaveChart(outputFolder + "/plot.jpg");
 
     QString msg;
     msg = "Aligned images have been saved at the specified location.";

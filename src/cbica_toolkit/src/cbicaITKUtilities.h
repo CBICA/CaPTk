@@ -371,20 +371,20 @@ namespace cbica
     // perform an absolute check when either of the direction cosine location is zero
     if ((input_1 == 0) || (input_2 == 0))
     {
-      if (percentageDifference < threshold)
+      if (percentageDifference <= threshold)
       {
         percentageDifference = 0;
       }
       else
       {
         // otherwise, calculate the percentage based on the non-zero cosine
-        if (input_1 == 0)
+        if (input_2 != 0)
         {
-          percentageDifference /= input_1;
+          percentageDifference /= std::abs(input_2);
         }
-        else if (input_2 == 0)
+        else if (input_1 != 0)
         {
-          percentageDifference /= input_1;
+          percentageDifference /= std::abs(input_1);
         }
       }
     }
@@ -610,9 +610,10 @@ namespace cbica
 
   \param inputImage The vector of images from which the larger image is to be extracted
   \param newSpacing The spacing in the new dimension
+  \param spacingTolerance The spacing tolerance when processing individual images
   */
   template< class TInputImageType, class TOutputImageType >
-  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0)
+  typename TOutputImageType::Pointer GetJoinedImage(std::vector< typename TInputImageType::Pointer > &inputImages, double newSpacing = 1.0, double spacingTolerance = 5.0)
   {
     if (TOutputImageType::ImageDimension - 1 != TInputImageType::ImageDimension)
     {
@@ -625,7 +626,7 @@ namespace cbica
 
     for (size_t N = 0; N < inputImages.size(); N++)
     {
-      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N]))
+      if (!ImageSanityCheck< TInputImageType >(inputImages[0], inputImages[N], 0, 0, spacingTolerance))
       {
         std::cerr << "Image Sanity check failed in index '" << N << "'\n";
         //return typename TOutputImageType::New();

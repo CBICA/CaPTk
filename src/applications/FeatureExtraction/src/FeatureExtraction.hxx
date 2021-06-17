@@ -753,6 +753,16 @@ template< class TImage >
 void FeatureExtraction< TImage >::CalculateIntensity(std::vector< typename TImage::PixelType >& nonZeroVoxels, std::map< std::string, double >& featurevec, bool latticePatch)
 {
   cbica::Statistics< typename TImage::PixelType > statisticsCalculatorToUse;
+  if (m_QuantizationExtent.empty())
+  {
+    std::cerr << "'Quantization_Extent' needs to be defined under 'Generic'.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (m_histogramBinningType == -1)
+  {
+    std::cerr << "'Quantization_Type' needs to be defined under 'Generic'.\n";
+    exit(EXIT_FAILURE);
+  }
   if (m_QuantizationExtent == "Image")
   {
     statisticsCalculatorToUse = m_statistics_global[m_currentROIValue];
@@ -1815,11 +1825,14 @@ void FeatureExtraction< TImage >::Update()
         }
       }
 
-      // sanity check for the generated ROIs and image to ensure they are in same physical space
-      if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+      if (!m_skipSanityCheck)
       {
-        std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
-        exit(EXIT_FAILURE);
+        // sanity check for the generated ROIs and image to ensure they are in same physical space
+        if (!cbica::ImageSanityCheck< TImage >(m_inputImages[0], m_Mask))
+        {
+          std::cerr << "ERROR: the image and mask are not in the same physical space; please check properties, resample the images are re-try.\n";
+          exit(EXIT_FAILURE);
+        }
       }
 
       if (m_debug)
