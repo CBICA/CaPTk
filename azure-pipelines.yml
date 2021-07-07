@@ -378,7 +378,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
@@ -554,7 +554,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
@@ -744,7 +744,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
