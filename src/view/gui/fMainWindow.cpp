@@ -15,7 +15,7 @@
 #include "SimpleImageManager.h"
 #include "fHelpDialog.h"
 #include "EGFRvIIISurrogateIndex.h"
-#include "TrainingModule.h"
+//#include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
 #include "BiasCorrection.hpp"
 #include "SusanDenoising.h"
@@ -262,6 +262,8 @@ fMainWindow::fMainWindow()
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+
+  trainingPanel = new fTrainingSimulator();
 
   this->sysinfowidget = new SystemInformationDisplayWidget();
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
@@ -900,7 +902,7 @@ fMainWindow::fMainWindow()
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
+  //connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
 
   connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
@@ -1037,6 +1039,10 @@ fMainWindow::~fMainWindow()
 
   if (this->m_DownloadManager)
 	  delete this->m_DownloadManager;
+
+  if (trainingPanel)
+      delete trainingPanel;
+
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
@@ -2348,8 +2354,9 @@ void fMainWindow::CloseImage(QTableWidgetItem* item)
     mLandmarks->Clear();
     mSeedPoints->Clear();
     mTissuePoints->Clear();
+    m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into resetting
   }
-
+  
   InitDisplay();
 }
 
@@ -3197,6 +3204,7 @@ void fMainWindow::clearMask(int label)
       }
     }
     ++maskIt;
+    m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into using fresh data
   }
   makeStroke(indecesToErase, 0);
   this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
@@ -5513,6 +5521,7 @@ void fMainWindow::LoadDrawing()
     if (reader)
     {
       readMaskFile(filename_string);
+      m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into resetting
     }
   }
   else
@@ -7015,6 +7024,13 @@ void fMainWindow::ApplicationGeodesicTraining()
   // Different operations happen if the user reruns it on the same images
   std::string firstFileName = mSlicerManagers[0]->mFileName;
   bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
+  // first loaded file name is used to determine whether we're on a re-run.
+  // But this is insufficient for the case when you want a fresh start.
+  // TODO: Make this mechanism a little more robust. 
+  // For now, we'll clear the m_GeodesicTrainingFirstFileNameFromLastExec field when:
+  // 1. images are loaded/unloaded 
+  // 2. drawings are cleared
+
   m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
 
   updateProgress(0, "Geodesic Training segmentation started, please wait");
@@ -7625,7 +7641,7 @@ void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 void fMainWindow::ApplicationTrainingModule()
 {
   //open a simple dialog box with input and output images
-  trainingPanel.exec();
+  trainingPanel->exec();
 }
 
 void fMainWindow::ApplicationTheia()
@@ -9084,17 +9100,20 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   }
 }
 
+//This code is not needed as GUI invocation of the training module has been moved to the Training dialog itself.
+// TODO: Delete this, after testing is complete on separation out of the training module.
 void fMainWindow::CallTrainingSimulation(const TrainingModuleParameters params)
 {
   TrainingModule m_trainingsimulator;
 
-  if (m_trainingsimulator.Run(params))
+  if (m_trainingsimulator.Run(params).success)
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
     ShowMessage(msg.toStdString(), this);
   }
 }
+
 
 //void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
 //{

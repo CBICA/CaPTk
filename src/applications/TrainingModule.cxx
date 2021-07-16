@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
   }
-  if (mTrainingSimulator.Run(params) == true)
+  if (mTrainingSimulator.Run(params).success == true)
     std::cout << "Finished successfully!!!\n";
   else
     std::cout << "Encountered an error!!!\n";

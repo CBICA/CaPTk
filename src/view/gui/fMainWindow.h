@@ -256,7 +256,7 @@ private:
 
   fSkullStripper skullStrippingPanel;
   fPCADialog pcaPanel;
-  fTrainingSimulator trainingPanel;
+  fTrainingSimulator* trainingPanel;
   fPerfusionEstimator perfmeasuresPanel;
   fPerfusionAligner perfalignPanel;
   fDiffusionEstimator diffmeasuresPanel;
