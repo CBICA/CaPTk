@@ -569,7 +569,10 @@ jobs:
   pool: 'macOS_10.14'
 
   steps:
-    - bash: export GIT_LFS_SKIP_SMUDGE=1
+    - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
+        which git-lfs
+      displayName: 'Pre-checkout git-lfs check'
     
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
