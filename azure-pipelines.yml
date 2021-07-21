@@ -572,6 +572,9 @@ jobs:
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
         echo "PATH=$PATH"
+        env
+        which git
+        
       displayName: 'Pre-checkout git-lfs check'
     
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
