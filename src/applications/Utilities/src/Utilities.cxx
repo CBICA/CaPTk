@@ -3,7 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
-#include "DicomMetadataReader.h"
+#include "DicomMetadataReader.h" 
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
@@ -1264,7 +1264,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
   parser.addOptionalParameter("ejT", "extrac2joinToler", cbica::Parameter::FLOAT, "0-10", "The spacing tolerance in the original axes", "Only used of 'e2j' is passed", "Defaults to " + std::to_string(nifti2dicomSpacingTolerance));
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
-  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
+  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map (such as the ground truth labels that you would like to compare)", "after '-i' and the comparison will be done with '-lsb'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
   parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
   parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
   parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");

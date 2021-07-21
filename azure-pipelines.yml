@@ -573,6 +573,7 @@ jobs:
 
     # submodule 
     - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
         git submodule update --init --recursive
 
       displayName: 'Git Submodule Init and Update'
