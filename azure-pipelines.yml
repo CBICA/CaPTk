@@ -569,10 +569,13 @@ jobs:
   pool: 'macOS_10.14'
 
   steps:
+    - bash: export GIT_LFS_SKIP_SMUDGE=1
+    
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
     # submodule 
     - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
         git submodule update --init --recursive
 
       displayName: 'Git Submodule Init and Update'
