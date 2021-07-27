@@ -1977,7 +1977,7 @@ namespace cbica
         similarityFilter->SetTargetImage(imageToCompare_2);
         similarityFilter->Update();
 
-        returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
+        //returnMap[labelString]["Overlap"] = similarityFilter->GetTotalOverlap();
         returnMap[labelString]["Jaccard"] = similarityFilter->GetUnionOverlap();
         returnMap[labelString]["Dice"] = similarityFilter->GetMeanOverlap();
         if (std::isinf(returnMap[labelString]["Dice"]))
