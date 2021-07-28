@@ -99,7 +99,7 @@ ELSE()
   SET( PLATFORM_STRING "linux" )
 ENDIF()
 
-SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/collage_${PLATFORM_STRING}.zip" )
+SET( DOWNLOAD_LINK "https://captk.projects.nitrc.org/collage_${PLATFORM_STRING}.zip" )
 SET( FILENAME_TO_EXTRACT "collage_${PLATFORM_STRING}")
 SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 
