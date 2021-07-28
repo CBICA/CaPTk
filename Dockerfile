@@ -26,4 +26,4 @@ ENV QT_X11_NO_MITSHM=1
 ENV QT_GRAPHICSSYSTEM="native"
 
 # define entry point
-ENTRYPOINT ["/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
+ENTRYPOINT ["/work/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
