@@ -1251,7 +1251,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/refer
 	\endverbatim
 - BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant.
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/referenceMask.nii.gz -lsb C:/test/predictedMask.nii.gz
 	\endverbatim
 - Collect information from all images in a directory and put it in CSV
 	\verbatim

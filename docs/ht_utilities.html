@@ -97,7 +97,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/ -o C:/output.nii.gz -e2j 1.5</
 <li>Transform coordinates from world to image and vice-versa <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -i2w 10,10,30
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -w2i 10.5,10.1,30.6</pre></li>
 <li>Label similarity Metrics between 2 label images: pure mathematical formulations are given as output <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/referenceMask.nii.gz</pre></li>
-<li>BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant. <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz</pre></li>
+<li>BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant. <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/referenceMask.nii.gz -lsb C:/test/predictedMask.nii.gz</pre></li>
 <li>Collect information from all images in a directory and put it in CSV <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputDirectory -o C:/test/inputDirectoryProperties.csv \
 -co 1 \ # enable recursion
 -cF volume \ # only process files that contain this string pattern 
