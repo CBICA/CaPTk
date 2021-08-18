@@ -5796,30 +5796,37 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
       }
-      if (!((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-        (extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
+      // if dicom detected, don't perform any more checks
+      if (cbica::IsDicom(fileName))
       {
-        unsupportedExtension += fileName + "\n";
-      }
-      else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
-      {
-        erroredFiles += fileName + "\n";
+        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
       }
       else
       {
-        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+        if (!((extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
+        {
+          unsupportedExtension += fileName + "\n";
+        }
+        else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
+        {
+          erroredFiles += fileName + "\n";
+        }
+        else
+        {
+          basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+        }
       }
     }
 
     if (!unsupportedExtension.empty() && !erroredFiles.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension +
+      ShowErrorMessage("Extensions for the following files were not supported; CaPTk will try to load the rest:\n\n" + unsupportedExtension +
         "\n\nAnd the following files are inconsistent with the first loaded image:\n\n" + erroredFiles, this);
       return;
     }
     if (!unsupportedExtension.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+      ShowErrorMessage("Extensions for the following files were not supported; CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
     }
     if (!erroredFiles.empty())
     {
