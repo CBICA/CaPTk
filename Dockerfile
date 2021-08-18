@@ -1,29 +1,24 @@
-FROM cbica/captk_centos7:devtoolset-4_superbuild
+FROM cbica/captk_ubuntu:1604superbuild
 
 LABEL authors="CBICA_UPenn <software@cbica.upenn.edu>"
 
-RUN yum update -y
+# Future superbuilds should perform this step ahead of time so we don't have to do it here, but it's fairly lightweight
+RUN apt-get install -y doxygen texlive
 
-RUN yum install git
-
-# We will do git pull on the CBICA/CaPTk master, because that is the repo using which the base image is made
-# We will not do compiles on the PR because the idea is that the Xenial build will check the build status of
-# the PR in any case.
-RUN cd CaPTk; \ 
+RUN cd /work/CaPTk && \
     git pull origin master
 
-RUN cd CaPTk/bin; \
-    if [ ! -d "`pwd`/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip; fi ; \
+RUN cd /work/CaPTk/bin; \
+    if [ ! -d "/work/CaPTk/bin/externalApps" ] ; then wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/linux.zip -O binaries_linux.zip$
     cmake -DITK_DIR=./bin/ITK-build -DDCMTK_DIR=./bin/DCMTK-build -DCMAKE_INSTALL_PREFIX="./install/appdir/usr" -DBUILD_TESTING=OFF ..; \
-    make && make install/strip; 
+    make && make install/strip && rm -rf /work/CaPTk/bin/binaries_linux.zip;
     #cd .. && ./scripts/captk-pkg
 
-# cleanup
-RUN rm -rf CaPTk/bin/binaries_linux.zip
 
-# set up the docker for GUI
+RUN apt-get install -y libegl1-mesa
 ENV QT_X11_NO_MITSHM=1
 ENV QT_GRAPHICSSYSTEM="native"
 
 # define entry point
 ENTRYPOINT ["/work/CaPTk/bin/install/appdir/usr/bin/CaPTk"]
+
