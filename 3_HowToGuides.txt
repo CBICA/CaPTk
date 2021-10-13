@@ -1192,7 +1192,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
 	\endverbatim
-- NIfTI to DICOM conversion
+- NIfTI to DICOM conversion: **Note** that both the NIfTI and DICOM reference images need to be defined in the same space for this to work correctly
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/
 	\endverbatim
