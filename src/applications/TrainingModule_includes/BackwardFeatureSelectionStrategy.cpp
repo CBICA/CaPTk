@@ -16,6 +16,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #pragma once
 
 #include "BackwardFeatureSelectionStrategy.h"
+#include "itkCSVNumericObjectFileWriter.h"
 //TBD: Merge backward and forward FS into one SequentialFS strategy that accepts an evaluation function/strategy?
 // e.g. pass in an F-test strategy to run univariate F-test as the elimination criterion
 
@@ -53,14 +54,15 @@ std::vector<int> BackwardFeatureSelectionStrategy::PerformFeatureSelectionBasedT
     //---------------------------
     // The idea is that we gradually select fewer features here, evaluating performance at each step
     // later, we will use this information to decide on a final number of features.
-    while (selectedFeatureIndices.size() > 1)
+    unsigned int selectDownTo = (params.maxNumberOfFeatures > 1 ? params.maxNumberOfFeatures : 1);
+    while (selectedFeatureIndices.size() > selectDownTo)
     {
         std::vector<double> CrossValidatedBalancedAccuracies;
         // iterate over the remaining features to find the best performing elimination
         for (unsigned int featureNo = 0; featureNo < selectedFeatureIndices.size(); featureNo++)
         {
             VariableSizeMatrixType reducedFeatureSet;
-            reducedFeatureSet.SetSize(labels.size(), selectedFeatureIndices.size());
+            reducedFeatureSet.SetSize(labels.size(), selectedFeatureIndices.size()-1);
 
             // copy all selected features except the current one under observation to the current feature set
             // basically we are testing elimination of the current feature
@@ -71,15 +73,16 @@ std::vector<int> BackwardFeatureSelectionStrategy::PerformFeatureSelectionBasedT
                 {
                     if (k != featureNo) // Non-eliminated features
                     {
-                        double value = (int)(features(j, selectedFeatureIndices[k]) * 10000 + .5);
-                        reducedFeatureSet(j, copiedFeatureCount) = (double)value / 10000;
+                        double value = (double)((features(j, selectedFeatureIndices[k]) * 10000 + .5)/10000.0);
+                        reducedFeatureSet(j, copiedFeatureCount) = (double)value;
                         copiedFeatureCount++; // use this to avoid leaving a gap in the matrix
                     }
                 }
             }
 
+
             // Perform cross-validated training and push back crossvalidation performance result
-            auto bestCVResultTuple = classifier->GetCrossValidationPerformanceMeasures(reducedFeatureSet, labels);
+            auto bestCVResultTuple = classifier->TrainAndGetPerformanceMeasures(reducedFeatureSet, labels);
             double cvResultBalancedAccuracy = std::get<3>(bestCVResultTuple);
 
             CrossValidatedBalancedAccuracies.push_back(cvResultBalancedAccuracy);
@@ -121,9 +124,16 @@ std::vector<int> BackwardFeatureSelectionStrategy::PerformFeatureSelectionBasedT
     int max_performance_elimination_count = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
     int max_performance_feature_count = features.Cols() - max_performance_elimination_count;
 
+    int eliminations_to_use;
+    if (params.maxNumberOfFeatures >= features.Cols())
+    {
+        params.maxNumberOfFeatures = features.Cols() - 1;
+    }
+    eliminations_to_use = ((params.maxNumberOfFeatures > 0) ?
+        (features.Cols() - params.maxNumberOfFeatures) : max_performance_elimination_count);
     // according to the highest-performing elimination count, choose the final feature eliminations
     std::vector<int> finalEliminatedFeatureIndices;
-    for (unsigned int index = 0; index < max_performance_elimination_count; index++)
+    for (unsigned int index = 0; index < eliminations_to_use; index++)
     {
         finalEliminatedFeatureIndices.push_back(eliminatedFeatureIndices[index]);
     }
@@ -138,7 +148,7 @@ std::vector<int> BackwardFeatureSelectionStrategy::PerformFeatureSelectionBasedT
         // Consider the feature selected only if it isn't in the eliminated features.
         for (int j = 0; j < finalEliminatedFeatureIndices.size(); j++)
         {
-            if (i != finalEliminatedFeatureIndices[j])
+            if (i == finalEliminatedFeatureIndices[j])
                 iInEliminatedFeatures = true;
         }
         if (!iInEliminatedFeatures)
@@ -146,8 +156,10 @@ std::vector<int> BackwardFeatureSelectionStrategy::PerformFeatureSelectionBasedT
 
     }
 
+    // If the user specified a maximum number of features, then all but those will be eliminated.
     std::cout << "No. of selected features: " << finalSelectedFeatureIndices.size() << std::endl;
-    std::cout << "Completed Backward Feature Elimination." << std::endl;
+    std::cout << "Completed recursive feature elimination." << std::endl;
     return finalSelectedFeatureIndices;
 }
+
 

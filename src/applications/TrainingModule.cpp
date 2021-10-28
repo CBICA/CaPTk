@@ -25,6 +25,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "OpenCVSVMClassifierStrategy.h"
 #include "OpenCVRandomForestStrategy.h"
 #include "OpenCVSGDSVMStrategy.h"
+#include "OpenCVBoostedTreesStrategy.h"
 
 // Feature Selection
 #include "BackwardFeatureSelectionStrategy.h"
@@ -35,6 +36,8 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 
 //etc
 #include "qdiriterator.h"
+#include <fstream>
+#include <iostream>
 
 TrainingModule::TrainingModule()
 {
@@ -55,6 +58,8 @@ TrainingModule::~TrainingModule()
 const TrainingModuleResult TrainingModule::Run(const TrainingModuleParameters& params)
 {
 	std::cout << "Entered the Training Module." << std::endl;
+	
+	TrainingModuleResult result;
 	bool success = false;
 	try
 	{
@@ -72,7 +77,10 @@ const TrainingModuleResult TrainingModule::Run(const TrainingModuleParameters& p
 		}
 		else 
 		{
-			logger.WriteError("Requested an unsupported TrainingModule configuration. Supported configurations are Split Train, Split Test, K-fold CrossValidation.");
+			success = false;
+			auto msg = "Requested an unsupported TrainingModule configuration. Supported configurations are Split Train, Split Test, K-fold CrossValidation.";
+			logger.WriteError(msg);
+			result.message = msg;
 		}
 	}
 	catch (const std::exception& exc)
@@ -80,11 +88,9 @@ const TrainingModuleResult TrainingModule::Run(const TrainingModuleParameters& p
 		success = false;
 		logger.WriteError("Exception caught while running the training module. Error information: " + std::string(exc.what()) );
 	}
-
-	TrainingModuleResult result;
 	result.success = success;
 
-	// TODO: Return a result struct for passing to CLI/GUI? Needs handling 
+	// TODO: Return a result struct for passing to CLI/GUI? Needs handling there.
 	if (success)
 	{
 		const auto successMsg = "Training module task completed successfully.";
@@ -102,41 +108,6 @@ const TrainingModuleResult TrainingModule::Run(const TrainingModuleParameters& p
 	return result;
 
 }
-
-/*void TrainingModule::RunThread(const TrainingModuleParameters& params)
-{	
-	if (isCurrentlyRunning)
-	{
-		// The below is not great practice -- this doesn't allow the thread to clean up, etc.
-		// However, QThread::quit() is not enough, nor is QThread::exit().
-		// If the training module code were in a form where it could accept an abort signal and stop cleanly,
-		// then we could safely use those.
-		// But for now, the cost of waiting for the entire training module to finish when the user wants 
-		// to quit is too great.
-		// TODO: Revisit this with QThread::currentThread->isInterruptionRequested in internal code
-		// and in the other internal functions, break out if interruption is requested (esp in longer loops)
-
-		// Need to stop any current processing on the worker thread before continuing.
-		// The calling code should always check isCurrentlyRunning itself before getting here.
-		m_workerThread->terminate();
-	}
-	isCurrentlyRunning = true;
-
-	auto toBeExecuted = std::bind(&TrainingModule::Run, this, params);
-	m_workerThread = QThread::create(toBeExecuted);
-
-	connect(m_workerThread, &QThread::finished, m_workerThread, &QObject::deleteLater);
-	connect(m_workerThread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
-
-	m_workerThread->start();
-}*/
-
-/*
-void TrainingModule::onThreadFinished()
-{
-	isCurrentlyRunning = false;
-	emit done(lastResult);
-}*/
 
 bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 {
@@ -175,9 +146,9 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 	RemoveNans(stdVector);
 
 	// Write scaling information to disk
-	WriteCSVFiles(scaledFeatureSet, params.outputDirectory + "/scaled_feature_set.csv");
-	WriteCSVFiles(meanVector, params.outputDirectory + "/zscore_mean.csv");
-	WriteCSVFiles(stdVector, params.outputDirectory + "/zscore_std.csv");
+	WriteCSVFiles(scaledFeatureSet, params.outputDirectory + "/scaled-feature-set.csv");
+	WriteCSVFiles(meanVector, params.outputDirectory + "/zscore-mean.csv");
+	WriteCSVFiles(stdVector, params.outputDirectory + "/zscore-std.csv");
 	std::cout << "Scaling parameters written." << std::endl;
 
 
@@ -207,6 +178,13 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 	{
 		featureSelector = std::make_shared<ReliefFFeatureSelectionStrategy>();
 	}
+	// TODO: Enable Optimal FS when it's fixed.
+	/*
+	else if (params.featureSelectionType == CAPTK::FeatureSelectionType::FS_TYPE_OPTIMIZE_ANY)
+	{
+		featureSelector = std::make_shared<OptimalFeatureSelectionStrategy>();
+	}
+	*/
 	else
 	{
 		// If we reach here, the user interface is broken. Only supported methods should be exposed to the GUI/CLI.
@@ -233,11 +211,11 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 	{
 		classifier = std::make_shared<OpenCVSGDSVMStrategy>();
 	}
-	/*
 	else if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_BOOSTEDTREES)
 	{
 		classifier = std::make_shared<OpenCVBoostedTreesStrategy>();
 	}
+	/*
 	else if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_OPTIMIZE_ANY)
 	{
 		classifier = std::make_shared<SelectOptimalClassifierStrategy>();
@@ -267,7 +245,7 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 
 	// Perform training with the selected strategies using the previously scaled features.
 	selectedFeatureIndices = featureSelector->PerformFeatureSelectionBasedTraining(scaledFeatureSet, labels, classifier.get());
-	WriteCSVFiles(selectedFeatureIndices, params.outputDirectory + "/SelectedFeatures.csv");
+	WriteCSVFiles(selectedFeatureIndices, params.outputDirectory + "/selected-features.csv");
 
 	VariableSizeMatrixType selectedScaledFeatureData;
 	selectedScaledFeatureData.SetSize(labels.size(), selectedFeatureIndices.size()); // samples x selected features
@@ -309,7 +287,7 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	try
 	{
 		MatrixType meanMatrix;
-		reader->SetFileName(params.modelDirectory + "/zscore_mean.csv");
+		reader->SetFileName(params.modelDirectory + "/zscore-mean.csv");
 		reader->SetFieldDelimiterCharacter(',');
 		reader->HasColumnHeadersOff();
 		reader->HasRowHeadersOff();
@@ -322,13 +300,13 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	}
 	catch (const std::exception& e1)
 	{
-		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/zscore_mean.csv. Error code : " + std::string(e1.what()));
+		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/zscore-mean.csv. Error code : " + std::string(e1.what()));
 	}
 
 	try
 	{
 		MatrixType stdMatrix;
-		reader->SetFileName(params.modelDirectory + "/zscore_std.csv");
+		reader->SetFileName(params.modelDirectory + "/zscore-std.csv");
 		reader->SetFieldDelimiterCharacter(',');
 		reader->HasColumnHeadersOff();
 		reader->HasRowHeadersOff();
@@ -341,13 +319,13 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	}
 	catch (const std::exception& e1)
 	{
-		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/zscore_std.csv. Error code : " + std::string(e1.what()));
+		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/zscore-std.csv. Error code : " + std::string(e1.what()));
 	}
 
 	try
 	{
 		MatrixType selectionMatrix;
-		reader->SetFileName(params.modelDirectory + "/SelectedFeatures.csv");
+		reader->SetFileName(params.modelDirectory + "/selected-features.csv");
 		reader->SetFieldDelimiterCharacter(',');
 		reader->HasColumnHeadersOff();
 		reader->HasRowHeadersOff();
@@ -359,7 +337,7 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	}
 	catch (const std::exception& e1)
 	{
-		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/SelectedFeatures.csv. Error code : " + std::string(e1.what()));
+		throw std::runtime_error("Error in reading the file: " + params.modelDirectory + "/selected-features.csv. Error code : " + std::string(e1.what()));
 	}
 
 	VariableSizeMatrixType allFeaturesMatrix;
@@ -396,7 +374,7 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	if (QFileInfo::exists(modelQuery))
 	{
 		modelsFound++;
-		//predictorPtr = std::make_shared<OpenCVBoostedTreesStrategy>();
+		predictorPtr = std::make_shared<OpenCVBoostedTreesStrategy>();
 	}
 
 	// add additional model-type handling (beyond SVMs and Random Forest) here...
@@ -447,8 +425,8 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	// Run prediction for both classes and distances
 	predictedLabels = predictorPtr->predict(finalFeatures);
 	predictedDistances = predictorPtr->predict(finalFeatures, true);
-	WriteCSVFiles(predictedDistances, params.outputDirectory + "/predicted_distances.csv");
-	WriteCSVFiles(predictedLabels, params.outputDirectory + "/predicted_labels.csv");
+	WriteCSVFiles(predictedDistances, params.outputDirectory + "/predicted-distances.csv", true);
+	WriteCSVFiles(predictedLabels, params.outputDirectory + "/predicted-labels.csv", true);
 
 	if (params.testPredictionsAgainstProvidedLabels)
 	{
@@ -462,9 +440,12 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 		}
 
 
-		// TODO: also consider validating with AUC (needs thresholding effect etc)
+		// TODO: also consider validating with AUC (needs thresholding effect etc). In general, add performance metrics here.
 		double balancedAccuracy = GetBinaryClassificationBalancedAccuracy(predictedLabelsAsItkVector, actualLabels);
-
+		std::ofstream performancefile;
+		performancefile.open(params.outputDirectory + "/performance.txt");
+		performancefile << "Balanced accuracy: " << std::to_string(balancedAccuracy) << std::endl;
+		performancefile.close();
 		
 
 	}
@@ -477,6 +458,102 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 {
 	// Train, but using folds and testing afterwards
 	// TODO: implement this
+	std::cout << "Running training module in cross-validation mode." << std::endl;
+	std::cout << "Loading data." << std::endl;
+	VariableSizeMatrixType FeaturesOfAllSubjects;
+	VariableLengthVectorType LabelsOfAllSubjects;
+	typedef vnl_matrix<double> MatrixType;
+	MatrixType dataMatrix;
+
+	bool featureLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, FeaturesOfAllSubjects);
+	bool labelLoadingSucceeded = GetLabelsFromFile(params.inputLabelsFile, LabelsOfAllSubjects);
+
+	auto folds = params.folds;
+	std::vector<int> sampleIndices;
+	for (int i = 0; i < LabelsOfAllSubjects.Size(); i++)
+	{
+		// Just a 1 to N range that can be shuffled for indexing into things randomly later
+		sampleIndices.push_back(i);
+	}
+	std::random_shuffle(sampleIndices.begin(), sampleIndices.end());
+	int testGroupStartIndex = 0;
+	int testGroupSize = sampleIndices.size() / (double)folds;
+	int groupRemainder = sampleIndices.size() % (int)folds;
+	int trainGroupSize = sampleIndices.size() - testGroupSize;
+	for (int currentFold = 0; currentFold < folds; currentFold++)
+	{
+		VariableSizeMatrixType trainingData;
+		VariableSizeMatrixType testingData;
+		VectorDouble trainingLabels;
+		VectorDouble testingLabels;
+
+		trainingData.SetSize(trainGroupSize, FeaturesOfAllSubjects.Cols());
+		testingData.SetSize(testGroupSize, FeaturesOfAllSubjects.Cols());
+
+		for (int i = 0; i < testGroupSize; i++) // copy testing data samples
+		{
+			int testGroupIndex = i + testGroupStartIndex;
+			testingLabels.push_back(LabelsOfAllSubjects[sampleIndices[testGroupIndex]]);
+
+			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
+			{
+				testingData(i, j) = FeaturesOfAllSubjects(sampleIndices[testGroupIndex], j);
+			}
+		}
+		for (int i = 0; i < testGroupStartIndex; i++) // copy first part of training data samples
+		{
+			trainingLabels.push_back(LabelsOfAllSubjects[i]);
+
+			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
+			{
+				trainingData(i, j) = FeaturesOfAllSubjects(sampleIndices[i], j);
+			}
+		}
+		for (int i = testGroupStartIndex + testGroupSize; i < sampleIndices.size(); i++) // copy second part of training data samples
+		{
+			trainingLabels.push_back(LabelsOfAllSubjects[i]);
+
+			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
+			{
+				auto value = FeaturesOfAllSubjects(sampleIndices[i], j);
+				trainingData(i - testGroupSize, j) = value;
+			}
+		}
+
+		auto outputFoldDir = params.outputDirectory + "/Fold" + std::to_string(currentFold);
+		if (!cbica::makeDirectory(outputFoldDir))
+		{
+			throw std::runtime_error("Couldn't create the fold subdirectory during cross-validation mode.");
+		}
+		// Need to use vertical param of WriteCSV files to get the labels in the form we accept. This will need reworking.
+		WriteCSVFiles(trainingData, outputFoldDir + "/raw-training-features.csv");
+		WriteCSVFiles(trainingLabels, outputFoldDir + "/training-labels.csv", true);
+		WriteCSVFiles(testingData, outputFoldDir + "/raw-testing-features.csv");
+		WriteCSVFiles(testingLabels, outputFoldDir + "/ground-truth-labels.csv", true);
+
+		// Run training on this fold's training data
+		auto thisFoldParams = params;
+		thisFoldParams.outputDirectory = outputFoldDir;
+		thisFoldParams.configurationType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TRAIN;
+		thisFoldParams.inputFeaturesFile = outputFoldDir + "/raw-training-features.csv";
+		thisFoldParams.inputLabelsFile = outputFoldDir + "/training-labels.csv";
+		RunSplitTraining(thisFoldParams);
+
+		// Run testing/inference on this fold's test featureset using the trained model, get balanced accuracy vs testing labels
+		thisFoldParams.modelDirectory = outputFoldDir;
+		thisFoldParams.inputFeaturesFile = outputFoldDir + "/raw-testing-features.csv";
+		thisFoldParams.configurationType = CAPTK::ClassificationConfigurationType::CONF_TYPE_SPLIT_TEST;
+		thisFoldParams.testPredictionsAgainstProvidedLabels = true;
+		thisFoldParams.inputLabelsFile = outputFoldDir + "/ground-truth-labels.csv";
+		RunSplitTesting(thisFoldParams);
+
+		std::cout << "Finished processing fold " + std::to_string(currentFold) << std::endl;
+		testGroupStartIndex += testGroupSize; // Shift indexing up for next fold
+
+	}
+
+	std::cout << "Finished cross-validation. Please check the output directory for each fold for performance scores." << std::endl;
+
 	return true;
 }
 
@@ -499,12 +576,11 @@ bool TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, Variab
 		readerMean->HasRowHeadersOff();
 		readerMean->Parse();
 		dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-		featuresMatrix.SetSize(dataMatrix.rows() - 1, dataMatrix.columns() - 1);
+		featuresMatrix.SetSize(dataMatrix.rows(), dataMatrix.columns());
 
-		// TODO DOUBLE CHECK THIS
-		for (unsigned int i = 1; i < dataMatrix.rows(); i++)
-			for (unsigned int j = 1; j < dataMatrix.cols(); j++)
-				featuresMatrix(i - 1, j - 1) = dataMatrix(i, j);
+		for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+			for (unsigned int j = 0; j < dataMatrix.cols(); j++)
+				featuresMatrix(i, j) = dataMatrix(i, j);
 	}
 	catch (const std::exception& e1)
 	{
@@ -526,10 +602,10 @@ bool TrainingModule::GetLabelsFromFile(std::string labelsFilename, VariableLengt
 		readerMean->HasRowHeadersOff();
 		readerMean->Parse();
 		dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-		labelsVector.SetSize(dataMatrix.rows() - 1);
+		labelsVector.SetSize(dataMatrix.rows());
 
-		for (unsigned int i = 1; i < dataMatrix.rows(); i++)
-			labelsVector[i - 1] = dataMatrix(i, 0);
+		for (unsigned int i = 0; i < dataMatrix.rows(); i++)
+			labelsVector[i] = dataMatrix(i, 0);
 	}
 	catch (const std::exception& e1)
 	{
@@ -592,3 +668,39 @@ void TrainingModule::RemoveNans(VariableLengthVectorType& vec)
 			vec[index1] = 0;
 	}
 }
+
+
+/*void TrainingModule::RunThread(const TrainingModuleParameters& params)
+{
+	if (isCurrentlyRunning)
+	{
+		// The below is not great practice -- this doesn't allow the thread to clean up, etc.
+		// However, QThread::quit() is not enough, nor is QThread::exit().
+		// If the training module code were in a form where it could accept an abort signal and stop cleanly,
+		// then we could safely use those.
+		// But for now, the cost of waiting for the entire training module to finish when the user wants
+		// to quit is too great.
+		// TODO: Revisit this with QThread::currentThread->isInterruptionRequested in internal code
+		// and in the other internal functions, break out if interruption is requested (esp in longer loops)
+
+		// Need to stop any current processing on the worker thread before continuing.
+		// The calling code should always check isCurrentlyRunning itself before getting here.
+		m_workerThread->terminate();
+	}
+	isCurrentlyRunning = true;
+
+	auto toBeExecuted = std::bind(&TrainingModule::Run, this, params);
+	m_workerThread = QThread::create(toBeExecuted);
+
+	connect(m_workerThread, &QThread::finished, m_workerThread, &QObject::deleteLater);
+	connect(m_workerThread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
+
+	m_workerThread->start();
+}*/
+
+/*
+void TrainingModule::onThreadFinished()
+{
+	isCurrentlyRunning = false;
+	emit done(lastResult);
+}*/

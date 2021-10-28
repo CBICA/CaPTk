@@ -115,6 +115,7 @@ bool OpenCVSVMClassifierStrategy::train(const VariableSizeMatrixType& features, 
 		gammaSearchRelevant = true;
 		coefSearchRelevant = true;
 		degreeSearchRelevant = true;
+		svm->setDegree(2); // Needs to be positive, OpenCV seems to complain easily
 	}
 	else if (params.classifierType == CAPTK::ClassifierType::CLASS_TYPE_SVM_SIGMOID)
 	{
@@ -159,9 +160,10 @@ bool OpenCVSVMClassifierStrategy::train(const VariableSizeMatrixType& features, 
 		coefGrid.logStep = params.coefLogBase;
 		coefGrid.minVal = params.coefMin;
 		auto degreeGrid = cv::ml::SVM::getDefaultGrid(cv::ml::SVM::DEGREE);
-		degreeGrid.maxVal = params.degreeMax;
-		degreeGrid.logStep = params.degreeLogBase;
-		degreeGrid.minVal = params.degreeMin;
+
+		//degreeGrid.maxVal = params.degreeMax;
+		//degreeGrid.logStep = params.degreeLogBase;
+		//degreeGrid.minVal = params.degreeMin;
 
 		// TODO Replace?
 		//svm->train(trainingData);

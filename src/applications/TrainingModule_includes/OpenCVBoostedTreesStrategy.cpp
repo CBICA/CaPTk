@@ -85,14 +85,17 @@ bool OpenCVBoostedTreesStrategy::train(const VariableSizeMatrixType& features, c
 		for (int copyDataCounter2 = 0; copyDataCounter2 < trainingFeatures.cols; copyDataCounter2++)
 			trainingFeatures.ptr< float >(copyDataCounter)[copyDataCounter2] = features[copyDataCounter][copyDataCounter2];
 	}
-	trainingLabels.convertTo(trainingLabels, CV_32FC1);
+	trainingLabels.convertTo(trainingLabels, CV_32S);
 
 	auto trainingData = cv::ml::TrainData::create(trainingFeatures, cv::ml::ROW_SAMPLE, trainingLabels);
 
 	auto boostedTrees = cv::ml::Boost::create();
 	
 	// TODO: Add parametrization support
-	boostedTrees->setOptimalParameters(); // Go with sane defaults for now
+	//boostedTrees->setWeakCount( );
+	//boostedTrees->setWeightTrimRate( );
+	//boostedTrees->setBoostType( ); // Discrete, Real, Logit, Gentle
+	//boostedTrees->setOptimalParameters(); // Go with sane defaults for now
 	boostedTrees->train(trainingData);
 	
 

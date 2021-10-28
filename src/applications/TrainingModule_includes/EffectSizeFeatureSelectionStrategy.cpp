@@ -27,6 +27,7 @@ std::vector<int> EffectSizeFeatureSelectionStrategy::PerformFeatureSelectionBase
 {
 	std::cout << "Entering effect size-based feature selection." << std::endl;
 	int numberOfSelectedFeatures = 0;
+    std::vector<int> FinalSelectedFeatures;
     VectorDouble EffectSize = CalculateEffectSizes(features, labels);
     // Absolute value of effect size -- effect is important regardless of direction
     for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
@@ -53,29 +54,41 @@ std::vector<int> EffectSizeFeatureSelectionStrategy::PerformFeatureSelectionBase
                 currentFeatureSet(j, k) = features(j, indices[k]);
 
         // Perform cross-validated training and push back crossvalidation performance result
-        classifier->train(currentFeatureSet, labels);
+        classifier->TrainAndGetPerformanceMeasures(currentFeatureSet, labels);
         auto cvResultTuple = classifier->CalculatePerformanceMeasuresAgainstLabels(currentFeatureSet, labels);
         double cvResultSpecificity = std::get<3>(cvResultTuple);
 
         CrossValidatedBalancedAccuracies.push_back(cvResultSpecificity);
     }
 
-    // Find how many features to keep
-    //we are doing moving average to avoid local maxima. in pairs of 3, we average them and pick the middle one. 
-    //TODO: consider selecting the first feature out of the three features involved in moving average
+    if (params.maxNumberOfFeatures > features.Cols())
+    {
+        params.maxNumberOfFeatures = features.Cols();
+    }
+    if (params.maxNumberOfFeatures > 0)
+    {
+        for (int index = 0; index <= params.maxNumberOfFeatures; index++)
+            FinalSelectedFeatures.push_back(indices[index]);
+    }
+    else // Find best performance
+    {
+        // Find how many features to keep
+        //we are doing moving average to avoid local maxima. in pairs of 3, we average them and pick the middle one. 
+        //TODO: consider selecting the first feature out of the three features involved in moving average
 
-    std::vector<double> MovingAverageOnCrossValidatedPerformance;
-    MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use first index for averaging
-    for (unsigned int index = 1; index < CrossValidatedBalancedAccuracies.size() - 1; index++)
-        MovingAverageOnCrossValidatedPerformance.push_back((CrossValidatedBalancedAccuracies[index] + CrossValidatedBalancedAccuracies[index - 1] + CrossValidatedBalancedAccuracies[index + 1]) / 3);
-    MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use last index for averaging
+        std::vector<double> MovingAverageOnCrossValidatedPerformance;
+        MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use first index for averaging
+        for (unsigned int index = 1; index < CrossValidatedBalancedAccuracies.size() - 1; index++)
+            MovingAverageOnCrossValidatedPerformance.push_back((CrossValidatedBalancedAccuracies[index] + CrossValidatedBalancedAccuracies[index - 1] + CrossValidatedBalancedAccuracies[index + 1]) / 3);
+        MovingAverageOnCrossValidatedPerformance.push_back(0);  //can not use last index for averaging
 
-    int max_performance_counter = std::distance(MovingAverageOnCrossValidatedPerformance.begin(), std::max_element(MovingAverageOnCrossValidatedPerformance.begin(), MovingAverageOnCrossValidatedPerformance.end()));
-    std::vector<int> FinalSelectedFeatures;
+        int max_performance_counter = std::distance(MovingAverageOnCrossValidatedPerformance.begin(), std::max_element(MovingAverageOnCrossValidatedPerformance.begin(), MovingAverageOnCrossValidatedPerformance.end()));
 
-    // push back the feature set that produced the best performance
-    for (int index = 0; index <= max_performance_counter; index++)
-        FinalSelectedFeatures.push_back(indices[index]); 
+        // push back the feature set that produced the best performance
+        for (int index = 0; index <= max_performance_counter; index++)
+            FinalSelectedFeatures.push_back(indices[index]);
+    }
+
     std::cout << "No. of selected features: " << FinalSelectedFeatures.size() << std::endl;
 
 	std::cout << "Completed effect size-based feature selection." << std::endl;

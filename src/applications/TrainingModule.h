@@ -106,7 +106,7 @@ public:
     //void done(TrainingModuleResult result);
 
 };
-
+// Below are implementation details from the old Training Module, left only for reference purposes
 /*
   VectorDouble TestData(const VariableSizeMatrixType inputFeatures, const TrainingModuleParameters& params);
   VectorDouble TrainData(const VariableSizeMatrixType inputFeatures, const VariableLengthVectorType inputLabels, 

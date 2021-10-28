@@ -105,15 +105,15 @@ std::tuple<double, double, double, double> CalculatePerformanceMeasuresAgainstLa
         }
     }
     double overallAccuracy = (TP + TN) / (double)predictedLabels.size();
-    double sensitivity = TP / (TP + FN);
-    double specificity = TN / (TN + FP);
+    double sensitivity = ((TP > 0) ? (TP / (TP + FN)) : 0 );
+    double specificity = ((TN > 0) ? (TN / (TN + FP)) : 0 );
     double balancedAccuracy = (sensitivity + specificity) / (double)2;
     result = std::make_tuple(overallAccuracy, sensitivity, specificity, balancedAccuracy);
 
     return result;
 }
 
-std::tuple<double, double, double, double> GetCrossValidationPerformanceMeasures(const VariableSizeMatrixType& features, const VectorDouble& labels)
+std::tuple<double, double, double, double> TrainAndGetPerformanceMeasures(const VariableSizeMatrixType& features, const VectorDouble& labels)
 {
     if (params.crossValidationType == CAPTK::CrossValidationType::CV_TYPE_RESUBSTITUTION)
     {

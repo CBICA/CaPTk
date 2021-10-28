@@ -79,6 +79,7 @@ public:
   QRadioButton* mChiSquaredKernel;
   QRadioButton* mRandomForest;
   QRadioButton* mSGDSVM;
+  QRadioButton* mBoostedTrees;
   QRadioButton* mSelectOptimalML;
 
   QRadioButton *mSVMFFS;
@@ -229,6 +230,8 @@ public:
     mRandomForest->setEnabled(true);
     mSGDSVM = new QRadioButton("Stochastic Gradient Descent SVM");
     mSGDSVM->setEnabled(true);
+    mBoostedTrees = new QRadioButton("Boosted Trees");
+    mBoostedTrees->setEnabled(true);
 
     mSelectOptimalML = new QRadioButton("Optimized Machine Learning");
     mSelectOptimalML->setToolTip("Iterates over each machine learning strategy and selects the best-performing. WARNING: Multiplies the time required to run!");
@@ -242,7 +245,8 @@ public:
     classifierGridLayout->addWidget(mIntersectionKernel, 2, 1, 1, 1);
     classifierGridLayout->addWidget(mRandomForest, 3, 0, 1, 1);
     classifierGridLayout->addWidget(mSGDSVM, 3, 1, 1, 1);
-    classifierGridLayout->addWidget(mSelectOptimalML, 4, 0, 1, 1);
+    classifierGridLayout->addWidget(mBoostedTrees, 4, 0, 1, 1);
+    classifierGridLayout->addWidget(mSelectOptimalML, 4, 1, 1, 1);
 
     paramsGroupBox = new QGroupBox(fTrainingSimulator);
     paramsGroupBox->setTitle(QString::fromStdString("Parameter Optimization/Cross-validation"));
@@ -385,12 +389,13 @@ public:
     mConvergenceThresholdSpinbox->setMinimum(0.000001);
     mConvergenceThresholdSpinbox->setValue(0.01);
     mConvergenceThresholdSpinbox->setEnabled(false);
+    mConvergenceThresholdSpinbox->setVisible(false);
 
-    forwardfsTerminationGridLayout->addWidget(mUseFeatureCount, 2, 0, 1, 2);
-    forwardfsTerminationGridLayout->addWidget(mUseConvergenceThreshold, 2, 2, 1, 2);
-    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesLabel, 3, 0, 1, 1);
-    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesSpinbox, 3, 1, 1, 1);
-    forwardfsTerminationGridLayout->addWidget(mConvergenceThresholdSpinbox, 3, 2, 1, 2);
+    //forwardfsTerminationGridLayout->addWidget(mUseFeatureCount, 2, 0, 1, 2);
+    //forwardfsTerminationGridLayout->addWidget(mUseConvergenceThreshold, 2, 2, 1, 2);
+    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesLabel, 3, 0, 1, 2);
+    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesSpinbox, 3, 1, 1, 2);
+    //forwardfsTerminationGridLayout->addWidget(mConvergenceThresholdSpinbox, 3, 2, 1, 2);
 
 
 
@@ -409,9 +414,9 @@ public:
 
     mCrossValidation = new QRadioButton("CrossValidation");
     mCrossValidation->setEnabled(true);
-    mSplitTrain = new QRadioButton("Split Train");
+    mSplitTrain = new QRadioButton("Training");
     mSplitTrain->setEnabled(true);
-    mSplitTest = new QRadioButton("Split Test");
+    mSplitTest = new QRadioButton("Testing");
     mSplitTest->setEnabled(true);
 
     cvValue = new QLineEdit("");

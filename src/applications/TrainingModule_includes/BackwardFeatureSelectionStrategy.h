@@ -27,5 +27,4 @@ class BackwardFeatureSelectionStrategy : public IFeatureSelectionStrategy
 std::vector<int> PerformFeatureSelectionBasedTraining(
 	const VariableSizeMatrixType& features, const VectorDouble& labels, IClassifierStrategy* classifier);
 
-
 };

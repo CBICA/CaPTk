@@ -21,6 +21,8 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include "opencv2/core/core.hpp"
 #include "opencv2/ml.hpp"
 
+#include "CaPTkUtils.h"
+
 
 
 // Perform feature selection on the given data using the given classification method/strategy.
@@ -35,7 +37,6 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
     scaledFeatures.SetSize(features.Rows(), features.Cols());
     
     // Algorithm notes that you should scale features to 0-1 first
-    // TODO: DO THIS
     for (unsigned int i = 0; i < features.Cols(); i++)
     {
         double thisFeatureMaximum = 0;
@@ -54,7 +55,16 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
 
         for (unsigned int j = 0; j < features.Rows(); j++)
         {
-            scaledFeatures(j, i) = ( (features(j, i) - thisFeatureMinimum) / (thisFeatureMaximum - thisFeatureMinimum) );
+            // Static feature handling -- Have to scale accordingly since otherwise it's NaN
+            if (thisFeatureMaximum == thisFeatureMinimum)
+            {
+                scaledFeatures(j, i) = 0.5000000;
+            }
+            else // Normal case
+            {
+                double val = ((features(j, i) - thisFeatureMinimum) / (thisFeatureMaximum - thisFeatureMinimum));
+                scaledFeatures(j, i) = val;
+            }
         }
 
 
@@ -75,8 +85,8 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
         // Find the nearest neighbors via Manhattan (L1) norm aka "taxicab" norm (dX + dY)
         // NOT the Euclidean distance ( sqrt(dX^2 + dY^2) ) used by regular RELIEF!
 
-        unsigned int nearestHitIndex;
-        unsigned int nearestMissIndex;
+        unsigned int nearestHitIndex = 0;
+        unsigned int nearestMissIndex = 0;
 
         double currentLeastDistanceToSameClass = std::numeric_limits<double>::max(); // start high, shrink as we go
         double currentLeastDistanceToDifferentClass = std::numeric_limits<double>::max();
@@ -87,13 +97,13 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
                 continue; 
             }
 
-            double currentDistance = 0; // Loop over features to get distance
+            double currentDistance = 0.0; // Loop over features to get distance
             for (unsigned int featureIndex = 0; featureIndex < scaledFeatures.Cols(); featureIndex++)
             {
-                currentDistance += std::abs(scaledFeatures(j, featureIndex) - scaledFeatures(i, featureIndex));
+                currentDistance += std::abs((double)scaledFeatures(j, featureIndex) - (double)scaledFeatures(i, featureIndex));
             }
 
-            if (labels[j] == labels[i]) // Same class -- "near hit"
+            if ((int)labels[j] == (int)labels[i]) // Same class -- "near hit"
             {
                 if (currentDistance < currentLeastDistanceToSameClass)
                 {
@@ -101,7 +111,7 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
                     nearestHitIndex = j;
                 }
             }
-            else if (labels[j] != labels[i]) // different class -- "near miss"
+            else if ((int)labels[j] != (int)labels[i]) // different class -- "near miss"
             {
                if (currentDistance < currentLeastDistanceToDifferentClass)
                {
@@ -118,9 +128,13 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
 
         for (unsigned int featureIndex = 0; featureIndex < features.Cols(); featureIndex++)
         {
-            weights[featureIndex] = weights[featureIndex] 
-                - std::abs(scaledFeatures(i, featureIndex) - scaledFeatures(nearestHitIndex, featureIndex))
-                + std::abs(scaledFeatures(i, featureIndex) - scaledFeatures(nearestMissIndex, featureIndex));
+            double currentValue = scaledFeatures(i, featureIndex);
+            double nearestHitValue = scaledFeatures(nearestHitIndex, featureIndex);
+            double nearestMissValue = scaledFeatures(nearestMissIndex, featureIndex);
+            double nearestHitDiff = std::abs((currentValue - nearestHitValue));
+            double nearestMissDiff = std::abs((currentValue - nearestMissValue));
+
+            weights[featureIndex] = weights[featureIndex] - nearestHitDiff + nearestMissDiff;
         }
 
     }
@@ -138,14 +152,22 @@ std::vector<int> ReliefFFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
 
     std::vector<int> FinalSelectedFeatures;
 
-    // push back the feature set that produced the best performance
-    for (int index = 0; index < params.maxNumberOfFeatures; index++)
+    // Push back the requested number of features, or just select all in order of importance
+    unsigned int numFeaturesToSelect;
+    if (params.maxNumberOfFeatures > features.Cols())
+    {
+        params.maxNumberOfFeatures = features.Cols();
+    }
+    numFeaturesToSelect = (params.maxNumberOfFeatures > 0 ? params.maxNumberOfFeatures : indices.size());
+    for (int index = 0; index < numFeaturesToSelect; index++)
         FinalSelectedFeatures.push_back(indices[index]); 
     std::cout << "No. of selected features: " << FinalSelectedFeatures.size() << std::endl;
 
 	std::cout << "Completed RELIEF-F feature selection." << std::endl;
 	return FinalSelectedFeatures;
 }
+
+
 
 
 

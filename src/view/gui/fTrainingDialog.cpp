@@ -35,6 +35,10 @@ fTrainingSimulator::fTrainingSimulator()
   connect(mSigmoidKernel, SIGNAL(toggled(bool)), this, SLOT(SVMToggled(bool)));
   connect(mChiSquaredKernel, SIGNAL(toggled(bool)), this, SLOT(SVMToggled(bool)));
   connect(mIntersectionKernel, SIGNAL(toggled(bool)), this, SLOT(SVMToggled(bool)));
+  
+  // Just included to help clear options from the GUI, this needs to be reorganized
+  connect(mSGDSVM, SIGNAL(toggled(bool)), this, SLOT(SVMToggled(bool)));
+  connect(mBoostedTrees, SIGNAL(toggled(bool)), this, SLOT(SVMToggled(bool)));
 
   connect(mRandomForest, SIGNAL(toggled(bool)), this, SLOT(RandomForestToggled(bool)));
 
@@ -43,6 +47,14 @@ fTrainingSimulator::fTrainingSimulator()
   cvValue->setEnabled(false);
   mSplitModelDirectory->setEnabled(false);
   mSplitModelDirectoryButton->setEnabled(false);
+
+  // Disable Optimized ML and FS until they're ready
+  mSelectOptimalFS->setVisible(false);
+  mSelectOptimalFS->setEnabled(false);
+  mSelectOptimalML->setVisible(false);
+  mSelectOptimalML->setVisible(false);
+
+  cvValue->setText("5");
 
   m_jobIsCurrentlyRunning = false;
 }
@@ -239,7 +251,8 @@ void fTrainingSimulator::ConfirmButtonPressed()
     if (!mLinearKernel->isChecked() && !mRBFKernel->isChecked() &&
         !mSigmoidKernel->isChecked() && !mPolynomialKernel->isChecked() &&
         !mChiSquaredKernel->isChecked() && !mIntersectionKernel->isChecked() &&
-        !mRandomForest->isChecked() && !mSGDSVM->isChecked())
+        !mRandomForest->isChecked() && !mSGDSVM->isChecked() &&
+        !mBoostedTrees->isChecked())
     {
       ShowErrorMessage("Please select a classifier.");
       return;
@@ -256,7 +269,7 @@ void fTrainingSimulator::ConfirmButtonPressed()
         mChiSquaredKernel->isChecked() || mIntersectionKernel->isChecked() ) &&
         (mResubstitution->isChecked() == false && mFiveFold->isChecked() == false))
     {
-      ShowErrorMessage("Please select at least one of the given two cross-validation options: Resubstitution, 5-fold.");
+      ShowErrorMessage("Please select at least one of the given two internal cross-validation options: Resubstitution, 5-fold.");
       return;
     }
 
@@ -330,6 +343,8 @@ void fTrainingSimulator::ConfirmButtonPressed()
       params.classifierType = CAPTK::ClassifierType::CLASS_TYPE_RANDOMFOREST;
   else if (mSGDSVM->isChecked())
       params.classifierType = CAPTK::ClassifierType::CLASS_TYPE_SGD_SVM;
+  else if (mBoostedTrees->isChecked())
+      params.classifierType = CAPTK::ClassifierType::CLASS_TYPE_BOOSTEDTREES;
 
   if (mSVMFFS->isChecked())
       params.featureSelectionType = CAPTK::FeatureSelectionType::FS_TYPE_FFS;
@@ -386,13 +401,10 @@ void fTrainingSimulator::ConfirmButtonPressed()
   params.maxNumberOfFeatures = mNumberOfFeaturesSpinbox->value();
 
   
-  // TODO fix this
+  // TODO fix this to allow threaded in the background with progress updates
   if (!m_jobIsCurrentlyRunning)
   {
-      m_jobIsCurrentlyRunning = true;
-      m_lastResult.success = false;
-      m_lastResult.message = "Operation incomplete!"; // Placeholder for if thread terminates without completion
-      m_jobCompleted = false;
+
       /*
       auto toBeExecuted = std::bind(&fTrainingSimulator::workerFunction, this, params, std::ref(m_lastResult));
       m_workerThread = QThread::create(toBeExecuted);
@@ -402,15 +414,45 @@ void fTrainingSimulator::ConfirmButtonPressed()
 
       m_workerThread->start();
       */
-      progressBar->setMinimum(0);
-      progressBar->setMaximum(0);
-      progressBar->setValue(1);
-      ShowMessage("Training Module is now running.", this, "Running...");
-      TrainingModule m_trainingSimulator;
-      m_lastResult = m_trainingSimulator.Run(params);
-      m_jobIsCurrentlyRunning = false;
+      QMessageBox::StandardButton reply;
+      reply = QMessageBox::question(this, "Training Module",
+          "While the training module is running, you will not be able to interact with the CaPTk interface. \
+          Press OK to continue.", QMessageBox::Ok | QMessageBox::Cancel);
+      if (reply == QMessageBox::Ok) 
+      {
+          progressBar->setMinimum(0);
+          progressBar->setMaximum(0);
+          progressBar->setValue(1);
+          progressBar->setTextVisible(true);
+          progressBar->setFormat("Running...");
+          //ShowMessage("Training Module is now running.", this, "Running...");
+          TrainingModule m_trainingSimulator;
+          m_jobIsCurrentlyRunning = false;
+          m_lastResult.success = false;
+          m_lastResult.message = "Operation incomplete!"; // Placeholder for if thread terminates without completion
+          m_jobCompleted = false;
+          m_lastResult = m_trainingSimulator.Run(params);
+          //m_trainingSimulator.RunThread(params);
+          m_jobIsCurrentlyRunning = false;
+          progressBar->setValue(0);
+          progressBar->setMaximum(1);
+          if (!m_lastResult.success)
+          {
+              ShowErrorMessage("Training module failed with the following error: " + m_lastResult.message +
+                  "\n Please check parameters and submit a bug report to CBICA Software if applicable.", this, "Error");
+          }
+          else 
+          {
+              ShowMessage("Training module finished!", this);
+          }
+          
+      }
+      else
+      {
+          return;
+      }
 
-      //m_trainingSimulator.RunThread(params);
+      
   }
   else
   {

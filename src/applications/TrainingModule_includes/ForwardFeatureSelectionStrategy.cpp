@@ -32,6 +32,10 @@ std::vector<int> ForwardFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
     paramsIgnoringOptimization.optimizationType = CAPTK::OptimizationType::OPT_TYPE_OFF;
     paramsIgnoringOptimization.crossValidationType = CAPTK::CrossValidationType::CV_TYPE_RESUBSTITUTION;
     classifier->SetParameters(paramsIgnoringOptimization);
+    if (params.maxNumberOfFeatures > features.Cols())
+    {
+        params.maxNumberOfFeatures = features.Cols();
+    }
 
 	std::vector<int> selectedFeatures;
 	std::vector<int> unselectedFeatures = GetUnselectedFeatures(selectedFeatures, features.Cols());
@@ -71,7 +75,7 @@ std::vector<int> ForwardFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
 
             // Perform cross-validated training and push back crossvalidation performance result
             //classifier->train(reducedFeatureSet, labels); // Don't run optimization during this training
-            auto bestCVResultTuple = classifier->GetCrossValidationPerformanceMeasures(reducedFeatureSet, labels);
+            auto bestCVResultTuple = classifier->TrainAndGetPerformanceMeasures(reducedFeatureSet, labels);
             double cvResultBalancedAccuracy = std::get<3>(bestCVResultTuple);
             
             CrossValidatedBalancedAccuraciesAfterAddingUnselectedFeatures.push_back(cvResultBalancedAccuracy);
@@ -94,6 +98,7 @@ std::vector<int> ForwardFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
         unselectedFeatures = GetUnselectedFeatures(selectedFeatures, features.Cols());
 
         // Only interrupt feature additions if the user actually specified a (non-zero) value 
+
         if ((params.maxNumberOfFeatures != 0) && (selectedFeatures.size() >= params.maxNumberOfFeatures))
         {
             // Don't waste time computing further feature selection measures
@@ -112,8 +117,10 @@ std::vector<int> ForwardFeatureSelectionStrategy::PerformFeatureSelectionBasedTr
     for (unsigned int index = 1; index < CrossValidatedBalancedAccuraciesFinal.size() - 1; index++)
         MovingAverageOnCrossValidatedPerformance[index] = (CrossValidatedBalancedAccuraciesFinal[index] + CrossValidatedBalancedAccuraciesFinal[index - 1] + CrossValidatedBalancedAccuraciesFinal[index + 1]) / 3;
 
+
     // We just find the best performing count among the features we've already selected.
     // NOTE: This section included from Saima's code -- doesn't seem to actually use the moving average.
+
     int max_performance_counter = std::distance(CrossValidatedBalancedAccuraciesFinal.begin(), std::max_element(CrossValidatedBalancedAccuraciesFinal.begin(), CrossValidatedBalancedAccuraciesFinal.end()));
     std::vector<int> finalSelectedFeatures;
     for (unsigned int index = 0; index <= max_performance_counter; index++)

@@ -62,9 +62,15 @@ std::vector<int> RandomForestFeatureSelectionStrategy::PerformFeatureSelectionBa
     std::vector<size_t> indices = sortIndexesByValue(importancesSortable);
 
     std::vector<int> FinalSelectedFeatures;
-
+    
+    unsigned int numFeaturesToSelect;
+    if (params.maxNumberOfFeatures > features.Cols())
+    {
+        params.maxNumberOfFeatures = features.Cols();
+    }
+    numFeaturesToSelect = (params.maxNumberOfFeatures > 0 ? params.maxNumberOfFeatures : features.Cols());
     // push back the feature set that produced the best performance
-    for (int index = 0; index < params.maxNumberOfFeatures; index++)
+    for (int index = 0; index < numFeaturesToSelect; index++)
         FinalSelectedFeatures.push_back(indices[index]); 
     std::cout << "No. of selected features: " << FinalSelectedFeatures.size() << std::endl;
 

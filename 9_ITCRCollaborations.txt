@@ -1,0 +1,28 @@
+/**
+
+\page ITCR_Connectivity ITCR Connectivity
+
+This section includes a reference of all ongoing and existing connections between CaPTk and other projects funded under the [Informatics Technology for Cancer Research (ITCR)]() program.
+
+A connectivity map featuring all ITCR projects can be found [here](https://www.ndexbio.org/#/network/04c0a7e8-af92-11e7-94d3-0ac135e8bacf).
+
+\section itcr_existing Existing Connections
+\subsection itcr_dcmtk [DCMTK - DICOM ToolKit](https://dicom.offis.de/dcmtk.php.en)
+CaPTk uses DICOM ToolKit (DCMTK) for DICOM file handling. 
+
+\subsection itcr_dcmqi [DCMQI - DICOM for Quantitative Imaging](http://qiicr.org/dcmqi-guide/tutorials/intro.html)
+CaPTk leverages DCMQI for generating DICOM-Seg files from NIfTI file format. 
+
+\subsection itcr_synapse [Synapse PACS](https://healthcaresolutions-us.fujifilm.com/enterprise-imaging/synapse-pacs)
+CaPTk’s performance evaluation metrics are used by Synapse.  
+
+\subsection itr_tcia_idc [The Cancer Imaging Archive](https://www.cancerimagingarchive.net/)[/ Imaging Data Commons](https://datacommons.cancer.gov/repository/imaging-data-commons)
+Enriching TCIA data collections with segmentations and radiomic features. Robustness analysis on radiomic features on TCIA data. 
+
+\section itcr_ongoing Ongoing Development
+\subsection itcr_radxtools [RADxTools](https://radxtools.github.io/)
+CaPTk provides the [CoLlAGe](https://github.com/radxtools/collageradiomics) features through its feature extraction functionality. 
+
+Contact [software [at] cbica.upenn.edu](mailto:software@cbica.upenn.edu) with any questions.
+
+*/
