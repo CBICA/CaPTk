@@ -3340,6 +3340,8 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
     auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+    // Added this to allow masks of non-identity direction to pass the image sanity check below.
+    mask_temp = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(mask_temp);
     //SaveImage_withFile(0, temp_prev.c_str());
     if (!imageSanityCheckDone)
     {
@@ -5554,6 +5556,7 @@ void fMainWindow::overlayUseStateChanged(int state)
         mSlicerManagers[i]->mSlicers[j]->RemoveOverlay();
       }
     }
+    ChangeMaskOpacity(0.0);
     UpdateRenderWindows();
   }
 }
@@ -5573,6 +5576,7 @@ void fMainWindow::overlaySliderChanged(int value)
       mSlicerManagers[index]->GetSlicer(i)->SetOverlayOpacity((double)value / (10 + 1e-6));
     }
   }
+  ChangeMaskOpacity(value * 0.1);
   UpdateRenderWindows();
 }
 
