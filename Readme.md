@@ -4,6 +4,7 @@
     <img src="https://raw.githubusercontent.com/CBICA/CaPTk/master/docs_sources/images/0_tutorial_1_mainUI_resized.png" />
     <br></br>
     <a href="https://dev.azure.com/CBICA/CaPTk/_build?definitionId=2" alt="Build Status"><img src="https://dev.azure.com/CBICA/CaPTk/_apis/build/status/CBICA.CaPTk?branchName=master" /></a>
+    <a href="https://app.codacy.com/gh/CBICA/CaPTk?utm_source=github.com&utm_medium=referral&utm_content=CBICA/CaPTk&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/4388874394474ce38d6e6586255ef645"</a>
     <a href="https://hub.docker.com/r/cbica/captk/builds" alt="Build Status"><img src="https://img.shields.io/docker/cloud/automated/cbica/captk"></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues/CBICA/CaPTk.svg" /></a>
     <a href="https://github.com/CBICA/CaPTk/issues" alt="Issues"><img src="https://img.shields.io/github/issues-closed/CBICA/CaPTk.svg" /></a>
@@ -11,7 +12,7 @@
     <img src="https://img.shields.io/badge/language-c%2B%2B11-blue.svg" />
 </p>
 
-CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis, that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given in its use as a very lightweight and efficient viewer, and with no prerequisites for substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow.
+CaPTk is a software platform, written in C++, for analysis of radiographic images of cancer, currently focusing on brain, breast, and lung cancer. CaPTk integrates advanced, validated tools performing various aspects of medical image analysis, that have been developed in the context of active clinical research studies and collaborations toward addressing real clinical needs. With emphasis given in its use as a very lightweight and efficient viewer, and with no prerequisites for substantial computational background, CaPTk aims to facilitate the swift translation of advanced computational algorithms into routine clinical quantification, analysis, decision making, and reporting workflow. 
 
 Its long-term goal is to provide widely used technology that leverages the value of advanced imaging analytics in cancer prediction, diagnosis, and prognosis, as well as in better understanding the biological mechanisms of cancer development.
 
@@ -59,7 +60,7 @@ These are UNTESTED development builds from the latest master. Use at your own ri
 ## [Frequently Asked Questions (FAQ)](https://cbica.github.io/CaPTk/Getting_Started.html#gs_FAQ)
 
 ## Contact
-For more information, please contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
+For more information or any support, please post on the [Discussions](https://github.com/CBICA/CaPTk/discussions) section or contact <a href="mailto:software@cbica.upenn.edu">CBICA Software</a>.
 
 ## GitHub Distribution
 

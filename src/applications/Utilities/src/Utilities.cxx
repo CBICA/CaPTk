@@ -3,7 +3,7 @@
 #include "cbicaITKSafeImageIO.h"
 #include "cbicaUtilities.h"
 #include "cbicaITKUtilities.h"
-#include "DicomMetadataReader.h"
+#include "DicomMetadataReader.h" 
 
 #include "itkBoundingBox.h"
 #include "itkPointSet.h"
@@ -1180,7 +1180,7 @@ int algorithmsRunner_imageStack2join(std::vector< std::string >& inputImageFiles
   {
     inputImages[i] = cbica::ReadImage< TImageType >(inputImageFiles[i]);
   }
-  auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing);
+  auto output = cbica::GetJoinedImage< TImageType, TOutputImageType >(inputImages, imageStack2JoinSpacing, nifti2dicomSpacingTolerance);
   cbica::WriteImage< TOutputImageType >(output, outputImageFile);
   return EXIT_SUCCESS;
 }
@@ -1262,8 +1262,9 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("w2i", "world2image", cbica::Parameter::STRING, "i,j,k", "The world coordinates that will be converted to image coordinates for the input image", "Example: '-w2i 10.5,20.6,30.2'");
   parser.addOptionalParameter("j2e", "joined2extracted", cbica::Parameter::BOOLEAN, "0-1", "Axis to extract is always the final axis (axis '3' for a 4D image)", "The '-o' parameter can be used for output: '-o /path/to/extracted_'");
   parser.addOptionalParameter("e2j", "extracted2joined", cbica::Parameter::FLOAT, "0-10", "The spacing in the new direction", "Pass the folder containing all images in '-i'");
+  parser.addOptionalParameter("ejT", "extrac2joinToler", cbica::Parameter::FLOAT, "0-10", "The spacing tolerance in the original axes", "Only used of 'e2j' is passed", "Defaults to " + std::to_string(nifti2dicomSpacingTolerance));
   parser.addOptionalParameter("ls", "labelSimilarity", cbica::Parameter::FILE, "NIfTI Reference", "Calculate similarity measures for 2 label maps", "Pass the reference map after '-ls' and the comparison will be done with '-i'", "For images with more than 2 labels, individual label stats are also presented");
-  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map after '-lsb' and the comparison will be done with '-i'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
+  parser.addOptionalParameter("lsb", "lSimilarityBrats", cbica::Parameter::FILE, "NIfTI Reference", "Calculate BraTS similarity measures for 2 brain labels", "Pass the reference map (such as the ground truth labels that you would like to compare)", "after '-i' and the comparison will be done with '-lsb'", "Assumed labels in image are '1,2,4' and missing labels will be populate with '0'");
   parser.addOptionalParameter("hd", "hausdorffDist", cbica::Parameter::FILE, "NIfTI Reference", "Calculate the Hausdorff Distance for the input image and", "the one passed after '-hd'");
   parser.addOptionalParameter("co", "collectInfo", cbica::Parameter::BOOLEAN, "Dir with read", "Collects information about all images in input directory", "Input directory passed using '-i'", "Recursion defined using '-co 1'", "Output CSV passed using '-o'");
   parser.addOptionalParameter("cF", "collectFileName", cbica::Parameter::STRING, "File pattern", "The file pattern to check for in every file when collecting information", "Defaults to check all");
@@ -1354,7 +1355,19 @@ int main(int argc, char** argv)
   else if (parser.isPresent("n2d"))
   {
     requestedAlgorithm = Nifti2Dicom;
-    parser.getParameterValue("n2d", targetImageFile); // in this case, it is the DICOM reference file
+    int tempPosition;
+    if (parser.compareParameter("n2d", tempPosition))
+    {
+      std::string tempValue;
+      if (argc > tempPosition + 1)
+      {
+        tempValue = argv[tempPosition + 1];
+        if (cbica::exists(tempValue))
+        {
+          targetImageFile = tempValue; // in this case, it is the DICOM reference file
+        }
+      }
+    }
     parser.getParameterValue("o", outputImageFile);
     if (parser.isPresent("ndD"))
     {
@@ -1647,6 +1660,10 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
     parser.getParameterValue("e2j", imageStack2JoinSpacing);
+    if (parser.isPresent("ejT"))
+    {
+      parser.getParameterValue("ejT", nifti2dicomSpacingTolerance);
+    }
 
     auto imagesToJoin = cbica::filesInDirectory(inputImageFile);
     if (imagesToJoin.empty())

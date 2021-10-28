@@ -237,23 +237,23 @@ jobs:
         make -j 2
       displayName: 'Configure and compile CaPTk'
 
-    - script: |
-        cd bin
+ #   - script: |
+ #       cd bin
 
-        sudo rm -rf CaPTk_*
+#        sudo rm -rf CaPTk_*
 
-        cmake ../
-        rm CMakeCache.txt
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+ #       cmake ../
+ #       rm CMakeCache.txt
+ #       export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+ #       export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
 
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ../
+ #       export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/bin/ITK-build:$(Build.SourcesDirectory)/bin/DCMTK-build:$(Build.SourcesDirectory)/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+ #       cmake -DITK_DIR=./ITK-build -DDCMTK_DIR=./DCMTK-build -DBUILD_TESTING=ON ../
 
-        make -j 2
-        make test
-        rm -rf testing
-      displayName: 'Performing the Tests'
+ #       make -j 2
+ #       make test
+ #       rm -rf testing
+ #     displayName: 'Performing the Tests'
 
 - job: 'Windows_SelfHost_Windows_7'
   displayName: "Self-hosted agent on Windows 7"
@@ -378,7 +378,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
@@ -554,7 +554,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true
@@ -573,6 +573,7 @@ jobs:
 
     # submodule 
     - bash: |
+        export GIT_LFS_SKIP_SMUDGE=1
         git submodule update --init --recursive
 
       displayName: 'Git Submodule Init and Update'
@@ -744,7 +745,7 @@ jobs:
         sshEndpoint: cbicaNITRC
         sourceFolder: $(Build.ArtifactStagingDirectory)
         contents: '*_Installer.*'
-        targetFolder: /mnt/gforge-data/gforge/home/groups/captk/downloads
+        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
         cleanTargetFolder: false
         overwrite: true
         continueOnError: true

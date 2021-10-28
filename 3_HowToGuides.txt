@@ -1158,7 +1158,7 @@ See the usage option of the TrainingModule application (-u, --usage) for more in
 
 - \subpage BraTS_Metrics "BraTS Similarity Metrics Computation"
 
-This is a command line executable containing the following functionalities (with corresponding examples):
+This is a [command line executable](https://cbica.github.io/CaPTk/FAQ.html#gs_FAQ_3) containing the following functionalities (with corresponding examples):
 - Resizing
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -o C:/test_75.nii.gz -r 75 -ri linear
@@ -1179,6 +1179,10 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un
 	\endverbatim
+- Change values in image: The following command will change all voxels of value 1 & 2 to 2 & 4, respectively:
+	\verbatim
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -cv 1x2,2x4
+	\endverbatim
 - Get smallest bounding box in mask (optional isotropic bounding box)
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -b C:/testMask.nii.gz -o C:/output.nii.gz
@@ -1195,7 +1199,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -d2n
 	\endverbatim
-- NIfTI to DICOM conversion
+- NIfTI to DICOM conversion: **Note** that both the NIfTI and DICOM reference images need to be defined in the same space for this to work correctly
 	\verbatim
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/imageToConvert.nii.gz -o C:/outputDicom/ -n2d C:/referenceDICOM/
 	\endverbatim
@@ -1254,7 +1258,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -l2s C:/refer
 	\endverbatim
 - BraTS similarity Metrics between 2 label images: special considerations for metrics are done in this mode because output needs to be BraTS-compliant.
 	\verbatim
-${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/outputMask.nii.gz -lsb C:/referenceMask.nii.gz
+${CaPTk_InstallDir}/bin/Utilities.exe -i C:/referenceMask.nii.gz -lsb C:/test/predictedMask.nii.gz
 	\endverbatim
 - Collect information from all images in a directory and put it in CSV
 	\verbatim

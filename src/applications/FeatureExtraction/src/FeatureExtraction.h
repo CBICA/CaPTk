@@ -284,6 +284,8 @@ public:
     m_Mask = image;
   }
 
+  void SetSkipSanityCheck(bool flag) { m_skipSanityCheck = flag; }
+
   /**
   \brief SetOutputFilename sets m_outputPath value
   \param filename is the absolute path of output file.
@@ -773,6 +775,7 @@ private:
   bool m_LatticeComputation = false; //! flag to check if lattice-based computation has been enabled or not
   bool m_writeFeatureMaps = false; //! flag to check to write feature maps or not
   bool m_keepNaNs = true; //! whether to keep the nan values or not
+  bool m_skipSanityCheck = false;
   float m_latticeWindow = 0, m_latticeStep = 0; //! these are defined in mm
   typename TImageType::IndexType m_latticeStepImage; //! lattice step as defined in the image coordinates
   typename TImageType::SizeType m_latticeSizeImage; //! lattice size in image space

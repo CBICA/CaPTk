@@ -290,7 +290,7 @@ int main(int argc, char **argv)
     }
 
     auto tempExt = cbica::getFilenameExtension(outputFile, false);
-    if ((tempExt != ".nii.gz") || (tempExt != ".nii"))
+    if ((tempExt != ".nii.gz") && (tempExt != ".nii"))
     {
       std::cerr << "Output file extension needs to be compatible with NIfTI format. Only '.nii.gz' or '.nii' allowed\n";
       return EXIT_FAILURE;

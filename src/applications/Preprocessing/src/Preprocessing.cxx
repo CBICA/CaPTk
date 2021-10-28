@@ -47,7 +47,7 @@ registrationAffineTransformInput, registrationDeformableTransformInput;
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
   registrationTypeInt, registrationRigidDof = 12;
-bool registrationIntermediate = false, registrationSegmentationMoving = false, registrationJacobian = false;
+bool registrationIntermediate = false, registrationSegmentationMoving = false, registrationJacobian = false, registrationInvert = false;
 float zNormCutLow = 3, zNormCutHigh = 3, zNormQuantLow = 5, zNormQuantHigh = 95,
   bias_fwhm = BiasCorrection::default_fwhm, rescaleLower = 0, rescaleUpper = 1000,
   ssSigma = 0.5, ssIntensityThreshold = 80,
@@ -513,6 +513,10 @@ int algorithmsRunner()
       }
       default: // we shall always assume affine/rigid
       {
+        if (registrationInvert)
+        {
+          interimFiles_affineTransform += ",-1";
+        }
         if (registrationSegmentationMoving)
         {
           commandToCall = greedyPathAndDim +
@@ -706,6 +710,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rIS", "regInterSave", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the intermediate files are to be saved or not", "Defaults to " + std::to_string(registrationIntermediate));
   parser.addOptionalParameter("rSg", "regSegMoving", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the Moving Image(s) is a segmentation file", "If 1, the 'Nearest Label' Interpolation is applied", "Defaults to " + std::to_string(registrationSegmentationMoving));
   parser.addOptionalParameter("rJC", "regJacobian", cbica::Parameter::BOOLEAN, "0 or 1", "Whether Jacobian will be generated or not");
+  parser.addOptionalParameter("rIv", "regInverse", cbica::Parameter::BOOLEAN, "0 or 1", "Whether the affine matrix should be inverted or not, defaults to false");
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
@@ -973,6 +978,10 @@ int main(int argc, char** argv)
     if (parser.isPresent("rJC"))
     {
       parser.getParameterValue("rJC", registrationJacobian);
+    }
+    if (parser.isPresent("rIv"))
+    {
+      parser.getParameterValue("rIv", registrationInvert);
     }
     if (parser.isPresent("rIA"))
     {

@@ -314,7 +314,7 @@ FOREACH(subdir ${SUBDIRECTORIES})
 
     ### this should be removed and put in with application decoupling
     ## this is a TEMPORARY work-around until https://github.com/CBICA/CaPTk/pull/1043 is merged
-    SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/deepMedicInference_${PLATFORM_STRING}.zip" )
+    SET( DOWNLOAD_LINK "https://captk.projects.nitrc.org/deepMedicInference_${PLATFORM_STRING}.zip" )
     SET( FILENAME_TO_EXTRACT "deepMedicInference_${PLATFORM_STRING}")
     SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
     
@@ -653,7 +653,7 @@ IF( NOT EXISTS "${SOURCE_APPLICATIONS_PATH}/dcm2niix" )
 ENDIF()
 
 #specify download link
-SET( DOWNLOAD_LINK "ftp://www.nitrc.org/home/groups/captk/downloads/precompiledApps/dcm2niix_${PLATFORM_STRING}.zip" )
+SET( DOWNLOAD_LINK "https://captk.projects.nitrc.org/dcm2niix_${PLATFORM_STRING}.zip" )
 SET( FILENAME_TO_EXTRACT "dcm2niix_${PLATFORM_STRING}")
 SET( FILE_TO_EXTRACT ${PROJECT_BINARY_DIR}/${FILENAME_TO_EXTRACT}.zip)
 

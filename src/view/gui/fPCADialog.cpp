@@ -16,8 +16,24 @@ fPCADialog::fPCADialog()
   mode = -1;
   //this->setFixedWidth(400);
   //this->setFixedHeight(300);
+
+  modeButtons = new QButtonGroup(this);
+  modeButtons->addButton(extractPCA, fPCADialog::PCAModeType::Extract);
+  modeButtons->addButton(applyPCA, fPCADialog::PCAModeType::Apply);
+
+  connect(pbInput, SIGNAL(clicked()), this, SLOT(OnSelectInputDirectory()));
+  connect(pbOutput, SIGNAL(clicked()), this, SLOT(OnSelectOutputDirectory()));
+  connect(pbParams, SIGNAL(clicked()), this, SLOT(OnSelectPCAParametersDirectory()));
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(CancelButtonPressed()));
-  connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
+  connect(confirmButton, SIGNAL(clicked()), this, SLOT(OnConfirmButtonPressed()));
+  connect(modeButtons, SIGNAL(buttonClicked(int)), this, SLOT(OnPCAModeChanged(int)));
+  connect(varLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnVarianceChanged(const QString &)));
+  connect(nPCsLE, SIGNAL(textEdited(const QString &)), this, SLOT(OnNumberPCAImagesChanged(const QString &)));
+
+  //by default extract pca params is selected
+  this->extractPCA->click();
+
+  //old connections - we don't need them anymore
   connect(existingMasksButton, SIGNAL(clicked()), this, SLOT(OpenExistingMasksDirectory()));
   connect(svmModelButton1, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile1()));
   connect(svmModelButton2, SIGNAL(clicked()), this, SLOT(OpenSVMModelFile2()));
@@ -115,9 +131,10 @@ void fPCADialog::ConfirmButtonPressed()
       ShowErrorMessage("Please specify the directory of SVM model.");
       return;
     }
-    if (cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
-      cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
-      emit ExistingModelBasedPCAEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
+	if (cbica::isFile(svmModelFileName2->text().toStdString() + "/Mean_PERF.csv") &&
+		cbica::isFile(svmModelFileName2->text().toStdString() + "/PCA_PERF.csv"))
+		;
+      //emit ExistingModelBasedPCAEstimate(svmModelFileName2->text().toStdString(), testSubjectsDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
     else
     {
       ShowErrorMessage("The specified directory does not have model files.");
@@ -125,7 +142,7 @@ void fPCADialog::ConfirmButtonPressed()
     }
   }
   else
-    emit TrainNewPCAModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
+    //emit TrainNewPCAModel(existingMaskDirectoryName->text().toStdString(), outputDirectoryName->text().toStdString());
   this->close();
 }
 
@@ -238,6 +255,133 @@ void fPCADialog::CurrentSubjectRadioButtonChecked()
   //	existingMaskDirectoryName->setEnabled(false);
   //	existingMasksButton->setEnabled(false);
   //}
+}
+
+void fPCADialog::OnPCAModeChanged(int mode)
+{
+	if (mode == (int)fPCADialog::PCAModeType::Extract)
+	{
+		this->pcaParamsLabel->hide();
+		this->pcaParamsLE->hide();
+		this->pbParams->hide();
+		this->optionalGroupBox->setTitle("Optional Parameters");
+	}
+	else if (mode == (int)fPCADialog::PCAModeType::Apply)
+	{
+		this->pcaParamsLabel->show();
+		this->pcaParamsLE->show();
+		this->pbParams->show();
+		this->optionalGroupBox->setTitle("Additional Parameters");
+	}
+}
+
+void fPCADialog::OnVarianceChanged(const QString &text)
+{
+	if (!text.isEmpty())
+	{
+		this->nPCsLE->hide();
+		this->nPCsLabel->hide();
+	}
+	else
+	{
+		this->nPCsLE->show();
+		this->nPCsLabel->show();
+	}
+}
+
+void fPCADialog::OnNumberPCAImagesChanged(const QString &text)
+{
+	if (!text.isEmpty())
+	{
+		this->varLabel->hide();
+		this->varLE->hide();
+	}
+	else
+	{
+		this->varLabel->show();
+		this->varLE->show();
+	}
+}
+
+void fPCADialog::OnConfirmButtonPressed()
+{
+	QString inputDir, outputDir, pcaParamDir, nPCAImages, variance;
+	inputDir = this->inputDirLE->text();
+	outputDir = this->outputDirLE->text();
+	pcaParamDir = this->pcaParamsLE->text();
+	nPCAImages = this->nPCsLE->text();
+	variance = this->varLE->text();
+
+	//check if the user specified the input and output dirs
+	if (inputDir.isEmpty())
+	{
+		ShowErrorMessage("Please specify a valid input directory.");
+		return;
+	}
+	if (outputDir.isEmpty())
+	{
+		ShowErrorMessage("Please specify a valid output directory.");
+		return;
+	}
+
+	//check if input dir exists
+	if (!cbica::directoryExists(inputDir.toStdString()))
+	{
+		ShowErrorMessage("The input directory does not exist. Please specify a valid input directory.");
+		return;
+	}
+
+	//if output dir does not exist, create it
+	if (!cbica::directoryExists(outputDir.toStdString()))
+	{
+		if (!cbica::createDirectory(outputDir.toStdString()))
+		{
+			ShowErrorMessage("The output directory can not be created.Please specify a valid output directory.");
+			return;
+		}
+	}
+
+	if (this->extractPCA->isChecked()) //extract PCA mode
+	{
+		emit TrainNewPCAModel(inputDir, outputDir, nPCAImages, variance);
+	}
+	else if (this->applyPCA->isChecked()) //Apply PCA mode
+	{
+		//check if pca parameter dir exists
+		if (!cbica::directoryExists(pcaParamDir.toStdString()))
+		{
+			ShowErrorMessage("The PCA parameters directory doesn't exist.");
+			return;
+		}
+
+		//if variance and number of PCA images to produce are both not specified
+		if (variance.isEmpty() && nPCAImages.isEmpty())
+		{
+			ShowErrorMessage("Please specify either the number of PCA images to produce or the variance threshold to continue.");
+			return;
+		}
+
+		emit ExistingModelBasedPCAEstimate(inputDir, outputDir, pcaParamDir, nPCAImages, variance);
+	}
+	this->close();
+}
+
+void fPCADialog::OnSelectInputDirectory()
+{
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->inputDirLE->setText(dir);
+}
+
+void fPCADialog::OnSelectOutputDirectory()
+{
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->outputDirLE->setText(dir);
+}
+
+void fPCADialog::OnSelectPCAParametersDirectory()
+{
+	QString dir = getExistingDirectory(this, this->mInputPathName);
+	this->pcaParamsLE->setText(dir);
 }
 
 //void fPCADialog::CheckForDisclaimer()

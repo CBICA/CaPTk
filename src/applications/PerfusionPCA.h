@@ -49,6 +49,14 @@ class PerfusionPCA
 #endif
 {
 public:
+
+	enum ErrorCode
+	{
+		IncorrectInputStructure = 0,
+		MismatchedTimePoints,
+		NoError
+	};
+
   cbica::Logging logger;
   //! Default constructor
   PerfusionPCA()
@@ -60,19 +68,64 @@ public:
   /*template<class ImageTypeFloat4D, class ImageTypeFloat3D>
   std::vector<typename ImageTypeFloat3D::Pointer> Run(typename ImageTypeFloat3D::Pointer maskImagePointerNifti, typename ImageTypeFloat4D::Pointer perfImagePointerNifti);
 */
+  /*
+  \brief Load Perfusion and Segmentation images into Perfusion Data Map
+  \return ErrorCode Indicating the status of load operation
+  \return inValidSubject If unable to load, path of the invalid subject
+  */
+  ErrorCode LoadData(std::string &inValidSubject);
 
-  bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory,std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects);
-  bool ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory, std::vector<std::map<CAPTK::ImageModalityType, std::string>> QualifiedSubjects,const std::string ModelDirectoryName);
+  //Extract PCA Parameters
+  bool TrainNewPerfusionModel(const int number, const std::string inputdirectory, const std::string outputdirectory);
+
+  //Apply extracted PCA paramters
+  ErrorCode ApplyExistingPCAModel(const int number, const std::string inputdirectory, const std::string outputdirectory,const std::string ModelDirectoryName);
   
+  //Load perfusion data into vector and matrix
   template<class PerfusionImageType, class ImageType>
   VariableSizeMatrixType LoadPerfusionData(typename ImageType::Pointer maskImagePointerNifti, typename PerfusionImageType::Pointer perfImagePointerNifti, std::vector< typename ImageType::IndexType> &indices);
 
-  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs);
+  PerfusionMapType CombineAndCalculatePerfusionPCA(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector, vtkSmartPointer<vtkTable> &ReducedPCAs, vtkSmartPointer<vtkDoubleArray> &variance);
   VariableSizeMatrixType ColumnWiseScaling(VariableSizeMatrixType inputdata);
 
   PerfusionMapType CombineAndCalculatePerfusionPCAForTestData(PerfusionMapType PerfusionDataMap, VariableSizeMatrixType &TransformationMatrix, VariableLengthVectorType &MeanVector);
+
+  //write vtk array
+  void WritevtkArray(vtkDoubleArray* inputdata, std::string filepath);
+
+  //determine # PCs
+  int DetermineNumberOfPCs(vtkSmartPointer<vtkDoubleArray> variance);
+
+  //setter for Variance theshold
+  void SetVarianceThreshold(float threshold);
+
+  //setter for number of PCA images to produce
+  void SetNumberOfPCs(int pcs);
+
+  //setter to request intermediate perfusion data for whole population
+  void RequestPerfusionDataWholePopulation(bool request);
+
+  //sort and arrange valid input data
+  void SortValidSubjectsFromGivenDirectory(const std::string directoryname);
+
+  //check if there are any valid subjects in input data
+  bool HasValidSubjects();
 private:
 
+	int m_TotalTimePoints = 0;
+
+	//map of subject id to tuple of vector of mask indices and matrix of perfusion pixel data 
+	//size of perfusion data map is equal to the number of subjects
+	PerfusionMapType m_PerfusionDataMap;
+
+	float m_VarianceThreshold = 0.0;
+	int m_NumberOfPCs = 0;
+	bool m_VarianceThresholdDefined = false;
+	bool m_NumberOfPCsDefined = false;
+	bool m_PerfusionDataForWholePopulationRequested = false;
+
+	//vector of valid subjects in input
+	std::vector<std::map<CAPTK::ImageModalityType, std::string>> m_ValidSubjectList;
 };
 
 template<class PerfusionImageType, class ImageType>
