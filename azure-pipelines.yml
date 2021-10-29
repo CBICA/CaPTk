@@ -649,7 +649,7 @@ jobs:
         
         cmake -DITK_DIR="/Users/Shared/superbuild/bin/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
         
-        # Debug using vsts' cache
+        # Debug using vsts' cache 
         cp CMakeCache.txt /Users/Shared/latest-vsts-cmakecache.txt 
         make -j 2
          
