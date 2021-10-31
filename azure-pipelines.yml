@@ -639,15 +639,13 @@ jobs:
 
         rm -rf CaPTk_*
 
-        cmake ../
-        rm -f CMakeCache.txt
-        
-        
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/bin/ITK-build:/Users/Shared/superbuild/bin/DCMTK-build:/Users/Shared/superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
         echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
+        #cmake ../
+        #rm -f CMakeCache.txt
         
-        cmake -DITK_DIR="/Users/Shared/superbuild/bin/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DVTK_DIR="/Users/Shared/superbuild/VTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
         
         # Debug using vsts' cache
         cp CMakeCache.txt /Users/Shared/debug-vsts-getkaa-cmakecache.txt 
@@ -664,13 +662,13 @@ jobs:
 
         rm -rf CaPTk*.app
 
-        cmake ../
-        rm -f CMakeCache.txt
+        #cmake ../
+        #rm -f CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/bin/ITK-build:/Users/Shared/superbuild/bin/DCMTK-build:/Users/Shared/superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
   
         
-        cmake -DITK_DIR="/Users/Shared/superbuild/bin/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
 
         make -j 2
 
