@@ -662,8 +662,8 @@ jobs:
 
         rm -rf CaPTk*.app
 
-        #cmake ../
-        #rm -f CMakeCache.txt
+        cmake ../
+        rm -f CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
         export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
   
