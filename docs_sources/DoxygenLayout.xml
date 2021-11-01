@@ -26,6 +26,7 @@
     <tab type="user" visible="yes" title="Installation Instructions" url="Installation.html"/>
     <tab type="user" visible="yes" title="Release Notes" url="ReleaseNotes.html"/>
     <tab type="user" visible="yes" title="People (Credits)" url="People.html"/>
+	<tab type="user" visible="yes" title="ITCR Connectivity" url="ITCR_Connectivity.html"/>
     <tab type="pages" visible="no" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
