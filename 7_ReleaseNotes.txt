@@ -2,6 +2,20 @@
 
 \page ReleaseNotes Changelog: Release Notes
 
+- New training module
+- Updated documentation
+- Miscellaneous bug fixes
+
+For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
+
+\subsection Known Issues
+
+https://github.com/CBICA/CaPTk/issues
+
+\subsection Older Versions
+
+\subsubsection 1.8.0
+
 - Fixes to Preprocessing 
   - NIfTI to DICOM writing improvements
   - Registration improvements (rigid and deformable added to CLI and GUI)
@@ -26,21 +40,13 @@
 - Added Collage radiomic features to Feature Extraction module
 - Documentation updates
 
-For a full list, please see https://github.com/CBICA/CaPTk/issues?q=is%3Aissue+is%3Aclosed
-
-## Known Issues
-
-https://github.com/CBICA/CaPTk/issues
-
-## Older Versions
-
-### 1.7.6
+\subsubsection 1.7.6
 
 - New model and data for Pseudo-Progression Estimator
 - Generic bug fixes and improvements 
 - Documentation updates
 
-### 1.7.5
+\subsubsection 1.7.5
 
 - GUI improvements
 - Algorithmic fixes for Neuro applications
@@ -48,7 +54,7 @@ https://github.com/CBICA/CaPTk/issues
 - Linux installation updates
 - Generic bug fixes and improvements 
 
-### 1.7.3
+\subsubsection 1.7.3
 
 - Light/Dark mode and font switcher
 - Lots of new Utilities (NIfTI to DICOM & DICOM-Seg object conversion, Orientation change, Thresholding, File format conversion)
@@ -56,7 +62,7 @@ https://github.com/CBICA/CaPTk/issues
 - Automated Docker builds
 - Generic bug fixes and improvements 
 
-### 1.7.2
+\subsubsection 1.7.2
 
 - Preferences dialog added (see File > Preferences)
 - DICOM reading updates on the GUI
@@ -64,13 +70,13 @@ https://github.com/CBICA/CaPTk/issues
 - Comparison mode works on 2 images
 - Generic bug fixes and improvements 
 
-### 1.7.1 
+\subsubsection 1.7.1 
 
 - Better high DPI support for all supported platforms
 - Updated documentation for whole package
 - Generic bug fixes and improvements 
 
-### 1.7.0
+\subsubsection 1.7.0
 - New Applications and Tools
   - Perfusion Alignment
   - Deep Learning Inference Engine based on DeepMedic
@@ -86,19 +92,19 @@ https://github.com/CBICA/CaPTk/issues
   - Training Module improvements
   - Annotation visualization improvements (single/multiple label view)
 
-### 1.6.1
+\subsubsection 1.6.1
 - Generic bug fixes in several applications 
 - Feature Extraction fixes on par with IBSI
 - OpenGL rendering added to better handle scaling issues
 - New "Preprocessing" executable added which has a bunch of generic functionality
 
-### 1.6.0
+\subsubsection 1.6.0
 - New applications have been added: Lung Cancer Segmentation/Analysis, Pseudo-Progression, EGFRvIII-SVM, Training Module, DeepMedic Segmentation, Greedy Registration
 - Updates to Feature Extraction Panel (Lattice-based computation, new feature families)
 - macOS package has been added
 - Lots of bug-fixes and improvements
 
-### 1.5.0
+\subsubsection 1.5.0
 - New applications added: Perfusion derivatives (ap-rCBV, PSR, PH), Diffusion derivatives (FA, AX, RAD, TR), PCA Volume Extraction, GBM Molecular Subtype Prediction, GBM Population Atlas
 - Performance and UI improvements
 - New user-centric documentation & intro, based on NIH/ITCR guidelines
@@ -107,48 +113,48 @@ https://github.com/CBICA/CaPTk/issues
 - Updated implementation of Directionality Estimation  
 
 
-### 1.3.0
+\subsubsection 1.3.0
 - Labels updated to support GLISTR and GLISTRboost outputs
 - Added a way to invoke CaPTk from the command line to make QC of multiple subjects easier
 - Double click to add tissue points and tumor point centers
 - New applications added
 - Performance and UI improvements
 
-### 1.2.0
+\subsubsection 1.2.0
 - New applications added
 - Interactive functionality updated 
 - Added central core for statistical analyses
 - Bug fixes
 
-### 1.1.0
+\subsubsection 1.1.0
 - Added functionality to drawing 
 - Documentation updated with more illustrative screenshots
 
-### 1.0.1
+\subsubsection 1.0.1
 - Updated documentation outside and inside the application
 - Random bug-fixes 
 
-### 2017.02.01
+\subsubsection 2017.02.01
 - First public release of CaPTk_Full (version 1.0.0)
 - Applications populated using highlighted algorithms from CBICA
 - Feature Panel added to generate a comprehensive radiomic feature set for training
 - More optimizations and bug-fixes in interaction
 
-### 2016.10.14
+\subsubsection 2016.10.14
 - Release for MICCAI 2016
 - UI optimizations
 - Seed point selector updated
 
-### 2016.09.05
+\subsubsection 2016.09.05
 - Move to a date-based versioning system for more clarity and coherence
 - SeedSelector version for GLISTR, GLISTRboost, PORTR added to compilation
 - Major UI overhaul with more dynamic elements
 
-### 0.0.2
+\subsubsection 0.0.2
 - Bug fixes in the seed points are saved
 - Generic interactive improvements
 
-### 0.0.1
+\subsubsection 0.0.1
 - First (internal) release of CaPTk
 - Mostly a prototype at this stage
 - Interactive elements (seed-point initialization, ROI drawing) work properly

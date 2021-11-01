@@ -9,7 +9,7 @@ CaPTk is currently distributed in the form of pre-compiled (executable) Windows,
 Check the [Installation](Installation.html) guide for details on installation.
 
 --------------------------------------------------------------------
-### Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:
+<b>Note:</b> Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:
 
 - C.Davatzikos, S.Rathore, S.Bakas, S.Pati, M.Bergman, R.Kalarot, P.Sridharan, A.Gastounioti, N.Jahani, E.Cohen, H.Akbari, B.Tunc, J.Doshi, D.Parker, M.Hsieh, A.Sotiras, H.Li, Y.Ou, R.K.Doot, M.Bilello, Y.Fan, R.T.Shinohara, P.Yushkevich, R.Verma, D.Kontos, "Cancer imaging phenomics toolkit: quantitative imaging analytics for precision diagnostics and predictive modeling of clinical outcome", J Med Imaging, 5(1):011018, 2018, DOI:10.1117/1.JMI.5.1.011018
 - S.Pati, A.Singh, S.Rathore, A.Gastounioti, M.Bergman, P.Ngo, S.M.Ha, D.Bounias, J.Minock, G.Murphy, H.Li, A.Bhattarai, A.Wolf, P.Sridaran, R.Kalarot, H.Akbari, A.Sotiras, S.P.Thakur, R.Verma, R.T.Shinohara, P.Yushkevich, Y.Fan, D.Kontos, C.Davatzikos, S.Bakas, "The Cancer Imaging Phenomics Toolkit (CaPTk): Technical Overview", Springer - BrainLes 2019 - LNCS, Vol.11993, 380-394, 2020, DOI:10.1007/978-3-030-46643-5_38
@@ -24,7 +24,7 @@ In addition, if the journal/conference where you submit your paper does not rest
 
 
 --------------------------------------------------------------------
-## License
+\subsection lic License
 
 By installing the CaPTk, the user agrees to the following licenses, which pertain to the code and its different constituents:
 
