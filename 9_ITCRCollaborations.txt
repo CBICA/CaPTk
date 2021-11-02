@@ -10,7 +10,7 @@ A connectivity map featuring all ITCR projects can be found [here](https://www.n
 
 \section itcr_existing Existing Connections
 
-\subsection itcr_dcmtk DCMT
+\subsection itcr_dcmtk DCMTK
 CaPTk uses [DCMTK - DICOM ToolKit (DCMTK)](https://dicom.offis.de/dcmtk.php.en) for DICOM file handling. 
 
 \subsection itcr_dcmqi DCMQI
