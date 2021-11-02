@@ -3,7 +3,7 @@
 \page People People (Credits)
 
 
-## Advisors:
+\subsection advisors Advisors:
 
 - [Christos Davatzikos](https://www.med.upenn.edu/cbica/christos/)
 - [Despina Kontos](https://www.med.upenn.edu/cbica/cbig/despinak.html)
@@ -14,7 +14,7 @@
 - [Spyridon Bakas](https://www.med.upenn.edu/cbica/sbakas/)
 
 
-## Developers:
+\subsection devs Developers:
 
 - [Sarthak Pati](https://www.med.upenn.edu/cbica/aibil/spati.html): v.0.0.1 - present
 - [Saima Rathore](https://www.med.upenn.edu/sbia/srathore.html): v.0.0.1 - present
@@ -34,7 +34,7 @@
 
 More details are available from our repository's [Insights page](https://github.com/CBICA/CaPTk/graphs/contributors).
 
-## Collaborators:
+\subsection collabs Collaborators:
 
 - [Mark Bergman](https://www.med.upenn.edu/cbica/sbia/mbergman.html)
 - [Chiharu Sako](https://www.med.upenn.edu/cbica/aibil/sako.html)

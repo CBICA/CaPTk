@@ -259,21 +259,42 @@
     <name>Download</name>
     <title>Download Instructions</title>
     <filename>Download.html</filename>
+    <docanchor file="Download.html" title="License">lic</docanchor>
   </compound>
   <compound kind="page">
     <name>Installation</name>
     <title>Installation Instructions</title>
     <filename>Installation.html</filename>
+    <docanchor file="Installation.html">Windows</docanchor>
+    <docanchor file="Installation.html">Linux</docanchor>
+    <docanchor file="Installation.html">macOS</docanchor>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>
     <title>Changelog: Release Notes</title>
     <filename>ReleaseNotes.html</filename>
+    <docanchor file="ReleaseNotes.html" title="Issues">Known</docanchor>
+    <docanchor file="ReleaseNotes.html" title="Versions">Older</docanchor>
   </compound>
   <compound kind="page">
     <name>People</name>
     <title>People (Credits)</title>
     <filename>People.html</filename>
+    <docanchor file="People.html" title="Advisors:">advisors</docanchor>
+    <docanchor file="People.html" title="Developers:">devs</docanchor>
+    <docanchor file="People.html" title="Collaborators:">collabs</docanchor>
+  </compound>
+  <compound kind="page">
+    <name>ITCR_Connectivity</name>
+    <title>ITCR Connectivity</title>
+    <filename>ITCR_Connectivity.html</filename>
+    <docanchor file="ITCR_Connectivity.html" title="Existing Connections">itcr_existing</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="DCMT">itcr_dcmtk</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="DCMQI">itcr_dcmqi</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="Synapse PACS">itcr_synapse</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="TCIA and IDC">itr_tcia_idc</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="Ongoing Development">itcr_ongoing</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="RADxTools">itcr_radxtools</docanchor>
   </compound>
   <compound kind="page">
     <name>index</name>

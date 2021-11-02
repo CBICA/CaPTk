@@ -7,12 +7,12 @@
     <toc>
       <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.2.Alpha" ref="index.html">
         <section title="Overview" ref="index.html">
-          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md131" />
-          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md132" />
-          <section title="Citations" ref="index.html#autotoc_md133" />
-          <section title="Supporting Grant" ref="index.html#autotoc_md134" />
-          <section title="Disclaimer" ref="index.html#autotoc_md135" />
-          <section title="Contact" ref="index.html#autotoc_md136" />
+          <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md103" />
+          <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md104" />
+          <section title="Citations" ref="index.html#autotoc_md105" />
+          <section title="Supporting Grant" ref="index.html#autotoc_md106" />
+          <section title="Disclaimer" ref="index.html#autotoc_md107" />
+          <section title="Contact" ref="index.html#autotoc_md108" />
         </section>
       </section>
       <section title="Getting Started" ref="Getting_Started.html">
@@ -61,102 +61,98 @@
           <section title="BraTS Pre-processing Pipeline" ref="preprocessing_brats.html" />
         </section>
         <section title="Segmentation" ref="ht_Segmentation.html">
-          <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html" />
-          <section title="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
-          <section title="ITK-SNAP" ref="seg_SNAP.html" />
-          <section title="Deep Learning Segmentation" ref="seg_DL.html" />
-        </section>
-        <section title="Feature Extraction" ref="ht_FeatureExtraction.html" />
-        <section title="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html">
-          <section title="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
-          <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
-          <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
-          <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
-          <section title="Glioblastoma Pseudo-progression Index" ref="Glioblastoma_Pseudoprogression.html" />
-          <section title="Glioblastoma Overall Survival Prediction" ref="Glioblastoma_Survival.html" />
-          <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
-          <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
-          <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
-          <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
-          <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
-          <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
-          <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
-          <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
-          <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
-          <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-          <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
-          <section title="Miscellaneous: Training Module" ref="Training_Module.html" />
-        </section>
-        <section title="Utilities (CLI only)" ref="ht_utilities.html">
-          <section title="BraTS Similarity Metrics Computation (CLI Only)" ref="BraTS_Metrics.html" />
-        </section>
-      </section>
-      <section title="Scientific Findings using CaPTk" ref="Science.html">
-        <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
-        <section title="Prediction of Overall Survival in Glioblastoma Patients" ref="Science.html#survivalPredictor" />
-        <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
-        <section title="Prediction of Progression-Free Survival (PFS) and Recurrence Pattern (RP) in Glioblastoma" ref="Science.html#jcoCancer" />
-        <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers" />
-      </section>
-      <section title="Technical Reference" ref="Technical_Reference.html">
-        <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
-          <section title="Pre-Existing Parameter Configurations" ref="tr_FeatureExtraction.html#tr_fe_defaults">
-            <section title="Default 3D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
-            <section title="Default 2D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
-            <section title="Customizing Parameters" ref="tr_FeatureExtraction.html#tr_fe_customization" />
+          <section title="Geodesic Training Segmentation" ref="seg_GeoTrain.html">
+            <section title="Note that the CLI allows users to configure a pixel limit. Images above this size (after normalization) will be downsampled for processing, then upsampled when done. This produces a faster, but less precise, result. The GUI does not currently perform this downscaling step." ref="seg_GeoTrain.html#autotoc_md32" />
           </section>
-          <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
-          <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
         </section>
-        <section title="Integrating your Application in CaPTk" ref="tr_integration.html">
-          <section title="Building CaPTk from Sources" ref="tr_integration.html#tr_sourceBuid">
-            <section title="Prerequisites" ref="tr_integration.html#tr_sb_prerequisites" />
-            <section title="Build" ref="tr_integration.html#tr_sb_actualBuild" />
-          </section>
-          <section title="Integrating your C++ application into CaPTk" ref="tr_integration.html#tr_cppIntegration" />
-          <section title="Integrating your Python application into CaPTk" ref="tr_integration.html#tr_pyIntegration" />
+        <section title="Geodesic Distance Transform-based Segmentation" ref="seg_Geodesic.html" />
+        <section title="ITK-SNAP" ref="seg_SNAP.html" />
+        <section title="Deep Learning Segmentation" ref="seg_DL.html" />
+      </section>
+      <section title="Feature Extraction" ref="ht_FeatureExtraction.html" />
+      <section title="Specialized Applications (SAs) Usage" ref="ht_SpecialApps.html">
+        <section title="Brain Cancer: WhiteStripe Normalization" ref="Glioblastoma_WhiteStripe.html" />
+        <section title="Brain Cancer: Population Atlas" ref="Glioblastoma_Atlas.html" />
+        <section title="Brain Cancer: Confetti" ref="Glioblastoma_Confetti.html" />
+        <section title="Brain Cancer: Glioblastoma Infiltration Index (Recurrence)" ref="Glioblastoma_Recurrence.html" />
+        <section title="Glioblastoma Pseudo-progression Index" ref="Glioblastoma_Pseudoprogression.html" />
+        <section title="Glioblastoma Overall Survival Prediction" ref="Glioblastoma_Survival.html" />
+        <section title="Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)" ref="Glioblastoma_PHI.html" />
+        <section title="Brain Cancer: Glioblastoma EGFRvIII SVM Index" ref="Glioblastoma_EGFRvIII.html" />
+        <section title="Breast Cancer: Breast Segmentation" ref="BreastCancer_breastSegmentation.html" />
+        <section title="Breast Cancer: Breast Density Estimation (LIBRA)" ref="BreastCancer_LIBRA.html" />
+        <section title="Breast Cancer: Texture Feature Extraction" ref="BreastCancer_texture.html" />
+        <section title="Lung Cancer: Radiomics Analysis of Lung Cancer" ref="LungCancer_SBRT.html" />
+        <section title="Miscellaneous: Directionality Estimator" ref="Glioblastoma_Directionality.html" />
+        <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
+        <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
+        <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
+        <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
+        <section title="Miscellaneous: Training Module" ref="Training_Module.html">
+          <section title="See the usage option of the TrainingModule application (-u, &amp;ndash;usage) for more information." ref="Training_Module.html#autotoc_md66" />
         </section>
       </section>
-      <section title="Download Instructions" ref="Download.html">
-        <section title="Please make sure that whenever you use and/or refer to CaPTk in your research, you should always cite the following papers:" ref="Download.html#autotoc_md93" />
-      </section>
-      <section title="License" ref="Download.html#autotoc_md95" />
+    </section>
+    <section title="Utilities (CLI only)" ref="ht_utilities.html">
+      <section title="BraTS Similarity Metrics Computation (CLI Only)" ref="BraTS_Metrics.html" />
     </section>
   </section>
-  <section title="Installation Instructions" ref="Installation.html">
-    <section title="Windows" ref="Installation.html#autotoc_md99" />
-    <section title="Linux" ref="Installation.html#autotoc_md100" />
-    <section title="macOS" ref="Installation.html#autotoc_md101" />
+  <section title="Scientific Findings using CaPTk" ref="Science.html">
+    <section title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients" ref="Science.html#phiEstimator" />
+    <section title="Prediction of Overall Survival in Glioblastoma Patients" ref="Science.html#survivalPredictor" />
+    <section title="Probability Maps of Potential Recurrence of Glioblastoma Tumors" ref="Science.html#recurrencePredictor" />
+    <section title="Prediction of Progression-Free Survival (PFS) and Recurrence Pattern (RP) in Glioblastoma" ref="Science.html#jcoCancer" />
+    <section title="Imaging Biomarkers Related to Cancer Risk and Development of Breast Cancer" ref="Science.html#libraPapers" />
+  </section>
+  <section title="Technical Reference" ref="Technical_Reference.html">
+    <section title="Feature Extraction" ref="tr_FeatureExtraction.html">
+      <section title="Pre-Existing Parameter Configurations" ref="tr_FeatureExtraction.html#tr_fe_defaults">
+        <section title="Default 3D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_main" />
+        <section title="Default 2D Image Feature Extraction Parameters" ref="tr_FeatureExtraction.html#tr_fe_def_lattice" />
+        <section title="Customizing Parameters" ref="tr_FeatureExtraction.html#tr_fe_customization" />
+      </section>
+      <section title="Batch Mode" ref="tr_FeatureExtraction.html#tr_fe_batch" />
+      <section title="Extracted Features" ref="tr_FeatureExtraction.html#tr_fe_math" />
+    </section>
+    <section title="Integrating your Application in CaPTk" ref="tr_integration.html">
+      <section title="Building CaPTk from Sources" ref="tr_integration.html#tr_sourceBuid">
+        <section title="Prerequisites" ref="tr_integration.html#tr_sb_prerequisites" />
+        <section title="Build" ref="tr_integration.html#tr_sb_actualBuild" />
+      </section>
+      <section title="Integrating your C++ application into CaPTk" ref="tr_integration.html#tr_cppIntegration" />
+      <section title="Integrating your Python application into CaPTk" ref="tr_integration.html#tr_pyIntegration" />
+    </section>
+  </section>
+  <section title="Download Instructions" ref="Download.html">
+    <section title="License" ref="Download.html#lic" />
   </section>
 </section>
+<section title="Installation Instructions" ref="Installation.html">
+  <section title="Windows" ref="Installation.html#Windows" />
+  <section title="Linux" ref="Installation.html#Linux" />
+  <section title="macOS" ref="Installation.html#macOS" />
+</section>
+</section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">
-  <section title="Known Issues" ref="ReleaseNotes.html#autotoc_md105" />
-  <section title="Older Versions" ref="ReleaseNotes.html#autotoc_md106">
-    <section title="1.7.6" ref="ReleaseNotes.html#autotoc_md107" />
-    <section title="1.7.5" ref="ReleaseNotes.html#autotoc_md108" />
-    <section title="1.7.3" ref="ReleaseNotes.html#autotoc_md109" />
-    <section title="1.7.2" ref="ReleaseNotes.html#autotoc_md110" />
-    <section title="1.7.1" ref="ReleaseNotes.html#autotoc_md111" />
-    <section title="1.7.0" ref="ReleaseNotes.html#autotoc_md112" />
-    <section title="1.6.1" ref="ReleaseNotes.html#autotoc_md113" />
-    <section title="1.6.0" ref="ReleaseNotes.html#autotoc_md114" />
-    <section title="1.5.0" ref="ReleaseNotes.html#autotoc_md115" />
-    <section title="1.3.0" ref="ReleaseNotes.html#autotoc_md116" />
-    <section title="1.2.0" ref="ReleaseNotes.html#autotoc_md117" />
-    <section title="1.1.0" ref="ReleaseNotes.html#autotoc_md118" />
-    <section title="1.0.1" ref="ReleaseNotes.html#autotoc_md119" />
-    <section title="2017.02.01" ref="ReleaseNotes.html#autotoc_md120" />
-    <section title="2016.10.14" ref="ReleaseNotes.html#autotoc_md121" />
-    <section title="2016.09.05" ref="ReleaseNotes.html#autotoc_md122" />
-    <section title="0.0.2" ref="ReleaseNotes.html#autotoc_md123" />
-    <section title="0.0.1" ref="ReleaseNotes.html#autotoc_md124" />
-  </section>
+<section title="Issues" ref="ReleaseNotes.html#Known" />
+<section title="Versions" ref="ReleaseNotes.html#Older" />
 </section>
 </section>
 <section title="People (Credits)" ref="People.html">
-<section title="Advisors:" ref="People.html#autotoc_md128" />
-<section title="Developers:" ref="People.html#autotoc_md129" />
-<section title="Collaborators:" ref="People.html#autotoc_md130" />
+<section title="Advisors:" ref="People.html#advisors" />
+<section title="Developers:" ref="People.html#devs" />
+<section title="Collaborators:" ref="People.html#collabs" />
+</section>
+</section>
+<section title="ITCR Connectivity" ref="ITCR_Connectivity.html">
+<section title="Existing Connections" ref="ITCR_Connectivity.html#itcr_existing">
+<section title="DCMT" ref="ITCR_Connectivity.html#itcr_dcmtk" />
+<section title="DCMQI" ref="ITCR_Connectivity.html#itcr_dcmqi" />
+<section title="Synapse PACS" ref="ITCR_Connectivity.html#itcr_synapse" />
+<section title="TCIA and IDC" ref="ITCR_Connectivity.html#itr_tcia_idc" />
+</section>
+<section title="Ongoing Development" ref="ITCR_Connectivity.html#itcr_ongoing">
+<section title="RADxTools" ref="ITCR_Connectivity.html#itcr_radxtools" />
 </section>
 </section>
 </section>
@@ -208,6 +204,7 @@
       <keyword name="Installation Instructions" id="Installation Instructions" ref="Installation.html" />
       <keyword name="Changelog: Release Notes" id="Changelog: Release Notes" ref="ReleaseNotes.html" />
       <keyword name="People (Credits)" id="People (Credits)" ref="People.html" />
+      <keyword name="ITCR Connectivity" id="ITCR Connectivity" ref="ITCR_Connectivity.html" />
     </keywords>
     <files>
       <file>tabs.css</file>
@@ -273,6 +270,7 @@
       <file>Installation.html</file>
       <file>ReleaseNotes.html</file>
       <file>People.html</file>
+      <file>ITCR_Connectivity.html</file>
       <file>index.html</file>
       <file>pages.html</file>
     </files>
