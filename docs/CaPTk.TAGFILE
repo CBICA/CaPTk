@@ -289,7 +289,7 @@
     <title>ITCR Connectivity</title>
     <filename>ITCR_Connectivity.html</filename>
     <docanchor file="ITCR_Connectivity.html" title="Existing Connections">itcr_existing</docanchor>
-    <docanchor file="ITCR_Connectivity.html" title="DCMT">itcr_dcmtk</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="DCMTK">itcr_dcmtk</docanchor>
     <docanchor file="ITCR_Connectivity.html" title="DCMQI">itcr_dcmqi</docanchor>
     <docanchor file="ITCR_Connectivity.html" title="Synapse PACS">itcr_synapse</docanchor>
     <docanchor file="ITCR_Connectivity.html" title="TCIA and IDC">itr_tcia_idc</docanchor>

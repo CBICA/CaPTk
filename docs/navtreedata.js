@@ -91,7 +91,7 @@ var NAVTREE =
         [ "Advisors:", "People.html#advisors", null ],
         [ "Developers:", "People.html#devs", null ],
         [ "Collaborators:", "People.html#collabs", null ],
-        [ "DCMT", "ITCR_Connectivity.html#itcr_dcmtk", null ],
+        [ "DCMTK", "ITCR_Connectivity.html#itcr_dcmtk", null ],
         [ "DCMQI", "ITCR_Connectivity.html#itcr_dcmqi", null ],
         [ "Synapse PACS", "ITCR_Connectivity.html#itcr_synapse", null ],
         [ "TCIA and IDC", "ITCR_Connectivity.html#itr_tcia_idc", null ]

@@ -146,7 +146,7 @@
 </section>
 <section title="ITCR Connectivity" ref="ITCR_Connectivity.html">
 <section title="Existing Connections" ref="ITCR_Connectivity.html#itcr_existing">
-<section title="DCMT" ref="ITCR_Connectivity.html#itcr_dcmtk" />
+<section title="DCMTK" ref="ITCR_Connectivity.html#itcr_dcmtk" />
 <section title="DCMQI" ref="ITCR_Connectivity.html#itcr_dcmqi" />
 <section title="Synapse PACS" ref="ITCR_Connectivity.html#itcr_synapse" />
 <section title="TCIA and IDC" ref="ITCR_Connectivity.html#itr_tcia_idc" />
