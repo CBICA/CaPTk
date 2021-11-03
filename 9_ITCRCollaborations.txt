@@ -17,7 +17,7 @@ CaPTk uses [DCMTK - DICOM ToolKit (DCMTK)](https://dicom.offis.de/dcmtk.php.en) 
 CaPTk leverages [DICOM for Quantitative Imaging (DCMQI)](http://qiicr.org/dcmqi-guide/tutorials/intro.html) for generating DICOM-Seg files from NIfTI files. 
 
 \subsection itcr_synapse Synapse PACS
-CaPTk’s performance evaluation metrics are used by [Synapse PACS](https://healthcaresolutions-us.fujifilm.com/enterprise-imaging/synapse-pacs).  
+CaPTk’s performance evaluation metrics are used by [Synapse PACS](https://www.synapse.org/).  
 
 \subsection itr_tcia_idc TCIA and IDC
 Enriching  [The Cancer Imaging Archive (TCIA)](https://www.cancerimagingarchive.net/) and [Imaging Data Commons (IDC)](https://datacommons.cancer.gov/repository/imaging-data-commons) data collections with segmentations and radiomic features. Robustness analysis on radiomic features on TCIA data has also been posted back to TCIA.
