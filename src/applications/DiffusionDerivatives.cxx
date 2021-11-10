@@ -17,6 +17,7 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("f", "fractional", cbica::Parameter::BOOLEAN, "", "Generate the Fractional Anisotropy image (1=YES, 0=NO, 1 (Default))");
   parser.addOptionalParameter("r", "radial", cbica::Parameter::BOOLEAN, "", "Generate the Radial Diffusivity image (1=YES, 0=NO, 1 (Default))");
   parser.addOptionalParameter("t", "coefficient", cbica::Parameter::BOOLEAN, "", "Generate the Apparent Diffusion Coefficient (1=YES, 0=NO, 1 (Default))");
+  parser.addOptionalParameter("z", "b0", cbica::Parameter::BOOLEAN, "", "Generate the b0 image (1=YES, 0=NO, 1 (Default))");
 
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
@@ -33,6 +34,7 @@ int main(int argc, char **argv)
   bool faPresent = 1;
   bool radPresent = 1;
   bool trPresent = 1;
+  bool bZeroPresent = 1;
 
   int tempPosition;
   std::string inputFileName, inputMaskName, inputBValName, inputBVecName, outputDirectoryName;
@@ -82,6 +84,10 @@ int main(int argc, char **argv)
   if (parser.compareParameter("t", tempPosition))
   {
     parser.getParameterValue("t", trPresent);
+  }
+  if (parser.compareParameter("z", tempPosition))
+  {
+      parser.getParameterValue("z", bZeroPresent);
   }
 
   if (parser.compareParameter("o", tempPosition))
@@ -135,6 +141,8 @@ int main(int argc, char **argv)
     cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputDirectoryName + "/RadialDiffusivity.nii.gz");
   if (axPresent == true)
     cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputDirectoryName + "/AxialDiffusivity.nii.gz");
+  if (bZeroPresent == true)
+      cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputDirectoryName + "/b0.nii.gz");
 
   std::cout << "Finished successfully.\n";
 

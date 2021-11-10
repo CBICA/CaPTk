@@ -30,6 +30,8 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkDiffusionTensor3DReconstructionImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkBinaryThresholdImageFilter.h"
+#include "itkNaryAddImageFilter.h"
+#include "itkDivideImageFilter.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
 
@@ -410,8 +412,8 @@ std::vector<itk::Image<float, 3>::Pointer> DiffusionDerivatives::Run(std::string
   }
   default:
   {
-	  m_LastError = "Mask is expected to be either a unsigned char or a signed short Image. Please invectigate the image type of your supplied mask.";
-      std::cerr << "Mask is expected to be either a unsigned char or a signed short Image. Please invectigate the image type of your supplied mask" << std::endl;
+	  m_LastError = "Mask is expected to be either a unsigned char or a signed short Image. Please investigate the image type of your supplied mask.";
+      std::cerr << "Mask is expected to be either a unsigned char or a signed short Image. Please investigate the image type of your supplied mask." << std::endl;
     break;
   }
   }
@@ -591,6 +593,8 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
   double bValue = 0;
   std::ifstream bvalIn(bvalFile.c_str());
   std::string line;
+  std::vector<int> indexesWhereBValZero;
+  int currentTimeIndex = 0;
   while (!bvalIn.eof())
   {
     getline(bvalIn, line);
@@ -599,14 +603,18 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
 
     while (ss >> val)
     {
+      if (val == 0) //  mark these indices for b0 extraction
+         indexesWhereBValZero.push_back(currentTimeIndex);
+
       ++NumberOfGradients;
       if (val != 0 && bValue == 0)
         bValue = val;
       else if (val != 0 && bValue != val)
       {
-        std::cerr << "multiple bvalues not allowed" << std::endl;
-		m_LastError = "multiple bvalues not allowed";
+        std::cerr << "multiple unique bvalues are not currently allowed" << std::endl;
+		m_LastError = "multiple unique bvalues are not currently allowed";
       }
+      currentTimeIndex++;
     }
   }
   std::ifstream bvecIn(gradFile.c_str());
@@ -690,6 +698,9 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
   static int writeRadAx = 1;
   static int writeSkew = 0;
   static int writeKurt = 0;
+  static int writeBZero = 1; 
+  // The way this is currently done means the calling code can break depending on if these features ever get enabled.
+  // TODO: Fix this up
 
   typedef float ScalarPixelType;
   typedef itk::DiffusionTensor3D< float > TensorPixelType;
@@ -742,6 +753,9 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
     typename ScalarImageType::Pointer k1Im = ScalarImageType::New();
     typename ScalarImageType::Pointer k2Im = ScalarImageType::New();
     typename ScalarImageType::Pointer k3Im = ScalarImageType::New();
+
+    // b0 image
+    typename ScalarImageType::Pointer bZeroIm = ScalarImageType::New();
 
     //Allocate all the images...
     if (writeFA)
@@ -796,6 +810,51 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
       allocateScalarIm<ScalarImageType, TensorImageType>(k1Im, tensorIm);
       allocateScalarIm<ScalarImageType, TensorImageType>(k2Im, tensorIm);
       allocateScalarIm<ScalarImageType, TensorImageType>(k3Im, tensorIm);
+    }
+    if (writeBZero)
+    {
+      allocateScalarIm<ScalarImageType, TensorImageType>(bZeroIm, tensorIm);
+      typename InputImageType::RegionType inputRegion = img4D->GetLargestPossibleRegion();
+      InputImageType::SizeType desiredSize = inputRegion.GetSize();
+      desiredSize[3] = 0; // We'll always collapse along the 4th dimension
+
+      // Add all b0 together first to average the images
+      typedef itk::NaryAddImageFilter<ScalarImageType, ScalarImageType> AddImageFilterType; // NaryAdd makes sure we can loop easily
+      typename AddImageFilterType::Pointer nAdder = AddImageFilterType::New();
+      for (int i = 0; i < indexesWhereBValZero.size(); i++)
+      {
+          typedef itk::ExtractImageFilter<InputImageType, ScalarImageType> ExtractorType;
+          typename ExtractorType::Pointer extractor = ExtractorType::New();
+          typename InputImageType::IndexType index = inputRegion.GetIndex();
+          index[3] = indexesWhereBValZero[i]; // Extract only the current time index
+
+          InputImageType::RegionType targetRegion;
+          targetRegion.SetSize(desiredSize);
+          targetRegion.SetIndex(index);
+
+          extractor->SetInput(img4D);
+          extractor->SetExtractionRegion(targetRegion);
+          extractor->SetDirectionCollapseToSubmatrix();
+          extractor->Update();
+
+          nAdder->SetInput(i, extractor->GetOutput());
+      }
+      nAdder->Update();
+      // Now divide the added image by the number of images N
+      typedef itk::DivideImageFilter<ScalarImageType, ScalarImageType, ScalarImageType> DividerType;
+      typename DividerType::Pointer divider = DividerType::New();
+      divider->SetInput(nAdder->GetOutput());
+      divider->SetConstant((double)indexesWhereBValZero.size());
+      divider->Update();
+
+      // Apply mask to the now-averaged b0
+      typedef itk::MaskImageFilter<ScalarImageType, ImageMaskType, ScalarImageType> MaskerType;
+      typename MaskerType::Pointer masker = MaskerType::New();
+      masker->SetInput(divider->GetOutput());
+      masker->SetMaskImage(maskReader->GetOutput());
+      masker->Update();
+      bZeroIm = masker->GetOutput();
+      
     }
     //Loop though all the voxels and if compute the needed measures!
     ConstIterType iter(tensorIm, tensorIm->GetLargestPossibleRegion());
@@ -980,6 +1039,15 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
 	vectorOfDTIScalars.push_back(NULL);
 	vectorOfDTIScalars.push_back(NULL);
 	}
+
+    if (writeBZero)
+    {
+        vectorOfDTIScalars.push_back(bZeroIm);
+    }
+    else
+    {
+        vectorOfDTIScalars.push_back(NULL);
+    }
   }
   catch (itk::ExceptionObject & excp)
   {
