@@ -58,7 +58,7 @@ public:
 
 signals:
 	void RunDiffusionMeasuresCalculation(const std::string inputImageFile, const std::string inputMaskFile,
-    const std::string bValFile, const std::string bVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
+    const std::string bValFile, const std::string bVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const bool bzero, const std::string outputFolder);
 };
 
 

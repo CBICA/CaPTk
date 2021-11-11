@@ -26,6 +26,7 @@ fDiffusionEstimator::fDiffusionEstimator()
   m_fa->setChecked(true);
   m_rad->setChecked(true);
   m_tr->setChecked(true);
+  m_bzero->setChecked(true);
 }
 fDiffusionEstimator::~fDiffusionEstimator()
 {
@@ -69,9 +70,9 @@ void fDiffusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please select at least one of the given four options: Axial diffusivity, fractional anisotropy, radial diffusivity, apparant diffusion coefficient.");
     return;
   }
-	emit RunDiffusionMeasuresCalculation(mInputPathName.toStdString(), mInputMaskName.toStdString(),
-    inputBvalName->text().toStdString(), inputBvecName->text().toStdString(),
-    m_ax->isChecked(), m_fa->isChecked(), m_rad->isChecked(), m_tr->isChecked(),
+  emit RunDiffusionMeasuresCalculation(mInputPathName.toStdString(), mInputMaskName.toStdString(),
+      inputBvalName->text().toStdString(), inputBvecName->text().toStdString(),
+      m_ax->isChecked(), m_fa->isChecked(), m_rad->isChecked(), m_tr->isChecked(), m_bzero->isChecked(),
     mOutputPathName.toStdString());
 
 	this->close();

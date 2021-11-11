@@ -75,6 +75,7 @@ public:
 	QCheckBox* m_fa;
 	QCheckBox* m_rad;
 	QCheckBox* m_tr;
+	QCheckBox* m_bzero;
 
 	QHBoxLayout * horizontalLayout;
 
@@ -180,6 +181,8 @@ public:
 		m_rad->setEnabled(true);
 		m_tr  = new QCheckBox("Apparent Diffusion Coefficient");
 		m_tr->setEnabled(true);
+		m_bzero = new QCheckBox("Extract averaged B0 image");
+		m_bzero->setEnabled(true);
 
 
 		inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
@@ -203,6 +206,7 @@ public:
 		inputGridLayout->addWidget(m_rad, 5, 0, 1, 1);
 		inputGridLayout->addWidget(m_ax, 6, 0, 1, 1);
 		inputGridLayout->addWidget(m_tr, 7, 0, 1, 1);
+		inputGridLayout->addWidget(m_bzero, 8, 0, 1, 1);
 
 		// output
 		outputGroupBox = new QGroupBox(fDiffusionEstimator);
@@ -281,6 +285,7 @@ public:
 		m_ax->setText(QApplication::translate("fDiffusionEstimator", "Axial Diffusivity", 0));
 		m_rad->setText(QApplication::translate("fDiffusionEstimator", "Radial Diffusivity", 0));
 		m_tr->setText(QApplication::translate("fDiffusionEstimator", "Apparent Diffusion Coefficient", 0));
+		m_bzero->setText(QApplication::translate("fDiffusionEstimator", "Extract averaged b0 image", 0));
 
 		inputImageLabel->setText(QApplication::translate("fDiffusionEstimator", "DWI Image:", 0));
 		inputMaskLabel->setText(QApplication::translate("fDiffusionEstimator", "Mask:", 0));

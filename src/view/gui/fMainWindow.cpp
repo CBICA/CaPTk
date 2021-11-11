@@ -908,8 +908,8 @@ fMainWindow::fMainWindow()
   connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
 
 
-  connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
-    SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)));
+  connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const bool, const std::string)), this,
+    SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const bool, const std::string)));
 
   connect(&whiteStripeNormalizer, SIGNAL(RunWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)), this, SLOT(CallWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)));
 
@@ -8990,7 +8990,7 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
   }
 }
 
-void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder)
+void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const bool bzero, const std::string outputFolder)
 {
   DiffusionDerivatives m_diffusionderivatives;
   typedef itk::Image<float, 3> ScalarImageType;
@@ -9026,7 +9026,8 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
     cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputFolder + "/RadialDiffusivity.nii.gz");
   if (ax == true)
     cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputFolder + "/AxialDiffusivity.nii.gz");
-
+  if (bzero == true)
+      cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputFolder + "/b0.nii.gz");
   QString msg;
   msg = "Diffusion derivatives have been saved at the specified locations.";
   ShowMessage(msg.toStdString(), this);
