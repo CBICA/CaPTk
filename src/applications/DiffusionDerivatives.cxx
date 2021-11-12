@@ -19,11 +19,13 @@ int main(int argc, char **argv)
   parser.addOptionalParameter("t", "coefficient", cbica::Parameter::BOOLEAN, "", "Generate the Apparent Diffusion Coefficient (1=YES, 0=NO, 1 (Default))");
   parser.addOptionalParameter("z", "b0", cbica::Parameter::BOOLEAN, "", "Generate the b0 image (1=YES, 0=NO, 1 (Default))");
 
+  parser.addOptionalParameter("reg", "registerTo", cbica::Parameter::FILE, "", "Optional file used as a fixed image for (rigid) registration of the output.");
+
   parser.addRequiredParameter("o", "output", cbica::Parameter::STRING, "", "The output directory.");
   parser.addOptionalParameter("L", "Logger", cbica::Parameter::STRING, "log file which user has write access to", "Full path to log file to store console outputs", "By default, only console output is generated");
   //parser.exampleUsage("");
-  parser.addExampleUsage("-i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output",
-    "Calculates diffusion derivatives for the specified input image and parameters");
+  parser.addExampleUsage("-i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -z 1 -reg C:/registrationTemplate.nii.gz -o C:/output",
+    "Calculates diffusion derivatives and averaged b0 for the specified input image and parameters, then registers (rigidly) to the given registration template.");
   parser.addApplicationDescription("Calculates Diffusion Derivatives for a DWI image for a defined mask, bvec and bval files");
 
   // parameters to get from the command line
@@ -35,9 +37,10 @@ int main(int argc, char **argv)
   bool radPresent = 1;
   bool trPresent = 1;
   bool bZeroPresent = 1;
+  bool registrationRequested = false;
 
   int tempPosition;
-  std::string inputFileName, inputMaskName, inputBValName, inputBVecName, outputDirectoryName;
+  std::string inputFileName, inputMaskName, inputBValName, inputBVecName, outputDirectoryName, inputRegistrationFile;
 
   if ((argc < 1) || (parser.compareParameter("u", tempPosition)))
   {
@@ -66,6 +69,11 @@ int main(int argc, char **argv)
   if (parser.compareParameter("g", tempPosition))
   {
     inputBVecName = argv[tempPosition + 1];
+  }
+  if (parser.compareParameter("reg", tempPosition))
+  {
+      inputRegistrationFile = argv[tempPosition + 1];
+      registrationRequested = true;
   }
 
 
@@ -122,6 +130,11 @@ int main(int argc, char **argv)
     std::cout << "The input bvec file does not exist:" << inputBVecName << std::endl;
     return EXIT_FAILURE;
   }
+  if (registrationRequested && !cbica::isFile(inputRegistrationFile))
+  {
+      std::cout << "The registration fixed image file does not exist:" << inputRegistrationFile << std::endl;
+      return EXIT_FAILURE;
+  }
   if (!cbica::directoryExists(outputDirectoryName))
   {
     if (!cbica::createDirectory(outputDirectoryName))
@@ -130,19 +143,112 @@ int main(int argc, char **argv)
   }
   DiffusionDerivatives objDiffusion;
   std::vector<typename ImageTypeFloat3D::Pointer> diffusionDerivatives = objDiffusion.Run(inputFileName, inputMaskName, inputBValName, inputBVecName, outputDirectoryName);
-  std::cout << "Writing measures to the specified output directory.\n";
+  
+  if (registrationRequested)
+  {
+      if (faPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputDirectoryName + "/unregistered_FractionalAnisotropy.nii.gz");
+      if (trPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputDirectoryName + "/unregistered_ApparentDiffusionCoefficient.nii.gz");
+      if (radPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputDirectoryName + "/unregistered_RadialDiffusivity.nii.gz");
+      if (axPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputDirectoryName + "/unregistered_AxialDiffusivity.nii.gz");
+      if (bZeroPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputDirectoryName + "/unregistered_b0.nii.gz");
 
-  //fa,tr, rad , ax
-  if (faPresent== true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputDirectoryName + "/FractionalAnisotropy.nii.gz");
-  if (trPresent == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputDirectoryName + "/ApparentDiffusionCoefficient.nii.gz");
-  if (radPresent == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputDirectoryName + "/RadialDiffusivity.nii.gz");
-  if (axPresent == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputDirectoryName + "/AxialDiffusivity.nii.gz");
-  if (bZeroPresent == true)
-      cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputDirectoryName + "/b0.nii.gz");
+      std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
+#if WIN32
+          ".exe" +
+#endif
+          " -d " + std::to_string(TImageType::ImageDimension);
+      std::string fixedOptions = " -a -ia-image-centers -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
+      std::string commandToCall;
+      std::vector<int> returnCodesFromGreedy;
+      
+      // TODO (Alex): This needs to be done more dynamically
+      std::string specificParams;
+
+      // Create the intermediate transforms
+      specificParams = outputDirectoryName+"/unregistered_FractionalAnisotropy.nii.gz"+  " -o " + outputDirectoryName+"/affine_FractionalAnisotropy.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputDirectoryName + "/unregistered_ApparentDiffusionCoefficient.nii.gz" + " -o " + outputDirectoryName + "/affine_ApparentDiffusionCoefficient.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputDirectoryName + "/unregistered_RadialDiffusivity.nii.gz" + " -o " + outputDirectoryName + "/affine_RadialDiffusivity.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputDirectoryName + "/unregistered_AxialDiffusivity.nii.gz" + " -o " + outputDirectoryName + "/affine_AxialDiffusivity.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputDirectoryName + "/unregistered_b0.nii.gz" + " -o " + outputDirectoryName + "/affine_b0.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+
+      for (unsigned int i = 0; i < returnCodesFromGreedy.size(); i++)
+      {
+          if (returnCodesFromGreedy[i] != 0)
+          {
+              std::cerr << "Something went wrong when generating transforms with Greedy.\n";
+              return EXIT_FAILURE;
+          }
+      }
+
+      returnCodesFromGreedy.clear();
+      // Now run the transform and image through greedy to produce actual output...
+      std::string fixedOptions2 = " -rf " + inputRegistrationFile + " -ri LINEAR -r ";
+
+      std::string specificParams2 = outputDirectoryName + "/affine_FractionalAnisotropy.mat" +
+          " -rm " + outputDirectoryName + "/unregistered_FractionalAnisotropy.nii.gz" +
+          " " + outputDirectoryName + "/FractionalAnisotropy.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputDirectoryName + "/affine_ApparentDiffusionCoefficient.mat" +
+          " -rm " + outputDirectoryName + "/unregistered_ApparentDiffusionCoefficient.nii.gz" +
+          " " + outputDirectoryName + "/ApparentDiffusionCoefficient.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputDirectoryName + "/affine_RadialDiffusivity.mat" +
+          " -rm " + outputDirectoryName + "/unregistered_RadialDiffusivity.nii.gz" +
+          " " + outputDirectoryName + "/RadialDiffusivity.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputDirectoryName + "/affine_AxialDiffusivity.mat" +
+          " -rm " + outputDirectoryName + "/unregistered_AxialDiffusivity.nii.gz" +
+          " " + outputDirectoryName + "/AxialDiffusivity.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputDirectoryName + "/affine_b0.mat" +
+          " -rm " + outputDirectoryName + "/unregistered_b0.nii.gz" +
+          " " + outputDirectoryName + "/b0.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+
+      for (unsigned int i = 0; i < returnCodesFromGreedy.size(); i++)
+      {
+          if (returnCodesFromGreedy[i] != 0)
+          {
+              std::cerr << "Something went wrong when registering final output with Greedy.\n";
+              return EXIT_FAILURE;
+          }
+      }
+
+  }
+  else 
+  {
+      std::cout << "Writing measures to the specified output directory.\n";
+      if (faPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputDirectoryName + "/FractionalAnisotropy.nii.gz");
+      if (trPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputDirectoryName + "/ApparentDiffusionCoefficient.nii.gz");
+      if (radPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputDirectoryName + "/RadialDiffusivity.nii.gz");
+      if (axPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputDirectoryName + "/AxialDiffusivity.nii.gz");
+      if (bZeroPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputDirectoryName + "/b0.nii.gz");
+  }
 
   std::cout << "Finished successfully.\n";
 
