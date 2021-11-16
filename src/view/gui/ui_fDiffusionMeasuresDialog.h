@@ -62,6 +62,11 @@ public:
 	QLineEdit	*inputBvecName;
 	QPushButton *inputBvecButton;
 
+	QLabel* registrationFileLabel;
+	QLineEdit* inputRegistrationFile;
+	QPushButton* inputRegistrationButton;
+
+
 	QGroupBox	*outputGroupBox;
 	QGridLayout *outputGridLayout;
 	QLineEdit	*outputImageName;
@@ -76,6 +81,7 @@ public:
 	QCheckBox* m_rad;
 	QCheckBox* m_tr;
 	QCheckBox* m_bzero;
+	QCheckBox* m_register;
 
 	QHBoxLayout * horizontalLayout;
 
@@ -169,6 +175,19 @@ public:
 		inputBvecButton->setObjectName(QString::fromUtf8("inputBvecButton"));
 		inputBvecButton->setText(QString("Browse"));
 
+		registrationFileLabel = new QLabel(inputGroupBox);
+		sizePolicy.setHeightForWidth(registrationFileLabel->sizePolicy().hasHeightForWidth());
+		registrationFileLabel->setSizePolicy(sizePolicy);
+
+		inputRegistrationFile = new QLineEdit("");
+		inputRegistrationFile->setObjectName(QString::fromUtf8("inputBvecName"));
+		sizePolicy.setHeightForWidth(inputRegistrationFile->sizePolicy().hasHeightForWidth());
+		inputRegistrationFile->setSizePolicy(sizePolicy);
+		inputRegistrationFile->setAlignment(Qt::AlignCenter | Qt::AlignTrailing | Qt::AlignVCenter);
+
+		inputRegistrationButton = new QPushButton(inputGroupBox);
+		inputRegistrationButton->setObjectName(QString::fromUtf8("inputRegistrationFile"));
+		inputRegistrationButton->setText(QString("Browse"));
 
 
 
@@ -183,6 +202,8 @@ public:
 		m_tr->setEnabled(true);
 		m_bzero = new QCheckBox("Extract averaged B0 image");
 		m_bzero->setEnabled(true);
+		m_register = new QCheckBox("Register output to a fixed image");
+		m_register->setEnabled(true);
 
 
 		inputGridLayout->addWidget(inputImageLabel, 0, 0, 1, 1);
@@ -201,12 +222,17 @@ public:
 		inputGridLayout->addWidget(inputBvecName, 3, 1, 1, 1);
 		inputGridLayout->addWidget(inputBvecButton, 3, 2, 1, 1);
 
+		//inputGridLayout->addWidget(registrationFileLabel, 4, 0, 1, 1);
+		inputGridLayout->addWidget(m_register, 4, 0, 1, 1);
+		inputGridLayout->addWidget(inputRegistrationFile, 4, 1, 1, 1);
+		inputGridLayout->addWidget(inputRegistrationButton, 4, 2, 1, 1);
 
-		inputGridLayout->addWidget(m_fa, 4, 0, 1, 1);
-		inputGridLayout->addWidget(m_rad, 5, 0, 1, 1);
-		inputGridLayout->addWidget(m_ax, 6, 0, 1, 1);
-		inputGridLayout->addWidget(m_tr, 7, 0, 1, 1);
-		inputGridLayout->addWidget(m_bzero, 8, 0, 1, 1);
+
+		inputGridLayout->addWidget(m_fa, 5, 0, 1, 1);
+		inputGridLayout->addWidget(m_rad, 6, 0, 1, 1);
+		inputGridLayout->addWidget(m_ax, 7, 0, 1, 1);
+		inputGridLayout->addWidget(m_tr, 8, 0, 1, 1);
+		inputGridLayout->addWidget(m_bzero, 9, 0, 1, 1);
 
 		// output
 		outputGroupBox = new QGroupBox(fDiffusionEstimator);

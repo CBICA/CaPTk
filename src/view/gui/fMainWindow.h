@@ -806,7 +806,7 @@ public slots:
   \param BZero flag that enables averaged b0 image calculation 
   \param outputFolder The output folder to write all results
   */
-  void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const bool bzero, const std::string outputFolder);
+  void CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const bool bzero, const std::string outputFolder, const bool registrationRequested, const std::string registrationFixedImage);
 
   /**
   \brief Call the Diffusion Measures application with the inputs
