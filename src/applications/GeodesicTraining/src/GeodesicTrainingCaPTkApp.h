@@ -72,6 +72,7 @@ private:
         this->SetInputImages(inputImages);
         this->SetLabels(labelsImage);
 		this->SetSaveAll(true);
+		this->SetProcessing(true, 6, true, false, false, 5000000); // Disable pixel limit, all else default.
         auto executeResult = this->Execute();
 
         if (executeResult->ok) {

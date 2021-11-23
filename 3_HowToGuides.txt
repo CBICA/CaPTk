@@ -341,6 +341,7 @@ ${CaPTk_InstallDir}/bin/GeodesicTraining.exe -i C:/inputImage1.nii.gz,C:/inputIm
 	
 	You have to draw the ROI image somewhere else to use the CLI executable. This image should be zero everywhere, except for the voxels that you have drawn. These voxels should be the same value if they belong to the same area. For instance in the example we discussed before, you can use value 1 for tumor core, value 2 for edema and value 3 for healthy tissue. If you don't want the output to contain the healthy tissue you can use parameter "-cl 3/0" which means that value 3 will be changed to 0. Keep in mind that values for healthy tissue are still needed, they just not going to show up in the output segmentation. If you want to iterate (correct mistakes in the segmentation), it's a bit harder to do with the CLI. You have to add new values to the input ROI (not the output segmentation) and run again. If you are going to use the CLI it is recommended to spend a little bit more time when you draw your input ROI so the first segmentation you get is good and you don't have to iterate the algorithm often.
 
+Note that the CLI allows users to configure a pixel limit. Images above this size (after normalization) will be downsampled for processing, then upsampled when done. This produces a faster, but less precise, result. The GUI does not currently perform this downscaling step.
 --------
 
 References:
@@ -1101,41 +1102,47 @@ References:
 
 /**
 \page Training_Module Miscellaneous: Training Module
-This application allows training/testing using Support Vector Machine
+This application allows training and cross-validation of machine learning models, as well as inference functionality to generate predictions.
+Currently, it supports a variety of classifiers for binary classification tasks.
+It also provides several approaches for feature selection.
 
 <b> REQUIREMENTS:</b>
-Input features file (CSV) and a target label file (CSV).
+Input features file (CSV) and a target label file (CSV) (if training).
 
 <b> USAGE:</b>parameterize
 	-# Launch the application from "Applications" -> "Training Module".
 	-# Specify the features (.csv) file and the corresponding target (.csv) file.
-	-# Specify the kernel of SVM using either of the two radio buttons. 
-	-# Specify the cross-validation method which could be either k-fold cross-validation, split-train-test, training only, or inference only.
-	-# In case of k-fold cross-validation, specify the number of folds in the corresponding edit box. In case of split-train-test method, specify the number of training samples X. The starting X entries (out of the total N) of the feature and target file will be used for training and the remaining n-X entries will be used for testing. For training only option, no additional parameter is required in 'Configuration' section. For testing only option, the directory containing the trained model files should be provided. 
+	-# Specify the mode you wish to run the application in. You can train a model, test an existing model, or perform k-fold cross-validated training and testing.
+	-# If training a model, specify the classifier you wish to use and the feature selection approach, as well as other options. 
+ 		-Classifier options include SVMs (with Linear, RBF, Polynomial, Sigmoid, Chi-squared, and Histogram Intersection kernels), stochastic-gradient-descent based SVM, and decision trees (Random Forests and Boosted Trees).
+		-You can also enable hyperparameter optimization for C and Gamma parameters. You can optionally enable internal cross-validation during individual training steps.
+		-Feature selection options include forward sequential feature selection, recursive feature elimination, Effect-size-based feature selection, RELIEF-F based feature selection, and Random-Forest-based feature selection.
+	-# In the case of k-fold cross-validation, specify the number of folds in the corresponding edit box.
+	-# If testing an existing model, you may optionally provide a labels file to be used as ground truth. Performance metrics will be calculated and placed in the output directory.
+	-# Select an output directory.
 	-# Press "Confirm" button. 
 	-# The model or the predicted output, depending on the configuration, will be calculated and saved in the output directory.
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, and can run in the following formats:
     - K-Fold CrossValidation option:
 		\verbatim
-${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 1 -k 10 
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -t crossvalidate -c 1 -k 10 
 		\endverbatim
-    - Split Train-Test option:
+    - Training option:
 		\verbatim
-${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 2 -k 40
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -t train -c 2 -s 5 -n 2
 		\endverbatim
-    - Train only option:
+    - Testing option:
 		\verbatim
-${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 3 -k 10
-		\endverbatim
-    - Test only option:
-		\verbatim
-${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -l C:/TestLabels.csv -o C:/OutputDirectory -c 1 -n 4 -k 10 -m C:/ModelDirectory
+${CaPTk_InstallDir}/bin/TrainingModule -f C:/TestFeatures.csv -m C:/ModelDirectory/ -o C:/OutputDirectory -t test 3
 		\endverbatim
     
-<b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM)
-<b>n</b> is the configuration type (-n 1 for cross-validation, -n 2 for split train-test, -n 3 for training only, -n 4 for testing only)
-<b>k</b> is the # of folds for cross-validation configuration, and size of train dataset for split train-test configuration
+<b>c</b> is the classifier type (-c 1 for Linear SVM, -c 2 for RBF SVM, -c 3 for Polynomial SVM, -c 4 for Sigmoid SVM, -c 5 Chi-squared SVM, -c 6 Intersection SVM, -c 7 Random Forest, -c 8 SGD SVM, -c 9 Boosted Trees )
+<b>s</b> is the feature selection type (-s 1 for Effect-size FS, -s 2 for Forward FS, -s 3 for Recursive Feature Elimination, -s 4 for Random Forest based FS, -5 for RELIEF-F FS).
+<b>t</b> is the execution mode ('cv' or 'crossvalidate' for cross-validation, 'train' for model training only, 'test' for testing only)
+<b>k</b> is the # of folds for cross-validation configuration. 
+<b>x</b> is the maximum number of features to select during feature selection. Up to that many features can be included. A value of 0 produces different behavior depending on the feature selection method used. For Forward FS, Effect-size FS, and Recursive Feature Elimination, produces the best set overall. For Random Forest FS and RELIEF-F FS, selects all features but in the order of importance.
 
+See the usage option of the TrainingModule application (-u, --usage) for more information.
 --------------------------------------------------------------------
 
 \htmlonly

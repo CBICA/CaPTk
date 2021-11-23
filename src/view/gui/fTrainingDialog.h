@@ -20,11 +20,13 @@
 #include "CaPTkEnums.h"
 #include "ui_fTrainingDialog.h"
 #include "TrainingModuleParameters.h"
+#include "TrainingModule.h"
+#include <QThread>
 
 /**
 \class fTrainingSimulator
 
-\brief This class controls the elements in the recurrence dialog
+\brief This class controls the elements in the training dialog
 */
 class fTrainingSimulator : public QDialog, private Ui::fTrainingSimulator
 {
@@ -34,7 +36,17 @@ public:
   fTrainingSimulator();
   ~fTrainingSimulator();
   int mode;
+  cbica::Logging logger;
 
+private:
+  bool m_jobIsCurrentlyRunning;
+  bool m_jobCompleted;
+  TrainingModuleResult m_lastResult;
+  //QThread* m_workerThread;
+  //TrainingModule m_trainingSimulator;
+
+
+public:
   void SetCurrentImagePath(const QString &inputPath)
   {
     mInputFeaturesName = inputPath;
@@ -48,7 +60,7 @@ public:
   QString mInputBVecName;
   QString mOutputPathName;
 
-
+  //void workerFunction(TrainingModuleParameters& parameters, TrainingModuleResult& storeResult);
 
 public slots:
   void CancelButtonPressed();
@@ -61,6 +73,11 @@ public slots:
   void SplitTrainRadioButtonChecked();
   void SplitTestRadioButtonChecked();
   void OptimizationToggled(bool);
+  void RandomForestToggled(bool);
+  void SVMToggled(bool);
+
+  //void onThreadFinished();
+  //void onProgressUpdate(int);
 
 signals:
   void RunTrainingSimulation(const TrainingModuleParameters params);

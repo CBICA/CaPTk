@@ -566,7 +566,7 @@ jobs:
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
 
-  pool: 'macOS_10.14'
+  pool: 'macOS_10.14_alt' # Change to alt pool to try running this outside of Phuc's account -- possible permissions problems
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
@@ -639,19 +639,16 @@ jobs:
 
         rm -rf CaPTk_*
 
-        cmake ../
-        rm CMakeCache.txt
-        
-        
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-
+        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
         echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
+        #cmake ../
+        #rm -f CMakeCache.txt
         
-        cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DVTK_DIR="/Users/Shared/superbuild/VTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
         
         # Debug using vsts' cache
-        cp CMakeCache.txt /Users/Shared/latest-vsts-cmakecache.txt 
+        cp CMakeCache.txt /Users/Shared/debug-vsts-getkaa-cmakecache.txt 
         make -j 2
          
       displayName: 'Configure and compile CaPTk'
@@ -666,12 +663,12 @@ jobs:
         rm -rf CaPTk*.app
 
         cmake ../
-        rm CMakeCache.txt
+        rm -f CMakeCache.txt
         export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build:$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5:$(Build.SourcesDirectory)/../../superbuild/bin/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
   
         
-        cmake -DITK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/ITK-build" -DDCMTK_DIR="$(Build.SourcesDirectory)/../../superbuild/bin/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
 
         make -j 2
 

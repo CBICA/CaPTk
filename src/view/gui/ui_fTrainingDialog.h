@@ -33,6 +33,7 @@
 #include <QtWidgets/QSpinBox>
 #include <QGroupBox>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QProgressBar>
 
 QT_BEGIN_NAMESPACE
 
@@ -72,10 +73,34 @@ public:
 
   QRadioButton *mLinearKernel;
   QRadioButton *mRBFKernel;
+  QRadioButton* mPolynomialKernel;
+  QRadioButton* mIntersectionKernel;
+  QRadioButton* mSigmoidKernel;
+  QRadioButton* mChiSquaredKernel;
+  QRadioButton* mRandomForest;
+  QRadioButton* mSGDSVM;
+  QRadioButton* mBoostedTrees;
+  QRadioButton* mSelectOptimalML;
+
   QRadioButton *mSVMFFS;
   QRadioButton *mESFS;
+  QRadioButton *mBackwardsFS;
+  QRadioButton *mRandomForestFS;
+  QRadioButton *mReliefFFS;
+  QRadioButton* mSelectOptimalFS;
+
   QRadioButton *mResubstitution;
   QRadioButton *mFiveFold;
+  QLabel *mNumberOfFeaturesLabel;
+
+  QGroupBox* forwardfsTerminationGroupBox;
+  QGridLayout* forwardfsTerminationGridLayout;
+  QSpinBox *mNumberOfFeaturesSpinbox;
+  QRadioButton* mUseFeatureCount;
+  QRadioButton* mUseConvergenceThreshold;
+
+  QLabel* validatePredictionsLabel;
+  QCheckBox *mTestPredictionsAgainstProvidedLabels;
 
   QRadioButton *mCrossValidation;
   QRadioButton *mSplitTrain;
@@ -90,11 +115,13 @@ public:
 
   QGroupBox	*classifierGroupBox;
   QGroupBox	*paramsGroupBox;
+  QGroupBox *randomForestGroupBox;
   QGroupBox	*fsGroupBox;
 
   QGroupBox	*configurationGroupBox;
   QGridLayout *classifierGridLayout;
   QGridLayout *paramsGridLayout;
+  QGridLayout* randomForestGridLayout;
   QGridLayout *fsGridLayout;
   QGridLayout *configurationGridLayout;
 
@@ -116,6 +143,15 @@ public:
   QDoubleSpinBox* gMaximumSpinbox;
   QDoubleSpinBox* cMinimumSpinbox;
   QDoubleSpinBox* cMaximumSpinbox;
+
+  QDoubleSpinBox* mConvergenceThresholdSpinbox;
+
+  QLabel* randomForestEpsilonLabel;
+  QLabel* randomForestMaxIterationsLabel;
+  QDoubleSpinBox* randomForestEpsilonSpinbox;
+  QSpinBox* randomForestMaxIterationsSpinbox;
+
+  QProgressBar* progressBar;
 
   void setupUi(QDialog *fTrainingSimulator)
   {
@@ -175,20 +211,53 @@ public:
 
     // output
     classifierGroupBox = new QGroupBox(fTrainingSimulator);
-    classifierGroupBox->setTitle(QString::fromStdString("SVM Classification kernel"));
+    classifierGroupBox->setTitle(QString::fromStdString("Classification"));
     classifierGridLayout = new QGridLayout(classifierGroupBox);
     classifierGridLayout->setObjectName(QString::fromUtf8("classifierGridLayout"));
     mLinearKernel = new QRadioButton("SVM: Linear");
     mLinearKernel->setEnabled(true);
     mRBFKernel = new QRadioButton("SVM: RBF");
     mRBFKernel->setEnabled(true);
+    mPolynomialKernel = new QRadioButton("SVM: Polynomial");
+    mPolynomialKernel->setEnabled(true);
+    mSigmoidKernel = new QRadioButton("SVM: Sigmoid");
+    mSigmoidKernel->setEnabled(true);
+    mChiSquaredKernel = new QRadioButton("SVM: Chi-squared");
+    mChiSquaredKernel->setEnabled(true);
+    mIntersectionKernel = new QRadioButton("SVM: Histogram Intersection");
+    mIntersectionKernel->setEnabled(true);
+    mRandomForest = new QRadioButton("Random Forest");
+    mRandomForest->setEnabled(true);
+    mSGDSVM = new QRadioButton("Stochastic Gradient Descent SVM");
+    mSGDSVM->setEnabled(true);
+    mBoostedTrees = new QRadioButton("Boosted Trees");
+    mBoostedTrees->setEnabled(true);
+
+    mSelectOptimalML = new QRadioButton("Optimized Machine Learning");
+    mSelectOptimalML->setToolTip("Iterates over each machine learning strategy and selects the best-performing. WARNING: Multiplies the time required to run!");
+    mSelectOptimalML->setEnabled(true);
+
     classifierGridLayout->addWidget(mLinearKernel, 0, 0, 1, 1);
     classifierGridLayout->addWidget(mRBFKernel, 0, 1, 1, 1);
+    classifierGridLayout->addWidget(mPolynomialKernel, 1, 0, 1, 1);
+    classifierGridLayout->addWidget(mSigmoidKernel, 1, 1, 1, 1);
+    classifierGridLayout->addWidget(mChiSquaredKernel, 2, 0, 1, 1);
+    classifierGridLayout->addWidget(mIntersectionKernel, 2, 1, 1, 1);
+    classifierGridLayout->addWidget(mRandomForest, 3, 0, 1, 1);
+    classifierGridLayout->addWidget(mSGDSVM, 3, 1, 1, 1);
+    classifierGridLayout->addWidget(mBoostedTrees, 4, 0, 1, 1);
+    classifierGridLayout->addWidget(mSelectOptimalML, 4, 1, 1, 1);
 
     paramsGroupBox = new QGroupBox(fTrainingSimulator);
     paramsGroupBox->setTitle(QString::fromStdString("Parameter Optimization/Cross-validation"));
     paramsGridLayout = new QGridLayout(paramsGroupBox);
     paramsGridLayout->setObjectName(QString::fromUtf8("paramsGridLayout"));
+
+    randomForestGroupBox = new QGroupBox(fTrainingSimulator);
+    randomForestGroupBox->setVisible(false);
+    randomForestGroupBox->setTitle(QString::fromStdString("Random Forest Parameters"));
+    randomForestGridLayout = new QGridLayout(randomForestGroupBox);
+    randomForestGridLayout->setObjectName(QString::fromUtf8("randomForestGridLayout"));
 
     parametersLabel = new QLabel(paramsGroupBox);
     sizePolicy.setHeightForWidth(parametersLabel->sizePolicy().hasHeightForWidth());
@@ -250,18 +319,85 @@ public:
     paramsGridLayout->addWidget(gMinimumSpinbox, 3, 3, 1, 1);
     paramsGridLayout->addWidget(gMaximumSpinbox, 4, 3, 1, 1);
 
-    
+    randomForestEpsilonLabel = new QLabel("Termination accuracy threshold");
+    randomForestEpsilonLabel->setParent(randomForestGroupBox);
+    randomForestEpsilonLabel->setToolTip("Train until out-of-bag error is less than this value, unless the maximum iteration count is hit.");
+    randomForestEpsilonLabel->setVisible(false);
+    randomForestEpsilonSpinbox = new QDoubleSpinBox(randomForestGroupBox);
+    randomForestEpsilonSpinbox->setMaximum(0.9999);
+    randomForestEpsilonSpinbox->setMinimum(0.0001);
+    randomForestEpsilonSpinbox->setSingleStep(0.01);
+    randomForestEpsilonSpinbox->setValue(0.1);
+    randomForestEpsilonSpinbox->setVisible(false);
+    randomForestMaxIterationsLabel = new QLabel("Maximum iterations until termination");
+    randomForestMaxIterationsLabel->setToolTip("Increases accuracy but falls off asymptotically. Computation time scales linearly.");
+    randomForestMaxIterationsLabel->setVisible(false);
+    randomForestMaxIterationsLabel->setParent(randomForestGroupBox);
+    randomForestMaxIterationsSpinbox = new QSpinBox(randomForestGroupBox);
+    randomForestMaxIterationsSpinbox->setMaximum(500);
+    randomForestMaxIterationsSpinbox->setMinimum(1);
+    randomForestMaxIterationsSpinbox->setValue(50);
+    randomForestMaxIterationsSpinbox->setVisible(false);
+
+    randomForestGridLayout->setObjectName(QString::fromStdString("randomForestGridLayout"));
+    randomForestGridLayout->addWidget(randomForestEpsilonLabel, 0, 0, 1, 1);
+    randomForestGridLayout->addWidget(randomForestEpsilonSpinbox, 0, 1, 1, 1);
+    randomForestGridLayout->addWidget(randomForestMaxIterationsLabel, 1, 0, 1, 1);
+    randomForestGridLayout->addWidget(randomForestMaxIterationsSpinbox, 1, 1, 1, 1);
+
 
     fsGroupBox = new QGroupBox(fTrainingSimulator);
     fsGroupBox->setTitle(QString::fromStdString("Feature selection"));
     fsGridLayout = new QGridLayout(fsGroupBox);
     fsGridLayout->setObjectName(QString::fromUtf8("fsGridLayout"));
-    mSVMFFS = new QRadioButton("SVM: Forward feature selection");
+    mSVMFFS = new QRadioButton("Forward feature selection");
     mSVMFFS->setEnabled(true);
     mESFS = new QRadioButton("Effect Size feature selection");
     mESFS->setEnabled(true);
+    mBackwardsFS = new QRadioButton("Recursive feature elimination");
+    mBackwardsFS->setEnabled(true);
+    mRandomForestFS = new QRadioButton("Random Forest importance-based feature selection");
+    mReliefFFS = new QRadioButton("RELIEF-F feature selection");
+    mReliefFFS->setEnabled(true);
+    mSelectOptimalFS = new QRadioButton("Optimized Feature Selection");
+    mSelectOptimalFS->setEnabled(true);
+    mSelectOptimalFS->setToolTip("Iterates over each feature selection method and selects the best performing. WARNING: multiplies the required run time!");
     fsGridLayout->addWidget(mSVMFFS, 0, 0, 1, 1);
     fsGridLayout->addWidget(mESFS, 0, 1, 1, 1);
+    fsGridLayout->addWidget(mBackwardsFS, 0, 2, 1, 1);
+    fsGridLayout->addWidget(mRandomForestFS, 0, 3, 1, 1);
+    fsGridLayout->addWidget(mReliefFFS, 1, 0, 1, 1);
+    fsGridLayout->addWidget(mSelectOptimalFS, 1, 1, 1, 1);
+
+    forwardfsTerminationGroupBox = new QGroupBox(fsGroupBox);
+    forwardfsTerminationGroupBox->setTitle("Termination Criteria");
+    forwardfsTerminationGridLayout = new QGridLayout(forwardfsTerminationGroupBox);
+    mNumberOfFeaturesLabel = new QLabel("Number of features");
+    mNumberOfFeaturesLabel->setToolTip("If 0, include the best performing set of features. Otherwise, only include up to this many features. Must be greater than 0 for random forest");
+
+    fsGridLayout->addWidget(forwardfsTerminationGroupBox, 2, 0, -1, -1);
+    mNumberOfFeaturesSpinbox = new QSpinBox(fsGroupBox);
+    mNumberOfFeaturesSpinbox->setMaximum(99999);
+    mNumberOfFeaturesSpinbox->setMinimum(0);
+    mNumberOfFeaturesSpinbox->setValue(0);
+    mNumberOfFeaturesSpinbox->setToolTip("If 0, include the best performing set of features. Otherwise, only include up to this many features. Must be greater than 0 for random forest.");
+    mNumberOfFeaturesSpinbox->setVisible(true);
+    mUseFeatureCount = new QRadioButton("Terminate using feature count");
+    mUseConvergenceThreshold = new QRadioButton("Terminate using convergence threshold");
+    mConvergenceThresholdSpinbox = new QDoubleSpinBox(fsGroupBox);
+    mConvergenceThresholdSpinbox->setMaximum(1.0);
+    mConvergenceThresholdSpinbox->setMinimum(0.000001);
+    mConvergenceThresholdSpinbox->setValue(0.01);
+    mConvergenceThresholdSpinbox->setEnabled(false);
+    mConvergenceThresholdSpinbox->setVisible(false);
+
+    //forwardfsTerminationGridLayout->addWidget(mUseFeatureCount, 2, 0, 1, 2);
+    //forwardfsTerminationGridLayout->addWidget(mUseConvergenceThreshold, 2, 2, 1, 2);
+    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesLabel, 3, 0, 1, 2);
+    forwardfsTerminationGridLayout->addWidget(mNumberOfFeaturesSpinbox, 3, 1, 1, 2);
+    //forwardfsTerminationGridLayout->addWidget(mConvergenceThresholdSpinbox, 3, 2, 1, 2);
+
+
 
     configurationGroupBox = new QGroupBox(fTrainingSimulator);
     configurationGroupBox->setTitle(QString::fromStdString("Configuration"));
@@ -274,11 +410,13 @@ public:
     sizePolicy.setHeightForWidth(mSplitModelDirectoryLabel->sizePolicy().hasHeightForWidth());
     mSplitModelDirectoryLabel->setSizePolicy(sizePolicy);
 
+
+
     mCrossValidation = new QRadioButton("CrossValidation");
     mCrossValidation->setEnabled(true);
-    mSplitTrain = new QRadioButton("Split Train");
+    mSplitTrain = new QRadioButton("Training");
     mSplitTrain->setEnabled(true);
-    mSplitTest = new QRadioButton("Split Test");
+    mSplitTest = new QRadioButton("Testing");
     mSplitTest->setEnabled(true);
 
     cvValue = new QLineEdit("");
@@ -303,9 +441,15 @@ public:
 
     configurationGridLayout->addWidget(mSplitTrain, 2,0, 1, 1);
     configurationGridLayout->addWidget(mSplitTest, 3,0, 1, 1);
-    configurationGridLayout->addWidget(mSplitModelDirectoryLabel, 3, 1, 1, 1);
-    configurationGridLayout->addWidget(mSplitModelDirectory, 3,2, 1, 1);
-    configurationGridLayout->addWidget(mSplitModelDirectoryButton, 3,3, 1, 1);
+    validatePredictionsLabel = new QLabel(configurationGroupBox);
+    mTestPredictionsAgainstProvidedLabels = new QCheckBox("Yes/No");
+    configurationGridLayout->addWidget(validatePredictionsLabel, 3, 1, 1, 1);
+    configurationGridLayout->addWidget(mTestPredictionsAgainstProvidedLabels, 3, 2, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectoryLabel, 4, 0, 1, 1);
+    configurationGridLayout->addWidget(mSplitModelDirectory, 4, 1, 1, 2);
+    configurationGridLayout->addWidget(mSplitModelDirectoryButton, 4, 3, 1, 1);
+
+
 
 
 
@@ -354,6 +498,8 @@ public:
     confirmGridLayout = new QGridLayout(confirmGroupBox);
     confirmGridLayout->setObjectName(QString::fromUtf8("confirmGridLayout"));
 
+
+
     confirmButton = new QPushButton(confirmGroupBox);
     confirmButton->setObjectName(QString::fromUtf8("confirm"));
     cancelButton = new QPushButton(confirmGroupBox);
@@ -362,14 +508,19 @@ public:
     confirmGridLayout->addWidget(confirmButton, 0, 0, 1, 1);
     confirmGridLayout->addWidget(cancelButton, 0, 1, 1, 1);
 
+    progressBar = new QProgressBar(confirmGroupBox);
+    confirmGridLayout->addWidget(progressBar, 1, 0, 1, -1);
 
     gridLayout->addWidget(inputGroupBox, 1, 0, 1, 2);
     gridLayout->addWidget(classifierGroupBox, 2, 0, 1, 2);
     gridLayout->addWidget(paramsGroupBox, 3, 0, 1, 2);
-    gridLayout->addWidget(fsGroupBox, 4, 0, 1, 2);
-    gridLayout->addWidget(configurationGroupBox, 5, 0, 1, 2);
-    gridLayout->addWidget(outputGroupBox, 6, 0, 1, 2);
-    gridLayout->addWidget(confirmGroupBox, 7, 0, 1, 2);
+    gridLayout->addWidget(randomForestGroupBox, 4, 0, 1, 2);
+    gridLayout->addWidget(fsGroupBox, 5, 0, 1, 2);
+    gridLayout->addWidget(configurationGroupBox, 6, 0, 1, 2);
+    gridLayout->addWidget(outputGroupBox, 7, 0, 1, 2);
+    gridLayout->addWidget(confirmGroupBox, 8, 0, 1, 2);
+
+    
 
     retranslateUi(fTrainingSimulator);
 
@@ -388,7 +539,7 @@ public:
     mSplitModelDirectoryLabel->setText(QApplication::translate("fTrainingSimulator", "Model directory:", 0));
     parametersLabel->setText(QApplication::translate("fTrainingSimulator", "Optimize classifier's parameters", 0));
     crossvalidationLabel->setText(QApplication::translate("fTrainingSimulator", "Cross-validation", 0));
-
+    validatePredictionsLabel->setText(QApplication::translate("fTrainingSimulator", "Validate predictions against given labels", 0));
   } // retranslateUi
 };
 

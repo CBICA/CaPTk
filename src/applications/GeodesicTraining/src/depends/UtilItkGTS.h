@@ -167,6 +167,14 @@ namespace GeodesicTrainingSegmentation
 					break;
 				}
 			}
+			// BUGFIX: Added a check for size change too, this was missing! -- AG
+			// (Was causing output that didn't match input on large but uniformly spaced images)
+			for (unsigned int i = 0; i < dimensions; i++) {
+				if (inputSize[i] != forcedSize[i]) {
+					isAnythingDifferent = true;
+					break;
+				}
+			}
 			if (!isAnythingDifferent) { return input; }
 
 			// Print input information
@@ -520,12 +528,18 @@ namespace GeodesicTrainingSegmentation
 			typename TImageType::SizeType inputSize = image->GetLargestPossibleRegion().GetSize();
 			typename TImageType::SpacingType inputSpacing = image->GetSpacing();
 
-			using TransformType = itk::IdentityTransform<double, TImageType::ImageDimension>;
+			
 			using ResampleFilterType = itk::ResampleImageFilter<TImageType, TImageType>;
 			
+
 			// Instantiate the transform and specify it should be the identity transform.
+			using TransformType = itk::IdentityTransform<double, TImageType::ImageDimension>;
 			typename TransformType::Pointer transform = TransformType::New();
 			transform->SetIdentity();
+			// BUGFIX: if the size is lower than the original, and spacing is the same, this will only subsample a corner.
+			// (it resamples according to physical points).
+			// This needs to be handled upstream by performing calculations to find the spacing that will accomodate.
+
 			
 			// Initiate the resampler
 			typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();

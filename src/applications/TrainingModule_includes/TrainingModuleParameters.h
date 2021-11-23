@@ -43,20 +43,31 @@ public:
 	// (ex: don't use gamma [gmin/gmax] for any code that presupposes linear kernel SVM
 
 	// Required
-	int classifierType;
-	int optimizationType;
+	CAPTK::ClassifierType classifierType;
+	CAPTK::OptimizationType optimizationType;
 	std::string inputFeaturesFile;
 	std::string inputLabelsFile;
 	std::string outputDirectory;
 	std::string modelDirectory;
-	int configurationType;
-	int featureSelectionType;
-	int crossValidationType;
+	CAPTK::ClassificationConfigurationType configurationType;
+	CAPTK::FeatureSelectionType featureSelectionType;
+	CAPTK::CrossValidationType crossValidationType;
 	int folds;
 
+	// if zero, select features until performance peaks. Else, only select up to this many.
+	int maxNumberOfFeatures = 0; 
+
 	// Options with valid defaults
+	bool testPredictionsAgainstProvidedLabels = false;
 	
-	double cMin = -5; double cMax = 5;
-	double gMin = -5; double gMax = 5;
+	// SVM parameters for C_SVC with base/max/min for grid search
+	double cMin = -5; double cLogBase = 2; double cMax = 5;
+	double gMin = -5; double gLogBase = 2; double gMax = 5;
+	double coefMin = 0.1; double coefLogBase = 14; double coefMax = 300;
+	double degreeMin = 0.01; double degreeLogBase = 7; double degreeMax = 4;
+
+	// Termination criteria for random forest
+	double randomForestEpsilon = 0.1;
+	int randomForestMaxIterations = 50;
 
 };

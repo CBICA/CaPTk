@@ -76,7 +76,8 @@ $(document).ready(function(){initNavTree('seg_GeoTrain.html',''); initResizable(
 </pre></li>
 </ul>
 <p>You have to draw the ROI image somewhere else to use the CLI executable. This image should be zero everywhere, except for the voxels that you have drawn. These voxels should be the same value if they belong to the same area. For instance in the example we discussed before, you can use value 1 for tumor core, value 2 for edema and value 3 for healthy tissue. If you don't want the output to contain the healthy tissue you can use parameter "-cl 3/0" which means that value 3 will be changed to 0. Keep in mind that values for healthy tissue are still needed, they just not going to show up in the output segmentation. If you want to iterate (correct mistakes in the segmentation), it's a bit harder to do with the CLI. You have to add new values to the input ROI (not the output segmentation) and run again. If you are going to use the CLI it is recommended to spend a little bit more time when you draw your input ROI so the first segmentation you get is good and you don't have to iterate the algorithm often.</p>
-<hr  />
+<h2><a class="anchor" id="autotoc_md32"></a>
+Note that the CLI allows users to configure a pixel limit. Images above this size (after normalization) will be downsampled for processing, then upsampled when done. This produces a faster, but less precise, result. The GUI does not currently perform this downscaling step.</h2>
 <p>References:</p>
 <ol type="1">
 <li>B.Gaonkar, L.Shu, G.Hermosillo, Y.Zhan, "Adaptive geodesic transform for segmentation of vertebrae on CT images", Proceedings Volume 9035, Medical Imaging 2014: Computer-Aided Diagnosis; 9035:16, 2014, DOI:10.1117/12.2043527.</li>

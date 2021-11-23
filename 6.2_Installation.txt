@@ -2,14 +2,14 @@
 
 \page Installation Installation Instructions
 
-## Windows
+\subsection Windows
 
 - Download the ".msi" installer file and double click to open.
 - On Windows 10, sometimes, Microsoft Edge does not let you download installers from unknown sources for security purposes (the warning comes up after the download finishes); you will need to select "Keep File" and follow prompts.
 - If a security prompt comes up after opening the installer, click on "Run Anyway".
 - Follow prompts for installation.
 
-## Linux
+\subsection Linux
 
 - Linux users have a CaPTk AppImage available called `CaPTk_${Version}.bin`. 
 - To run the AppImage, first open a terminal in the same directory as the .bin file.
@@ -27,7 +27,7 @@ chmod +x CaPTk_${Version}.bin
 \endverbatim
 - Follow prompts to install.
 
-## macOS
+\subsection macOS
 
 - Users will download the ".pkg" file from NITRC; double-click the file. 
 - If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences > Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).

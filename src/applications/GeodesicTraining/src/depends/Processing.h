@@ -190,6 +190,14 @@ namespace GeodesicTrainingSegmentation
 				}
 			}
 
+			// TODO: Reorganize this to fix the corner-subsample bug. Steps need to be as follows:
+			// 1. Make spacing isotropic to the minimum spacing (along the highest-res axis of the image).
+			// 2. Check pixel/voxel count after step 1 to see if this needs to be size-normalized (under m_pixel_limit)
+			// 3. Calculate the ratio that we need to shrink by to fit under the m_pixel_limit.
+			// 4. Multiply the spacing by the inverse of this ratio. Resampling now can fit the entire image.
+			// 5. Perform the downsampling (and then undo this during postprocessing)
+			// When this is done, we can re-enable the pixel limit feature when invoked from the GUI.
+			
 			// Find the (theoretical) size that will result from potentially normalizing spacing
 			unsigned long tPixelCount = 1;
 			for(int i=0; i<InputImageType::ImageDimension; i++) {
@@ -223,7 +231,8 @@ namespace GeodesicTrainingSegmentation
 			for(int i=0; i<InputImageType::ImageDimension; i++) 
 			{
 				targetSize[i] = std::lround(
-					1.0 * tSize[i] * m_original_labels_image_spacing[i] / tSpacing[i]
+					1.0 * tSize[i] /* m_original_labels_image_spacing[i] / tSpacing[i]*/
+					// dimensional spacing ratio not needed here, already accounted for in tSize
 				);
 				if (targetSize[i] < 1) { targetSize[i] = 1; }
 			}
@@ -508,6 +517,14 @@ namespace GeodesicTrainingSegmentation
 			imageInVector.push_back(image);
 			PostProcessNormalImages<TImageType>(imageInVector);
 			stopTimerAndReport("Postprocessing: Changing a non-label image's size and spacing back");
+
+			if (m_save_all)
+			{
+				cbica::WriteImage<TImageType>(image, m_output_folder + "/" +
+					std::string("image_postprocessed_res.nii.gz")
+					);
+			}
+
 		}
 
 	private:
