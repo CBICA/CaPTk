@@ -778,7 +778,7 @@ public slots:
   \param inputfilename The input perfusion image file name
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, const std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
