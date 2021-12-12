@@ -31,6 +31,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkNaryAddImageFilter.h"
+#include "itkMaskImageFilter.h"
 #include "itkDivideImageFilter.h"
 #include "cbicaLogging.h"
 #include "CaPTkDefines.h"
