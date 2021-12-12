@@ -848,7 +848,7 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
       divider->Update();
 
       // Apply mask to the now-averaged b0
-      typedef itk::MaskImageFilter<ScalarImageType, ImageMaskType, ScalarImageType> MaskerType;
+      typedef typename itk::MaskImageFilter<ScalarImageType, ImageMaskType, ScalarImageType> MaskerType;
       typename MaskerType::Pointer masker = MaskerType::New();
       masker->SetInput(divider->GetOutput());
       masker->SetMaskImage(maskReader->GetOutput());
