@@ -44,6 +44,7 @@ public:
 	QString mInputMaskName;
 	QString mInputBValName;
 	QString mInputBVecName;
+	QString mInputRegistrationFileName;
 	QString mOutputPathName;
 
 
@@ -54,11 +55,12 @@ public:
 	void OpenInputMaskImage();
 	void OpenInputBValImage();
 	void OpenInputBVecImage();
+	void OpenInputRegistrationImage();
 	void SelectOutputImage();
 
 signals:
 	void RunDiffusionMeasuresCalculation(const std::string inputImageFile, const std::string inputMaskFile,
-    const std::string bValFile, const std::string bVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder);
+    const std::string bValFile, const std::string bVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const bool bzero, const std::string outputFolder, const bool registrationRequested, const std::string fixedImage);
 };
 
 

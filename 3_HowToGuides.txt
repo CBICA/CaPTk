@@ -982,7 +982,7 @@ References:
 
 /**
 \page Diffusion_Derivatives Miscellaneous: Diffusion Derivatives
-This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).
+This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), iv) apparent diffusion coefficient (ADC), and v) averaged b0 image (B0).
 
 This application is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 
@@ -994,11 +994,12 @@ This application is also available from the web on the [CBICA Image Processing P
 <b> USAGE:</b>
 	-# Launch the application from "Applications" -> "Diffusion Derivatives".
 	-# Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.
+	-# If desired, enable registration of outputs and select a fixed image to register to.
 	-# Identify the diffusion measurements to be extracted, and the output directory.
 	-# Press the "Confirm" button.
 	-# The extracted measurements will be saved at the specified location (~5 minutes).
 \verbatim
-${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output
+${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -z 1 -reg C:/template.nii.gz -o C:/output
 \endverbatim
 
 --------
