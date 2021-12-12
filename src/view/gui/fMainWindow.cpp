@@ -904,8 +904,8 @@ fMainWindow::fMainWindow()
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
   //connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const int, const int, const int, const int, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const int, const int, const int, const int, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string, const std::string)));
 
 
   connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
@@ -9031,7 +9031,9 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
   msg = "Diffusion derivatives have been saved at the specified locations.";
   ShowMessage(msg.toStdString(), this);
 }
-void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph,
+    const int baselineStart, const int baselineEnd, const int recoveryStart, const int recoveryEnd,
+    const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -9049,6 +9051,10 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
+  m_perfusionderivatives.SetBaselineStartPercentage(baselineStart);
+  m_perfusionderivatives.SetBaselineEndPercentage(baselineEnd);
+  m_perfusionderivatives.SetRecoveryStartPercentage(recoveryStart);
+  m_perfusionderivatives.SetRecoveryEndPercentage(recoveryEnd);
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, outputFolder);
 
   if (perfusionDerivatives.size() == 0)
@@ -9075,7 +9081,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, const std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
