@@ -815,7 +815,7 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
     {
       allocateScalarIm<ScalarImageType, TensorImageType>(bZeroIm, tensorIm);
       typename InputImageType::RegionType inputRegion = img4D->GetLargestPossibleRegion();
-      InputImageType::SizeType desiredSize = inputRegion.GetSize();
+      typename InputImageType::SizeType desiredSize = inputRegion.GetSize();
       desiredSize[3] = 0; // We'll always collapse along the 4th dimension
 
       // Add all b0 together first to average the images
@@ -828,7 +828,7 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
           typename InputImageType::IndexType index = inputRegion.GetIndex();
           index[3] = indexesWhereBValZero[i]; // Extract only the current time index
 
-          InputImageType::RegionType targetRegion;
+          typename InputImageType::RegionType targetRegion;
           targetRegion.SetSize(desiredSize);
           targetRegion.SetIndex(index);
 
