@@ -778,7 +778,7 @@ public slots:
   \param inputfilename The input perfusion image file name
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder);
+  void CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, const std::string outputFolder);
 
   /**
   \brief Call the Perfusion Measures application with the inputs
@@ -790,7 +790,7 @@ public slots:
   \param inputfile The input DSC-MRI image
   \param outputFolder The output folder to write all results
   */
-  void CallPerfusionMeasuresCalculation(const bool rcbv, const bool psr, const bool ph, const std::string inputfile, const std::string outputFolder);
+  void CallPerfusionMeasuresCalculation(const bool rcbv, const bool psr, const bool ph, const int baselineStart, const int baselineEnd, const int recoveryStart, const int recoveryEnd, const std::string inputfile, const std::string outputFolder);
 
   /**
   \brief Call the Diffusion Measures application with the inputs

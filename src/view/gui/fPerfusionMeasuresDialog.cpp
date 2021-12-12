@@ -16,6 +16,10 @@ fPerfusionEstimator::fPerfusionEstimator()
   m_baselineEnd->setValue(20);
   m_recoveryStart->setValue(66);
   m_recoveryEnd->setValue(88);
+  m_baselineStart->setEnabled(true);
+  m_baselineEnd->setEnabled(true);
+  m_recoveryStart->setEnabled(true);
+  m_recoveryEnd->setEnabled(true);
 
   m_baselineStartLabel->setText("Baseline Start Threshold %");
   m_baselineEndLabel->setText("Baseline End Threshold %");
@@ -55,7 +59,12 @@ void fPerfusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please select at least one of the given three options: ap-rCBV, PH, PSR.");
     return;
   }
-  emit RunPerfusionMeasuresCalculation(m_rcbv->isChecked(), m_psr->isChecked(), m_ph->isChecked(), mInputPathName.toStdString(), mOutputPathName.toStdString());
+  if (m_baselineStart->value() >= m_baselineEnd->value() || m_recoveryStart->value() >= m_recoveryEnd->value() || m_baselineEnd->value() >= m_recoveryStart->value())
+  {
+    ShowErrorMessage("Please check your baseline and recovery thresholds for validity.");
+    return;
+  }
+  emit RunPerfusionMeasuresCalculation(m_rcbv->isChecked(), m_psr->isChecked(), m_ph->isChecked(), m_baselineStart->value(), m_baselineEnd->value(), m_recoveryStart->value(), m_recoveryEnd->value(), mInputPathName.toStdString(), mOutputPathName.toStdString());
 
   this->close();
 }
