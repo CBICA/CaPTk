@@ -13,6 +13,7 @@ fPerfusionAligner::fPerfusionAligner()
   connect(confirmButton, SIGNAL(clicked()), this, SLOT(ConfirmButtonPressed()));
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
   connect(inputImageButton, SIGNAL(clicked()), this, SLOT(SelectInputImage()));
+  connect(inputMaskButton, SIGNAL(clicked()), this, SLOT(SelectMaskImage()));
 }
 fPerfusionAligner::~fPerfusionAligner()
 {
@@ -84,4 +85,15 @@ void fPerfusionAligner::SelectInputImage()
 		inputImageName->setText(inputImage);
 
 	mInputPathName = inputImage;
+}
+
+void fPerfusionAligner::SelectMaskImage()
+{
+    auto maskImage = getExistingFile(this, mMaskPathName);
+    if (maskImage.isNull() || maskImage.isEmpty())
+        return;
+    else
+        inputMaskName->setText(maskImage);
+
+    mMaskPathName = maskImage;
 }
