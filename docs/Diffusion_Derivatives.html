@@ -61,7 +61,7 @@ $(document).ready(function(){initNavTree('Diffusion_Derivatives.html',''); initR
 <div class="title">Miscellaneous: Diffusion Derivatives </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), and iv) apparent diffusion coefficient (ADC).</p>
+<div class="textblock"><p>This application extracts various measurements from a Diffusion Weighted MRI scan. The exact measurements comprise i) fractional anisotropy (FA), ii) radial diffusivity (RAD), iii) axial diffusivity (AX), iv) apparent diffusion coefficient (ADC), and v) averaged b0 image (B0).</p>
 <p>This application is also available from the web on the <a href="https://ipp.cbica.upenn.edu/">CBICA Image Processing Portal</a>. Please see the experiment on the portal for details.</p>
 <p><b> REQUIREMENTS:</b></p><ol type="1">
 <li>A single DW-MRI image</li>
@@ -71,9 +71,10 @@ $(document).ready(function(){initNavTree('Diffusion_Derivatives.html',''); initR
 <p><b> USAGE:</b></p><ol type="1">
 <li>Launch the application from "Applications" -&gt; "Diffusion Derivatives".</li>
 <li>Specify the paths to the input DW-MRI image, bval and bvec files with the gradient information, and the mask defining the voxels to extract the measurements.</li>
+<li>If desired, enable registration of outputs and select a fixed image to register to.</li>
 <li>Identify the diffusion measurements to be extracted, and the output directory.</li>
 <li>Press the "Confirm" button.</li>
-<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -o C:/output
+<li>The extracted measurements will be saved at the specified location (~5 minutes). <pre class="fragment">${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -z 1 -reg C:/template.nii.gz -o C:/output
 </pre></li>
 </ol>
 <hr  />

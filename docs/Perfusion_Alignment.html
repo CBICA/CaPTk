@@ -69,14 +69,14 @@ $(document).ready(function(){initNavTree('Perfusion_Alignment.html',''); initRes
 </ol>
 <p><b> USAGE:</b></p><ol type="1">
 <li>Launch the application from "Applications" -&gt; "Perfusion Alignment".</li>
-<li>Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (2 seconds), number of time-points before (b) and after (a) drop of the perfusion curve, and the output directory.</li>
-<li>Specify the optional drop-scaling (-d in the command line) and standard-deviation threshold (-s in the command line) parameters</li>
+<li>Specify the input DSC-MRI image, T1 post-contrast image, time-resolution of the DSC-MRI scan in seconds (t1, ex. 2 seconds), number of time-points before (t3) and after (t4) drop of the perfusion curve, and the output directory.</li>
+<li>Optionally, specify the output repetition time (t2, default 1 second), intensity drop in mean curve inside the ROI (-s2 in the command line, default 100) and the maximum intensity before the drop in mean curve inside the ROI (-s1 in the command line, default 300) parameters</li>
 <li>Press "Confirm" button.</li>
-<li>The b+a+1 individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).</li>
-<li>Outupt folder will contain the alighned perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.</li>
+<li>The individual volumes of the aligned DSC-MRI image will be saved at the specified location (~5 minutes).</li>
+<li>Output folder will contain the alighed perfusion image along with CSV files containing the original, truncated, revised and interpolated perfusion curve signals.</li>
 </ol>
 <ul>
-<li>This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -b 15 -a 17 -t 2 -s 10 -d 1 -o C:/InputImage_output
+<li>This application is also available as a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/PerfusionAlignment.exe -i C:/InputImage/convertedNIfTIPerf_image.nii.gz -m brainMask.nii.gz -t1 2 -t3 15 -t4 30 -o C:/testPerf
 </pre> </li>
 </ul>
 </div></div><!-- contents -->
