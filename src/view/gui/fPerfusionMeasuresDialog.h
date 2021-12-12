@@ -51,7 +51,10 @@ public:
   void SelectInputImage();
 
 signals:
-  void RunPerfusionMeasuresCalculation(const bool rcbv, const bool psr,const bool ph, const std::string inputfile,  std::string outputFolder);
+  void RunPerfusionMeasuresCalculation(const bool rcbv, const bool psr,const bool ph, 
+      const int baselineStartThreshold, const int baselineEndThreshold,
+      const int recoveryStartThreshold, const int recoveryEndThreshold,
+      const std::string inputfile, std::string outputFolder);
 };
 
 

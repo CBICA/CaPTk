@@ -142,15 +142,27 @@ public:
 	frame->setObjectName(QStringLiteral("frame"));
 	frame->setFrameShape(QFrame::StyledPanel);
 	frame->setFrameShadow(QFrame::Raised);
-	frame->setDisabled(true);
-	frame->setToolTip("Please use the CLI to adjust baseline and recovery thresholds.");
+	//frame->setDisabled(true);
+	//frame->setToolTip("Please use the CLI to adjust baseline and recovery thresholds.");
 
 	frameGridLayout = new QGridLayout(frame);
 
 	m_baselineStart = new QSpinBox(frame);
+    m_baselineStart->setEnabled(true);
+    m_baselineStart->setMinimum(0);
+    m_baselineStart->setMaximum(100);
 	m_baselineEnd = new QSpinBox(frame);
+    m_baselineEnd->setEnabled(true);
+    m_baselineEnd->setMinimum(0);
+    m_baselineEnd->setMaximum(100);
 	m_recoveryStart = new QSpinBox(frame);
+    m_recoveryStart->setEnabled(true);
+    m_recoveryStart->setMinimum(0);
+    m_recoveryStart->setMaximum(100);
 	m_recoveryEnd = new QSpinBox(frame);
+    m_recoveryEnd->setEnabled(true);
+    m_recoveryEnd->setMinimum(0);
+    m_recoveryEnd->setMaximum(100);
 
 	m_baselineStartLabel = new QLabel(frame);
 	m_baselineEndLabel = new QLabel(frame);
