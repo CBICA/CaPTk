@@ -268,7 +268,7 @@ public:
     // m_psr->setText(QApplication::translate("fPerfusionAlignmentDialog", "Percent Signal Recovery", 0, QApplication::UnicodeUTF8));
     // m_ph->setText(QApplication::translate("fPerfusionAlignmentDialog", "Peak Height", 0, QApplication::UnicodeUTF8));
     // NEW CHANGES
-    fPerfusionAlignmentDialog->setWindowTitle(QApplication::translate("fPerfusionAlignmentDialog", "Perfusion Derivatives", 0));
+    fPerfusionAlignmentDialog->setWindowTitle(QApplication::translate("fPerfusionAlignmentDialog", "Perfusion Alignment", 0));
     inputBeforePointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points before drop", 0));
     inputAfterPointsLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "# of Points after drop", 0));
     inputEchoTimeLabel->setText(QApplication::translate("fPerfusionAlignmentDialog", "Time-resolution (seconds)", 0));

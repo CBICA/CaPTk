@@ -130,9 +130,11 @@ int main(int argc, char **argv)
   //check if output dir exists
   if (!cbica::directoryExists(outputDirectoryName))
   {
-    if (!cbica::createDirectory(outputDirectoryName))
-      std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
-    return EXIT_FAILURE;
+      if (!cbica::createDirectory(outputDirectoryName))
+      {
+          std::cout << "The output directory can not be created:" << outputDirectoryName << std::endl;
+          return EXIT_FAILURE;
+      }
   }
 
   PerfusionPCA object_pca; //pca algorithm object

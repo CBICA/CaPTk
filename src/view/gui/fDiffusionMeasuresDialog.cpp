@@ -18,7 +18,7 @@ fDiffusionEstimator::fDiffusionEstimator()
   connect(inputMaskButton, SIGNAL(clicked()), this, SLOT(OpenInputMaskImage()));
   connect(inputBvalButton, SIGNAL(clicked()), this, SLOT(OpenInputBValImage()));
   connect(inputBvecButton, SIGNAL(clicked()), this, SLOT(OpenInputBVecImage()));
-
+  connect(inputRegistrationButton, SIGNAL(clicked()), this, SLOT(OpenInputRegistrationImage()));
 
   connect(outputImageButton, SIGNAL(clicked()), this, SLOT(SelectOutputImage()));
 
@@ -26,6 +26,7 @@ fDiffusionEstimator::fDiffusionEstimator()
   m_fa->setChecked(true);
   m_rad->setChecked(true);
   m_tr->setChecked(true);
+  m_bzero->setChecked(true);
 }
 fDiffusionEstimator::~fDiffusionEstimator()
 {
@@ -59,20 +60,25 @@ void fDiffusionEstimator::ConfirmButtonPressed()
     ShowErrorMessage("Please specify the BVec file.", this);
     return;
   }
+  if (m_register->isChecked() && (inputRegistrationFile->text().isEmpty() || !cbica::isFile(inputRegistrationFile->text().toStdString())))
+  {
+      ShowErrorMessage("In order to register output, please specify a fixed image.", this);
+      return;
+  }
 	if (outputImageName->text().isEmpty())
 	{
     ShowErrorMessage("Please specify the output directory.", this);
 		return;
 	}
-  if (m_ax->isChecked() == false && m_fa->isChecked() == false && m_rad->isChecked() == false && m_tr->isChecked() == false)
+  if (!m_ax->isChecked() && !m_fa->isChecked() && !m_rad->isChecked() && !m_tr->isChecked() && !m_bzero->isChecked())
   {
-    ShowErrorMessage("Please select at least one of the given four options: Axial diffusivity, fractional anisotropy, radial diffusivity, apparant diffusion coefficient.");
+    ShowErrorMessage("Please select at least one of the given options: Axial diffusivity, fractional anisotropy, radial diffusivity, apparent diffusion coefficient, extract b0");
     return;
   }
-	emit RunDiffusionMeasuresCalculation(mInputPathName.toStdString(), mInputMaskName.toStdString(),
-    inputBvalName->text().toStdString(), inputBvecName->text().toStdString(),
-    m_ax->isChecked(), m_fa->isChecked(), m_rad->isChecked(), m_tr->isChecked(),
-    mOutputPathName.toStdString());
+  emit RunDiffusionMeasuresCalculation(mInputPathName.toStdString(), mInputMaskName.toStdString(),
+      inputBvalName->text().toStdString(), inputBvecName->text().toStdString(),
+      m_ax->isChecked(), m_fa->isChecked(), m_rad->isChecked(), m_tr->isChecked(), m_bzero->isChecked(),
+    mOutputPathName.toStdString(), m_register->isChecked(), mInputRegistrationFileName.toStdString());
 
 	this->close();
 }
@@ -119,6 +125,16 @@ void fDiffusionEstimator::OpenInputBVecImage()
 	else
 		inputBvecName->setText(inputImage);
 	mInputBVecName = inputImage;
+}
+
+void fDiffusionEstimator::OpenInputRegistrationImage()
+{
+    auto inputImage = getExistingFile(this, mInputRegistrationFileName, "*.nii.gz");
+    if (inputImage.isNull() || inputImage.isEmpty())
+        return;
+    else
+        inputRegistrationFile->setText(inputImage);
+    mInputRegistrationFileName = inputImage;
 }
 
 void fDiffusionEstimator::SelectOutputImage()
