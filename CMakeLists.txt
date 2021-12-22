@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_Variant "Full" ) # the particular variant of CaPTk (Full/Ne
 
 SET( PROJECT_VERSION_MAJOR 1 )
 SET( PROJECT_VERSION_MINOR 9 )
-SET( PROJECT_VERSION_PATCH 0.Alpha2 )
+SET( PROJECT_VERSION_PATCH 0.Alpha )
 SET( PROJECT_VERSION_TWEAK ) 
 
 # check for the string "nonRelease" in the PROJECT_VERSION_PATCH variable
