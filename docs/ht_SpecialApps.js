@@ -16,6 +16,6 @@ var ht_SpecialApps =
     [ "Miscellaneous: Perfusion Alignment", "Perfusion_Alignment.html", null ],
     [ "Miscellaneous: Diffusion Derivatives", "Diffusion_Derivatives.html", null ],
     [ "Miscellaneous: Perfusion Derivatives", "Perfusion_Derivatives.html", null ],
-    [ "Miscellaneous: Perfusion PCA Volume Extraction", "PCA_Extraction.html", null ],
+    [ "Miscellaneous: Perfusion PCA Parameter Extractor", "PCA_Extraction.html", null ],
     [ "Miscellaneous: Training Module", "Training_Module.html", null ]
 ];
