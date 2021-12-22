@@ -4,17 +4,17 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - acr-mode-experimental
+    - master
 
 trigger:
   batch: true
   branches:
-    include: ['acr-mode-experimental']
+    include: ['master']
 
 # 20200312: apparently this is now explicitly required for azure
 pr:
   branches:
-    include: ['acr-mode-experimental']
+    include: ['master']
 
 jobs:
 - job: 'WindowsBuild'
