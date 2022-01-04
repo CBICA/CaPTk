@@ -5,7 +5,7 @@
   <filterSection>
     <filterAttribute>doxygen</filterAttribute>
     <toc>
-      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.8.2.Alpha.2" ref="index.html">
+      <section title="Cancer Imaging Phenomics Toolkit (CaPTk) 1.9.0.Alpha" ref="index.html">
         <section title="Overview" ref="index.html">
           <section title="Bug Tracker and Feature Request" ref="index.html#autotoc_md103" />
           <section title="Frequently Asked Questions (FAQ)" ref="index.html#autotoc_md104" />
@@ -87,7 +87,7 @@
         <section title="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
         <section title="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
         <section title="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-        <section title="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
+        <section title="Miscellaneous: Perfusion PCA Parameter Extractor" ref="PCA_Extraction.html" />
         <section title="Miscellaneous: Training Module" ref="Training_Module.html">
           <section title="See the usage option of the TrainingModule application (-u, &amp;ndash;usage) for more information." ref="Training_Module.html#autotoc_md66" />
         </section>
@@ -192,7 +192,7 @@
       <keyword name="Miscellaneous: Diffusion Derivatives" id="Miscellaneous: Diffusion Derivatives" ref="Diffusion_Derivatives.html" />
       <keyword name="Miscellaneous: Perfusion Alignment" id="Miscellaneous: Perfusion Alignment" ref="Perfusion_Alignment.html" />
       <keyword name="Miscellaneous: Perfusion Derivatives" id="Miscellaneous: Perfusion Derivatives" ref="Perfusion_Derivatives.html" />
-      <keyword name="Miscellaneous: Perfusion PCA Volume Extraction" id="Miscellaneous: Perfusion PCA Volume Extraction" ref="PCA_Extraction.html" />
+      <keyword name="Miscellaneous: Perfusion PCA Parameter Extractor" id="Miscellaneous: Perfusion PCA Parameter Extractor" ref="PCA_Extraction.html" />
       <keyword name="Miscellaneous: Training Module" id="Miscellaneous: Training Module" ref="Training_Module.html" />
       <keyword name="Utilities (CLI only)" id="Utilities (CLI only)" ref="ht_utilities.html" />
       <keyword name="BraTS Similarity Metrics Computation (CLI Only)" id="BraTS Similarity Metrics Computation (CLI Only)" ref="BraTS_Metrics.html" />
