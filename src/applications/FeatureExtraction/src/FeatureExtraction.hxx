@@ -42,6 +42,7 @@
 //#include "FractalBoxCount_template.h"
 
 #include "cbicaProgressBar.h"
+#include "cbicaITKUtilities.h"
 
 //TBD
 #include <math.h> //for debugging
@@ -380,7 +381,6 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
     std::cerr << "Could not find the Collage CLI, so cannot extract collage features.\n";
     return;
   }
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
   auto tempDir = cbica::createTemporaryDirectory();
   auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
@@ -440,7 +440,16 @@ void FeatureExtraction< TImage >::CalculateIBSI2(const typename TImage::Pointer 
     std::cerr << "Could not find the CaPTk_ExtraFeatures CLI, so cannot extract IBSI2 features.\n";
     return;
   }
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
+
+  //// Check if input mask is not null
+  //auto minMaxCal = itk::MinimumMaximumImageCalculator< TImage >::New();
+  //minMaxCal->SetImage(maskImage);
+  //minMaxCal->ComputeMaximum();
+  //if (minMaxCal->GetMaximum() == 0)
+  //{
+  //  // mask is empty
+  //  maskImage = cbica::CreateImage< TImage >(inputImage, 1);
+  //}
 
   auto tempDir = cbica::createTemporaryDirectory();
   auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
