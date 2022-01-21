@@ -1,4 +1,4 @@
-# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason
+# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason 
 schedules:
 - cron: "0 4 * * *"
   displayName: Daily midnight build
@@ -11,7 +11,7 @@ trigger:
   branches:
     include: ['master']
 
-# 20200312: apparently this is now explicitly required for azure
+# 20200312: apparently this is now explicitly required for azure 
 pr:
   branches:
     include: ['master']
@@ -570,7 +570,7 @@ jobs:
 
   steps:
     - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-
+      lfs: true # May be explicitly needed now as of 11/17/2020
     # submodule 
     - bash: |
         export GIT_LFS_SKIP_SMUDGE=1
