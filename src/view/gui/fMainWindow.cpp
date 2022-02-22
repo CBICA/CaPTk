@@ -1824,9 +1824,25 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
       ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
-      imageManager->SetPerfImage(imagePerf);
+      
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
-      //return;
+      imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins()); // Fix missing (3D) origins for 4D
+      /*auto originalDirection = imageInfo.GetImageDirections();
+      ImageTypeFloat3D::DirectionType originalDirectionIn3D;
+      for (int i = 0; i < 3; i++)
+      {
+          for (int j = 0; j < 3; j++)
+          {
+              originalDirectionIn3D[i][j] = originalDirection[i][j];
+          }
+      }
+      imageManager->SetOriginalDirection(originalDirectionIn3D);
+      */
+      //auto tempImage = cbica::GetImageOrientation< ImageTypeFloat4D >(imagePerf);
+      //imageManager->SetOriginalOrientation(tempImage.first);
+      //imagePerf = ChangeImageDirectionToIdentity< ImageTypeFloat4D >(tempImage.second);
+      imageManager->SetPerfImage(imagePerf);
+          //return;
     }
     else
     {
@@ -5816,18 +5832,34 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       }
       else
       {
+
         if (!((extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
         {
           unsupportedExtension += fileName + "\n";
         }
-        else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
-        {
-          erroredFiles += fileName + "\n";
-        }
         else
         {
-          basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          // This 4D check is duplicated here from LoadSlicerImages, 
+          // because it has to be for us to correctly know to use 4D sanity checks below.
+          // TBD: This needs a refactor for clarity.
+          auto imageInfo = cbica::ImageInfo(fileName);
+          bool fourDImage = false;
+          int dimsOfImage0 = cbica::ImageInfo(fileForSanityCheck).GetImageDimensions();
+          if ((imageInfo.GetImageDimensions() == 4) || (dimsOfImage0 == 4))
+          {
+                fourDImage = true;
+          }
+          if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString(), fourDImage))
+          {
+              erroredFiles += fileName + "\n";
+          }
+          else
+          {
+              basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          }
+          
         }
+
       }
     }
 
