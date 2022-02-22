@@ -1824,7 +1824,6 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
       image4DMaxSliceIndicator->setText(QString::fromStdString(" / " + std::to_string(imageInfo.GetImageSize()[3])));
-      //Update4DSliderInfo();
       ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
       
       
@@ -6737,6 +6736,12 @@ void fMainWindow::ApplicationEGFR()
     QString::number(EGFRStatusParams[3]) + "/" + QString::number(nearIndices.size()) + "\nFar ROI voxels used =   " +
     QString::number(EGFRStatusParams[4]) + "/" + QString::number(farIndices.size()) +
     "\n\n\n----------\n\nPHI Threshold = 0.1377\n[based on 142 UPenn brain tumor scans]";
+
+  msg = msg + "\n\nNote that processing was conducted on all detected time points (" +
+      QString::number(perfusionImage->GetLargestPossibleRegion().GetSize()[3])+
+      ") of the given DSC-MRI image." +
+      "\nUPenn scans used for analysis typically contain 45 time points." +
+      "\nIn order to select a number of time points to use, or to do batch processing, please use the command-line interface.";
 
   updateProgress(0);
   ShowMessage(msg.toStdString(), this);
