@@ -561,6 +561,10 @@ This application evaluates the Epidermal Growth Factor Receptor splice variant I
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputDSCImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
 \endverbatim
+	- Additionally, you can process a batch directory (subdirectories are subjects, and each must have a perfusion and mask image). Pass "--help" to the CLI application for more details.
+\verbatim
+${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -b C:/inputDirectory/ -o C:/output.csv
+\endverbatim
 
 <b>RULES FOR ROI ANNOTATION</b>:
   - These two ROIs are used to sample tissue located on the two boundaries of the peritumoaral edema/invasion area: near to and far from the tumor, respectively, and hence to evaluate the heterogeneity or spatial gradient of perfusion signals [1-3].
