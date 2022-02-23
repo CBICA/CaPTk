@@ -4594,7 +4594,12 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   //check if input has valid subjects
   if (mPCAEstimator.HasValidSubjects() == 0)
   {
-    ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
+    std::string msg = "The specified directory does not have any subject with all the required imaging sequences.\n";
+    msg += "Make sure that the input directory has subdirectories (each one is one subject), and that each subdirectory two images : \n";
+    msg += "The perfusion image .nii.gz file must contain '_perf_' in the basename, and ";
+    msg += "the segmentation .nii.gz file must end with '_segmentation.nii.gz'.";
+
+    ShowErrorMessage(msg);
     return;
   }
 
