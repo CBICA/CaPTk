@@ -1277,6 +1277,11 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
   m_algorithmDone = false;
 }
 
+template < class TImage > 
+FeatureType FeatureExtraction< TImage >::GetRequestedFeatures()
+{
+    return m_Features;
+}
 
 template< class TImage >
 void FeatureExtraction< TImage >::SetRequestedFeatures(std::string filename, std::string selected_features)
@@ -2810,6 +2815,13 @@ void FeatureExtraction< TImage >::Update()
             }
             case COLLAGE:
             {
+                std::string collageMessage = "COLLAGE features were requested for this computation, but are not available through this interface. Please note:\n\n";
+                collageMessage += "The COLLAGE features were developed by BrIC Lab and the RadxTools team (https://doi.org/10.1038/srep37241, https://github.com/radxtools/collageradiomics) \n\n";
+                collageMessage += "Based on published results indicating their importance, COLLAGE features are offered as part of the CaPTk platform to enable users to extract a more comprehensive and reproducible set of features, as shown in : [https://doi.org/10.1002/mp.14556] \n\n";
+                collageMessage += "Please note that extraction of COLLAGE features is a long running process (often >20 minutes) and might not produce results for all the input images.\n";
+                collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable from the CaPTk install directory.\n";
+                collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.\n";
+              m_logger.Write(collageMessage);
               // this is a special case, where a pre-compiled python binary is called for every image/mask
               if (!allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
               { // start lattice check
