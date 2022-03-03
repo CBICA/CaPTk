@@ -2822,6 +2822,8 @@ void FeatureExtraction< TImage >::Update()
                 collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable from the CaPTk install directory.\n";
                 collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.\n";
               m_logger.Write(collageMessage);
+              break; // Display message and break out of these features if it gets here (this *should* be caught by CLI/GUI, but just in case)
+
               // this is a special case, where a pre-compiled python binary is called for every image/mask
               if (!allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
               { // start lattice check
