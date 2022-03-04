@@ -9036,7 +9036,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
           ".exe" +
 #endif
           " -d " + std::to_string(TImageType::ImageDimension);
-      std::string fixedOptions = " -a -ia-image-centers -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
+      std::string fixedOptions = " -a -ia-image-centers -m NMI -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
       std::string commandToCall;
       std::vector<int> returnCodesFromGreedy;
 
@@ -9044,18 +9044,6 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       std::string specificParams;
 
       // Create the intermediate transforms
-      specificParams = outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" + " -o " + outputFolder + "/affine_FractionalAnisotropy.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" + " -o " + outputFolder + "/affine_ApparentDiffusionCoefficient.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_RadialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_RadialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_AxialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_AxialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
       specificParams = outputFolder + "/unregistered_b0.nii.gz" + " -o " + outputFolder + "/affine_b0.mat";
       commandToCall = greedyPathAndDim + fixedOptions + specificParams;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
@@ -9064,7 +9052,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       {
           if (returnCodesFromGreedy[i] != 0)
           {
-              std::cerr << "Something went wrong when generating transforms with Greedy.\n";
+              std::cerr << "Something went wrong when generating transform with Greedy.\n";
               return;
           }
       }
@@ -9073,22 +9061,22 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       // Now run the transform and image through greedy to produce actual output...
       std::string fixedOptions2 = " -rf " + inputRegistrationFile + " -ri LINEAR -r ";
 
-      std::string specificParams2 = outputFolder + "/affine_FractionalAnisotropy.mat" +
+      std::string specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" +
           " " + outputFolder + "/FractionalAnisotropy.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_ApparentDiffusionCoefficient.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" +
           " " + outputFolder + "/ApparentDiffusionCoefficient.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_RadialDiffusivity.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_RadialDiffusivity.nii.gz" +
           " " + outputFolder + "/RadialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_AxialDiffusivity.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_AxialDiffusivity.nii.gz" +
           " " + outputFolder + "/AxialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
@@ -9103,6 +9091,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       {
           if (returnCodesFromGreedy[i] != 0)
           {
+              ShowErrorMessage("Something went wrong when registering final output with Greedy. Please report this error to CBICA Software.");
               std::cerr << "Something went wrong when registering final output with Greedy.\n";
               return;
           }
@@ -9124,8 +9113,9 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
           cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputFolder + "/b0.nii.gz");
   }
 
-  std::cout << "Finished successfully.\n";
 
+  std::cout << "Finished successfully.\n";
+  ShowMessage("Diffusion Derivatives ran succesfully and output has been placed in the specified location.");
 }
 void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph,
     const int baselineStart, const int baselineEnd, const int recoveryStart, const int recoveryEnd,
