@@ -384,7 +384,7 @@ fMainWindow::fMainWindow()
   }
 
   // TBD: this needs to be controlled from CMake and not hard-coded here
-  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator";
+  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator ";
 #ifdef BUILD_MSUBTYPE
   //brainAppList += " MolecularSubtypePredictor ";
 #endif
