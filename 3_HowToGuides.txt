@@ -93,7 +93,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o
 
 /**  
 \page preprocessing_reg Image Co-registration
-This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].
+This tool registers multiple moving images to a single target image using the Greedy Registration technique [1]. 
 This tool is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 <b>REQUIREMENTS:</b>
 	-# A Target image.
