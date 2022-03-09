@@ -443,7 +443,7 @@ void fTrainingSimulator::ConfirmButtonPressed()
           }
           else 
           {
-              ShowMessage("Training module finished!", this);
+              ShowMessage("Training module finished! Please check the output folder for results.", this);
           }
           
       }

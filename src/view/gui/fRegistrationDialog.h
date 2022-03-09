@@ -36,6 +36,7 @@ public:
     std::string metric = "NMI";
     std::string radius = "5x5x5";
     std::string m_iterations = "100x50x5";
+    std::string interp = "Linear";
     bool radii = false;
     int clicked = 0;
     QString matExtn = ".mat";
@@ -65,6 +66,8 @@ public:
     void SelectedAffineMode();
     void SelectedRigidMode();
     void SelectedDeformMode();
+    void SelectedLinearInterp();
+    void SelectedNNInterp();
     void SelectedMetric(int index);
     void addMoreImages();
     void SelectGenerateMatrix(bool checked);
@@ -79,7 +82,7 @@ signals:
       std::vector<std::string> matrixfilenames, 
       std::string metrics, 
       bool rigidMode, bool affineMode, bool deformMode, 
-      std::string radii, std::string iterations, std::string dof);
+      std::string radii, std::string iterations, std::string dof, std::string interp);
 };
 
 #endif

@@ -132,6 +132,12 @@ public:
     QRadioButton *options_RIGID_selected;
     QRadioButton *options_DEFORMABLE_selected;
 
+    QGroupBox* interpolationGroupBox;
+    QHBoxLayout* interpolationLayout;
+
+    QRadioButton* interpolation_LINEAR;
+    QRadioButton* interpolation_NEARESTNEIGHBOR;
+
     QPushButton *confirmButton;
     QPushButton *cancelButton;
     QPushButton *resetButton;
@@ -160,6 +166,10 @@ public:
         modeGroupBox = new QGroupBox(fRegistrationDialog);
         modeGroupBox->setTitle(QString::fromStdString("Registration Mode:"));
 
+        interpolationGroupBox = new QGroupBox(fRegistrationDialog);
+        interpolationGroupBox->setTitle("Interpolation");
+        interpolationGroupBox->setToolTip("Linear is useful for most cases. Nearest neigbor is useful for masks and segmentations.");
+
         matrixGroupBox = new QGroupBox(fRegistrationDialog);
         matrixGroupBox->setTitle(QString::fromStdString("Transformation Matrix:"));
 
@@ -186,6 +196,9 @@ public:
 
         registrationGridLayout = new QGridLayout(registrationGroupBox);
         registrationGridLayout->setObjectName(QString::fromUtf8("registrationGridLayout"));
+
+        interpolationLayout = new QHBoxLayout(interpolationGroupBox);
+        registrationGridLayout->setObjectName(QString::fromUtf8("interpolationLayout"));
 
         inputGridLayout = new QGridLayout(inputGroupBox);
         inputGridLayout->setObjectName(QString::fromUtf8("inputGridLayout"));
@@ -214,6 +227,13 @@ public:
         modeGridLayout->addWidget(options_AFFINE_selected, gridRowCounter, 1, 1, 1);
         modeGridLayout->addWidget(options_RIGID_selected, gridRowCounter, 2, 1, 1);
         modeGridLayout->addWidget(options_DEFORMABLE_selected, gridRowCounter, 3, 1, 1);
+
+        /*--------- Interp ------------*/
+        interpolation_LINEAR = new QRadioButton("Linear", interpolationGroupBox);
+        interpolation_NEARESTNEIGHBOR = new QRadioButton("Nearest Neighbor", interpolationGroupBox);
+        interpolation_NEARESTNEIGHBOR->setToolTip("Useful for registering segmentations and masks.");
+        interpolationLayout->addWidget(interpolation_LINEAR);
+        interpolationLayout->addWidget(interpolation_NEARESTNEIGHBOR);
 
         /*---------------------Metrics---------------------*/
         options_MetricSelector_label = new QLabel(registrationGroupBox);
@@ -640,11 +660,12 @@ public:
 
         // put the layout in perspective        
         gridLayout->addWidget(modeGroupBox, 0, 0, 1, 2);
-        gridLayout->addWidget(registrationGroupBox, 1, 0, 1, 2);        
-        gridLayout->addWidget(inputGroupBox, 2, 0, 1, 2);
-        gridLayout->addWidget(matrixGroupBox, 3, 0, 1, 2);
-        gridLayout->addWidget(outputGroupBox, 4, 0, 1, 2);
-        gridLayout->addWidget(buttonGroupBox, 5, 0, 1, 2);
+        gridLayout->addWidget(interpolationGroupBox, 1, 0, 1, 2);
+        gridLayout->addWidget(registrationGroupBox, 2, 0, 1, 2);     
+        gridLayout->addWidget(inputGroupBox, 3, 0, 1, 2);
+        gridLayout->addWidget(matrixGroupBox, 4, 0, 1, 2);
+        gridLayout->addWidget(outputGroupBox, 5, 0, 1, 2);
+        gridLayout->addWidget(buttonGroupBox, 6, 0, 1, 2);
 
         /*------------------------Buttons-------------------------------*/
         confirmButton = new QPushButton(buttonGroupBox);
