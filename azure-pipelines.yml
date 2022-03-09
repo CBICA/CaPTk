@@ -1,4 +1,4 @@
-# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason
+# Schedule a build for every midnight Eastern time. This is visible to the pipeline as Build.Reason 
 schedules:
 - cron: "0 4 * * *"
   displayName: Daily midnight build
@@ -17,6 +17,28 @@ pr:
     include: ['master']
 
 jobs:
+- job: 'DockerImageBuild'
+  displayName: "Docker Image build & push to Docker Hub"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  
+  pool: 'Ubuntu_18.04' # Refers to /home/cbica-devs/Workspace/captk1-docker-build/ on crete's ubuntu18.04-selfhosting VM
+    
+  steps:
+    - task: Docker@2
+    # Docker CLI needs to be installed on this agent for this step to work.
+      inputs:
+        containerRegistry: 'cbicaDockerHub' 
+        repository: 'cbica/captk'
+        command: buildAndPush
+        tags: |
+            latest
+            azure-latest
+            $(Build.BuildId)
+        Dockerfile: Dockerfile
+      displayName: Build and push image to Docker Hub
+      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+
 - job: 'WindowsBuild'
   displayName: "End-to-end Windows build & package"
   timeoutInMinutes: 0
@@ -560,7 +582,8 @@ jobs:
         continueOnError: true
       displayName: Uploading to NITRC 
       condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
-
+        
+        
 - job: 'macOS_SelfHost_1014'
   displayName: "Self-hosted agent on macOS 10.14"
   timeoutInMinutes: 0
