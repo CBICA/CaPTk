@@ -2,6 +2,7 @@
 #include "itkCSVNumericObjectFileWriter.h"
 #include "CaPTkGUIUtils.h"
 #include "CaPTkClassifierUtils.h"
+#include "TrainingModuleLegacyUtils.h"
 
 
 typedef itk::Image< float, 3 > ImageType;
@@ -215,7 +216,7 @@ int MolecularSubtypePredictor::PrepareNewMolecularPredictionModel(const std::str
   mFeatureExtractionLocalPtr.FormulateMolecularTrainingData(AllSurvival, proneuralModelLabels, neuralModelLabels, messModelLabels, classicalModelLabels);
 
   //select model features using routines of training module
-  TrainingModule mTrainingModule;
+  TrainingModuleLegacyUtils mTrainingModule;
   VectorDouble selectedfeatures_Proneural, selectedfeatures_Neural, selectedfeatures_Mess, selectedfeatures_Classical;
   
   VectorDouble EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, proneuralModelLabels);

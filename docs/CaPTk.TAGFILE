@@ -3,7 +3,7 @@
   <compound kind="page">
     <name>Getting_Started</name>
     <title>Getting Started</title>
-    <filename>Getting_Started.html</filename>
+    <filename>Getting_Started</filename>
     <docanchor file="Getting_Started.html" title="Frequently Asked Questions">gs_FAQ</docanchor>
     <docanchor file="Getting_Started.html" title="Supported Images">gs_supportedImages</docanchor>
     <docanchor file="Getting_Started.html" title="Image &amp; Mask Loading">gs_imageLoading</docanchor>
@@ -24,7 +24,7 @@
   <compound kind="page">
     <name>FAQ</name>
     <title>Frequently Asked Questions</title>
-    <filename>FAQ.html</filename>
+    <filename>FAQ</filename>
     <docanchor file="FAQ.html" title="Which platforms are supported by CaPTk installers?">gs_FAQ_1</docanchor>
     <docanchor file="FAQ.html" title="What DICOM images are currently supported by CaPTk?">gs_FAQ_2</docanchor>
     <docanchor file="FAQ.html" title="How do I run CaPTk Applications from the Command Line?">gs_FAQ_3</docanchor>
@@ -42,187 +42,187 @@
   <compound kind="page">
     <name>How_To_Guides</name>
     <title>How To Guides</title>
-    <filename>How_To_Guides.html</filename>
+    <filename>How_To_Guides</filename>
   </compound>
   <compound kind="page">
     <name>ht_Preprocessing</name>
     <title>Preprocessing</title>
-    <filename>ht_Preprocessing.html</filename>
+    <filename>ht_Preprocessing</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_dcm2nii</name>
     <title>DICOM to NIfTI conversion</title>
-    <filename>preprocessing_dcm2nii.html</filename>
+    <filename>preprocessing_dcm2nii</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_reg</name>
     <title>Image Co-registration</title>
-    <filename>preprocessing_reg.html</filename>
+    <filename>preprocessing_reg</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_susan</name>
     <title>Denoise-SUSAN (ITK filter)</title>
-    <filename>preprocessing_susan.html</filename>
+    <filename>preprocessing_susan</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_bias</name>
     <title>Bias Correction (ITK filter)</title>
-    <filename>preprocessing_bias.html</filename>
+    <filename>preprocessing_bias</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_histoMatch</name>
     <title>Histogram Matching</title>
-    <filename>preprocessing_histoMatch.html</filename>
+    <filename>preprocessing_histoMatch</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_zScoreNorm</name>
     <title>Z-Scoring Normalization</title>
-    <filename>preprocessing_zScoreNorm.html</filename>
+    <filename>preprocessing_zScoreNorm</filename>
   </compound>
   <compound kind="page">
     <name>preprocessing_brats</name>
     <title>BraTS Pre-processing Pipeline</title>
-    <filename>preprocessing_brats.html</filename>
+    <filename>preprocessing_brats</filename>
   </compound>
   <compound kind="page">
     <name>ht_Segmentation</name>
     <title>Segmentation</title>
-    <filename>ht_Segmentation.html</filename>
+    <filename>ht_Segmentation</filename>
   </compound>
   <compound kind="page">
     <name>seg_GeoTrain</name>
     <title>Geodesic Training Segmentation</title>
-    <filename>seg_GeoTrain.html</filename>
+    <filename>seg_GeoTrain</filename>
   </compound>
   <compound kind="page">
     <name>seg_Geodesic</name>
     <title>Geodesic Distance Transform-based Segmentation</title>
-    <filename>seg_Geodesic.html</filename>
+    <filename>seg_Geodesic</filename>
   </compound>
   <compound kind="page">
     <name>seg_SNAP</name>
     <title>ITK-SNAP</title>
-    <filename>seg_SNAP.html</filename>
+    <filename>seg_SNAP</filename>
   </compound>
   <compound kind="page">
     <name>seg_DL</name>
     <title>Deep Learning Segmentation</title>
-    <filename>seg_DL.html</filename>
+    <filename>seg_DL</filename>
   </compound>
   <compound kind="page">
     <name>ht_FeatureExtraction</name>
     <title>Feature Extraction</title>
-    <filename>ht_FeatureExtraction.html</filename>
+    <filename>ht_FeatureExtraction</filename>
   </compound>
   <compound kind="page">
     <name>ht_SpecialApps</name>
     <title>Specialized Applications (SAs) Usage</title>
-    <filename>ht_SpecialApps.html</filename>
+    <filename>ht_SpecialApps</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_WhiteStripe</name>
     <title>Brain Cancer: WhiteStripe Normalization</title>
-    <filename>Glioblastoma_WhiteStripe.html</filename>
+    <filename>Glioblastoma_WhiteStripe</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_PHI</name>
     <title>Brain Cancer: Glioblastoma EGFRvIII Surrogate Index (PHI Estimator)</title>
-    <filename>Glioblastoma_PHI.html</filename>
+    <filename>Glioblastoma_PHI</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Recurrence</name>
     <title>Brain Cancer: Glioblastoma Infiltration Index (Recurrence)</title>
-    <filename>Glioblastoma_Recurrence.html</filename>
+    <filename>Glioblastoma_Recurrence</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Survival</name>
     <title>Glioblastoma Overall Survival Prediction</title>
-    <filename>Glioblastoma_Survival.html</filename>
+    <filename>Glioblastoma_Survival</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_EGFRvIII</name>
     <title>Brain Cancer: Glioblastoma EGFRvIII SVM Index</title>
-    <filename>Glioblastoma_EGFRvIII.html</filename>
+    <filename>Glioblastoma_EGFRvIII</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Pseudoprogression</name>
     <title>Glioblastoma Pseudo-progression Index</title>
-    <filename>Glioblastoma_Pseudoprogression.html</filename>
+    <filename>Glioblastoma_Pseudoprogression</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Atlas</name>
     <title>Brain Cancer: Population Atlas</title>
-    <filename>Glioblastoma_Atlas.html</filename>
+    <filename>Glioblastoma_Atlas</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Confetti</name>
     <title>Brain Cancer: Confetti</title>
-    <filename>Glioblastoma_Confetti.html</filename>
+    <filename>Glioblastoma_Confetti</filename>
   </compound>
   <compound kind="page">
     <name>Glioblastoma_Directionality</name>
     <title>Miscellaneous: Directionality Estimator</title>
-    <filename>Glioblastoma_Directionality.html</filename>
+    <filename>Glioblastoma_Directionality</filename>
   </compound>
   <compound kind="page">
     <name>BreastCancer_LIBRA</name>
     <title>Breast Cancer: Breast Density Estimation (LIBRA)</title>
-    <filename>BreastCancer_LIBRA.html</filename>
+    <filename>BreastCancer_LIBRA</filename>
   </compound>
   <compound kind="page">
     <name>BreastCancer_texture</name>
     <title>Breast Cancer: Texture Feature Extraction</title>
-    <filename>BreastCancer_texture.html</filename>
+    <filename>BreastCancer_texture</filename>
   </compound>
   <compound kind="page">
     <name>BreastCancer_breastSegmentation</name>
     <title>Breast Cancer: Breast Segmentation</title>
-    <filename>BreastCancer_breastSegmentation.html</filename>
+    <filename>BreastCancer_breastSegmentation</filename>
   </compound>
   <compound kind="page">
     <name>LungCancer_SBRT</name>
     <title>Lung Cancer: Radiomics Analysis of Lung Cancer</title>
-    <filename>LungCancer_SBRT.html</filename>
+    <filename>LungCancer_SBRT</filename>
   </compound>
   <compound kind="page">
     <name>Diffusion_Derivatives</name>
     <title>Miscellaneous: Diffusion Derivatives</title>
-    <filename>Diffusion_Derivatives.html</filename>
+    <filename>Diffusion_Derivatives</filename>
   </compound>
   <compound kind="page">
     <name>Perfusion_Alignment</name>
     <title>Miscellaneous: Perfusion Alignment</title>
-    <filename>Perfusion_Alignment.html</filename>
+    <filename>Perfusion_Alignment</filename>
   </compound>
   <compound kind="page">
     <name>Perfusion_Derivatives</name>
     <title>Miscellaneous: Perfusion Derivatives</title>
-    <filename>Perfusion_Derivatives.html</filename>
+    <filename>Perfusion_Derivatives</filename>
   </compound>
   <compound kind="page">
     <name>PCA_Extraction</name>
-    <title>Miscellaneous: Perfusion PCA Volume Extraction</title>
-    <filename>PCA_Extraction.html</filename>
+    <title>Miscellaneous: Perfusion PCA Parameter Extractor</title>
+    <filename>PCA_Extraction</filename>
   </compound>
   <compound kind="page">
     <name>Training_Module</name>
     <title>Miscellaneous: Training Module</title>
-    <filename>Training_Module.html</filename>
+    <filename>Training_Module</filename>
   </compound>
   <compound kind="page">
     <name>ht_utilities</name>
     <title>Utilities (CLI only)</title>
-    <filename>ht_utilities.html</filename>
+    <filename>ht_utilities</filename>
   </compound>
   <compound kind="page">
     <name>BraTS_Metrics</name>
     <title>BraTS Similarity Metrics Computation (CLI Only)</title>
-    <filename>BraTS_Metrics.html</filename>
+    <filename>BraTS_Metrics</filename>
   </compound>
   <compound kind="page">
     <name>Science</name>
     <title>Scientific Findings using CaPTk</title>
-    <filename>Science.html</filename>
+    <filename>Science</filename>
     <docanchor file="Science.html" title="Non-invasive Imaging Biomarker of EGFRvIII in Glioblastoma Patients">phiEstimator</docanchor>
     <docanchor file="Science.html" title="Prediction of Overall Survival in Glioblastoma Patients">survivalPredictor</docanchor>
     <docanchor file="Science.html" title="Probability Maps of Potential Recurrence of Glioblastoma Tumors">recurrencePredictor</docanchor>
@@ -232,12 +232,12 @@
   <compound kind="page">
     <name>Technical_Reference</name>
     <title>Technical Reference</title>
-    <filename>Technical_Reference.html</filename>
+    <filename>Technical_Reference</filename>
   </compound>
   <compound kind="page">
     <name>tr_FeatureExtraction</name>
     <title>Feature Extraction</title>
-    <filename>tr_FeatureExtraction.html</filename>
+    <filename>tr_FeatureExtraction</filename>
     <docanchor file="tr_FeatureExtraction.html" title="Pre-Existing Parameter Configurations">tr_fe_defaults</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Default 3D Image Feature Extraction Parameters">tr_fe_def_main</docanchor>
     <docanchor file="tr_FeatureExtraction.html" title="Default 2D Image Feature Extraction Parameters">tr_fe_def_lattice</docanchor>
@@ -248,7 +248,7 @@
   <compound kind="page">
     <name>tr_integration</name>
     <title>Integrating your Application in CaPTk</title>
-    <filename>tr_integration.html</filename>
+    <filename>tr_integration</filename>
     <docanchor file="tr_integration.html" title="Building CaPTk from Sources">tr_sourceBuid</docanchor>
     <docanchor file="tr_integration.html" title="Prerequisites">tr_sb_prerequisites</docanchor>
     <docanchor file="tr_integration.html" title="Build">tr_sb_actualBuild</docanchor>
@@ -258,26 +258,47 @@
   <compound kind="page">
     <name>Download</name>
     <title>Download Instructions</title>
-    <filename>Download.html</filename>
+    <filename>Download</filename>
+    <docanchor file="Download.html" title="License">lic</docanchor>
   </compound>
   <compound kind="page">
     <name>Installation</name>
     <title>Installation Instructions</title>
-    <filename>Installation.html</filename>
+    <filename>Installation</filename>
+    <docanchor file="Installation.html">Windows</docanchor>
+    <docanchor file="Installation.html">Linux</docanchor>
+    <docanchor file="Installation.html">macOS</docanchor>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>
     <title>Changelog: Release Notes</title>
-    <filename>ReleaseNotes.html</filename>
+    <filename>ReleaseNotes</filename>
+    <docanchor file="ReleaseNotes.html" title="Issues">Known</docanchor>
+    <docanchor file="ReleaseNotes.html" title="Versions">Older</docanchor>
   </compound>
   <compound kind="page">
     <name>People</name>
     <title>People (Credits)</title>
-    <filename>People.html</filename>
+    <filename>People</filename>
+    <docanchor file="People.html" title="Advisors:">advisors</docanchor>
+    <docanchor file="People.html" title="Developers:">devs</docanchor>
+    <docanchor file="People.html" title="Collaborators:">collabs</docanchor>
+  </compound>
+  <compound kind="page">
+    <name>ITCR_Connectivity</name>
+    <title>ITCR Connectivity</title>
+    <filename>ITCR_Connectivity</filename>
+    <docanchor file="ITCR_Connectivity.html" title="Existing Connections">itcr_existing</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="DCMTK">itcr_dcmtk</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="DCMQI">itcr_dcmqi</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="Synapse PACS">itcr_synapse</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="TCIA and IDC">itr_tcia_idc</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="Ongoing Development">itcr_ongoing</docanchor>
+    <docanchor file="ITCR_Connectivity.html" title="RADxTools">itcr_radxtools</docanchor>
   </compound>
   <compound kind="page">
     <name>index</name>
     <title>Overview</title>
-    <filename>index.html</filename>
+    <filename>index</filename>
   </compound>
 </tagfile>

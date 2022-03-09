@@ -1,26 +1,24 @@
 /*
- @licstart  The following is the entire license notice for the JavaScript code in this file.
+@licstart  The following is the entire license notice for the
+JavaScript code in this file.
 
- The MIT License (MIT)
+Copyright (C) 1997-2019 by Dimitri van Heesch
 
- Copyright (C) 1997-2020 by Dimitri van Heesch
+This program is free software; you can redistribute it and/or modify
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute,
- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
- The above copyright notice and this permission notice shall be included in all copies or
- substantial portions of the Software.
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
- @licend  The above is the entire license notice for the JavaScript code in this file
+@licend  The above is the entire license notice
+for the JavaScript code in this file
 */
 var NAVTREE =
 [
@@ -33,12 +31,12 @@ var NAVTREE =
       [ "Image Visualization", "Getting_Started.html#gs_imageVisualization", null ],
       [ "Tab Docking", "Getting_Started.html#gs_tabDocking", null ],
       [ "Coordinate definition (Seed-point initialization)", "Getting_Started.html#gs_seedpoints", [
-        [ "Bug Tracker and Feature Request", "index.html#autotoc_md131", null ],
-        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md132", null ],
-        [ "Citations", "index.html#autotoc_md133", null ],
-        [ "Supporting Grant", "index.html#autotoc_md134", null ],
-        [ "Disclaimer", "index.html#autotoc_md135", null ],
-        [ "Contact", "index.html#autotoc_md136", null ],
+        [ "Bug Tracker and Feature Request", "index.html#autotoc_md103", null ],
+        [ "Frequently Asked Questions (FAQ)", "index.html#autotoc_md104", null ],
+        [ "Citations", "index.html#autotoc_md105", null ],
+        [ "Supporting Grant", "index.html#autotoc_md106", null ],
+        [ "Disclaimer", "index.html#autotoc_md107", null ],
+        [ "Contact", "index.html#autotoc_md108", null ],
         [ "Tumor Points", "Getting_Started.html#gs_seedpoints_tumor", null ],
         [ "Tissue Points", "Getting_Started.html#gs_seedpoints_tissue", null ]
       ] ],
@@ -79,7 +77,27 @@ var NAVTREE =
     [ "Download Instructions", "Download.html", null ],
     [ "Installation Instructions", "Installation.html", null ],
     [ "Changelog: Release Notes", "ReleaseNotes.html", null ],
-    [ "People (Credits)", "People.html", null ]
+    [ "People (Credits)", "People.html", null ],
+    [ "ITCR Connectivity", "ITCR_Connectivity.html", [
+      [ "Existing Connections", "ITCR_Connectivity.html#itcr_existing", [
+        [ "License", "Download.html#lic", null ],
+        [ "Windows", "Installation.html#Windows", null ],
+        [ "Linux", "Installation.html#Linux", null ],
+        [ "macOS", "Installation.html#macOS", null ],
+        [ "Issues", "ReleaseNotes.html#Known", null ],
+        [ "Versions", "ReleaseNotes.html#Older", null ],
+        [ "Advisors:", "People.html#advisors", null ],
+        [ "Developers:", "People.html#devs", null ],
+        [ "Collaborators:", "People.html#collabs", null ],
+        [ "DCMTK", "ITCR_Connectivity.html#itcr_dcmtk", null ],
+        [ "DCMQI", "ITCR_Connectivity.html#itcr_dcmqi", null ],
+        [ "Synapse PACS", "ITCR_Connectivity.html#itcr_synapse", null ],
+        [ "TCIA and IDC", "ITCR_Connectivity.html#itr_tcia_idc", null ]
+      ] ],
+      [ "Ongoing Development", "ITCR_Connectivity.html#itcr_ongoing", [
+        [ "RADxTools", "ITCR_Connectivity.html#itcr_radxtools", null ]
+      ] ]
+    ] ]
   ] ]
 ];
 

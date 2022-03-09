@@ -15,7 +15,7 @@
 #include "SimpleImageManager.h"
 #include "fHelpDialog.h"
 #include "EGFRvIIISurrogateIndex.h"
-#include "TrainingModule.h"
+//#include "TrainingModule.h"
 #include "GeodesicSegmentation.h"
 #include "BiasCorrection.hpp"
 #include "SusanDenoising.h"
@@ -262,6 +262,8 @@ fMainWindow::fMainWindow()
   int minheight = /*std::max(drawingPanel->sizeHint().height(), featurePanel->sizeHint().height())*/featurePanel->sizeHint().height() + 25;
   m_tabWidget->setMinimumHeight(minheight);
   m_tabWidget->setMaximumHeight(m_tabWidget->minimumHeight());
+
+  trainingPanel = new fTrainingSimulator();
 
   this->sysinfowidget = new SystemInformationDisplayWidget();
   m_toolTabdock->setFeatures(QDockWidget::DockWidgetFloatable);
@@ -900,14 +902,14 @@ fMainWindow::fMainWindow()
 
 
   //connect(&pcaPanel, SIGNAL(RunPCAEstimation(const int, const std::string, const std::string)), this, SLOT(CallPCACalculation(const int, const std::string, const std::string)));
-  connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
+  //connect(&trainingPanel, SIGNAL(RunTrainingSimulation(TrainingModuleParameters)), this, SLOT(CallTrainingSimulation(const TrainingModuleParameters)));
 
-  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const std::string, const std::string)));
-  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string)));
+  connect(&perfmeasuresPanel, SIGNAL(RunPerfusionMeasuresCalculation(const bool, const bool, const bool, const int, const int, const int, const int, const std::string, const std::string)), this, SLOT(CallPerfusionMeasuresCalculation(const bool, const bool, const bool, const int, const int, const int, const int, const std::string, const std::string)));
+  connect(&perfalignPanel, SIGNAL(RunPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string, const std::string)), this, SLOT(CallPerfusionAlignmentCalculation(double, double, int, int, int, int, const std::string, const std::string, const std::string)));
 
 
-  connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)), this,
-    SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const std::string)));
+  connect(&diffmeasuresPanel, SIGNAL(RunDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const bool, const std::string, const bool, const std::string)), this,
+    SLOT(CallDiffusionMeasuresCalculation(const std::string, const std::string, const std::string, const std::string, const bool, const bool, const bool, const bool, const bool, const std::string, const bool, const std::string)));
 
   connect(&whiteStripeNormalizer, SIGNAL(RunWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)), this, SLOT(CallWhiteStripe(double, int, int, int, double, double, int, bool, const std::string)));
 
@@ -1037,6 +1039,10 @@ fMainWindow::~fMainWindow()
 
   if (this->m_DownloadManager)
 	  delete this->m_DownloadManager;
+
+  if (trainingPanel)
+      delete trainingPanel;
+
 
   ApplicationPreferences::GetInstance()->SerializePreferences();
   cbica::Logging(loggerFile, "CaPTk session Ending...");
@@ -2348,8 +2354,9 @@ void fMainWindow::CloseImage(QTableWidgetItem* item)
     mLandmarks->Clear();
     mSeedPoints->Clear();
     mTissuePoints->Clear();
+    m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into resetting
   }
-
+  
   InitDisplay();
 }
 
@@ -3197,6 +3204,7 @@ void fMainWindow::clearMask(int label)
       }
     }
     ++maskIt;
+    m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into using fresh data
   }
   makeStroke(indecesToErase, 0);
   this->mSlicerManagers[0]->GetSlicer(0)->mMask->Modified();
@@ -3332,6 +3340,8 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
     auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
+    // Added this to allow masks of non-identity direction to pass the image sanity check below.
+    mask_temp = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(mask_temp);
     //SaveImage_withFile(0, temp_prev.c_str());
     if (!imageSanityCheckDone)
     {
@@ -5535,6 +5545,7 @@ void fMainWindow::LoadDrawing()
     if (reader)
     {
       readMaskFile(filename_string);
+      m_GeodesicTrainingFirstFileNameFromLastExec = ""; // Trick GeodesicTraining into resetting
     }
   }
   else
@@ -5567,6 +5578,7 @@ void fMainWindow::overlayUseStateChanged(int state)
         mSlicerManagers[i]->mSlicers[j]->RemoveOverlay();
       }
     }
+    ChangeMaskOpacity(0.0);
     UpdateRenderWindows();
   }
 }
@@ -5586,6 +5598,7 @@ void fMainWindow::overlaySliderChanged(int value)
       mSlicerManagers[index]->GetSlicer(i)->SetOverlayOpacity((double)value / (10 + 1e-6));
     }
   }
+  ChangeMaskOpacity(value * 0.1);
   UpdateRenderWindows();
 }
 
@@ -5796,30 +5809,37 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       {
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
       }
-      if (!((extension == ".dcm") || (extension == ".dicom") || (extension == "") ||
-        (extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
+      // if dicom detected, don't perform any more checks
+      if (cbica::IsDicom(fileName))
       {
-        unsupportedExtension += fileName + "\n";
-      }
-      else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
-      {
-        erroredFiles += fileName + "\n";
+        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
       }
       else
       {
-        basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+        if (!((extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
+        {
+          unsupportedExtension += fileName + "\n";
+        }
+        else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
+        {
+          erroredFiles += fileName + "\n";
+        }
+        else
+        {
+          basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+        }
       }
     }
 
     if (!unsupportedExtension.empty() && !erroredFiles.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension +
+      ShowErrorMessage("Extensions for the following files were not supported; CaPTk will try to load the rest:\n\n" + unsupportedExtension +
         "\n\nAnd the following files are inconsistent with the first loaded image:\n\n" + erroredFiles, this);
       return;
     }
     if (!unsupportedExtension.empty())
     {
-      ShowErrorMessage("Extensions for the following files were not supported, CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
+      ShowErrorMessage("Extensions for the following files were not supported; CaPTk will try to load the rest:\n\n" + unsupportedExtension, this);
     }
     if (!erroredFiles.empty())
     {
@@ -7040,6 +7060,13 @@ void fMainWindow::ApplicationGeodesicTraining()
   // Different operations happen if the user reruns it on the same images
   std::string firstFileName = mSlicerManagers[0]->mFileName;
   bool isRerun = (firstFileName == m_GeodesicTrainingFirstFileNameFromLastExec);
+  // first loaded file name is used to determine whether we're on a re-run.
+  // But this is insufficient for the case when you want a fresh start.
+  // TODO: Make this mechanism a little more robust. 
+  // For now, we'll clear the m_GeodesicTrainingFirstFileNameFromLastExec field when:
+  // 1. images are loaded/unloaded 
+  // 2. drawings are cleared
+
   m_GeodesicTrainingFirstFileNameFromLastExec = firstFileName;
 
   updateProgress(0, "Geodesic Training segmentation started, please wait");
@@ -7644,7 +7671,7 @@ void fMainWindow::ApplicationDiffusionMeasuresCalculation()
 void fMainWindow::ApplicationTrainingModule()
 {
   //open a simple dialog box with input and output images
-  trainingPanel.exec();
+  trainingPanel->exec();
 }
 
 void fMainWindow::ApplicationTheia()
@@ -8963,7 +8990,7 @@ void fMainWindow::CallImageDeepMedicNormalizer(const std::string inputImage, con
   }
 }
 
-void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool ax, const bool fa, const bool rad, const bool tr, const std::string outputFolder)
+void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage, const std::string maskImage, const std::string BValFile, const std::string BVecFile, const bool axPresent, const bool faPresent, const bool radPresent, const bool trPresent, const bool bZeroPresent, const std::string outputFolder, const bool registrationRequested, const std::string inputRegistrationFile)
 {
   DiffusionDerivatives m_diffusionderivatives;
   typedef itk::Image<float, 3> ScalarImageType;
@@ -8990,21 +9017,119 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
     return;
   }
   diffusionDerivatives = m_diffusionderivatives.Run(inputImage, maskImage, BValFile, BVecFile, outputFolder);
-  //fa,tr, rad , ax
-  if (fa == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputFolder + "/FractionalAnisotropy.nii.gz");
-  if (tr == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputFolder + "/ApparentDiffusionCoefficient.nii.gz");
-  if (rad == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputFolder + "/RadialDiffusivity.nii.gz");
-  if (ax == true)
-    cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputFolder + "/AxialDiffusivity.nii.gz");
 
-  QString msg;
-  msg = "Diffusion derivatives have been saved at the specified locations.";
-  ShowMessage(msg.toStdString(), this);
+  if (registrationRequested)
+  {
+      if (faPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputFolder + "/unregistered_FractionalAnisotropy.nii.gz");
+      if (trPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz");
+      if (radPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputFolder + "/unregistered_RadialDiffusivity.nii.gz");
+      if (axPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputFolder + "/unregistered_AxialDiffusivity.nii.gz");
+      if (bZeroPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputFolder + "/unregistered_b0.nii.gz");
+
+      std::string greedyPathAndDim = cbica::getExecutablePath() + "greedy" +
+#if WIN32
+          ".exe" +
+#endif
+          " -d " + std::to_string(TImageType::ImageDimension);
+      std::string fixedOptions = " -a -ia-image-centers -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
+      std::string commandToCall;
+      std::vector<int> returnCodesFromGreedy;
+
+      // TODO (Alex): This needs to be done more dynamically
+      std::string specificParams;
+
+      // Create the intermediate transforms
+      specificParams = outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" + " -o " + outputFolder + "/affine_FractionalAnisotropy.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" + " -o " + outputFolder + "/affine_ApparentDiffusionCoefficient.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputFolder + "/unregistered_RadialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_RadialDiffusivity.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputFolder + "/unregistered_AxialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_AxialDiffusivity.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams = outputFolder + "/unregistered_b0.nii.gz" + " -o " + outputFolder + "/affine_b0.mat";
+      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+
+      for (unsigned int i = 0; i < returnCodesFromGreedy.size(); i++)
+      {
+          if (returnCodesFromGreedy[i] != 0)
+          {
+              std::cerr << "Something went wrong when generating transforms with Greedy.\n";
+              return;
+          }
+      }
+
+      returnCodesFromGreedy.clear();
+      // Now run the transform and image through greedy to produce actual output...
+      std::string fixedOptions2 = " -rf " + inputRegistrationFile + " -ri LINEAR -r ";
+
+      std::string specificParams2 = outputFolder + "/affine_FractionalAnisotropy.mat" +
+          " -rm " + outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" +
+          " " + outputFolder + "/FractionalAnisotropy.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputFolder + "/affine_ApparentDiffusionCoefficient.mat" +
+          " -rm " + outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" +
+          " " + outputFolder + "/ApparentDiffusionCoefficient.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputFolder + "/affine_RadialDiffusivity.mat" +
+          " -rm " + outputFolder + "/unregistered_RadialDiffusivity.nii.gz" +
+          " " + outputFolder + "/RadialDiffusivity.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputFolder + "/affine_AxialDiffusivity.mat" +
+          " -rm " + outputFolder + "/unregistered_AxialDiffusivity.nii.gz" +
+          " " + outputFolder + "/AxialDiffusivity.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      specificParams2 = outputFolder + "/affine_b0.mat" +
+          " -rm " + outputFolder + "/unregistered_b0.nii.gz" +
+          " " + outputFolder + "/b0.nii.gz";
+      commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
+      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+
+      for (unsigned int i = 0; i < returnCodesFromGreedy.size(); i++)
+      {
+          if (returnCodesFromGreedy[i] != 0)
+          {
+              std::cerr << "Something went wrong when registering final output with Greedy.\n";
+              return;
+          }
+      }
+
+  }
+  else
+  {
+      std::cout << "Writing measures to the specified output directory.\n";
+      if (faPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[0], outputFolder + "/FractionalAnisotropy.nii.gz");
+      if (trPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[1], outputFolder + "/ApparentDiffusionCoefficient.nii.gz");
+      if (radPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[2], outputFolder + "/RadialDiffusivity.nii.gz");
+      if (axPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[3], outputFolder + "/AxialDiffusivity.nii.gz");
+      if (bZeroPresent == true)
+          cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputFolder + "/b0.nii.gz");
+  }
+
+  std::cout << "Finished successfully.\n";
+
 }
-void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph, const std::string inputfilename, std::string outputFolder)
+void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph,
+    const int baselineStart, const int baselineEnd, const int recoveryStart, const int recoveryEnd,
+    const std::string inputfilename, std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -9022,6 +9147,10 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
   typedef ImageTypeFloat4D PerfusionImageType;
 
   PerfusionDerivatives m_perfusionderivatives;
+  m_perfusionderivatives.SetBaselineStartPercentage(baselineStart);
+  m_perfusionderivatives.SetBaselineEndPercentage(baselineEnd);
+  m_perfusionderivatives.SetRecoveryStartPercentage(recoveryStart);
+  m_perfusionderivatives.SetRecoveryEndPercentage(recoveryEnd);
   std::vector<typename ImageTypeFloat3D::Pointer> perfusionDerivatives = m_perfusionderivatives.Run<ImageTypeFloat3D, ImageTypeFloat4D>(inputfilename, rcbv, psr, ph, outputFolder);
 
   if (perfusionDerivatives.size() == 0)
@@ -9048,7 +9177,7 @@ void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  
 }
 
 
-void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, std::string outputFolder)
+void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const double echotimeOutput, const int before, const int after, const int mean, const int scale, const std::string inputfilename, const std::string inputmaskname, const std::string outputFolder)
 {
   if (!cbica::isFile(inputfilename))
   {
@@ -9098,17 +9227,20 @@ void fMainWindow::CallPerfusionAlignmentCalculation(const double echotime, const
   }
 }
 
+//This code is not needed as GUI invocation of the training module has been moved to the Training dialog itself.
+// TODO: Delete this, after testing is complete on separation out of the training module.
 void fMainWindow::CallTrainingSimulation(const TrainingModuleParameters params)
 {
   TrainingModule m_trainingsimulator;
 
-  if (m_trainingsimulator.Run(params))
+  if (m_trainingsimulator.Run(params).success)
   {
     QString msg;
     msg = "Training model has been saved at the specified location.";
     ShowMessage(msg.toStdString(), this);
   }
 }
+
 
 //void fMainWindow::CallPCACalculation(const int number, const std::string inputdirectory, const std::string outputdirectory)
 //{

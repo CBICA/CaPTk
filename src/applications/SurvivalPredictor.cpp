@@ -4,6 +4,7 @@
 #include "CaPTkClassifierUtils.h"
 #include "fMainWindow.h"
 #include "cbicaStatistics.h"
+#include "TrainingModuleLegacyUtils.h"
 
 VectorDouble SurvivalPredictor::GetStatisticalFeatures(const VectorDouble &intensities)
 {
@@ -206,7 +207,8 @@ int SurvivalPredictor::TrainNewSurvivalPredictionModel(const std::string &inputd
   mFeatureExtractionLocalPtr.FormulateSurvivalTrainingData(AllSurvival, SixModelLabels, EighteenModelLabels);
 
   //select 6-months and 18-months model features using routines of training module
-  TrainingModule mTrainingModule; 
+  // TODO: break out training utilities 
+  TrainingModuleLegacyUtils mTrainingModule; 
   VectorDouble cvaccuracies;
   VectorDouble EffectSize = mTrainingModule.EffectSizeFeatureSelection(scaledFeatureSet, SixModelLabels);
   for (unsigned int eSizeCounter = 0; eSizeCounter < EffectSize.size(); eSizeCounter++)
