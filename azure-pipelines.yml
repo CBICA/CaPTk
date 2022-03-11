@@ -561,193 +561,193 @@ jobs:
       displayName: Uploading to NITRC 
       condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
-- job: 'macOS_SelfHost_1014'
-  displayName: "Self-hosted agent on macOS 10.14"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
+# - job: 'macOS_SelfHost_1014'
+  # displayName: "Self-hosted agent on macOS 10.14"
+  # timeoutInMinutes: 0
+  # cancelTimeoutInMinutes: 300
 
-  pool: 'macOS_10.14_alt' # Change to alt pool to try running this outside of Phuc's account -- possible permissions problems
+  # pool: 'macOS_10.14_alt' # Change to alt pool to try running this outside of Phuc's account -- possible permissions problems
 
-  steps:
-    - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+  # steps:
+    # - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
 
-    # submodule 
-    - bash: |
-        export GIT_LFS_SKIP_SMUDGE=1
-        git submodule update --init --recursive
+    # # submodule 
+    # - bash: |
+        # export GIT_LFS_SKIP_SMUDGE=1
+        # git submodule update --init --recursive
 
-      displayName: 'Git Submodule Init and Update'
+      # displayName: 'Git Submodule Init and Update'
 
-    # Moving LFS Files
-    - bash: |
-        rm -rf bin
-        mkdir -p bin
-        cd bin
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
-        wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
-        # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
-        # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
-        ls -lt
-      displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+    # # Moving LFS Files
+    # - bash: |
+        # rm -rf bin
+        # mkdir -p bin
+        # cd bin
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/precompiledApps/macos.zip -O binaries_macos.zip
+        # wget https://github.com/CBICA/CaPTk/raw/master/binaries/qt_5.12.1/macos.zip -O qt.zip
+        # # mv ../binaries/precompiledApps/macos.zip ./binaries_macos.zip
+        # # mv ../binaries/qt_5.12.1/macos.zip ./qt.zip
+        # ls -lt
+      # displayName: 'Downloading & Moving LFS files to the appropriate location under bin'
+
+    # # - bash: |
+    # #     cd bin
+
+    # #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+    # #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
+
+    # #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
+
+    # #     make -j 2
+
+    # #   displayName: 'Configure and compile Superbuild'
+
+    # # - bash: |
+    # #     # mkdir $(Build.SourcesDirectory)/../superbuild
+    # #     # cd bin
+    # #     # mv ./* $(Build.SourcesDirectory)/../superbuild
+    # #     # cd $(Build.SourcesDirectory)/..
+    # #     # ls
+    # #     # echo "Done cd"
+    # #     # tar cvfz superbuild.tar.gz superbuild
+    # #     # ls
+    # #     # echo "done tar"
+    # #     # rm -rf superbuild
+    # #     # ls
+    # #     # cd $(Build.SourcesDirectory)
+
+    # #     pwd
+
+    # #     cd $(Build.SourcesDirectory)/../../
+    # #     ls
+    # #     tar xvfz superbuild.tar.gz
+    # #     rm -rf superbuild.tar.gz
+    # #     cd $(Build.SourcesDirectory)/../../superbuild/bin
+    # #     ls
+    # #     echo "Done tar"
+    # #   displayName: 'Move superbuild and qt and compiled apps'
 
     # - bash: |
-    #     cd bin
-
-    #     export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-    #     export CMAKE_PREFIX_PATH="/Library/TeX/texbin"
-
-    #     cmake ../ -DCMAKE_INSTALL_PREFIX="./install"
-
-    #     make -j 2
-
-    #   displayName: 'Configure and compile Superbuild'
+        # git pull origin master
+        # git log -1
+        # cat CMakeLists.txt | grep -i "PROJECT_VERSION"
+      # displayName: 'Testing git pull and version'
 
     # - bash: |
-    #     # mkdir $(Build.SourcesDirectory)/../superbuild
-    #     # cd bin
-    #     # mv ./* $(Build.SourcesDirectory)/../superbuild
-    #     # cd $(Build.SourcesDirectory)/..
-    #     # ls
-    #     # echo "Done cd"
-    #     # tar cvfz superbuild.tar.gz superbuild
-    #     # ls
-    #     # echo "done tar"
-    #     # rm -rf superbuild
-    #     # ls
-    #     # cd $(Build.SourcesDirectory)
+        # cd bin
+        # pwd
 
-    #     pwd
+        # rm -rf CaPTk_*
 
-    #     cd $(Build.SourcesDirectory)/../../
-    #     ls
-    #     tar xvfz superbuild.tar.gz
-    #     rm -rf superbuild.tar.gz
-    #     cd $(Build.SourcesDirectory)/../../superbuild/bin
-    #     ls
-    #     echo "Done tar"
-    #   displayName: 'Move superbuild and qt and compiled apps'
-
-    - bash: |
-        git pull origin master
-        git log -1
-        cat CMakeLists.txt | grep -i "PROJECT_VERSION"
-      displayName: 'Testing git pull and version'
-
-    - bash: |
-        cd bin
-        pwd
-
-        rm -rf CaPTk_*
-
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
-        echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
-        #cmake ../
-        #rm -f CMakeCache.txt
+        # export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        # export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5:$(pwd)/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        # echo "[DEBUG] CMAKE_PREFIX_PATH: " $CMAKE_PREFIX_PATH
+        # #cmake ../
+        # #rm -f CMakeCache.txt
         
-        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DVTK_DIR="/Users/Shared/superbuild/VTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        # cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DVTK_DIR="/Users/Shared/superbuild/VTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
         
-        # Debug using vsts' cache
-        cp CMakeCache.txt /Users/Shared/debug-vsts-getkaa-cmakecache.txt 
-        make -j 2
+        # # Debug using vsts' cache
+        # cp CMakeCache.txt /Users/Shared/debug-vsts-getkaa-cmakecache.txt 
+        # make -j 2
          
-      displayName: 'Configure and compile CaPTk'
+      # displayName: 'Configure and compile CaPTk'
 
-    - bash: |
-        cd bin
+    # - bash: |
+        # cd bin
 
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        # version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
 
-        rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
+        # rm -rf CaPTk_$version.app/Contents/Resources/bin/ITK-SNAP.app
 
-        rm -rf CaPTk*.app
+        # rm -rf CaPTk*.app
 
-        cmake ../
-        rm -f CMakeCache.txt
-        export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
-        export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
+        # cmake ../
+        # rm -f CMakeCache.txt
+        # export CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
+        # export CMAKE_PREFIX_PATH=/Users/Shared/superbuild/ITK-build:/Users/Shared/superbuild/DCMTK-build:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5:/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core:$CMAKE_PREFIX_PATH
   
         
-        cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
+        # cmake -DITK_DIR="/Users/Shared/superbuild/ITK-build" -DDCMTK_DIR="/Users/Shared/superbuild/DCMTK-build" -DCMAKE_INSTALL_PREFIX="./install" -DQt5_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5 -DQt5Core_DIR=/Users/Shared/superbuild/qt/5.12.1/clang_64/lib/cmake/Qt5Core ../
 
-        make -j 2
+        # make -j 2
 
-      displayName: 'Ensure documentation is picked up properly'
+      # displayName: 'Ensure documentation is picked up properly'
 
 
-    - bash: |
-        cd bin
+    # - bash: |
+        # cd bin
 
-        version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
-        pkgname="_Installer"
-        pkgname="$version$pkgname"
+        # version=$(grep -i -e "project_version:*" CMakeCache.txt | cut -c24-)
+        # pkgname="_Installer"
+        # pkgname="$version$pkgname"
 
-        rm -rf *.pkg
-        rm -rf install_manifest.txt
-        make package
+        # rm -rf *.pkg
+        # rm -rf install_manifest.txt
+        # make package
         
-        # print dir tree for debug
-        ls -R _CPack_Packages
+        # # print dir tree for debug
+        # ls -R _CPack_Packages
 
-        pkgpath=""
-        if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
+        # pkgpath=""
+        # if [ -d "$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/" ]; then pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/"; else pkgpath="$(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/CaPTk_$version.app/"; fi
         
-        # Try patching Utilities as late as possible. Seems to be necessary for Utilities specifically.
-        install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $pkgpath/Contents/Resources/bin/Utilities
+        # # Try patching Utilities as late as possible. Seems to be necessary for Utilities specifically.
+        # install_name_tool -change /usr/local/opt/libomp/lib/libomp.dylib  @rpath/libomp.dylib $pkgpath/Contents/Resources/bin/Utilities
         
-        pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
+        # pkgbuild --version $version --identifier com.cbica.captk --install-location /Applications --component $pkgpath ./CaPTk_$version.pkg
 
-        productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
+        # productbuild --synthesize --package CaPTk_$version.pkg ./distribution.xml
 
-        xml='<?xml version="1.0" encoding="utf-8"?>
-        <installer-gui-script minSpecVersion="1">
-            <title>CaPTk_'"$version"'</title>
-            <license file="Combined.txt"></license>
-            <pkg-ref id="com.cbica.captk"/>
-            <options customize="never" require-scripts="false"/>
-            <choices-outline>
-                <line choice="default">
-                    <line choice="com.cbica.captk"/>
-                </line>
-            </choices-outline>
-            <choice id="default"/>
-            <choice id="com.cbica.captk" visible="false">
-                <pkg-ref id="com.cbica.captk"/>
-            </choice>
-            <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
-        </installer-gui-script>'
+        # xml='<?xml version="1.0" encoding="utf-8"?>
+        # <installer-gui-script minSpecVersion="1">
+            # <title>CaPTk_'"$version"'</title>
+            # <license file="Combined.txt"></license>
+            # <pkg-ref id="com.cbica.captk"/>
+            # <options customize="never" require-scripts="false"/>
+            # <choices-outline>
+                # <line choice="default">
+                    # <line choice="com.cbica.captk"/>
+                # </line>
+            # </choices-outline>
+            # <choice id="default"/>
+            # <choice id="com.cbica.captk" visible="false">
+                # <pkg-ref id="com.cbica.captk"/>
+            # </choice>
+            # <pkg-ref id="com.cbica.captk" version="$version" onConclusion="none">CaPTk_'"$version"'.pkg</pkg-ref>
+        # </installer-gui-script>'
 
-        echo $xml > "./distribution.xml"
+        # echo $xml > "./distribution.xml"
 
-        productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
+        # productbuild --distribution ./distribution.xml --resources $(Build.SourcesDirectory)/bin/_CPack_Packages/OSX/DragNDrop/CaPTk_$version/ALL_IN_ONE/CaPTk_$version.app/Contents/Resources/license/ --package-path . ./CaPTk_$pkgname.pkg
 
-        mv *_Installer* $(Build.ArtifactStagingDirectory)
+        # mv *_Installer* $(Build.ArtifactStagingDirectory)
 
-      displayName: 'Package CaPTk (.dmg and .pkg)'
+      # displayName: 'Package CaPTk (.dmg and .pkg)'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
+    # - task: PublishBuildArtifacts@1
+      # inputs:
+        # pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        # artifactName: '$(Build.DefinitionName)_installer_macOS'
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: '$(Build.DefinitionName)_installer_macOS'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # - task: DownloadBuildArtifacts@0
+      # inputs:
+        # buildType: 'current'
+        # downloadType: 'single'
+        # artifactName: '$(Build.DefinitionName)_installer_macOS'
+        # downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: cbicaNITRC
-        sourceFolder: $(Build.ArtifactStagingDirectory)
-        contents: '*_Installer.*'
-        targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
-        cleanTargetFolder: false
-        overwrite: true
-        continueOnError: true
-      displayName: Uploading to NITRC
-      condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
+    # - task: CopyFilesOverSSH@0
+      # inputs:
+        # sshEndpoint: cbicaNITRC
+        # sourceFolder: $(Build.ArtifactStagingDirectory)
+        # contents: '*_Installer.*'
+        # targetFolder: /var/home/groups/captk/htdocs # previously /mnt/gforge-data/gforge/home/groups/captk/downloads
+        # cleanTargetFolder: false
+        # overwrite: true
+        # continueOnError: true
+      # displayName: Uploading to NITRC
+      # condition: and( eq(variables['Build.DefinitionName'], 'CBICA.CaPTk'), or( eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'Schedule')) )
 
 # - job: 'Linux_SelfHost_CentOS7'
 #   displayName: "Self-hosted agent on CentOS 7"
