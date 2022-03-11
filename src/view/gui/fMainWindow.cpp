@@ -1823,10 +1823,28 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
+      image4DMaxSliceIndicator->setText(QString::fromStdString(" / " + std::to_string(imageInfo.GetImageSize()[3])));
       ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
-      imageManager->SetPerfImage(imagePerf);
+      
+      
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
-      //return;
+      imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins()); // Fix missing (3D) origins for 4D
+      /*auto originalDirection = imageInfo.GetImageDirections();
+      ImageTypeFloat3D::DirectionType originalDirectionIn3D;
+      for (int i = 0; i < 3; i++)
+      {
+          for (int j = 0; j < 3; j++)
+          {
+              originalDirectionIn3D[i][j] = originalDirection[i][j];
+          }
+      }
+      imageManager->SetOriginalDirection(originalDirectionIn3D);
+      */
+      //auto tempImage = cbica::GetImageOrientation< ImageTypeFloat4D >(imagePerf);
+      //imageManager->SetOriginalOrientation(tempImage.first);
+      //imagePerf = ChangeImageDirectionToIdentity< ImageTypeFloat4D >(tempImage.second);
+      imageManager->SetPerfImage(imagePerf);
+          //return;
     }
     else
     {
@@ -4576,7 +4594,12 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   //check if input has valid subjects
   if (mPCAEstimator.HasValidSubjects() == 0)
   {
-    ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
+    std::string msg = "The specified directory does not have any subject with all the required imaging sequences.\n";
+    msg += "Make sure that the input directory has subdirectories (each one is one subject), and that each subdirectory two images : \n";
+    msg += "The perfusion image .nii.gz file must contain '_perf_' in the basename, and ";
+    msg += "the segmentation .nii.gz file must end with '_segmentation.nii.gz'.";
+
+    ShowErrorMessage(msg);
     return;
   }
 
@@ -5628,6 +5651,7 @@ void fMainWindow::imageSliderChanged()
   if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
   {
     mSlicerManagers[index]->Get3DImageAtCurrentPerfusionIndex(value);
+    image4DCurrentSliceIndicator->setText(QString::fromStdString(std::to_string(value+1)));
   }
   AxialViewSliderChanged();
   mSlicerManagers[index]->Picked();
@@ -5816,18 +5840,34 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       }
       else
       {
+
         if (!((extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
         {
           unsupportedExtension += fileName + "\n";
         }
-        else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
-        {
-          erroredFiles += fileName + "\n";
-        }
         else
         {
-          basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          // This 4D check is duplicated here from LoadSlicerImages, 
+          // because it has to be for us to correctly know to use 4D sanity checks below.
+          // TBD: This needs a refactor for clarity.
+          auto imageInfo = cbica::ImageInfo(fileName);
+          bool fourDImage = false;
+          int dimsOfImage0 = cbica::ImageInfo(fileForSanityCheck).GetImageDimensions();
+          if ((imageInfo.GetImageDimensions() == 4) || (dimsOfImage0 == 4))
+          {
+                fourDImage = true;
+          }
+          if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString(), fourDImage))
+          {
+              erroredFiles += fileName + "\n";
+          }
+          else
+          {
+              basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          }
+          
         }
+
       }
     }
 
@@ -6701,6 +6741,12 @@ void fMainWindow::ApplicationEGFR()
     QString::number(EGFRStatusParams[3]) + "/" + QString::number(nearIndices.size()) + "\nFar ROI voxels used =   " +
     QString::number(EGFRStatusParams[4]) + "/" + QString::number(farIndices.size()) +
     "\n\n\n----------\n\nPHI Threshold = 0.1377\n[based on 142 UPenn brain tumor scans]";
+
+  msg = msg + "\n\nNote that processing was conducted on all detected time points (" +
+      QString::number(perfusionImage->GetLargestPossibleRegion().GetSize()[3])+
+      ") of the given DSC-MRI image." +
+      "\nUPenn scans used for analysis typically contain 45 time points." +
+      "\nIn order to select a number of time points to use, or to do batch processing, please use the command-line interface.";
 
   updateProgress(0);
   ShowMessage(msg.toStdString(), this);

@@ -44,6 +44,10 @@ private:
 public:
  
   QSlider *image4DSlider;
+  QLabel* image4DTimeLabel;
+  QLabel* image4DCurrentSliceIndicator;
+  QLabel* image4DMaxSliceIndicator;
+  QHBoxLayout* image4DBarLayout;
   QGroupBox *preferencesGroupBox;
   QWidget *centralwidget;
 
@@ -146,7 +150,19 @@ public:
     image4DSlider->setPageStep(1);
     image4DSlider->setSliderPosition(5);
     image4DSlider->setOrientation(Qt::Horizontal);
-    overallGridLayout->addWidget(image4DSlider, 1, 0, 1, 3);
+    image4DTimeLabel = new QLabel(centralwidget);
+    image4DTimeLabel->setText("Time: ");
+    image4DCurrentSliceIndicator = new QLabel(centralwidget);
+    image4DCurrentSliceIndicator->setText("1");
+    image4DMaxSliceIndicator = new QLabel(centralwidget);
+    image4DMaxSliceIndicator->setText(" / 1");
+    image4DBarLayout = new QHBoxLayout(centralwidget);
+    image4DBarLayout->addWidget(image4DTimeLabel, 0);
+    image4DBarLayout->addWidget(image4DCurrentSliceIndicator, 0);
+    image4DBarLayout->addWidget(image4DMaxSliceIndicator, 0);
+    image4DBarLayout->addWidget(image4DSlider, 0);
+    overallGridLayout->addLayout(image4DBarLayout, 1, 0, 1, 3);
+    //overallGridLayout->addWidget(image4DSlider, 1, 0, 1, 3);
     //---------------------------------------------------------------------------------------
     preferencesGroupBox = new QGroupBox(centralwidget);
     //-------------------preferences related objects----------------------
