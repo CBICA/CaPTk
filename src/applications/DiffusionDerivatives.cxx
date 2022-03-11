@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 {
   cbica::CmdParser parser = cbica::CmdParser(argc, argv, "DiffusionDerivatives");
   parser.addRequiredParameter("i", "input", cbica::Parameter::STRING, "", "The input DWI file.");
-  parser.addRequiredParameter("m", "mask", cbica::Parameter::STRING, "", "The input mask file.");
+  parser.addRequiredParameter("m", "mask", cbica::Parameter::STRING, "", "The input binary mask file used for extraction of derivatives. Extraction only occurs within this region.");
   parser.addRequiredParameter("b", "Bval", cbica::Parameter::STRING, "", "The input bval file.");
   parser.addRequiredParameter("g", "Bvec", cbica::Parameter::STRING, "", "The input bvec file.");
 
@@ -162,26 +162,14 @@ int main(int argc, char **argv)
           ".exe" +
 #endif
           " -d " + std::to_string(TImageType::ImageDimension);
-      std::string fixedOptions = " -a -ia-image-centers -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
+      std::string fixedOptions = " -a -ia-image-centers -m NMI -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
       std::string commandToCall;
       std::vector<int> returnCodesFromGreedy;
       
       // TODO (Alex): This needs to be done more dynamically
       std::string specificParams;
 
-      // Create the intermediate transforms
-      specificParams = outputDirectoryName+"/unregistered_FractionalAnisotropy.nii.gz"+  " -o " + outputDirectoryName+"/affine_FractionalAnisotropy.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputDirectoryName + "/unregistered_ApparentDiffusionCoefficient.nii.gz" + " -o " + outputDirectoryName + "/affine_ApparentDiffusionCoefficient.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputDirectoryName + "/unregistered_RadialDiffusivity.nii.gz" + " -o " + outputDirectoryName + "/affine_RadialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputDirectoryName + "/unregistered_AxialDiffusivity.nii.gz" + " -o " + outputDirectoryName + "/affine_AxialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
+      // Create intermediate transform from b0-to-template
       specificParams = outputDirectoryName + "/unregistered_b0.nii.gz" + " -o " + outputDirectoryName + "/affine_b0.mat";
       commandToCall = greedyPathAndDim + fixedOptions + specificParams;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
@@ -190,7 +178,7 @@ int main(int argc, char **argv)
       {
           if (returnCodesFromGreedy[i] != 0)
           {
-              std::cerr << "Something went wrong when generating transforms with Greedy.\n";
+              std::cerr << "Something went wrong when generating transform with Greedy.\n";
               return EXIT_FAILURE;
           }
       }
@@ -199,22 +187,22 @@ int main(int argc, char **argv)
       // Now run the transform and image through greedy to produce actual output...
       std::string fixedOptions2 = " -rf " + inputRegistrationFile + " -ri LINEAR -r ";
 
-      std::string specificParams2 = outputDirectoryName + "/affine_FractionalAnisotropy.mat" +
+      std::string specificParams2 = outputDirectoryName + "/affine_b0.mat" +
           " -rm " + outputDirectoryName + "/unregistered_FractionalAnisotropy.nii.gz" +
           " " + outputDirectoryName + "/FractionalAnisotropy.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputDirectoryName + "/affine_ApparentDiffusionCoefficient.mat" +
+      specificParams2 = outputDirectoryName + "/affine_b0.mat" +
           " -rm " + outputDirectoryName + "/unregistered_ApparentDiffusionCoefficient.nii.gz" +
           " " + outputDirectoryName + "/ApparentDiffusionCoefficient.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputDirectoryName + "/affine_RadialDiffusivity.mat" +
+      specificParams2 = outputDirectoryName + "/affine_b0.mat" +
           " -rm " + outputDirectoryName + "/unregistered_RadialDiffusivity.nii.gz" +
           " " + outputDirectoryName + "/RadialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputDirectoryName + "/affine_AxialDiffusivity.mat" +
+      specificParams2 = outputDirectoryName + "/affine_b0.mat" +
           " -rm " + outputDirectoryName + "/unregistered_AxialDiffusivity.nii.gz" +
           " " + outputDirectoryName + "/AxialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
