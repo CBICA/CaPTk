@@ -35,11 +35,9 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "ReliefFFeatureSelectionStrategy.h"
 
 //etc
-#include "qdiriterator.h"
 #include <fstream>
 #include <iostream>
 
-#include <itkCSVNumericObjectFileWriter.h>
 
 TrainingModule::TrainingModule()
 {
@@ -609,74 +607,6 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 	return true;
 }
 
-/*std::pair<bool, bool> TrainingModule::GetHeaderInformationFromFile(std::string filename, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders)
-{
-	// Searches if header information is present in the file (i.e. if the first row and/or first column are all NaNs),
-	//  and populates rowHeaders and/or colHeaders if information is available.
-	// 
-	// Returns a std::pair of two bools. First is true if row headers are present, second is true if column headers are present.
-
-	// To be used for detecting headers from FE/etc.
-	// TODO: Implement this (potentially alongside "labels-in-features-file" functionality to allow one-file training)
-
-	std::pair<bool, bool> result = std::make_pair(false, false);
-	MatrixType dataMatrix;
-	try
-	{
-		CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
-		readerMean->SetFileName(filename);
-		readerMean->SetFieldDelimiterCharacter(',');
-		readerMean->HasColumnHeadersOff();
-		readerMean->HasRowHeadersOff();
-		readerMean->Parse();
-		dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-
-		// Check row and column header existence via heuristic: presence of all-NaNs
-
-		for (int row = 0; row < dataMatrix.rows(); row++)
-		{
-			if (!std::isnan(dataMatrix[row][0]))
-			{
-				// Found a number in row headers, must assume this column meant to be numerical (i.e. no row headers).
-				result.first = false;
-				break;
-			}
-			result.first = true; // All entries in the first column are Not A Number
-		}
-
-		for (int col = 0; col < dataMatrix.cols(); col++)
-		{
-			if (!std::isnan(dataMatrix[0][col]))
-			{
-				// Found a number in column headers, must assume this row meant to be numerical (i.e. no column headers).
-				result.second = false;
-				break;
-			}
-			result.second = true;// All entries in the first row are Not A Number
-		}
-
-		if (result.first || result.second)
-		{
-			// Re-parse with this new knowledge if headers are present at all
-			readerMean->HasColumnHeadersOn();
-			readerMean->HasRowHeadersOn();
-			readerMean->Parse();
-			dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
-		}
-
-		colHeaders = readerMean->GetArray2DDataObject()->GetColumnHeaders();
-		rowHeaders = readerMean->GetArray2DDataObject()->GetRowHeaders();
-	}
-	catch (const std::exception& e1)
-	{
-		std::cerr << "Error reading the feature file in the input directory. Error code : " + std::string(e1.what()) << std::endl;
-		return result;
-	}
-	return result;
-
-
-}
-*/
 
 std::tuple<bool, bool, bool> TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, VariableSizeMatrixType& featuresMatrix, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders)
 {
