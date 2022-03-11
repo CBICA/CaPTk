@@ -93,7 +93,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/dicomFolderWithSingleSubject -o
 
 /**  
 \page preprocessing_reg Image Co-registration
-This tool registers multiple moving images to a single target image using the Greedy Registration technique [1].
+This tool registers multiple moving images to a single target image using the Greedy Registration technique [1]. 
 This tool is also available from the web on the [CBICA Image Processing Portal](https://ipp.cbica.upenn.edu/). Please see the experiment on the portal for details.
 <b>REQUIREMENTS:</b>
 	-# A Target image.
@@ -560,6 +560,10 @@ This application evaluates the Epidermal Growth Factor Receptor splice variant I
 	- This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command:
 \verbatim
 ${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputDSCImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+\endverbatim
+	- Additionally, you can process a batch directory (subdirectories are subjects, and each must have a perfusion and mask image). Pass "--help" to the CLI application for more details.
+\verbatim
+${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -b C:/inputDirectory/ -o C:/output.csv
 \endverbatim
 
 <b>RULES FOR ROI ANNOTATION</b>:
@@ -1074,11 +1078,11 @@ This application extracts the principal components from DSC-MRI scans as mention
 <b> REQUIREMENTS:</b>
 Directory containing the following images in a sub-folder:
   -# A single DSC-MRI image (filename must contain the text 'perf' or 'PERF' or 'DSC' to be correctly detected e.g. AAAA_perf.nii.gz )
-  -# Its corresponding mask for which the measurements need to be extracted (filename must contain the text 'label' or 'segmentation'
+  -# Its corresponding mask for which the measurements need to be extracted (filename must contain the text 'label' or 'segmentation')
    to be correctly detected e.g. AAA_label.nii.gz)
   -# An example directory structure for the input data is as follows:
   \verbatim
-	- RootFolder
+	- RootFolder (this is the one you select for input)
 		- Subject_AAAA
 			- AAAA_perf.nii.gz
 			- AAAA_label.nii.gz

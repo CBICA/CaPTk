@@ -146,6 +146,9 @@ int main(int argc, char **argv)
   if(!object_pca.HasValidSubjects())
   {
     std::cout << "There is no subject with the required input in the given directory." << std::endl;
+	std::cout << "Make sure that the input directory has subdirectories (each one is one subject), and that each subdirectory two images: " << std::endl;
+	std::cout << "The perfusion image .nii.gz file must contain '_perf_' in the basename, and" << std::endl;
+	std::cout << "The segmentation .nii.gz file must contain '_segmentation' in the basename." << std::endl;
     return EXIT_FAILURE;
   }
 
