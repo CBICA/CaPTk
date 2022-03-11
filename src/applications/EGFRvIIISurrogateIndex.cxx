@@ -5,7 +5,7 @@
 #include <regex>
 
 //returns pair of int (return code) and vector<double> (EGFRStatus)
-std::pair<int, std::vector<double>> RunForSingleSubject(const std::string& inputFile, const std::string drawingFile,
+std::pair<int, std::vector<double>> RunForSingleSubject(const std::string& inputFile, const std::string& drawingFile,
     const int userTimePoints = -1)
 {
     // returns EXIT_SUCCESS (0) if all good, EXIT_FAILURE(1) otherwise
