@@ -33,11 +33,16 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   connect(m_btnBrowseSaveFile, SIGNAL(clicked()), this, SLOT(browseOutputFileName()));
   connect(m_cmbFeatureType, SIGNAL(currentIndexChanged(int)), this, SLOT(featureTypeChanged(int)));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
+  
   //csv_format->setChecked(true);
   m_verticalConcat->setChecked(true);
   radio1->setChecked(true);
   loadFeatureFiles();
   featureTypeChanged(0);
+
+  // Disable collage by default on GUI, so that users must be prompted with RadXTools info
+  m_Collage->setChecked(false);
+  connect(m_Collage, SIGNAL(toggled(bool)), this, SLOT(onCollageToggled(bool)));
 
 }
 
@@ -389,4 +394,25 @@ void fFeaturePanel::advancedButtonClicked()
   m_featureDialog->exec();
   m_FeatureMaps[selectedFeatureType] = m_featureDialog->getFeatureMap();
 
+}
+
+void fFeaturePanel::onCollageToggled(bool checked)
+{
+    if (checked)
+    {
+        std::string collageMessage = "COLLAGE features were requested for this computation, but are not available through this interface. Please note:\n\n";
+        collageMessage += "The COLLAGE features were developed by BrIC Lab and the RadxTools team (https://doi.org/10.1038/srep37241, https://github.com/radxtools/collageradiomics) \n\n";
+        collageMessage += "Based on published results indicating their importance, COLLAGE features are offered as part of the CaPTk platform to enable users to extract a more comprehensive and reproducible set of features, as shown in : [https://doi.org/10.1002/mp.14556] \n\n";
+        collageMessage += "Please note that extraction of COLLAGE features is a long running process (often >20 minutes) and might not produce results for all the input images.\n";
+        collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable from the CaPTk install directory.\n";
+        collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.\n";
+        collageMessage += "Feature requests, bug reports, and any other COLLAGE related considerations, should be directed to https://github.com/radxtools/collageradiomics/issues.";
+        QMessageBox msgbox;
+        msgbox.setText(QString::fromStdString(collageMessage));
+        msgbox.setWindowTitle("COLLAGE Warning");
+        msgbox.setStandardButtons(QMessageBox::Ok);
+        msgbox.setDefaultButton(QMessageBox::Ok);
+        m_Collage->setChecked(false);
+        msgbox.exec();
+    }
 }

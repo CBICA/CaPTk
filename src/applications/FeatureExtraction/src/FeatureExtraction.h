@@ -234,6 +234,11 @@ public:
   \brief Populates the feature structure from the GUI
   */
   void SetRequestedFeatures(std::map< std::string, std::vector< std::map<std::string, std::string> > >  featuresFromUI, std::map<std::string, bool> selected_features);
+  
+  /** 
+  \brief Gets the requested features (as FeatureType)
+  */
+  FeatureType GetRequestedFeatures();
 
   /**
   \brief This function is used to populate the variables throughout the Update() step which are then used to write to a file
