@@ -440,7 +440,7 @@ Multi-institutional Performance Evaluation of Deep Learning Methods and Robust M
 <b>REQUIREMENTS:</b>
   -# An image or a set of co-registered images.
   -# An ROI file containing various labels, for which features will be extracted.
-	-# NOTE: CaPTk also extracts COLLAGE features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/).
+	-# NOTE: CaPTk can also extract COLLAGE features [1] using the [Python implementation](https://github.com/radxtools/collageradiomics/), but this functionality must be invoked from the separate "CollageFeatures" executable.
  
 <b>USAGE:</b>
   -# Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.
@@ -1001,7 +1001,7 @@ This application is also available from the web on the [CBICA Image Processing P
 	-# If desired, enable registration of outputs and select a fixed image to register to.
 	-# Identify the diffusion measurements to be extracted, and the output directory.
 	-# Press the "Confirm" button.
-	-# The extracted measurements will be saved at the specified location (~5 minutes).
+	-# The extracted measurements will be saved at the specified location (~5 minutes). 
 \verbatim
 ${CaPTk_InstallDir}/bin/ DiffusionDerivatives.exe -i C:/inputDWI.nii.gz -m C:/mask.nii.gz -b C:/input.bval -g C:/input.bvec -a 1 -f 1 -r 1 -t 1 -z 1 -reg C:/template.nii.gz -o C:/output
 \endverbatim

@@ -211,6 +211,26 @@ void algorithmRunner(std::vector<typename TImageType::Pointer> inputImages, type
   features.SetValidMask();
   features.SetMaskImage(mask);
   features.SetRequestedFeatures(param_file);
+
+  // Interrupt here now that we have requested features if COLLAGE is present.
+  auto tmp_features = features.GetRequestedFeatures();
+  auto tmp_iterator = tmp_features.find(FeatureFamilyString[FeatureFamily::COLLAGE]);
+  // Below line checks if COLLAGE exists in the feature families at all, and if it does,
+  // then it checks if it's enabled in the struct
+  if (tmp_iterator != tmp_features.end() && (std::get<0>(tmp_iterator->second) == true))
+  {
+      std::string collageMessage = "COLLAGE features were requested for this computation, but are not available through this interface. Please note:\n\n";
+      collageMessage += "The COLLAGE features were developed by BrIC Lab and the RadxTools team \n (https://doi.org/10.1038/srep37241, https://github.com/radxtools/collageradiomics) \n\n";
+      collageMessage += "Based on published results indicating their importance, COLLAGE features are offered as part of the CaPTk platform to enable users to extract a more comprehensive and reproducible set of features, as shown in:\n[https://doi.org/10.1002/mp.14556] \n\n";
+      collageMessage += "Please note that extraction of COLLAGE features is a long running process (often >20 minutes) and might not produce results for all the input images.";
+      collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable (CollageFeatures) from the CaPTk install directory.";
+      collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.";
+      collageMessage += "\nTo continue with feature extraction, change parameters and try again. Exiting.";
+      std::cerr << collageMessage << std::endl;
+      exit(EXIT_FAILURE); // Using this to escape out, since no return code exists from this function... kind of hacky
+  }
+
+
   features.SetOutputFilename(outputFilename);
   features.SetVerticallyConcatenatedOutput(verticalConc);
   features.SetWriteFeatureMaps(featureMaps);

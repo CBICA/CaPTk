@@ -42,6 +42,7 @@ SET( APPLICATIONS
   SBRT_LungField
   SBRT_Nodule
   SBRT_Analysis
+  CollageFeatures
 )
 SET( CAPTK_APP_LIST "" )
 
@@ -194,6 +195,10 @@ FOREACH(application ${APPLICATIONS})
 
   IF ( (${application} STREQUAL GeodesicTraining))
     SET( CAPTK_APP_LIST "${CAPTK_APP_LIST} ${application}" )
+  ENDIF()
+  
+  IF ( (${application} STREQUAL CollageFeatures))
+   ADD_APPLICATION( ${application} )
   ENDIF()
 
 ENDFOREACH()
