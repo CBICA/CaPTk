@@ -35,6 +35,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include "ReliefFFeatureSelectionStrategy.h"
 
 //etc
+#include "qdiriterator.h"
 #include <fstream>
 #include <iostream>
 
