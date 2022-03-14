@@ -267,7 +267,7 @@
     <filename>Installation</filename>
     <docanchor file="Installation.html">Windows</docanchor>
     <docanchor file="Installation.html">Linux</docanchor>
-    <docanchor file="Installation.html" title="(versions prior to 1.9.0)">macOS</docanchor>
+    <docanchor file="Installation.html">macOS</docanchor>
   </compound>
   <compound kind="page">
     <name>ReleaseNotes</name>

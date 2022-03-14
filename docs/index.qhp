@@ -130,7 +130,7 @@
 <section title="Installation Instructions" ref="Installation.html">
   <section title="Windows" ref="Installation.html#Windows" />
   <section title="Linux" ref="Installation.html#Linux" />
-  <section title="(versions prior to 1.9.0)" ref="Installation.html#macOS" />
+  <section title="macOS" ref="Installation.html#macOS" />
 </section>
 </section>
 <section title="Changelog: Release Notes" ref="ReleaseNotes.html">

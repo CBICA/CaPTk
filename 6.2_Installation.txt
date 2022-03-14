@@ -27,20 +27,26 @@ chmod +x CaPTk_${Version}.bin
 \endverbatim
 - Follow prompts to install.
 
-\subsection macOS (versions prior to 1.9.0)
+\subsection macOS
 
+<b>For CaPTk Versions prior to 1.9.0:</b>
 - Users will download the ".pkg" file from NITRC; double-click the file. 
 - If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences > Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).
 - Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.
 - Before installation begins, you may be prompted for your password again.
 - You will find CaPTk under your "Applications" folder and you can delete the disk image.
 
-\subsection macOS (versions 1.9.0 and later)
-
+<b>For CaPTk versions 1.9.0 and greater:</b>
 - macOS users will need to download Docker (https://docs.docker.com/get-docker/)
-- Then pull the container from Docker Hub (https://hub.docker.com/r/cbica/captk), example command: docker pull cbica/captk
-- The container can be run with "docker run -it cbica/captk [args go here]". 
-- The above is sufficient for command line use -- to enable the graphical user interface, you will need to set up graphical sharing. We cannot provide technical support for Docker, but this article contains an example: https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc
+- Then pull the container from Docker Hub (https://hub.docker.com/r/cbica/captk), example command: 
+\verbatim
+docker pull cbica/captk
+\endverbatim
+- The container can be run with:
+\verbatim
+ docker run -it cbica/captk [args go here]
+ \endverbatim
+- The above is sufficient for command line use. To enable the graphical user interface, you will need to set up graphical sharing. We cannot provide technical support for Docker, but this article contains an example: https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc
 - In order to process your files with CaPTk, you will need to mount your input directory into Docker. Please see the Docker documentation for examples on how to do this. The "docker run" command can do this at startup, example: https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only
 
 --------------------------------------------------------------------
