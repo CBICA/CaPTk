@@ -84,18 +84,32 @@ public:
   void RemoveNans(VariableSizeMatrixType& mat);
   void RemoveNans(VariableLengthVectorType& vec);
 
+  void WriteNumericFilesWithHeaders(const std::string& filePath, const VariableSizeMatrixType& data, const std::vector<std::string>& rowHeaders, const std::vector<std::string>& colHeaders);
+  void WriteLabelFilesWithHeaders(const std::string& filePath, const VectorDouble& data, const std::vector<std::string>& rowHeaders, const std::vector<std::string>& colHeaders);
+
+
   // given a set of predicted (binary-classifier) labels and actual labels, returns the balanced accuracy.
   static double GetBinaryClassificationBalancedAccuracy(VariableLengthVectorType& predicted, VariableLengthVectorType& actual);
 
-  static void GetHeaderInformationFromFile(std::string filename);
+  //static void GetHeaderInformationFromFile(std::string filename);
 
   // param featuresMatrix : the matrix to load features into
-  // returns True if successful, false otherwise
-  static bool GetFeatureDataFromFile(std::string featuresFilename, VariableSizeMatrixType& featuresMatrix);
+  // param rowHeaders: std vector to load row headers into
+  // param colHeaders: std vector to load column headers into
+  // returns 3-tuple of bools:
+  // First is overall success (true if success, failure otherwise)
+  // Second is true if row headers are present
+  // Third is true if column headers are present
+  static std::tuple<bool,bool,bool> GetFeatureDataFromFile(std::string featuresFilename, VariableSizeMatrixType& featuresMatrix, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders);
 
   // param labelsVector : the vector to load labels into
-  // returns True if successful, false otherwise
-  static bool GetLabelsFromFile(std::string labelsFilename, VariableLengthVectorType& labelsVector);
+  // param rowHeaders: std vector to load row headers into
+  // param colHeaders: std vector to load column headers into
+  // returns 3-tuple of bools:
+  // First is overall success (true if success, failure otherwise)
+  // Second is true if row headers are present
+  // Third is true if column headers are present
+  static std::tuple<bool,bool,bool> GetLabelsFromFile(std::string labelsFilename, VariableLengthVectorType& labelsVector, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders);
 
 //public slots:
     //void onThreadFinished();

@@ -384,7 +384,7 @@ fMainWindow::fMainWindow()
   }
 
   // TBD: this needs to be controlled from CMake and not hard-coded here
-  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator";
+  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator ";
 #ifdef BUILD_MSUBTYPE
   //brainAppList += " MolecularSubtypePredictor ";
 #endif
@@ -523,9 +523,9 @@ fMainWindow::fMainWindow()
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
   connect(&registrationPanel, 
-    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)),
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string, std::string)),
     this, 
-    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -9532,7 +9532,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
   std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
   std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
-  std::string radii, std::string iterations, std::string degreesOfFreedom)
+  std::string radii, std::string iterations, std::string degreesOfFreedom, std::string interp)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9590,6 +9590,9 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     {
       args << "Deformable";
     }
+
+    args << "-rIP " << interp.c_str();
+
     std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)

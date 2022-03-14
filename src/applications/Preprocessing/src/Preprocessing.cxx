@@ -44,6 +44,7 @@ std::string inputImageFile, inputMaskFile, outputImageFile, outputDir, targetIma
 std::vector< std::string > inputImageFiles; // store multiple image files
 std::string registrationFixedImageFile, registrationType = "Affine", registrationMetrics = "NMI", registrationIterations = "100,50,5",
 registrationAffineTransformInput, registrationDeformableTransformInput;
+std::string registrationInterp = "Linear";
 
 int histoMatchQuantiles = 40, histoMatchBins = 100,
   registrationTypeInt, registrationRigidDof = 12;
@@ -306,6 +307,9 @@ int algorithmsRunner()
         " -d " + std::to_string(TImageType::ImageDimension);
 
       std::string commonCommands; // put all the common things for the affine/deform/reslice in single place
+
+      // add interpolation
+      commonCommands += " -rI " + registrationInterp;
 
       // add iterations to command
       std::string iterations;
@@ -714,6 +718,7 @@ int main(int argc, char** argv)
   parser.addOptionalParameter("rIA", "regInterAffn", cbica::Parameter::FILE, "mat", "The path to the affine transformation to apply to moving image", "If this is present, the Affine registration step will be skipped", "Also used for rigid transformation");
   parser.addOptionalParameter("rID", "regInterDefm", cbica::Parameter::FILE, "NIfTI", "The path to the deformable transformation to apply to moving image", "If this is present, the Deformable registration step will be skipped");
   parser.addOptionalParameter("rsc", "rescaleImage", cbica::Parameter::STRING, "Output Intensity range", "The output intensity range after image rescaling", "Defaults to " + std::to_string(rescaleLower) + ":" + std::to_string(rescaleUpper), "If multiple inputs are passed (comma-separated), the rescaling is done in a cumulative manner,", "i.e., stats from all images are considered for the scaling");
+  parser.addOptionalParameter("rIP", "regInterpolation", cbica::Parameter::STRING, "Linear or NN", "The interpolation mode to use. NN is nearest neighbor, useful for registering masks and segmentations.", "Defaults to Linear.");
 
   parser.addOptionalParameter("d", "debugMode", cbica::Parameter::BOOLEAN, "0 or 1", "Enabled debug mode", "Default: 0");
 
@@ -990,6 +995,15 @@ int main(int argc, char** argv)
     if (parser.isPresent("rID"))
     {
       parser.getParameterValue("rID", registrationDeformableTransformInput);
+    }
+    if (parser.isPresent("rIP"))
+    {
+      parser.getParameterValue("rIP", registrationInterp);
+      if (!(registrationInterp == "NN" || registrationInterp == "LINEAR"))
+      {
+          std::cerr << "Requested an unsupported interpolation method. Please specify LINEAR or NN." << std::endl;
+          return EXIT_FAILURE;
+      }
     }
   }
   else if (parser.isPresent("rsc"))
