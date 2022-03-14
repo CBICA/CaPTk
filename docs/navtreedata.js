@@ -83,7 +83,7 @@ var NAVTREE =
         [ "License", "Download.html#lic", null ],
         [ "Windows", "Installation.html#Windows", null ],
         [ "Linux", "Installation.html#Linux", null ],
-        [ "macOS", "Installation.html#macOS", null ],
+        [ "(versions prior to 1.9.0)", "Installation.html#macOS", null ],
         [ "Issues", "ReleaseNotes.html#Known", null ],
         [ "Versions", "ReleaseNotes.html#Older", null ],
         [ "Advisors:", "People.html#advisors", null ],

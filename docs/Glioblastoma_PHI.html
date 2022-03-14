@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.9.0.Alpha</span>
+   &#160;<span id="projectnumber">1.9.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -75,6 +75,8 @@ $(document).ready(function(){initNavTree('Glioblastoma_PHI.html',''); initResiza
 </ol>
 <ul>
 <li>This application is also available as with a stand-alone CLI for data analysts to build pipelines around, using the following example command: <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -i C:/inputDSCImage.nii.gz -m C:/maskWithNearAndFarLabels.nii.gz
+</pre></li>
+<li>Additionally, you can process a batch directory (subdirectories are subjects, and each must have a perfusion and mask image). Pass "--help" to the CLI application for more details. <pre class="fragment">${CaPTk_InstallDir}/bin/EGFRvIIISurrogateIndex.exe -b C:/inputDirectory/ -o C:/output.csv
 </pre></li>
 </ul>
 <p><b>RULES FOR ROI ANNOTATION</b>:</p><ul>
