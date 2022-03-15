@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.9.0.Alpha</span>
+   &#160;<span id="projectnumber">1.9.0.Beta</span>
    </div>
   </td>
  </tr>
@@ -64,8 +64,8 @@ $(document).ready(function(){initNavTree('PCA_Extraction.html',''); initResizabl
 <div class="textblock"><p>This application extracts the principal components from DSC-MRI scans as mentioned in [1].</p>
 <p><b> REQUIREMENTS:</b> Directory containing the following images in a sub-folder:</p><ol type="1">
 <li>A single DSC-MRI image (filename must contain the text 'perf' or 'PERF' or 'DSC' to be correctly detected e.g. AAAA_perf.nii.gz )</li>
-<li>Its corresponding mask for which the measurements need to be extracted (filename must contain the text 'label' or 'segmentation' to be correctly detected e.g. AAA_label.nii.gz)</li>
-<li>An example directory structure for the input data is as follows: <pre class="fragment">  - RootFolder
+<li>Its corresponding mask for which the measurements need to be extracted (filename must contain the text 'label' or 'segmentation') to be correctly detected e.g. AAA_label.nii.gz)</li>
+<li>An example directory structure for the input data is as follows: <pre class="fragment">  - RootFolder (this is the one you select for input)
     - Subject_AAAA
       - AAAA_perf.nii.gz
       - AAAA_label.nii.gz</pre></li>

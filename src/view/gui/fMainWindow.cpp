@@ -1826,25 +1826,9 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       image4DMaxSliceIndicator->setText(QString::fromStdString(" / " + std::to_string(imageInfo.GetImageSize()[3])));
       ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
       
-      
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins()); // Fix missing (3D) origins for 4D
-      /*auto originalDirection = imageInfo.GetImageDirections();
-      ImageTypeFloat3D::DirectionType originalDirectionIn3D;
-      for (int i = 0; i < 3; i++)
-      {
-          for (int j = 0; j < 3; j++)
-          {
-              originalDirectionIn3D[i][j] = originalDirection[i][j];
-          }
-      }
-      imageManager->SetOriginalDirection(originalDirectionIn3D);
-      */
-      //auto tempImage = cbica::GetImageOrientation< ImageTypeFloat4D >(imagePerf);
-      //imageManager->SetOriginalOrientation(tempImage.first);
-      //imagePerf = ChangeImageDirectionToIdentity< ImageTypeFloat4D >(tempImage.second);
       imageManager->SetPerfImage(imagePerf);
-          //return;
     }
     else
     {
