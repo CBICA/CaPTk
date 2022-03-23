@@ -162,6 +162,13 @@ void fFeaturePanel::computeFeature(int type)
   std::vector< std::string >imagepaths;
   std::vector<std::string> modality;
 
+  images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
+
+  if (images.size() == 0) // Do this first to prevent vector index exceptions with 0 images
+  {
+      ShowErrorMessage("No valid images selected!", this);
+      return;
+  }
 
   if (m_listener != NULL)
   {
@@ -179,7 +186,6 @@ void fFeaturePanel::computeFeature(int type)
     }
     else
     {
-      images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
       if (imagepaths.size() < 1)
       {
         ShowErrorMessage("No valid images selected!", this);
@@ -207,10 +213,9 @@ void fFeaturePanel::computeFeature(int type)
     ShowErrorMessage("No valid images selected!", this);
     return;
   }
-  else
-  {
-    ((fMainWindow*)m_listener)->updateProgress(5, "Initializing Feature Extraction Module");
-  }
+
+  ((fMainWindow*)m_listener)->updateProgress(5, "Initializing Feature Extraction Module");
+
 
   std::string featureFileName = m_txtSaveFileName->text().toStdString();
 
