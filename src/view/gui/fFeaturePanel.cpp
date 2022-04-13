@@ -44,6 +44,10 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   m_Collage->setChecked(false);
   connect(m_Collage, SIGNAL(toggled(bool)), this, SLOT(onCollageToggled(bool)));
 
+  // Add info-message to IBSI2 to tell user about additional output file. (Also warns that 3D is required)
+  m_IBSI2->setChecked(false);
+  connect(m_IBSI2, SIGNAL(toggled(bool)), this, SLOT(onIBSI2Toggled(bool)));
+
 }
 
 void fFeaturePanel::helpClicked()
@@ -418,6 +422,21 @@ void fFeaturePanel::onCollageToggled(bool checked)
         msgbox.setStandardButtons(QMessageBox::Ok);
         msgbox.setDefaultButton(QMessageBox::Ok);
         m_Collage->setChecked(false);
+        msgbox.exec();
+    }
+}
+
+void fFeaturePanel::onIBSI2Toggled(bool checked)
+{
+    if (checked)
+    {
+        QMessageBox msgbox;
+        QString msg;
+        msg = "You have selected IBSI-2 convolutional features.\n";
+        msg += "As these features are not currently exportable to a .csv format, an additional output directory will be created alongside the output csv file, with the suffix '_IBSI2'.\n\n";
+        msg += "Please note that these features are currently only defined for 3D images.\n\n";
+        msg += "Processing of these features may take between 1-4 minutes per input image on a typical desktop machine.";
+        msgbox.setText(msg);
         msgbox.exec();
     }
 }

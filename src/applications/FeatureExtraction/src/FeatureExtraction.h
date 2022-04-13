@@ -767,6 +767,7 @@ private:
   std::string m_outputFile; //! output file
   std::string  m_outputPath, //! this is the output directory and can be used to save intermediate files, if required
     m_outputIntermediatePath; //! store intermediate files (if any)
+  int m_currentImageIndex; //! stores the index to the image currently being selected, for use in feature family functions that need access (e.g. writing some other output file per-input) 
   bool m_outputVerticallyConcatenated = false; //! flag to check how to write the output file (whether in individual fields or vertically concatenated), defaults to horizontal-concatenation
   std::string m_finalOutputToWrite; //! this gets populated with the feature values to write at the end, TBD: needs to change when YML format is incorporated
   bool m_cancel; //! unused right now but scope for extension in the future
