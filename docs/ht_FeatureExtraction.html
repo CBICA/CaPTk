@@ -64,7 +64,10 @@ $(document).ready(function(){initNavTree('ht_FeatureExtraction.html',''); initRe
 <div class="textblock"><p><b>REQUIREMENTS:</b></p><ol type="1">
 <li>An image or a set of co-registered images.</li>
 <li>An ROI file containing various labels, for which features will be extracted.</li>
-<li>NOTE: CaPTk can also extract COLLAGE features [1] using the <a href="https://github.com/radxtools/collageradiomics/">Python implementation</a>, but this functionality must be invoked from the separate "CollageFeatures" executable.</li>
+<li>NOTE: CaPTk can also extract COLLAGE features [1] using the <a href="https://github.com/radxtools/collageradiomics/">Python implementation</a>, but this functionality must be invoked from the separate "CollageFeatures" executable.<ol type="a">
+<li>By contrast, IBSI-2 convolutional features based on the <a href="https://github.com/CBICA/CaPTK_IBSI2">CBICA Python implementation</a> are fully available from the CLI and GUI.</li>
+</ol>
+</li>
 </ol>
 <p><b>USAGE:</b></p><ol type="1">
 <li>Once image(s) and an ROI file are loaded, go to the "Feature Extraction" panel.</li>
