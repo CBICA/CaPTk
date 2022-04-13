@@ -105,6 +105,10 @@ This approach uses one single parameter file that is applied to all uploaded ima
 
 Modality detection in the filenames relies on a known list of modality names. We detect some modalities by default (see the IPP page for details), but you can also specify custom modality names that will be detected in the "Filename Parsing" section.
 
+## IBSI-2 Features
+Feature Extraction offers extraction of IBSI-2 convolutional features. These features are not exportable to a .csv output and instead are in the form of multiple .nii.gz output images. These are created alongside the output .csv file.
+These features are created with the [CBICA IBSI-2 implementation.](https://github.com/CBICA/CaPTK_IBSI2)
+
 ## Frequently Asked Questions
 
 - What do the various parameters mean and how do I customize them?
