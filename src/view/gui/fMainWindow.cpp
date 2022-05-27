@@ -1320,20 +1320,8 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
     }
     else if (cbica::ImageInfo(mSlicerManagers[index]->GetPathFileName()).GetImageDimensions() == 4)
     {
-        // TODO: uncomment the below for saving 4D images
-        /*
-        auto reorientedImage4D = cbica::GetImageOrientation< ImageTypeFloat4D >(convertVtkToItk<ImageTypeFloat4D::PixelType, ImageTypeFloat4D::ImageDimension>(mSlicerManagers[index]->mImage), originalOrientation);
-        auto img = reorientedImage.second;
-        auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
-        infoChanger->SetInput(img);
-        infoChanger->ChangeDirectionOn();
-        infoChanger->ChangeOriginOn();
-        infoChanger->SetOutputDirection(originalDirection);
-        infoChanger->SetOutputOrigin(originalOrigin);
-        infoChanger->Update();
-
-        cbica::WriteImage< ImageTypeFloat4D >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
-        */
+        cbica::WriteImage< ImageTypeFloat4D >(mSlicerManagers[index]->GetPerfImage(), correctExtension(saveFileName_string));
+        updateProgress(0, "Image saved! (" + saveFileName_string + ")");
     }
     else
     {
@@ -1505,11 +1493,6 @@ void fMainWindow::SaveImage()
   int index = GetSlicerIndexFromItem(items[0]);
   if (index < 0 || index >= (int)mSlicerManagers.size()) 
   {
-    return;
-  }
-  if (cbica::ImageInfo(mSlicerManagers[index]->GetPathFileName()).GetImageDimensions() == 4)
-  {
-      ShowErrorMessage("Saving of 4D images is not currently supported. Please note that you may save a 3D mask/ROI file for a 4D image volume.");
     return;
   }
 

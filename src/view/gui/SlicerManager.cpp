@@ -138,14 +138,13 @@ void SlicerManager::SetPerfImage(ImageTypeFloat4D::Pointer image)
   filter->SetInput(mPerfusionImagePointer);
   filter->SetDirectionCollapseToSubmatrix(); // This is required.
   filter->Update();
-  typedef itk::OrientImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > ReorientType;
-  auto reorienter = ReorientType::New();
-  reorienter->SetInput(filter->GetOutput());
-  reorienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI);
-  reorienter->UseImageDirectionOn();
-  reorienter->Update();
-  mITKImage = reorienter->GetOutput();
+  mITKImage = cbica::GetImageOrientation(filter->GetOutput(),"RAI").second;
   UpdateVtkImage();
+}
+
+ImageTypeFloat4D::Pointer SlicerManager::GetPerfImage()
+{
+    return mPerfusionImagePointer;
 }
 
 void SlicerManager::SetOriginalOrigin(ImageTypeFloat3D::PointType origin)
@@ -1263,13 +1262,7 @@ void SlicerManager::Get3DImageAtCurrentPerfusionIndex(int sliderindex)
   croppingFilter->SetExtractionRegion(regionToCrop);
   croppingFilter->SetDirectionCollapseToSubmatrix(); // This is required.
   croppingFilter->Update();
-  typedef itk::OrientImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > ReorientType;
-  auto reorienter = ReorientType::New();
-  reorienter->SetInput(croppingFilter->GetOutput());
-  reorienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI);
-  reorienter->UseImageDirectionOn();
-  reorienter->Update();
-  mITKImage->Graft(reorienter->GetOutput());//TBD this is crashing 
+  mITKImage->Graft(cbica::GetImageOrientation(croppingFilter->GetOutput(), "RAI").second);
  
   UpdateVtkImage();
   this->Render();
