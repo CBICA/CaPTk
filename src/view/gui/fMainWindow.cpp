@@ -1318,6 +1318,23 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
 
       cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
     }
+    else if (cbica::ImageInfo(mSlicerManagers[index]->GetPathFileName()).GetImageDimensions() == 4)
+    {
+        // TODO: uncomment the below for saving 4D images
+        /*
+        auto reorientedImage4D = cbica::GetImageOrientation< ImageTypeFloat4D >(convertVtkToItk<ImageTypeFloat4D::PixelType, ImageTypeFloat4D::ImageDimension>(mSlicerManagers[index]->mImage), originalOrientation);
+        auto img = reorientedImage.second;
+        auto infoChanger = itk::ChangeInformationImageFilter< ImageType >::New();
+        infoChanger->SetInput(img);
+        infoChanger->ChangeDirectionOn();
+        infoChanger->ChangeOriginOn();
+        infoChanger->SetOutputDirection(originalDirection);
+        infoChanger->SetOutputOrigin(originalOrigin);
+        infoChanger->Update();
+
+        cbica::WriteImage< ImageTypeFloat4D >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
+        */
+    }
     else
     {
       auto img = reorientedImage.second;
@@ -1490,6 +1507,12 @@ void fMainWindow::SaveImage()
   {
     return;
   }
+  if (cbica::ImageInfo(mSlicerManagers[index]->GetPathFileName()).GetImageDimensions() == 4)
+  {
+      ShowErrorMessage("Saving of 4D images is not currently supported. Please note that you may save a 3D mask/ROI file for a 4D image volume.");
+    return;
+  }
+
   //
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
   SaveImage_withFile(index, saveFileName);
@@ -1729,7 +1752,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       fname = ConversionFrom2Dto3D(fname);
     }
-    else if (!bFirstLoad)
+    if (!bFirstLoad)
     {
       {
         //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
@@ -1828,6 +1851,42 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
       imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins()); // Fix missing (3D) origins for 4D
+      auto original4DDirection = imagePerf->GetDirection();
+      // Construct acceptable 3D directions from existing 4D directions
+      using DirectionType3D = itk::Matrix<itk::SpacePrecisionType, 3U, 3U>;
+      DirectionType3D directionIn3D;
+      for (int i = 0; i < 3; i++)
+      {
+          for (int j = 0; j < 3; j++)
+          {
+              directionIn3D(i, j) = (double)original4DDirection(i, j);
+          }
+      }
+      
+      imageManager->SetOriginalDirection(directionIn3D);
+      // Now get the original image orientation from the 3D float read
+      using ExtractorType = itk::ExtractImageFilter<ImageTypeFloat4D, ImageTypeFloat3D>;
+      auto extractor = ExtractorType::New();
+      extractor->SetInput(imagePerf);
+      extractor->SetDirectionCollapseToSubmatrix(); // Needed to preserve original directionality for this read
+      ImageTypeFloat4D::RegionType region = imagePerf->GetLargestPossibleRegion();
+      ImageTypeFloat4D::IndexType regionIndex;
+      ImageTypeFloat4D::SizeType regionSize;
+      regionSize[0] = region.GetSize()[0];
+      regionSize[1] = region.GetSize()[1];
+      regionSize[2] = region.GetSize()[2];
+      regionSize[3] = 0;
+      regionIndex[0] = 0;
+      regionIndex[1] = 0;
+      regionIndex[2] = 0;
+      regionIndex[3] = 0;
+      ImageTypeFloat4D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->Update();
+      auto subImage = extractor->GetOutput();
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(subImage, "RAI"); // defaults to RAI
+      // And bypass the issues with 4D template specialization of the above 
+      imageManager->SetOriginalOrientation(tempImage.first);
       imageManager->SetPerfImage(imagePerf);
     }
     else
@@ -1836,7 +1895,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
       imageManager->SetOriginalDirection(currentImage->GetDirection());
       imageManager->SetOriginalOrigin(currentImage->GetOrigin());
-      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname)); // defaults to RAI
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname), "RAI"); // defaults to RAI
       imageManager->SetOriginalOrientation(tempImage.first);
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(tempImage.second);
       imageManager->SetImage(currentImage);
@@ -3019,6 +3078,13 @@ void fMainWindow::SaveDrawing()
   imageToWrite->DisconnectPipeline();
   if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
   {
+    imageToWrite->DisconnectPipeline();
+
+    auto originalOrientation = mSlicerManagers[index]->mOrientation;
+
+    // This was originally restricted to only non-4D/perfusion cases,
+    // but we can actually handle this case regardless (3D mask is assumed even for 4D cases).
+    // In fact, we have to in order to restore original orientation.
     ImageTypeMask::DirectionType originalDirection;
     originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
     originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
@@ -3032,6 +3098,9 @@ void fMainWindow::SaveDrawing()
 
     ImageTypeMask::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
+
+    auto reorientedImage = cbica::GetImageOrientation< ImageTypeMask >(imageToWrite, originalOrientation);
+    auto imageToWrite_wrap = reorientedImage.second;
 
     auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
     infoChanger->SetInput(imageToWrite);
@@ -3340,14 +3409,16 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
         imageSanityCheckDone = true;
       }
     }
-    //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+
+    // Needs to be done with OrientFix so that it matches the in-memory ITK image (which should always be RAI/Identity direction).
     auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
-    // Added this to allow masks of non-identity direction to pass the image sanity check below.
-    mask_temp = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(mask_temp);
-    //SaveImage_withFile(0, temp_prev.c_str());
+ 
+
+    auto baseFirstImage = mSlicerManagers[0]->mITKImage;
     if (!imageSanityCheckDone)
     {
-      if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+      bool fourDImage = (mSlicerManagers[0]->GetDimension() == 4);
+      if (!cbica::ImageSanityCheck<ImageTypeFloat3D>(baseFirstImage, mask_temp, fourDImage))
       {
         ShowErrorMessage("The physical dimensions of the previously loaded image and the mask are inconsistent; proceeding to open registration dialog");
         ImageRegistration();
@@ -3357,7 +3428,9 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     using ImageType = itk::Image<unsigned int, 3>;
     auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
-    inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
+
+    // The below commented code ONLY changes direction information and does NOT re-orient the image. Be careful!
+    //inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
     auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
     minMaxCalc->SetImage(inputImage);

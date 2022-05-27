@@ -34,6 +34,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include <QVariant>
 
 #include "cbicaITKImageInfo.h"
+#include "cbicaITKUtilities.h"
 #include "CaPTkEnums.h"
 
 SlicerManager::SlicerManager(int numberOfSlicers, Landmarks* landmarks, Landmarks* seedPoints, Landmarks* tissuePoints)
@@ -135,10 +136,15 @@ void SlicerManager::SetPerfImage(ImageTypeFloat4D::Pointer image)
   FilterType::Pointer filter = FilterType::New();
   filter->SetExtractionRegion(desiredRegion);
   filter->SetInput(mPerfusionImagePointer);
-
-  filter->SetDirectionCollapseToIdentity(); // This is required.
+  filter->SetDirectionCollapseToSubmatrix(); // This is required.
   filter->Update();
-  mITKImage = filter->GetOutput();
+  typedef itk::OrientImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > ReorientType;
+  auto reorienter = ReorientType::New();
+  reorienter->SetInput(filter->GetOutput());
+  reorienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI);
+  reorienter->UseImageDirectionOn();
+  reorienter->Update();
+  mITKImage = reorienter->GetOutput();
   UpdateVtkImage();
 }
 
@@ -1257,7 +1263,13 @@ void SlicerManager::Get3DImageAtCurrentPerfusionIndex(int sliderindex)
   croppingFilter->SetExtractionRegion(regionToCrop);
   croppingFilter->SetDirectionCollapseToSubmatrix(); // This is required.
   croppingFilter->Update();
-  mITKImage->Graft(croppingFilter->GetOutput());//TBD this is crashing 
+  typedef itk::OrientImageFilter< ImageTypeFloat3D, ImageTypeFloat3D > ReorientType;
+  auto reorienter = ReorientType::New();
+  reorienter->SetInput(croppingFilter->GetOutput());
+  reorienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI);
+  reorienter->UseImageDirectionOn();
+  reorienter->Update();
+  mITKImage->Graft(reorienter->GetOutput());//TBD this is crashing 
  
   UpdateVtkImage();
   this->Render();
