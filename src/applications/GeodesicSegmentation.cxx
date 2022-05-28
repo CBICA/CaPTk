@@ -383,7 +383,6 @@ int main(int argc, char **argv)
       thresholder->SetInsideValue(1);
       thresholder->SetLowerThreshold(0);
       thresholder->SetUpperThreshold(threshold);
-      //thresholder->ThresholdAb
       thresholder->Update();
       geosOutput = thresholder->GetOutput();
     }
