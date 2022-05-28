@@ -309,15 +309,28 @@ int main(int argc, char **argv)
     unsigned short threshold = 0;
     if (parser.isPresent("t"))
     {
-      std::string temp;
+      int temp;
       parser.getParameterValue("t", temp);
-      threshold = std::atoi(temp.c_str());
+      threshold = temp;
     }
 
     std::cout << "Reading inputs.\n";
     using ImageType = itk::Image< float, 3 >;
+    using ImageTypeGeodesic = itk::Image < short, 3 >;
     auto inputImage = cbica::ReadImage< ImageType >(inputFile);
     auto mask = cbica::ReadImage< ImageType >(drawingFile);
+    using CastFilterType = itk::CastImageFilter<ImageType, ImageTypeGeodesic>;
+    auto castFilter = CastFilterType::New();
+    castFilter->SetInput(inputImage);
+    castFilter->Update();
+    auto convertedInputImage = castFilter->GetOutput();
+    using RescaleFilterType = itk::RescaleIntensityImageFilter<ImageTypeGeodesic, ImageTypeGeodesic>;
+    auto rescaleFilter = RescaleFilterType::New();
+    rescaleFilter->SetInput(convertedInputImage);
+    rescaleFilter->SetOutputMinimum(0);
+    rescaleFilter->SetOutputMaximum(255);
+    rescaleFilter->Update();
+    convertedInputImage = rescaleFilter->GetOutput();
 
     VectorVectorDouble Indices;
     typedef itk::ImageRegionIteratorWithIndex <ImageType> IteratorType;
@@ -338,15 +351,15 @@ int main(int argc, char **argv)
     }
 
     std::cout << "Performing Geodesic map estimation.\n";
-    GeodesicSegmentation< ImageType > segmentationClass;
-    auto geosOutput = segmentationClass.Run/*< ImageType >*/(inputImage, Indices);
+    GeodesicSegmentation< ImageTypeGeodesic > segmentationClass;
+    auto geosOutput = segmentationClass.Run/*< ImageType >*/(convertedInputImage, Indices);
     ImageType::PixelType maxVal;
 
     if (normalize)
     {
       std::cout << "Performing normalization.\n";
       maxVal = 255;
-      auto rescaleFilter = itk::RescaleIntensityImageFilter< ImageType >::New();
+      auto rescaleFilter = itk::RescaleIntensityImageFilter< ImageTypeGeodesic >::New();
       rescaleFilter->SetInput(geosOutput);
       rescaleFilter->SetOutputMinimum(0);
       rescaleFilter->SetOutputMaximum(maxVal);
@@ -355,7 +368,7 @@ int main(int argc, char **argv)
     }
     else
     {
-      auto calculator = itk::MinimumMaximumImageCalculator< ImageType >::New();
+      auto calculator = itk::MinimumMaximumImageCalculator< ImageTypeGeodesic >::New();
       calculator->SetImage(geosOutput);
       calculator->ComputeMaximum();
       maxVal = calculator->GetMaximum();
@@ -364,18 +377,18 @@ int main(int argc, char **argv)
     if (threshold != 0)
     {
       std::cout << "Performing threshold with threshold = " << threshold << ".\n";
-      auto thresholder = itk::BinaryThresholdImageFilter< ImageType, ImageType >::New();
+      auto thresholder = itk::BinaryThresholdImageFilter< ImageTypeGeodesic, ImageTypeGeodesic >::New();
       thresholder->SetInput(geosOutput);
       thresholder->SetOutsideValue(0);
       thresholder->SetInsideValue(1);
-      thresholder->SetLowerThreshold(threshold);
-      thresholder->SetUpperThreshold(maxVal);
+      thresholder->SetLowerThreshold(0);
+      thresholder->SetUpperThreshold(threshold);
       thresholder->Update();
       geosOutput = thresholder->GetOutput();
     }
 
     std::cout << "Writing Output File:\n" + outputFile + "\n";
-    cbica::WriteImage< ImageType >(geosOutput, outputFile);
+    cbica::WriteImage< ImageTypeGeodesic >(geosOutput, outputFile);
   }
 
   std::cout << "Finished Successfully.\n";
