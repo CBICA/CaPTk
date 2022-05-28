@@ -34,6 +34,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/software-agreement.html
 #include <QVariant>
 
 #include "cbicaITKImageInfo.h"
+#include "cbicaITKUtilities.h"
 #include "CaPTkEnums.h"
 
 SlicerManager::SlicerManager(int numberOfSlicers, Landmarks* landmarks, Landmarks* seedPoints, Landmarks* tissuePoints)
@@ -135,11 +136,15 @@ void SlicerManager::SetPerfImage(ImageTypeFloat4D::Pointer image)
   FilterType::Pointer filter = FilterType::New();
   filter->SetExtractionRegion(desiredRegion);
   filter->SetInput(mPerfusionImagePointer);
-
-  filter->SetDirectionCollapseToIdentity(); // This is required.
+  filter->SetDirectionCollapseToSubmatrix(); // This is required.
   filter->Update();
-  mITKImage = filter->GetOutput();
+  mITKImage = cbica::GetImageOrientation(filter->GetOutput(),"RAI").second;
   UpdateVtkImage();
+}
+
+ImageTypeFloat4D::Pointer SlicerManager::GetPerfImage()
+{
+    return mPerfusionImagePointer;
 }
 
 void SlicerManager::SetOriginalOrigin(ImageTypeFloat3D::PointType origin)
@@ -1257,7 +1262,7 @@ void SlicerManager::Get3DImageAtCurrentPerfusionIndex(int sliderindex)
   croppingFilter->SetExtractionRegion(regionToCrop);
   croppingFilter->SetDirectionCollapseToSubmatrix(); // This is required.
   croppingFilter->Update();
-  mITKImage->Graft(croppingFilter->GetOutput());//TBD this is crashing 
+  mITKImage->Graft(cbica::GetImageOrientation(croppingFilter->GetOutput(), "RAI").second);
  
   UpdateVtkImage();
   this->Render();
