@@ -64,6 +64,7 @@ public:
   QCheckBox* m_GLCM;
   QCheckBox* m_LBP;
   QCheckBox* m_Collage;
+  QCheckBox* m_IBSI2;
   QCheckBox* m_NGTDM;
   QCheckBox* m_NGLDM;
   QCheckBox* m_GLSZM;
@@ -102,6 +103,7 @@ public:
     m_featureCheckBoxMap["GLCM"] = m_GLCM;
     m_featureCheckBoxMap["LBP"] = m_LBP;
     m_featureCheckBoxMap["Collage"] = m_Collage;
+    m_featureCheckBoxMap["IBSI2"] = m_IBSI2;
     m_featureCheckBoxMap["NGTDM"] = m_NGTDM;
     m_featureCheckBoxMap["NGLDM"] = m_NGLDM;
     m_featureCheckBoxMap["GLSZM"] = m_GLSZM;
@@ -185,6 +187,9 @@ public:
     m_Collage->setToolTip(QString("Calculates Collag Features [from CWRU] for image and given mask."));
     m_Collage->setCheckState(Qt::CheckState::Unchecked);
     m_Collage->setEnabled(false);
+    m_IBSI2 = new QCheckBox("IBSI-2 (Convolutional Filters)");
+    m_IBSI2->setToolTip(QString("Calculates IBSI-2 features (convolutional filters) for image and given mask."));
+    m_IBSI2->setCheckState(Qt::CheckState::Unchecked);
     m_NGTDM = new QCheckBox("NGTDM (Tone Difference)");
     m_NGTDM->setToolTip(QString("Calculates Neighborhood Gray-Tone Difference Matrix."));
     m_NGLDM = new QCheckBox("NGLDM (Level Dependence)");
@@ -239,6 +244,7 @@ public:
     featureLayout4->addWidget(m_NGLDM);
     featureLayout4->addWidget(m_LBP);
     featureLayout4->addWidget(m_Collage);
+    featureLayout4->addWidget(m_IBSI2);
     featureLayout4->addStretch();
 
     featureLayout5->addWidget(m_Laws);

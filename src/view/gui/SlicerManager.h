@@ -106,6 +106,10 @@ public:
   //! Set new 4D image 
   void SetPerfImage(ImageTypeFloat4D::Pointer image);
 
+  //! Get the loaded 4D image
+  ImageTypeFloat4D::Pointer GetPerfImage();
+
+
   //! Set the vtk mask
   void SetMask(vtkSmartPointer< vtkImageData >  mask);
 

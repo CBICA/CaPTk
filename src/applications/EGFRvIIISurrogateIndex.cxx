@@ -221,12 +221,6 @@ int main(int argc, char **argv)
           std::cout << "Processing subject " + currentSubjectName + " ..." << std::endl;
 
           std::string possibleInputFile, possibleDrawingFile;
-          //currentSubjectDir.setFilter(QDir::Files | QDir::Readable);
-          //QStringList perfNameFilters, drawingNameFilters; 
-          //perfNameFilters << "*perf*.nii.gz" << "*DSC*.nii.gz";
-          //auto possibleInputFiles = currentSubjectDir.entryList(perfNameFilters);
-          //drawingNameFilters << "*mask*.nii.gz" << "*labels*.nii.gz";
-          //auto possibleDrawingFiles = currentSubjectDir.entryList();
           auto filesInDir = cbica::filesInDirectory(currentSubjectDir, true);
           std::regex perfRegex("(perf|DSC|PERF|dsc)");
           std::regex drawingRegex("(mask|MASK|label|LABEL|near|NEAR|far|FAR)");

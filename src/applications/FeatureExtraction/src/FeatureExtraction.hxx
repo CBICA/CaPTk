@@ -459,8 +459,16 @@ void FeatureExtraction< TImage >::CalculateIBSI2(const typename TImage::Pointer 
   cbica::WriteImage< TImage >(itkImage, inputImage);
   //cbica::WriteImage< TImage >(maskImage, inputMask);
 
+  // Use modality + patient information to construct subdirectory path
+  // required so that outputs from CaPTk_ExtraFeatures executable don't overwrite each other each time
+  std::string inputModality = m_modality[m_currentImageIndex];
+  std::string subjectName = m_patientID;
+  std::string path, ext, base;
+  cbica::splitFileName(m_outputFile, path, base, ext);
+  std::string modifiedOutputPath = path+base+"_IBSI2/"+subjectName+"/"+inputModality;
+  std::cout << "Creating IBSI-2 ouput directory: " << modifiedOutputPath << std::endl;
   // construct the command and call it
-  auto commandToRun = ibsi2_cli + " -i " + inputImage + " -o " + m_outputPath;
+  auto commandToRun = ibsi2_cli + " -i " + inputImage + " -o " + modifiedOutputPath;
   if (std::system(commandToRun.c_str()) != 0)
   {
     std::cerr << "Something went wrong with IBSI2 Feature extraction.\n";
@@ -1987,6 +1995,7 @@ void FeatureExtraction< TImage >::Update()
         bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
+          m_currentImageIndex = i; // make sure we can reference properties by this index in feature family functions
           auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
           // construct the mask and the non-zero image values for each iteration - saves a *lot* of memory
           auto currentMask = cbica::CreateImage< TImage >(m_Mask), currentMask_patch = cbica::CreateImage< TImage >(m_Mask);
@@ -2972,24 +2981,24 @@ void FeatureExtraction< TImage >::Update()
                       if (TImage::ImageDimension == 3)
                       {
                         std::string currentFeatureFamily = FeatureFamilyString[f];
-                        CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                        CalculateIBSI2(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                           "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                           ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
                         if (!writeFeatureMapsAndLattice && m_SliceComputation)
                         {
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
                             "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
                             "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
 
-                          CalculateCOLLAGE(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
                           WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
                             "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                             ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
@@ -2997,7 +3006,7 @@ void FeatureExtraction< TImage >::Update()
                       }
                       else
                       {
-                        CalculateCOLLAGE(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                        CalculateIBSI2(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
                         WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
                           "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
                           ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice);

@@ -435,6 +435,7 @@ namespace cbica
   template <typename ComputedImageType = ImageTypeFloat3D, typename ExpectedImageType = ComputedImageType>
   void WriteImage(typename ComputedImageType::Pointer imageToWrite, const std::string &fileName)
   {
+    // TODO: Enable 4D image saving
     //// check write access
     //if (((_access(fileName.c_str(), 2)) == -1) || ((_access(fileName.c_str(), 6)) == -1))
     //{

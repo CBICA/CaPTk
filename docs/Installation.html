@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.9.0.Alpha</span>
+   &#160;<span id="projectnumber">1.9.0</span>
    </div>
   </td>
  </tr>
@@ -84,12 +84,20 @@ Linux</h2>
 </ul>
 <h2><a class="anchor" id="macOS"></a>
 macOS</h2>
-<ul>
+<p><b>For CaPTk Versions prior to 1.9.0:</b></p><ul>
 <li>Users will download the ".pkg" file from NITRC; double-click the file.</li>
 <li>If there is a window saying that this is an "unidentified developer", hit "OK" and then go to "System Preferences &gt; Security and Privacy" and you need to click on "Open Anyway" beside the "CaPTk_$version.pkg" (this will prompt for your password).</li>
 <li>Double click on the pkg file and click on "Open". This will guide you through the installation screen with licensing information.</li>
 <li>Before installation begins, you may be prompted for your password again.</li>
 <li>You will find CaPTk under your "Applications" folder and you can delete the disk image.</li>
+</ul>
+<p><b>For CaPTk versions 1.9.0 and greater:</b></p><ul>
+<li>macOS users will need to download Docker (<a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a>)</li>
+<li>Then pull the container from Docker Hub (<a href="https://hub.docker.com/r/cbica/captk">https://hub.docker.com/r/cbica/captk</a>), example command: <pre class="fragment">docker pull cbica/captk
+</pre></li>
+<li>The container can be run with: <pre class="fragment"> docker run -it cbica/captk [args go here]</pre></li>
+<li>The above is sufficient for command line use. To enable the graphical user interface, you will need to set up graphical sharing. We cannot provide technical support for Docker, but this article contains an example: <a href="https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc">https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc</a></li>
+<li>In order to process your files with CaPTk, you will need to mount your input directory into Docker. Please see the Docker documentation for examples on how to do this. The "docker run" command can do this at startup, example: <a href="https://docs.docker.com/engine/reference/commandline/run/#mount-volume&ndash;v&mdash;read-only">https://docs.docker.com/engine/reference/commandline/run/#mount-volume&amp;ndash;v&amp;mdash;read-only</a></li>
 </ul>
 <hr  />
 <hr  />
