@@ -42,6 +42,7 @@
 //#include "FractalBoxCount_template.h"
 
 #include "cbicaProgressBar.h"
+#include "cbicaITKUtilities.h"
 
 //TBD
 #include <math.h> //for debugging
@@ -380,7 +381,6 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
     std::cerr << "Could not find the Collage CLI, so cannot extract collage features.\n";
     return;
   }
-  //std::cout << "[DEBUG] FeatureExtraction.hxx::NGTDM" << std::endl;
 
   auto tempDir = cbica::createTemporaryDirectory();
   auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
@@ -419,6 +419,61 @@ void FeatureExtraction< TImage >::CalculateCOLLAGE(const typename TImage::Pointe
     }
   }
   file.close();
+  cbica::removeDirectoryRecursively(tempDir, true); // delete the directory
+}
+
+
+template< class TImage >
+void FeatureExtraction< TImage >::CalculateIBSI2(const typename TImage::Pointer itkImage,
+  const typename TImage::Pointer maskImage, std::map<std::string, double>& featurevec)
+{
+  // this is a special case where the features are extracted via a python executable
+  auto ibsi2_cli = cbica::getExecutablePath() + "/CaPTk_ExtraFeatures"
+#ifdef _WIN32
+    + ".exe"
+#else
+
+#endif
+    ;
+  if (!cbica::isFile(ibsi2_cli))
+  {
+    std::cerr << "Could not find the CaPTk_ExtraFeatures CLI, so cannot extract IBSI2 features.\n";
+    return;
+  }
+
+  //// Check if input mask is not null
+  //auto minMaxCal = itk::MinimumMaximumImageCalculator< TImage >::New();
+  //minMaxCal->SetImage(maskImage);
+  //minMaxCal->ComputeMaximum();
+  //if (minMaxCal->GetMaximum() == 0)
+  //{
+  //  // mask is empty
+  //  maskImage = cbica::CreateImage< TImage >(inputImage, 1);
+  //}
+
+  auto tempDir = cbica::createTemporaryDirectory();
+  auto inputImage = cbica::normPath(tempDir + "/inputImage.nii.gz");
+  //auto inputMask = cbica::normPath(tempDir + "/inputMask.nii.gz");
+
+  // write input images to temp dir
+  cbica::WriteImage< TImage >(itkImage, inputImage);
+  //cbica::WriteImage< TImage >(maskImage, inputMask);
+
+  // Use modality + patient information to construct subdirectory path
+  // required so that outputs from CaPTk_ExtraFeatures executable don't overwrite each other each time
+  std::string inputModality = m_modality[m_currentImageIndex];
+  std::string subjectName = m_patientID;
+  std::string path, ext, base;
+  cbica::splitFileName(m_outputFile, path, base, ext);
+  std::string modifiedOutputPath = path+base+"_IBSI2/"+subjectName+"/"+inputModality;
+  std::cout << "Creating IBSI-2 ouput directory: " << modifiedOutputPath << std::endl;
+  // construct the command and call it
+  auto commandToRun = ibsi2_cli + " -i " + inputImage + " -o " + modifiedOutputPath;
+  if (std::system(commandToRun.c_str()) != 0)
+  {
+    std::cerr << "Something went wrong with IBSI2 Feature extraction.\n";
+  }
+
   cbica::removeDirectoryRecursively(tempDir, true); // delete the directory
 }
 
@@ -1277,6 +1332,11 @@ void FeatureExtraction< TImage >::SetSelectedROIsAndLabels(std::vector< std::str
   m_algorithmDone = false;
 }
 
+template < class TImage > 
+FeatureType FeatureExtraction< TImage >::GetRequestedFeatures()
+{
+    return m_Features;
+}
 
 template< class TImage >
 void FeatureExtraction< TImage >::SetRequestedFeatures(std::string filename, std::string selected_features)
@@ -1935,6 +1995,7 @@ void FeatureExtraction< TImage >::Update()
         bool volumetricFeaturesExtracted = false, morphologicFeaturesExtracted = false;
         for (size_t i = 0; i < m_inputImages.size(); i++)
         {
+          m_currentImageIndex = i; // make sure we can reference properties by this index in feature family functions
           auto writeFeatureMapsAndLattice = m_LatticeComputation && allROIs[j].latticeGridPoint;
           // construct the mask and the non-zero image values for each iteration - saves a *lot* of memory
           auto currentMask = cbica::CreateImage< TImage >(m_Mask), currentMask_patch = cbica::CreateImage< TImage >(m_Mask);
@@ -2810,6 +2871,15 @@ void FeatureExtraction< TImage >::Update()
             }
             case COLLAGE:
             {
+                std::string collageMessage = "COLLAGE features were requested for this computation, but are not available through this interface. Please note:\n\n";
+                collageMessage += "The COLLAGE features were developed by BrIC Lab and the RadxTools team (https://doi.org/10.1038/srep37241, https://github.com/radxtools/collageradiomics) \n\n";
+                collageMessage += "Based on published results indicating their importance, COLLAGE features are offered as part of the CaPTk platform to enable users to extract a more comprehensive and reproducible set of features, as shown in : [https://doi.org/10.1002/mp.14556] \n\n";
+                collageMessage += "Please note that extraction of COLLAGE features is a long running process (often >20 minutes) and might not produce results for all the input images.\n";
+                collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable from the CaPTk install directory.\n";
+                collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.\n";
+              m_logger.Write(collageMessage);
+              break; // Display message and break out of these features if it gets here (this *should* be caught by CLI/GUI, but just in case)
+
               // this is a special case, where a pre-compiled python binary is called for every image/mask
               if (!allROIs[j].latticeGridPoint) // this is not currently working for lattice patches - https://github.com/radxtools/collageradiomics/issues/89
               { // start lattice check
@@ -2881,6 +2951,77 @@ void FeatureExtraction< TImage >::Update()
                 }
                 break;
               } // end lattice check
+            }
+            case IBSI2:
+            {
+              // this is a special case, where a pre-compiled python binary is called for every image/mask
+              auto temp = m_Features.find(FeatureFamilyString[f]);
+              if (temp != m_Features.end())
+              {
+                if (std::get<0>(temp->second))
+                {
+                  auto tempT1 = std::chrono::high_resolution_clock::now();
+
+                  std::get<2>(temp->second) = m_modality[i];
+                  std::get<3>(temp->second) = allROIs[j].label;
+
+                  for (size_t r = 0; r < m_Radius_range.size(); r++)
+                  {
+                    m_Radius = m_Radius_range[r];
+                    auto m_Radius_string = std::to_string(m_Radius);
+
+                    auto offsets = GetOffsetVector(m_Radius, /*m_Direction*/27);
+                    //auto offsets_2D = GetOffsetVector(m_Radius, /*m_Direction*/8);
+
+                    for (size_t b = 0; b < m_Bins_range.size(); b++)
+                    {
+                      m_Bins = m_Bins_range[b];
+                      auto m_Bins_string = std::to_string(m_Bins);
+                      std::string currentFeatureFamily = std::string(FeatureFamilyString[f]) + "_Bins-" + m_Bins_string + "_Radius-" + m_Radius_string;
+                      if (TImage::ImageDimension == 3)
+                      {
+                        std::string currentFeatureFamily = FeatureFamilyString[f];
+                        CalculateIBSI2(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=3D;Dimension=3D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                        if (!writeFeatureMapsAndLattice && m_SliceComputation)
+                        {
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[0], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_X", std::get<4>(temp->second),
+                            "Axis=X;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[1], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Y", std::get<4>(temp->second),
+                            "Axis=Y;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+
+                          CalculateIBSI2(currentInputImage_patch, currentMask_patch_axisImages[2], std::get<4>(temp->second));
+                          WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily + "_Z", std::get<4>(temp->second),
+                            "Axis=2;Dimension=2D;Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                            ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice, allROIs[j].weight);
+                        }
+                      }
+                      else
+                      {
+                        CalculateIBSI2(currentInputImage_patch, currentMask_patch, std::get<4>(temp->second));
+                        WriteFeatures(m_modality[i], allROIs[j].label, currentFeatureFamily, std::get<4>(temp->second),
+                          "Axis=" + m_Axis + ";Dimension=" + std::to_string(m_Dimension) + ";Bins=" + m_Bins_string + ";Directions=" + std::to_string(m_Direction) +
+                          ";Radius=" + m_Radius_string, m_currentLatticeCenter, writeFeatureMapsAndLattice);
+                      }
+                    } // end bin-loop
+                  } // end radius-loop
+
+                  if (m_debug)
+                  {
+                    auto tempT2 = std::chrono::high_resolution_clock::now();
+                    m_logger.Write("Collage Features for modality '" + m_modality[i] + "' and ROI '" + allROIs[j].label + "' calculated in " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(tempT2 - tempT1).count()) + " milliseconds");
+                  }
+                }
+              }
+              break;
             }
             default: // undefined Feature
               break;

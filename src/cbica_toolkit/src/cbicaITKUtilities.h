@@ -542,7 +542,7 @@ namespace cbica
     auto imageOrigin2 = imageInfo2.GetImageOrigins();
 
     auto imageDirs1 = imageInfo1.GetImageDirections();
-    auto imageDirs2 = imageInfo1.GetImageDirections();
+    auto imageDirs2 = imageInfo2.GetImageDirections();
 
     for (size_t d = 0; d < dims; d++)
     {
@@ -572,14 +572,15 @@ namespace cbica
         return false;
       }
 
-      if (imageDirs1[d].size() != imageDirs2[d].size())
+      if ( (imageDirs1[d].size() != imageDirs2[d].size()) && !FourDImageCheck )
       {
+        // Handle mis-matched dir sizes (generally indicates mismatch in dims)
         std::cout << "The direction in dimension[" << d << "] of the image_1 (" << image1 << ") and image_2 (" << image2 << ") doesn't match.\n";
         return false;
       }
       else
       {
-        for (size_t i = 0; i < imageDirs1[d].size(); i++)
+        for (size_t i = 0; i < dims; i++) // Dirs are NxN where N is dimensionality. We need to handle 4D vs 3D
         {
           if (imageDirs1[d][i] != imageDirs2[d][i])
           {

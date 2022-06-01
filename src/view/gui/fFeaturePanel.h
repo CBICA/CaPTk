@@ -69,6 +69,8 @@ signals:
   void featureTypeChanged(int type);
   void advancedButtonClicked();
   void helpClicked();
+  void onCollageToggled(bool checked);
+  void onIBSI2Toggled(bool checked);
   std::map< std::string, bool > getEnabledFeatures();
 
 private:

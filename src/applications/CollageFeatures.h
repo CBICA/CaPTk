@@ -1,0 +1,1 @@
+// This is a blank header to ensure that CMake picks up the CollageFeatures wrapper for collageradiomics.

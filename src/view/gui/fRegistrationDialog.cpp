@@ -103,6 +103,9 @@ fRegistrationDialog::fRegistrationDialog()
   connect(options_MetricSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(SelectedMetric(int)));
   connect(nccRadii, SIGNAL(textChanged(QString)), this, SLOT(setRadii(QString)));
   connect(iterations, SIGNAL(textChanged(QString)), this, SLOT(getIterations(QString)));
+  connect(interpolation_LINEAR, SIGNAL(clicked()), this, SLOT(SelectedLinearInterp()));
+  connect(interpolation_NEARESTNEIGHBOR, SIGNAL(clicked()), this, SLOT(SelectedNNInterp()));
+
 
 }
 
@@ -630,6 +633,15 @@ void fRegistrationDialog::SelectedDeformMode()
   degreesOfFreedom->setEnabled(false);
 }
 
+void fRegistrationDialog::SelectedLinearInterp()
+{
+    interp = "LINEAR";
+}
+
+void fRegistrationDialog::SelectedNNInterp()
+{
+    interp = "NN";
+}
 void fRegistrationDialog::SelectedMetric(int index)
 {
   switch (options_MetricSelector->currentIndex())
@@ -884,7 +896,7 @@ void fRegistrationDialog::ConfirmButtonPressed()
       metric, 
       options_RIGID_selected->isChecked(), 
       options_AFFINE_selected->isChecked(), 
-      options_DEFORMABLE_selected->isChecked(), radius, m_iterations, degreesOfFreedom->text().toStdString());
+      options_DEFORMABLE_selected->isChecked(), radius, m_iterations, degreesOfFreedom->text().toStdString(), interp);
     this->close();
   }
 }

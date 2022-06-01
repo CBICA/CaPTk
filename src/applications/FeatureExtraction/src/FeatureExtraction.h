@@ -128,6 +128,7 @@ enum FeatureFamily
   NGLDM,
   LBP,
   COLLAGE,
+  IBSI2,
   Lattice,
   FractalDimension,
   Gabor,
@@ -139,7 +140,7 @@ enum FeatureFamily
 
 static const char FeatureFamilyString[FeatureMax + 1][20] =
 { "Generic", "Intensity", "Histogram", "Volumetric", "Morphologic", "GLCM", "GLRLM", "GLSZM", "NGTDM", "NGLDM", "LBP",
-"Collage", "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
+"Collage", "IBSI2", "Lattice", "FractalDimension", "GaborWavelets", "Laws", "EdgeEnhancement", "PowerSpectrum", "FeatureMax" };
 
 /**
 \brief FeatureExtraction Class -The main class structure enclosing all the feature calculations functions.
@@ -233,6 +234,11 @@ public:
   \brief Populates the feature structure from the GUI
   */
   void SetRequestedFeatures(std::map< std::string, std::vector< std::map<std::string, std::string> > >  featuresFromUI, std::map<std::string, bool> selected_features);
+  
+  /** 
+  \brief Gets the requested features (as FeatureType)
+  */
+  FeatureType GetRequestedFeatures();
 
   /**
   \brief This function is used to populate the variables throughout the Update() step which are then used to write to a file
@@ -669,6 +675,15 @@ private:
   void CalculateCOLLAGE(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map< std::string, double >& featurevec);
 
   /**
+  \brief Calculate IBSI2 features
+
+  \param itkImage The input image
+  \param maskImage The mask specifying the roi
+  \param featurevec - map of Individual feature name and their value
+  */
+  void CalculateIBSI2(const typename TImageType::Pointer itkImage, const typename TImageType::Pointer maskImage, std::map< std::string, double >& featurevec);
+
+  /**
   \brief Calculate NGTDM features
 
   \param itkImage The input image
@@ -752,6 +767,7 @@ private:
   std::string m_outputFile; //! output file
   std::string  m_outputPath, //! this is the output directory and can be used to save intermediate files, if required
     m_outputIntermediatePath; //! store intermediate files (if any)
+  int m_currentImageIndex; //! stores the index to the image currently being selected, for use in feature family functions that need access (e.g. writing some other output file per-input) 
   bool m_outputVerticallyConcatenated = false; //! flag to check how to write the output file (whether in individual fields or vertically concatenated), defaults to horizontal-concatenation
   std::string m_finalOutputToWrite; //! this gets populated with the feature values to write at the end, TBD: needs to change when YML format is incorporated
   bool m_cancel; //! unused right now but scope for extension in the future

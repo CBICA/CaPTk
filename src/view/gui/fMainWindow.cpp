@@ -384,7 +384,7 @@ fMainWindow::fMainWindow()
   }
 
   // TBD: this needs to be controlled from CMake and not hard-coded here
-  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator";
+  std::string brainAppList = " EGFRvIIISVMIndex EGFRvIIISurrogateIndex RecurrenceEstimator PseudoProgressionEstimator ";
 #ifdef BUILD_MSUBTYPE
   //brainAppList += " MolecularSubtypePredictor ";
 #endif
@@ -523,9 +523,9 @@ fMainWindow::fMainWindow()
 
   connect(featurePanel, SIGNAL(helpClicked_FeaUsage(std::string)), this, SLOT(help_contextual(std::string)));
   connect(&registrationPanel, 
-    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)),
+    SIGNAL(RegistrationSignal(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string, std::string)),
     this, 
-    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string)));
+    SLOT(Registration(std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>, std::string, bool, bool, bool, std::string, std::string, std::string, std::string)));
 
   cbica::createDir(loggerFolder);
   m_tempFolderLocation = loggerFolder + "tmp_" + cbica::getCurrentProcessID();
@@ -1318,6 +1318,11 @@ void fMainWindow::SaveImage_withFile(int indexOfInputImageToWrite, QString saveF
 
       cbica::WriteImage< ImageTypeFloat3D >(infoChanger->GetOutput(), correctExtension(saveFileName_string));
     }
+    else if (cbica::ImageInfo(mSlicerManagers[index]->GetPathFileName()).GetImageDimensions() == 4)
+    {
+        cbica::WriteImage< ImageTypeFloat4D >(mSlicerManagers[index]->GetPerfImage(), correctExtension(saveFileName_string));
+        updateProgress(0, "Image saved! (" + saveFileName_string + ")");
+    }
     else
     {
       auto img = reorientedImage.second;
@@ -1490,6 +1495,7 @@ void fMainWindow::SaveImage()
   {
     return;
   }
+
   //
   QString saveFileName = getSaveFile(this, mInputPathName, mInputPathName + "_new.nii.gz");
   SaveImage_withFile(index, saveFileName);
@@ -1729,7 +1735,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       fname = ConversionFrom2Dto3D(fname);
     }
-    else if (!bFirstLoad)
+    if (!bFirstLoad)
     {
       {
         //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
@@ -1823,10 +1829,48 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
     {
       image4DSlider->setEnabled(true);
       image4DSlider->setRange(0, imageInfo.GetImageSize()[3] - 1);
+      image4DMaxSliceIndicator->setText(QString::fromStdString(" / " + std::to_string(imageInfo.GetImageSize()[3])));
       ImageTypeFloat4D::Pointer imagePerf = cbica::ReadImage<ImageTypeFloat4D>(fname);
-      imageManager->SetPerfImage(imagePerf);
+      
       imageManager->mImageSubType = CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION;
-      //return;
+      imageManager->SetOriginalOrigin(imageInfo.GetImageOrigins()); // Fix missing (3D) origins for 4D
+      auto original4DDirection = imagePerf->GetDirection();
+      // Construct acceptable 3D directions from existing 4D directions
+      using DirectionType3D = itk::Matrix<itk::SpacePrecisionType, 3U, 3U>;
+      DirectionType3D directionIn3D;
+      for (int i = 0; i < 3; i++)
+      {
+          for (int j = 0; j < 3; j++)
+          {
+              directionIn3D(i, j) = (double)original4DDirection(i, j);
+          }
+      }
+      
+      imageManager->SetOriginalDirection(directionIn3D);
+      // Now get the original image orientation from the 3D float read
+      using ExtractorType = itk::ExtractImageFilter<ImageTypeFloat4D, ImageTypeFloat3D>;
+      auto extractor = ExtractorType::New();
+      extractor->SetInput(imagePerf);
+      extractor->SetDirectionCollapseToSubmatrix(); // Needed to preserve original directionality for this read
+      ImageTypeFloat4D::RegionType region = imagePerf->GetLargestPossibleRegion();
+      ImageTypeFloat4D::IndexType regionIndex;
+      ImageTypeFloat4D::SizeType regionSize;
+      regionSize[0] = region.GetSize()[0];
+      regionSize[1] = region.GetSize()[1];
+      regionSize[2] = region.GetSize()[2];
+      regionSize[3] = 0;
+      regionIndex[0] = 0;
+      regionIndex[1] = 0;
+      regionIndex[2] = 0;
+      regionIndex[3] = 0;
+      ImageTypeFloat4D::RegionType desiredRegion(regionIndex, regionSize);
+      extractor->SetExtractionRegion(desiredRegion);
+      extractor->Update();
+      auto subImage = extractor->GetOutput();
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(subImage, "RAI"); // defaults to RAI
+      // And bypass the issues with 4D template specialization of the above 
+      imageManager->SetOriginalOrientation(tempImage.first);
+      imageManager->SetPerfImage(imagePerf);
     }
     else
     {
@@ -1834,7 +1878,7 @@ void fMainWindow::LoadSlicerImages(const std::string &fileName, const int &image
       auto currentImage = cbica::ReadImage<ImageTypeFloat3D>(fname);
       imageManager->SetOriginalDirection(currentImage->GetDirection());
       imageManager->SetOriginalOrigin(currentImage->GetOrigin());
-      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname)); // defaults to RAI
+      auto tempImage = cbica::GetImageOrientation< ImageTypeFloat3D >(cbica::ReadImage< ImageTypeFloat3D >(fname), "RAI"); // defaults to RAI
       imageManager->SetOriginalOrientation(tempImage.first);
       currentImage = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(tempImage.second);
       imageManager->SetImage(currentImage);
@@ -3017,6 +3061,13 @@ void fMainWindow::SaveDrawing()
   imageToWrite->DisconnectPipeline();
   if (mSlicerManagers[index]->mImageSubType != CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
   {
+    imageToWrite->DisconnectPipeline();
+
+    auto originalOrientation = mSlicerManagers[index]->mOrientation;
+
+    // This was originally restricted to only non-4D/perfusion cases,
+    // but we can actually handle this case regardless (3D mask is assumed even for 4D cases).
+    // In fact, we have to in order to restore original orientation.
     ImageTypeMask::DirectionType originalDirection;
     originalDirection[0][0] = mSlicerManagers[index]->mDirection(0, 0);
     originalDirection[0][1] = mSlicerManagers[index]->mDirection(0, 1);
@@ -3030,6 +3081,9 @@ void fMainWindow::SaveDrawing()
 
     ImageTypeMask::PointType originalOrigin;
     originalOrigin = mSlicerManagers[index]->mOrigin;
+
+    auto reorientedImage = cbica::GetImageOrientation< ImageTypeMask >(imageToWrite, originalOrientation);
+    auto imageToWrite_wrap = reorientedImage.second;
 
     auto infoChanger = itk::ChangeInformationImageFilter< ImageTypeMask >::New();
     infoChanger->SetInput(imageToWrite);
@@ -3338,14 +3392,16 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
         imageSanityCheckDone = true;
       }
     }
-    //auto temp_prev = cbica::normPath(m_tempFolderLocation + "/temp_prev.nii.gz");
+
+    // Needs to be done with OrientFix so that it matches the in-memory ITK image (which should always be RAI/Identity direction).
     auto mask_temp = cbica::ReadImageWithOrientFix< ImageTypeFloat3D >(maskFileName_toRead);
-    // Added this to allow masks of non-identity direction to pass the image sanity check below.
-    mask_temp = ChangeImageDirectionToIdentity< ImageTypeFloat3D >(mask_temp);
-    //SaveImage_withFile(0, temp_prev.c_str());
+ 
+
+    auto baseFirstImage = mSlicerManagers[0]->mITKImage;
     if (!imageSanityCheckDone)
     {
-      if (!cbica::ImageSanityCheck< ImageTypeFloat3D >(mSlicerManagers[0]->mITKImage, mask_temp))
+      bool fourDImage = (mSlicerManagers[0]->GetDimension() == 4);
+      if (!cbica::ImageSanityCheck<ImageTypeFloat3D>(baseFirstImage, mask_temp, fourDImage))
       {
         ShowErrorMessage("The physical dimensions of the previously loaded image and the mask are inconsistent; proceeding to open registration dialog");
         ImageRegistration();
@@ -3355,7 +3411,9 @@ void fMainWindow::readMaskFile(const std::string &maskFileName)
     }
     using ImageType = itk::Image<unsigned int, 3>;
     auto inputImage = cbica::ReadImageWithOrientFix< ImageType >(maskFileName_toRead);
-    inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
+
+    // The below commented code ONLY changes direction information and does NOT re-orient the image. Be careful!
+    //inputImage = ChangeImageDirectionToIdentity< ImageType >(inputImage);
 
     auto minMaxCalc = itk::MinimumMaximumImageCalculator< ImageType >::New();
     minMaxCalc->SetImage(inputImage);
@@ -4576,7 +4634,12 @@ void fMainWindow::PCAEstimateOnExistingModel(QString &inputdirectory, QString &o
   //check if input has valid subjects
   if (mPCAEstimator.HasValidSubjects() == 0)
   {
-    ShowErrorMessage("The specified directory does not have any subject with all the required imaging sequences.");
+    std::string msg = "The specified directory does not have any subject with all the required imaging sequences.\n";
+    msg += "Make sure that the input directory has subdirectories (each one is one subject), and that each subdirectory two images : \n";
+    msg += "The perfusion image .nii.gz file must contain '_perf_' in the basename, and ";
+    msg += "the segmentation .nii.gz file must end with '_segmentation.nii.gz'.";
+
+    ShowErrorMessage(msg);
     return;
   }
 
@@ -5628,6 +5691,7 @@ void fMainWindow::imageSliderChanged()
   if (mSlicerManagers[index]->mImageSubType == CAPTK::ImageModalityType::IMAGE_TYPE_PERFUSION)
   {
     mSlicerManagers[index]->Get3DImageAtCurrentPerfusionIndex(value);
+    image4DCurrentSliceIndicator->setText(QString::fromStdString(std::to_string(value+1)));
   }
   AxialViewSliderChanged();
   mSlicerManagers[index]->Picked();
@@ -5816,18 +5880,34 @@ void fMainWindow::openImages(QStringList files, bool callingFromCmd)
       }
       else
       {
+
         if (!((extension == ".ima") || (extension == ".nii") || (extension == ".nii.gz")))
         {
           unsupportedExtension += fileName + "\n";
         }
-        else if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString()))
-        {
-          erroredFiles += fileName + "\n";
-        }
         else
         {
-          basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          // This 4D check is duplicated here from LoadSlicerImages, 
+          // because it has to be for us to correctly know to use 4D sanity checks below.
+          // TBD: This needs a refactor for clarity.
+          auto imageInfo = cbica::ImageInfo(fileName);
+          bool fourDImage = false;
+          int dimsOfImage0 = cbica::ImageInfo(fileForSanityCheck).GetImageDimensions();
+          if ((imageInfo.GetImageDimensions() == 4) || (dimsOfImage0 == 4))
+          {
+                fourDImage = true;
+          }
+          if (!cbica::ImageSanityCheck(fileForSanityCheck, files[i].toStdString(), fourDImage))
+          {
+              erroredFiles += fileName + "\n";
+          }
+          else
+          {
+              basicSanityChecksPassedFiles.push_back(files[i].toStdString());
+          }
+          
         }
+
       }
     }
 
@@ -6701,6 +6781,12 @@ void fMainWindow::ApplicationEGFR()
     QString::number(EGFRStatusParams[3]) + "/" + QString::number(nearIndices.size()) + "\nFar ROI voxels used =   " +
     QString::number(EGFRStatusParams[4]) + "/" + QString::number(farIndices.size()) +
     "\n\n\n----------\n\nPHI Threshold = 0.1377\n[based on 142 UPenn brain tumor scans]";
+
+  msg = msg + "\n\nNote that processing was conducted on all detected time points (" +
+      QString::number(perfusionImage->GetLargestPossibleRegion().GetSize()[3])+
+      ") of the given DSC-MRI image." +
+      "\nUPenn scans used for analysis typically contain 45 time points." +
+      "\nIn order to select a number of time points to use, or to do batch processing, please use the command-line interface.";
 
   updateProgress(0);
   ShowMessage(msg.toStdString(), this);
@@ -9036,7 +9122,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
           ".exe" +
 #endif
           " -d " + std::to_string(TImageType::ImageDimension);
-      std::string fixedOptions = " -a -ia-image-centers -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
+      std::string fixedOptions = " -a -ia-image-centers -m NMI -dof 6 -i " + inputRegistrationFile + " "; // force rigid registration only
       std::string commandToCall;
       std::vector<int> returnCodesFromGreedy;
 
@@ -9044,18 +9130,6 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       std::string specificParams;
 
       // Create the intermediate transforms
-      specificParams = outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" + " -o " + outputFolder + "/affine_FractionalAnisotropy.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" + " -o " + outputFolder + "/affine_ApparentDiffusionCoefficient.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_RadialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_RadialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams = outputFolder + "/unregistered_AxialDiffusivity.nii.gz" + " -o " + outputFolder + "/affine_AxialDiffusivity.mat";
-      commandToCall = greedyPathAndDim + fixedOptions + specificParams;
-      returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
       specificParams = outputFolder + "/unregistered_b0.nii.gz" + " -o " + outputFolder + "/affine_b0.mat";
       commandToCall = greedyPathAndDim + fixedOptions + specificParams;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
@@ -9064,7 +9138,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       {
           if (returnCodesFromGreedy[i] != 0)
           {
-              std::cerr << "Something went wrong when generating transforms with Greedy.\n";
+              std::cerr << "Something went wrong when generating transform with Greedy.\n";
               return;
           }
       }
@@ -9073,22 +9147,22 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       // Now run the transform and image through greedy to produce actual output...
       std::string fixedOptions2 = " -rf " + inputRegistrationFile + " -ri LINEAR -r ";
 
-      std::string specificParams2 = outputFolder + "/affine_FractionalAnisotropy.mat" +
+      std::string specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_FractionalAnisotropy.nii.gz" +
           " " + outputFolder + "/FractionalAnisotropy.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_ApparentDiffusionCoefficient.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_ApparentDiffusionCoefficient.nii.gz" +
           " " + outputFolder + "/ApparentDiffusionCoefficient.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_RadialDiffusivity.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_RadialDiffusivity.nii.gz" +
           " " + outputFolder + "/RadialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
       returnCodesFromGreedy.push_back(std::system(commandToCall.c_str()));
-      specificParams2 = outputFolder + "/affine_AxialDiffusivity.mat" +
+      specificParams2 = outputFolder + "/affine_b0.mat" +
           " -rm " + outputFolder + "/unregistered_AxialDiffusivity.nii.gz" +
           " " + outputFolder + "/AxialDiffusivity.nii.gz";
       commandToCall = greedyPathAndDim + fixedOptions2 + specificParams2;
@@ -9103,6 +9177,7 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
       {
           if (returnCodesFromGreedy[i] != 0)
           {
+              ShowErrorMessage("Something went wrong when registering final output with Greedy. Please report this error to CBICA Software.");
               std::cerr << "Something went wrong when registering final output with Greedy.\n";
               return;
           }
@@ -9124,8 +9199,9 @@ void fMainWindow::CallDiffusionMeasuresCalculation(const std::string inputImage,
           cbica::WriteImage< ImageTypeFloat3D >(diffusionDerivatives[4], outputFolder + "/b0.nii.gz");
   }
 
-  std::cout << "Finished successfully.\n";
 
+  std::cout << "Finished successfully.\n";
+  ShowMessage("Diffusion Derivatives ran succesfully and output has been placed in the specified location.");
 }
 void fMainWindow::CallPerfusionMeasuresCalculation(const bool rcbv, const bool  psr, const bool ph,
     const int baselineStart, const int baselineEnd, const int recoveryStart, const int recoveryEnd,
@@ -9496,7 +9572,7 @@ void fMainWindow::GeodesicTrainingFinishedWithErrorHandler(QString errorMessage)
 void fMainWindow::Registration(std::string fixedFileName, std::vector<std::string> inputFileNames,
   std::vector<std::string> outputFileNames, std::vector<std::string> matrixFileNames,
   std::string metrics, bool rigidMode, bool affineMode, bool deformMode,
-  std::string radii, std::string iterations, std::string degreesOfFreedom)
+  std::string radii, std::string iterations, std::string degreesOfFreedom, std::string interp)
 {
   std::string configPathName;
   std::string configFileName;
@@ -9554,6 +9630,9 @@ void fMainWindow::Registration(std::string fixedFileName, std::vector<std::strin
     {
       args << "Deformable";
     }
+
+    args << "-rIP " << interp.c_str();
+
     std::string fullCommandToRun = getApplicationPath("Preprocessing");
 
     if (startExternalProcess(fullCommandToRun.c_str(), args) != 0)

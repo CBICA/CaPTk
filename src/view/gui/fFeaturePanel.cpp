@@ -33,11 +33,20 @@ fFeaturePanel::fFeaturePanel(QWidget * parent) : QWidget(parent)
   connect(m_btnBrowseSaveFile, SIGNAL(clicked()), this, SLOT(browseOutputFileName()));
   connect(m_cmbFeatureType, SIGNAL(currentIndexChanged(int)), this, SLOT(featureTypeChanged(int)));
   connect(HelpButton, SIGNAL(clicked()), this, SLOT(helpClicked()));
+  
   //csv_format->setChecked(true);
   m_verticalConcat->setChecked(true);
   radio1->setChecked(true);
   loadFeatureFiles();
   featureTypeChanged(0);
+
+  // Disable collage by default on GUI, so that users must be prompted with RadXTools info
+  m_Collage->setChecked(false);
+  connect(m_Collage, SIGNAL(toggled(bool)), this, SLOT(onCollageToggled(bool)));
+
+  // Add info-message to IBSI2 to tell user about additional output file. (Also warns that 3D is required)
+  m_IBSI2->setChecked(false);
+  connect(m_IBSI2, SIGNAL(toggled(bool)), this, SLOT(onIBSI2Toggled(bool)));
 
 }
 
@@ -157,6 +166,13 @@ void fFeaturePanel::computeFeature(int type)
   std::vector< std::string >imagepaths;
   std::vector<std::string> modality;
 
+  images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
+
+  if (images.size() == 0) // Do this first to prevent vector index exceptions with 0 images
+  {
+      ShowErrorMessage("No valid images selected!", this);
+      return;
+  }
 
   if (m_listener != NULL)
   {
@@ -174,7 +190,6 @@ void fFeaturePanel::computeFeature(int type)
     }
     else
     {
-      images = ((fMainWindow*)m_listener)->getLodedImages(imagepaths, modality);
       if (imagepaths.size() < 1)
       {
         ShowErrorMessage("No valid images selected!", this);
@@ -202,10 +217,9 @@ void fFeaturePanel::computeFeature(int type)
     ShowErrorMessage("No valid images selected!", this);
     return;
   }
-  else
-  {
-    ((fMainWindow*)m_listener)->updateProgress(5, "Initializing Feature Extraction Module");
-  }
+
+  ((fMainWindow*)m_listener)->updateProgress(5, "Initializing Feature Extraction Module");
+
 
   std::string featureFileName = m_txtSaveFileName->text().toStdString();
 
@@ -389,4 +403,40 @@ void fFeaturePanel::advancedButtonClicked()
   m_featureDialog->exec();
   m_FeatureMaps[selectedFeatureType] = m_featureDialog->getFeatureMap();
 
+}
+
+void fFeaturePanel::onCollageToggled(bool checked)
+{
+    if (checked)
+    {
+        std::string collageMessage = "COLLAGE features were requested for this computation, but are not available through this interface. Please note:\n\n";
+        collageMessage += "The COLLAGE features were developed by BrIC Lab and the RadxTools team (https://doi.org/10.1038/srep37241, https://github.com/radxtools/collageradiomics) \n\n";
+        collageMessage += "Based on published results indicating their importance, COLLAGE features are offered as part of the CaPTk platform to enable users to extract a more comprehensive and reproducible set of features, as shown in : [https://doi.org/10.1002/mp.14556] \n\n";
+        collageMessage += "Please note that extraction of COLLAGE features is a long running process (often >20 minutes) and might not produce results for all the input images.\n";
+        collageMessage += "In order to extract COLLAGE features, please use the separate COLLAGE command line executable from the CaPTk install directory.\n";
+        collageMessage += "Future releases of CaPTk will include updated versions of COLLAGE when available.\n";
+        collageMessage += "Feature requests, bug reports, and any other COLLAGE related considerations, should be directed to https://github.com/radxtools/collageradiomics/issues.";
+        QMessageBox msgbox;
+        msgbox.setText(QString::fromStdString(collageMessage));
+        msgbox.setWindowTitle("COLLAGE Warning");
+        msgbox.setStandardButtons(QMessageBox::Ok);
+        msgbox.setDefaultButton(QMessageBox::Ok);
+        m_Collage->setChecked(false);
+        msgbox.exec();
+    }
+}
+
+void fFeaturePanel::onIBSI2Toggled(bool checked)
+{
+    if (checked)
+    {
+        QMessageBox msgbox;
+        QString msg;
+        msg = "You have selected IBSI-2 convolutional features.\n";
+        msg += "As these features are not currently exportable to a .csv format, an additional output directory will be created alongside the output csv file, with the suffix '_IBSI2'.\n\n";
+        msg += "Please note that these features are currently only defined for 3D images.\n\n";
+        msg += "Processing of these features may take between 1-4 minutes per input image on a typical desktop machine.";
+        msgbox.setText(msg);
+        msgbox.exec();
+    }
 }

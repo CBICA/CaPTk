@@ -365,6 +365,26 @@ int main(int argc, char** argv)
       cbica::ReadImage< TImageType >(brainMaskFile),
       finalBrainMask
       );
+
+    // iterate over outputRegisteredMaskedImages to write brain-masked images before brain-tumor step
+    for (auto it = outputRegisteredMaskedImages.begin(); it != outputRegisteredMaskedImages.end(); it++)
+    {
+        auto modality = it->first;
+        auto maskFilter = itk::MaskImageFilter< ImageType, ImageType >::New();
+        maskFilter->SetInput(cbica::ReadImage< ImageType >(outputRegisteredImages[modality]));
+        maskFilter->SetMaskImage(cbica::ReadImage< TImageType >(finalBrainMask));
+        try
+        {
+            maskFilter->Update();
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Something went wrong when applying the brain mask to modality '"
+                << modality << "': " << e.what();
+            return EXIT_FAILURE;
+        }
+        cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
+    }
   }
 
   if (brainTumor)
@@ -374,25 +394,6 @@ int main(int argc, char** argv)
 
     if (!cbica::exists(brainTumorMaskFile))
     {
-      // iterate over outputRegisteredMaskedImages
-      for (auto it = outputRegisteredMaskedImages.begin(); it != outputRegisteredMaskedImages.end(); it++)
-      {
-        auto modality = it->first;
-        auto maskFilter = itk::MaskImageFilter< ImageType, ImageType >::New();
-        maskFilter->SetInput(cbica::ReadImage< ImageType >(outputRegisteredImages[modality]));
-        maskFilter->SetMaskImage(cbica::ReadImage< TImageType >(finalBrainMask));
-        try
-        {
-          maskFilter->Update();
-        }
-        catch (const std::exception& e)
-        {
-          std::cerr << "Something went wrong when applying the brain mask to modality '"
-            << modality << "': " << e.what();
-          return EXIT_FAILURE;
-        }
-        cbica::WriteImage< ImageType >(maskFilter->GetOutput(), it->second); // write the masked image 
-      }
       fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
         "-i " + outputRegisteredMaskedImages["T1"] + "," +
         outputRegisteredMaskedImages["T1CE"] + "," +

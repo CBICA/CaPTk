@@ -39,6 +39,7 @@ See COPYING file or https://www.med.upenn.edu/cbica/captk/license.html
 #include <fstream>
 #include <iostream>
 
+
 TrainingModule::TrainingModule()
 {
 	//isCurrentlyRunning = false;
@@ -87,6 +88,10 @@ const TrainingModuleResult TrainingModule::Run(const TrainingModuleParameters& p
 	{
 		success = false;
 		logger.WriteError("Exception caught while running the training module. Error information: " + std::string(exc.what()) );
+		logger.WriteError("Please double check the validity of your data and ensure that multiple examples exist of each class.");
+		result.success = false;
+		result.message = exc.what();
+		return result;
 	}
 	result.success = success;
 
@@ -115,12 +120,21 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 	std::cout << "Running training." << std::endl;
 	VariableSizeMatrixType FeaturesOfAllSubjects;
 	VariableLengthVectorType LabelsOfAllSubjects;
+	std::vector<std::string> featureRowHeaders;
+	std::vector<std::string> featureColHeaders;
+	std::vector<std::string> labelRowHeaders;
+	std::vector<std::string> labelColHeaders;
 	typedef vnl_matrix<double> MatrixType;
 	MatrixType dataMatrix;
 
-	bool featureLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, FeaturesOfAllSubjects);
-	bool labelLoadingSucceeded = GetLabelsFromFile(params.inputLabelsFile, LabelsOfAllSubjects);
+	auto featureLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, FeaturesOfAllSubjects, featureRowHeaders, featureColHeaders);
+	auto labelLoadingSucceeded = GetLabelsFromFile(params.inputLabelsFile, LabelsOfAllSubjects, labelRowHeaders, labelColHeaders);
 
+	if (!std::get<0>(featureLoadingSucceeded) || !std::get<0>(labelLoadingSucceeded))
+	{
+		std::cerr << "Error when loading training data. See logs for more information." << std::endl;
+	    return false;
+	}
 	std::cout << "Finished loading training data." << std::endl;
 
 	//// Generate scaled features, save means/std-devs to disk
@@ -246,6 +260,25 @@ bool TrainingModule::RunSplitTraining(const TrainingModuleParameters& params)
 	// Perform training with the selected strategies using the previously scaled features.
 	selectedFeatureIndices = featureSelector->PerformFeatureSelectionBasedTraining(scaledFeatureSet, labels, classifier.get());
 	WriteCSVFiles(selectedFeatureIndices, params.outputDirectory + "/selected-features.csv");
+	if (!featureColHeaders.empty())
+	{
+		std::ofstream myfile;
+		myfile.open(params.outputDirectory + "/selected-feature-names.csv");
+		std::vector<std::string> selectedFeatureNames;
+		for (int i = 0; i < selectedFeatureIndices.size(); i++)
+		{
+			std::string currentFeatureName = featureColHeaders[selectedFeatureIndices[i]];
+			if (i == 0)
+			{
+				myfile << currentFeatureName;
+			}
+			else
+			{
+				myfile << "," << currentFeatureName;
+			}
+		}
+		myfile.close();
+	}
 
 	VariableSizeMatrixType selectedScaledFeatureData;
 	selectedScaledFeatureData.SetSize(labels.size(), selectedFeatureIndices.size()); // samples x selected features
@@ -341,7 +374,9 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	}
 
 	VariableSizeMatrixType allFeaturesMatrix;
-	bool featuresLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, allFeaturesMatrix);
+	std::vector<std::string> featureRowHeaders;
+	std::vector<std::string> featureColHeaders;
+	auto featuresLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, allFeaturesMatrix, featureRowHeaders, featureColHeaders);
 
 	std::shared_ptr<IClassifierStrategy> predictorPtr; // to be filled with the appropriate classifier for model handling
 
@@ -425,13 +460,16 @@ bool TrainingModule::RunSplitTesting(const TrainingModuleParameters& params)
 	// Run prediction for both classes and distances
 	predictedLabels = predictorPtr->predict(finalFeatures);
 	predictedDistances = predictorPtr->predict(finalFeatures, true);
-	WriteCSVFiles(predictedDistances, params.outputDirectory + "/predicted-distances.csv", true);
-	WriteCSVFiles(predictedLabels, params.outputDirectory + "/predicted-labels.csv", true);
+	std::vector<std::string> emptyHeaders;
+	WriteLabelFilesWithHeaders(params.outputDirectory + "/predicted-distances.csv", predictedDistances, featureRowHeaders, emptyHeaders);
+	WriteLabelFilesWithHeaders(params.outputDirectory + "/predicted-labels.csv", predictedLabels, featureRowHeaders, emptyHeaders);
 
 	if (params.testPredictionsAgainstProvidedLabels)
 	{
 		VariableLengthVectorType actualLabels;
-		bool succeeded = GetLabelsFromFile(params.inputLabelsFile, actualLabels);
+		std::vector<std::string> labelRowHeaders;
+		std::vector<std::string> labelColHeaders;
+		auto succeeded = GetLabelsFromFile(params.inputLabelsFile, actualLabels, labelRowHeaders, labelColHeaders);
 		VariableLengthVectorType predictedLabelsAsItkVector;
 		predictedLabelsAsItkVector.SetSize(predictedLabels.size());
 		for (unsigned int i = 0; i < predictedLabels.size(); i++)
@@ -462,13 +500,21 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 	std::cout << "Loading data." << std::endl;
 	VariableSizeMatrixType FeaturesOfAllSubjects;
 	VariableLengthVectorType LabelsOfAllSubjects;
+	std::vector<std::string> featureRowHeaders;
+	std::vector<std::string> featureColHeaders;
+	std::vector<std::string> labelRowHeaders;
+	std::vector<std::string> labelColHeaders;
 	typedef vnl_matrix<double> MatrixType;
 	MatrixType dataMatrix;
 
-	bool featureLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, FeaturesOfAllSubjects);
-	bool labelLoadingSucceeded = GetLabelsFromFile(params.inputLabelsFile, LabelsOfAllSubjects);
+	auto featureLoadingSucceeded = GetFeatureDataFromFile(params.inputFeaturesFile, FeaturesOfAllSubjects, featureRowHeaders, featureColHeaders);
+	auto labelLoadingSucceeded = GetLabelsFromFile(params.inputLabelsFile, LabelsOfAllSubjects, labelRowHeaders, labelColHeaders);
 
 	auto folds = params.folds;
+	if (folds <= LabelsOfAllSubjects.Size() * 2 )
+	{
+		throw std::runtime_error("Fold size too great for the amount of samples -- ensure your data has enough samples, and contains examples of each class.");
+	}
 	std::vector<int> sampleIndices;
 	for (int i = 0; i < LabelsOfAllSubjects.Size(); i++)
 	{
@@ -486,6 +532,8 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 		VariableSizeMatrixType testingData;
 		VectorDouble trainingLabels;
 		VectorDouble testingLabels;
+		std::vector<std::string> testingSubjectHeaders;
+		std::vector<std::string> trainingSubjectHeaders;
 
 		trainingData.SetSize(trainGroupSize, FeaturesOfAllSubjects.Cols());
 		testingData.SetSize(testGroupSize, FeaturesOfAllSubjects.Cols());
@@ -494,6 +542,7 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 		{
 			int testGroupIndex = i + testGroupStartIndex;
 			testingLabels.push_back(LabelsOfAllSubjects[sampleIndices[testGroupIndex]]);
+			testingSubjectHeaders.push_back(featureRowHeaders[sampleIndices[testGroupIndex]]);
 
 			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
 			{
@@ -503,6 +552,7 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 		for (int i = 0; i < testGroupStartIndex; i++) // copy first part of training data samples
 		{
 			trainingLabels.push_back(LabelsOfAllSubjects[i]);
+			trainingSubjectHeaders.push_back(featureRowHeaders[sampleIndices[i]]);
 
 			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
 			{
@@ -512,6 +562,7 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 		for (int i = testGroupStartIndex + testGroupSize; i < sampleIndices.size(); i++) // copy second part of training data samples
 		{
 			trainingLabels.push_back(LabelsOfAllSubjects[i]);
+			trainingSubjectHeaders.push_back(featureRowHeaders[sampleIndices[i]]);
 
 			for (int j = 0; j < FeaturesOfAllSubjects.Cols(); j++)
 			{
@@ -525,11 +576,11 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 		{
 			throw std::runtime_error("Couldn't create the fold subdirectory during cross-validation mode.");
 		}
-		// Need to use vertical param of WriteCSV files to get the labels in the form we accept. This will need reworking.
-		WriteCSVFiles(trainingData, outputFoldDir + "/raw-training-features.csv");
-		WriteCSVFiles(trainingLabels, outputFoldDir + "/training-labels.csv", true);
-		WriteCSVFiles(testingData, outputFoldDir + "/raw-testing-features.csv");
-		WriteCSVFiles(testingLabels, outputFoldDir + "/ground-truth-labels.csv", true);
+
+		WriteNumericFilesWithHeaders(outputFoldDir + "/raw-training-features.csv", trainingData, trainingSubjectHeaders, featureColHeaders);
+		WriteLabelFilesWithHeaders(outputFoldDir + "/training-labels.csv", trainingLabels, trainingSubjectHeaders, labelColHeaders);
+		WriteNumericFilesWithHeaders(outputFoldDir + "/raw-testing-features.csv", testingData, testingSubjectHeaders, featureColHeaders);
+		WriteLabelFilesWithHeaders(outputFoldDir + "/ground-truth-labels.csv", testingLabels, testingSubjectHeaders, labelColHeaders);
 
 		// Run training on this fold's training data
 		auto thisFoldParams = params;
@@ -557,15 +608,18 @@ bool TrainingModule::RunKFoldCrossValidation(const TrainingModuleParameters& par
 	return true;
 }
 
-void TrainingModule::GetHeaderInformationFromFile(std::string filename)
+
+std::tuple<bool, bool, bool> TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, VariableSizeMatrixType& featuresMatrix, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders)
 {
 
-	// To be used for detecting headers from FE/etc.
-	// TODO: Implement this (potentially alongside "labels-in-features-file" functionality to allow one-file training)
-}
+	// Return value :
+	// first is true if successful overall
+	// second is true if row headers were present (also populates if true)
+	// third is true if column headers were present (also populates if true)
+	std::tuple<bool, bool, bool> result = std::make_tuple(false, false, false);
+	bool hasRowHeaders = false;
+	bool hasColumnHeaders = false;
 
-bool TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, VariableSizeMatrixType& featuresMatrix)
-{
 	MatrixType dataMatrix;
 	try
 	{
@@ -576,6 +630,49 @@ bool TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, Variab
 		readerMean->HasRowHeadersOff();
 		readerMean->Parse();
 		dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
+
+		// Check row and column header existence via heuristic: presence of all-NaNs
+
+		for (int row = 0; row < dataMatrix.rows(); row++)
+		{
+			if (!std::isnan(dataMatrix[row][0]))
+			{
+				// Found a number in row headers, must assume this column meant to be numerical (i.e. no row headers).
+				hasRowHeaders = false;
+				break;
+			}
+			hasRowHeaders = true; // All entries in the first column are Not A Number
+		}
+
+		for (int col = 0; col < dataMatrix.cols(); col++)
+		{
+			if (!std::isnan(dataMatrix[0][col]))
+			{
+				// Found a number in column headers, must assume this row meant to be numerical (i.e. no column headers).
+				hasColumnHeaders = false;
+				break;
+			}
+			hasColumnHeaders = true;// All entries in the first row are Not A Number
+		}
+
+		if (hasRowHeaders)
+		{
+			readerMean->HasRowHeadersOn();
+		}
+		if (hasColumnHeaders)
+		{
+			readerMean->HasColumnHeadersOn();
+		}
+		// Re-parse with this new knowledge if headers are present at all
+		if (hasRowHeaders || hasColumnHeaders)
+		{
+			readerMean->Parse();
+			dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
+		}
+
+		colHeaders = readerMean->GetArray2DDataObject()->GetColumnHeaders();
+		rowHeaders = readerMean->GetArray2DDataObject()->GetRowHeaders();
+
 		featuresMatrix.SetSize(dataMatrix.rows(), dataMatrix.columns());
 
 		for (unsigned int i = 0; i < dataMatrix.rows(); i++)
@@ -584,15 +681,17 @@ bool TrainingModule::GetFeatureDataFromFile(std::string featuresFilename, Variab
 	}
 	catch (const std::exception& e1)
 	{
-		std::cerr << "Error reading the feature file in the input directory. Error code : " + std::string(e1.what()) << std::endl;
-		return false;
+		std::cerr << "Error reading the feature file in the input directory. Check permissions and existence. Error code : " + std::string(e1.what()) << std::endl;
+		return std::make_tuple(false, false, false);
 	}
-	return true;
+	return std::make_tuple(true, hasRowHeaders, hasColumnHeaders);
 }
 
-bool TrainingModule::GetLabelsFromFile(std::string labelsFilename, VariableLengthVectorType& labelsVector)
+std::tuple<bool, bool, bool> TrainingModule::GetLabelsFromFile(std::string labelsFilename, VariableLengthVectorType& labelsVector, std::vector<std::string>& rowHeaders, std::vector<std::string>& colHeaders)
 {
 	MatrixType dataMatrix;
+	bool hasRowHeaders = false;
+	bool hasColumnHeaders = false;
 	try
 	{
 		CSVFileReaderType::Pointer readerMean = CSVFileReaderType::New();
@@ -602,6 +701,49 @@ bool TrainingModule::GetLabelsFromFile(std::string labelsFilename, VariableLengt
 		readerMean->HasRowHeadersOff();
 		readerMean->Parse();
 		dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
+		
+		// Check row and column header existence via heuristic: presence of all-NaNs
+
+		for (int row = 0; row < dataMatrix.rows(); row++)
+		{
+			if (!std::isnan(dataMatrix[row][0]))
+			{
+				// Found a number in row headers, must assume this column meant to be numerical (i.e. no row headers).
+				hasRowHeaders = false;
+				break;
+			}
+			hasRowHeaders = true; // All entries in the first column are Not A Number
+		}
+
+		for (int col = 0; col < dataMatrix.cols(); col++)
+		{
+			if (!std::isnan(dataMatrix[0][col]))
+			{
+				// Found a number in column headers, must assume this row meant to be numerical (i.e. no column headers).
+				hasColumnHeaders = false;
+				break;
+			}
+			hasColumnHeaders = true;// All entries in the first row are Not A Number
+		}
+
+		if (hasRowHeaders)
+		{
+			readerMean->HasRowHeadersOn();
+		}
+		if (hasColumnHeaders)
+		{
+			readerMean->HasColumnHeadersOn();
+		}
+		// Re-parse with this new knowledge if headers are present at all
+		if (hasRowHeaders || hasColumnHeaders)
+		{
+			readerMean->Parse();
+			dataMatrix = readerMean->GetArray2DDataObject()->GetMatrix();
+		}
+
+		colHeaders = readerMean->GetArray2DDataObject()->GetColumnHeaders();
+		rowHeaders = readerMean->GetArray2DDataObject()->GetRowHeaders();
+
 		labelsVector.SetSize(dataMatrix.rows());
 
 		for (unsigned int i = 0; i < dataMatrix.rows(); i++)
@@ -609,10 +751,10 @@ bool TrainingModule::GetLabelsFromFile(std::string labelsFilename, VariableLengt
 	}
 	catch (const std::exception& e1)
 	{
-		std::cerr << "Error reading the labels file in the input directory. Error code : " + std::string(e1.what()) << std::endl;
-		return false;
+		std::cerr << "Error reading the labels file in the input directory. Check permissions and existence. Error code : " + std::string(e1.what()) << std::endl;
+		return std::make_tuple(false, false, false);
 	}
-	return true;
+	return std::make_tuple(true, hasRowHeaders, hasColumnHeaders);
 }
 
 double TrainingModule::GetBinaryClassificationBalancedAccuracy(VariableLengthVectorType& predictedLabels, VariableLengthVectorType& actualLabels)
@@ -667,6 +809,109 @@ void TrainingModule::RemoveNans(VariableLengthVectorType& vec)
 		if (std::isnan(vec[index1]))
 			vec[index1] = 0;
 	}
+}
+
+void TrainingModule::WriteNumericFilesWithHeaders(const std::string& filePath, const VariableSizeMatrixType& data, const std::vector<std::string>& rowHeaders, const std::vector<std::string>& colHeaders)
+{
+	std::ofstream myfile;
+	myfile.open(filePath);
+
+	if (rowHeaders.size() != data.Rows())
+	{
+		throw std::logic_error("Header/data row mismatch!");
+	}
+	if (colHeaders.size() != data.Cols())
+	{
+		throw std::logic_error("Header/data column mismatch!");
+	}
+
+	// First write out the whole set of column headers if needed
+	if (!colHeaders.empty())
+	{
+		myfile << " ,"; // filler so we don't misalign
+		for (unsigned int i = 0; i < colHeaders.size(); i++)
+		{
+			if (i == 0)
+				myfile << colHeaders[i];
+			else
+				myfile << "," << colHeaders[i];
+		}
+		myfile << "\n";
+	}
+
+	bool useRowHeaders = true;
+	if (rowHeaders.empty()) 
+	{
+		useRowHeaders = false;
+	}
+
+	// Now write data with row headers at start if needed
+	for (unsigned int index1 = 0; index1 < data.Rows(); index1++)
+	{
+		if (useRowHeaders)
+		{
+			myfile << rowHeaders[index1] << ",";
+		}
+
+		for (unsigned int index2 = 0; index2 < data.Cols(); index2++)
+		{
+			if (index2 == 0)
+				myfile << std::to_string(data[index1][index2]);
+			else
+				myfile << "," << std::to_string(data[index1][index2]);
+		}
+		myfile << "\n";
+	}
+	myfile.close();
+}
+
+void TrainingModule::WriteLabelFilesWithHeaders(const std::string& filePath, const VectorDouble& data, const std::vector<std::string>& rowHeaders, const std::vector<std::string>& colHeaders)
+{
+	std::ofstream myfile;
+	myfile.open(filePath);
+
+	if (!rowHeaders.empty() && (rowHeaders.size() != data.size()))
+	{
+		throw std::logic_error("Header/data row mismatch!");
+	}
+
+	if (colHeaders.size() > 1)
+	{
+		throw std::logic_error("Header/data column mismatch!");
+	}
+
+	// First write out the whole set of column headers if needed
+	if (!colHeaders.empty())
+	{
+		myfile << " ,"; // filler so we don't misalign
+		for (unsigned int i = 0; i < colHeaders.size(); i++)
+		{
+			if (i == 0)
+				myfile << colHeaders[i];
+			else
+				myfile << "," << colHeaders[i];
+		}
+		myfile << "\n";
+	}
+
+	bool useRowHeaders = true;
+	if (rowHeaders.empty())
+	{
+		useRowHeaders = false;
+	}
+
+	// Now write data with row headers at start if needed
+	for (unsigned int index1 = 0; index1 < data.size(); index1++)
+	{
+		if (useRowHeaders)
+		{
+			myfile << rowHeaders[index1] << ",";
+		}
+
+		myfile << data[index1];
+		myfile << "\n";
+	}
+	myfile.close();
 }
 
 

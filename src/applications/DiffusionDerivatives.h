@@ -855,6 +855,7 @@ std::vector<itk::Image<float, 3>::Pointer>  DiffusionDerivatives::dtiRecon(std::
       masker->SetMaskImage(maskReader->GetOutput());
       masker->Update();
       bZeroIm = masker->GetOutput();
+      //bZeroIm = divider->GetOutput();
       
     }
     //Loop though all the voxels and if compute the needed measures!
