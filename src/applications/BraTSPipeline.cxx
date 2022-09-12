@@ -44,7 +44,7 @@ int main(int argc, char** argv)
   parser.getParameterValue("fl", inputFiles["FL"]);
   parser.getParameterValue("o", outputDir);
 
-  if (!cbica::isDir)
+  if (!cbica::isDir(outputDir))
   {
     cbica::createDir(outputDir);
   }
@@ -289,7 +289,7 @@ int main(int argc, char** argv)
         if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
         {
           std::cerr << "Something went wrong when registering " << modality
-            << "to T1CE image, please re-try or contact sofware@cbica.upenn.edu.\n";
+            << "to T1CE image, please re-try or contact software@cbica.upenn.edu.\n";
           return EXIT_FAILURE;
         }
       } // end outputMatFiles[modality] check
