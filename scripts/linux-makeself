@@ -121,7 +121,8 @@ install_captk () {
   	printf "\n"
   fi
 
-  # Last case
+  # Last case -- need to sleep first to avoid some weird behavior where it doesn't catch the existence of the file
+  sleep 3 
   chmod +x ${target_dir}/CaPTk/${ver}/CaPTk-${ver}.bin
   if [ $? -ne 0 ]; then
     echo "WARNING: It appears as if something is wrong with your installation. Please make sure there is enough room on your disk, and that CaPTk-${ver}.bin is present under ./CaPTk" 1>&2
