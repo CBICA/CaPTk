@@ -8959,7 +8959,8 @@ void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::stri
 {
   if (!t1ceImage.empty() && !t1Image.empty() && !t2Image.empty() && !flImage.empty() && !outputDir.empty())
   {
-    auto bratsPipelineExe = getApplicationPath("BraTSPipeline");
+    // Escaped in quotes in case CaPTk is installed in a path with spaces (todo: verify this for all apps called via cli from gui)
+    auto bratsPipelineExe = "\"" + getApplicationPath("BraTSPipeline") + "\"";
     if (!cbica::exists(bratsPipelineExe))
     {
       ShowErrorMessage("Could not find the BraTSPipeline executable");
@@ -8967,11 +8968,11 @@ void fMainWindow::CallBraTSPipeline(const std::string t1ceImage, const std::stri
     }
     
     QStringList args;
-    args << "-t1" << t1Image.c_str() << 
-      "-t1c" << t1ceImage.c_str() << 
-      "-t2" << t2Image.c_str() << 
-      "-fl" << flImage.c_str() << 
-      "-o" << outputDir.c_str();
+    args << "-t1" << "\"" << t1Image.c_str() << "\"" <<
+        "-t1c" << "\"" << t1ceImage.c_str() << "\"" <<
+        "-t2" << "\"" << t2Image.c_str() << "\"" <<
+        "-fl" << "\"" << flImage.c_str() << "\"" <<
+        "-o" << "\"" << outputDir.c_str() << "\"";
 
     QMessageBox *box = new QMessageBox(QMessageBox::Question, "Long running Application",
       "BraTS Pipeline takes ~30 minutes to run, during which CaPTk will not be responsive; press OK to continue...",

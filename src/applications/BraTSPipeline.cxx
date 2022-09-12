@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     {
       std::cerr << "The BraTS pipeline is only valid for 3D images, whereas the image '" 
         << it->second << "' for modality '" << it->first << "' has " <<
-        inputImageInfo.GetImageDimensions() << " dimentions.\n";
+        inputImageInfo.GetImageDimensions() << " dimensions.\n";
       return EXIT_FAILURE;
     }
   }
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
       }
       else
       {
-        std::cerr << "Something went wrong with reading the raw input image, please re-try or contact sofware@cbica.upenn.edu.\n";
+        std::cerr << "Something went wrong with reading the raw input image, please re-try or contact software@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     }
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
     inputImages_processed[modality] = temp.second;
     if (inputImages_processed[modality].IsNull())
     {
-      std::cerr << "Something went wrong with re-orienting the input image, please re-try or contact sofware@cbica.upenn.edu.\n";
+      std::cerr << "Something went wrong with re-orienting the input image, please re-try or contact software@cbica.upenn.edu.\n";
       return EXIT_FAILURE;
     }
     else
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
         }
         else
         {
-          std::cerr << "Something went wrong with bias-correcting the re-oriented image, please re-try or contact sofware@cbica.upenn.edu.\n";
+          std::cerr << "Something went wrong with bias-correcting the re-oriented image, please re-try or contact software@cbica.upenn.edu.\n";
           return EXIT_FAILURE;
         }
       }
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
     std::cout << "Registering T1CE to SRI atlas.\n";
   }
 
-  auto greedyPathAndDim = getApplicationPath("greedy") + " -d 3";
+  auto greedyPathAndDim = "\"" + getApplicationPath("greedy") + "\"" + " -d 3";
 
   auto captkDataDir = getCaPTkDataDir();
   auto atlasImage = captkDataDir + "/sri24/atlastImage.nii.gz";
@@ -234,8 +234,8 @@ int main(int argc, char** argv)
 
   if (!cbica::exists(outputMatFiles["T1CE"]))
   {
-    fullCommand = " -a -m NMI -i " + atlasImage + " " + inputReorientedBiasFiles["T1CE"]
-      + " -o " + outputMatFiles["T1CE"] + " -ia-image-centers -n 100x50x10 -dof 6";
+    fullCommand = " -a -m NMI -i " + std::string("\"") +  atlasImage + "\"" + " " + "\"" + inputReorientedBiasFiles["T1CE"] + "\""
+      + " -o " + "\"" + outputMatFiles["T1CE"] + "\"" + " -ia-image-centers -n 100x50x10 -dof 6";
 
     if (debug)
     {
@@ -243,16 +243,16 @@ int main(int argc, char** argv)
     }
     if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
     {
-      std::cerr << "Something went wrong when registering T1CE image to SRI atlas, please re-try or contact sofware@cbica.upenn.edu.\n";
+      std::cerr << "Something went wrong when registering T1CE image to SRI atlas, please re-try or contact software@cbica.upenn.edu.\n";
       return EXIT_FAILURE;
     }
   } // end outputMatFiles["T1CE"] check
 
   if (!cbica::exists(outputRegisteredImages["T1CE"]))
   {
-    fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " +
-      inputReorientedFiles["T1CE"] + " " + outputRegisteredImages["T1CE"] + " -r " +
-      outputMatFiles["T1CE"];
+    fullCommand = " -rf " + std::string("\"") + atlasImage + "\"" + " -ri LINEAR -rm " +
+        "\"" + inputReorientedFiles["T1CE"] + "\"" + " " + "\"" + outputRegisteredImages["T1CE"]+ "\"" + " -r " +
+        "\"" + outputMatFiles["T1CE"] + "\"";
 
     if (debug)
     {
@@ -278,8 +278,8 @@ int main(int argc, char** argv)
       if (!cbica::exists(outputMatFiles[modality]))
       {
         // we use the bias-corrected image for registration as it is easier localize transformations
-        fullCommand = " -a -m NMI -i " + inputReorientedBiasFiles["T1CE"] + " " + inputReorientedBiasFiles[modality]
-          + " -o " + outputMatFiles[modality] + " -ia-image-centers -n 100x50x10 -dof 6";
+        fullCommand = " -a -m NMI -i " + std::string("\"") + inputReorientedBiasFiles["T1CE"] + "\"" + " " + "\"" + inputReorientedBiasFiles[modality] + "\""
+          + " -o " + "\"" + outputMatFiles[modality] + "\"" + " -ia-image-centers -n 100x50x10 -dof 6";
         if (debug)
         {
           std::cout << "Registering " << modality << " to T1CE.\n";
@@ -304,10 +304,10 @@ int main(int argc, char** argv)
       {
         // the final registration is applied on the original image after re-orientation (not bias-corrected) to
         // ensure maximum fidelity with original image
-        fullCommand = " -rf " + atlasImage + " -ri LINEAR -rm " + inputReorientedFiles[modality] + " " +
-          outputRegisteredImages[modality] + " -r "
-          + outputMatFiles["T1CE"] + " "
-          + outputMatFiles[modality];
+        fullCommand = " -rf " + std::string("\"") +atlasImage + "\"" + " -ri LINEAR -rm " + "\"" + inputReorientedFiles[modality] + "\"" + " " +
+            "\"" + outputRegisteredImages[modality] + "\"" + " -r "
+          + "\"" + outputMatFiles["T1CE"] + "\""  + " "
+          + "\"" + outputMatFiles[modality] + "\"";
 
         if (std::system((greedyPathAndDim + fullCommand).c_str()) != 0)
         {
@@ -320,7 +320,7 @@ int main(int argc, char** argv)
 
   // variables that are used later on
   auto finalBrainMask = cbica::normalizePath(outputDir + "/brainMask_SRI.nii.gz");
-  auto deepMedicExe = getApplicationPath("DeepMedic");
+  auto deepMedicExe = "\"" + getApplicationPath("DeepMedic") + "\"";
   auto brainMaskFile = outputDir + "/dmOut_skull/brainMask_SRI.nii.gz";
 
   if (skullStrip)
@@ -333,12 +333,12 @@ int main(int argc, char** argv)
 
     if (!cbica::exists(brainMaskFile))
     {
-      fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/skullStripping/ " +
-        "-i " + outputRegisteredImages["T1"] + "," +
-        outputRegisteredImages["T1CE"] + "," +
-        outputRegisteredImages["T2"] + "," +
-        outputRegisteredImages["FL"] + " -o " +
-        brainMaskFile;
+      fullCommand = " -md " + std::string("\"") + captkDataDir + "/deepMedic/saved_models/skullStripping/ " + "\"" +
+        "-i " + "\"" + outputRegisteredImages["T1"] + "\"" + "," +
+          "\"" + outputRegisteredImages["T1CE"] + "\"" + "," +
+          "\"" + outputRegisteredImages["T2"] + "\"" + "," +
+          "\"" + outputRegisteredImages["FL"] + "\"" + " -o " +
+          "\"" + brainMaskFile + "\"";
 
       if (debug)
       {
@@ -347,7 +347,7 @@ int main(int argc, char** argv)
 
       if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
       {
-        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact software@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     } // end brainMask check
@@ -394,12 +394,13 @@ int main(int argc, char** argv)
 
     if (!cbica::exists(brainTumorMaskFile))
     {
-      fullCommand = " -md " + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " +
-        "-i " + outputRegisteredMaskedImages["T1"] + "," +
-        outputRegisteredMaskedImages["T1CE"] + "," +
-        outputRegisteredMaskedImages["T2"] + "," +
-        outputRegisteredMaskedImages["FL"] + " -m " + finalBrainMask +
-        " -o " + brainTumorMaskFile;
+      fullCommand = " -md " + std::string("\"") + captkDataDir + "/deepMedic/saved_models/brainTumorSegmentation/ " + "\"" +
+        "-i " + "\"" + outputRegisteredMaskedImages["T1"] + "\"" + "," +
+          "\"" + outputRegisteredMaskedImages["T1CE"] + "\"" + "," +
+          "\"" + outputRegisteredMaskedImages["T2"] + "\"" + "," +
+          "\"" + outputRegisteredMaskedImages["FL"] + "\"" +
+          " -m " + "\"" + finalBrainMask + "\"" +
+        " -o " + "\"" + brainTumorMaskFile + "\"";
 
       if (debug)
       {
@@ -408,7 +409,7 @@ int main(int argc, char** argv)
 
       if (std::system((deepMedicExe + fullCommand).c_str()) != 0)
       {
-        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact sofware@cbica.upenn.edu.\n";
+        std::cerr << "Something went wrong when performing skull-stripping using DeepMedic, please re-try or contact software@cbica.upenn.edu.\n";
         return EXIT_FAILURE;
       }
     } // end brainTumorMaskFile check
