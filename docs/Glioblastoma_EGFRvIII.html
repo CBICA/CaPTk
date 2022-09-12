@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Cancer Imaging Phenomics Toolkit (CaPTk)
-   &#160;<span id="projectnumber">1.9.0</span>
+   &#160;<span id="projectnumber">1.9.1</span>
    </div>
   </td>
  </tr>
@@ -66,6 +66,55 @@ $(document).ready(function(){initNavTree('Glioblastoma_EGFRvIII.html',''); initR
 <li>Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.</li>
 <li>Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), as well as the Edema (Label=2)</li>
 <li>Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)</li>
+</ol>
+<p>Standard Atlas reference:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Value </th><th class="markdownTableHeadNone">Region  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">1 </td><td class="markdownTableBodyNone">Right frontal lobe  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">2 </td><td class="markdownTableBodyNone">Right temporal lobe  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">3 </td><td class="markdownTableBodyNone">Left temporal lobe  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">4 </td><td class="markdownTableBodyNone">Left thalamus  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">5 </td><td class="markdownTableBodyNone">Right parietal lobe  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">6 </td><td class="markdownTableBodyNone">Left insula  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">7 </td><td class="markdownTableBodyNone">Right basal ganglia  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">8 </td><td class="markdownTableBodyNone">Right occipital lobe  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">9 </td><td class="markdownTableBodyNone">Left basal ganglia  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">10 </td><td class="markdownTableBodyNone">corpus callosum  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">11 </td><td class="markdownTableBodyNone">Left frontal lobe  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">12 </td><td class="markdownTableBodyNone">Left parietal lobe  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">13 </td><td class="markdownTableBodyNone">Left occipital lobe  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">14 </td><td class="markdownTableBodyNone">brain stem  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">15 </td><td class="markdownTableBodyNone">Right thalamus  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">16 </td><td class="markdownTableBodyNone">Right fornix  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">17 </td><td class="markdownTableBodyNone">Left cingulate region  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">18 </td><td class="markdownTableBodyNone">Left fornix  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">19 </td><td class="markdownTableBodyNone">Right insula  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">20 </td><td class="markdownTableBodyNone">cerebellum  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">21 </td><td class="markdownTableBodyNone">Right cingulate region  </td></tr>
+</table>
+<ol type="1">
 <li>Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients.</li>
 <li>The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.<ul>
 <li>Subject_ID<ol type="a">
