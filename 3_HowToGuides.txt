@@ -616,6 +616,33 @@ This application provides the detection of EGFRvIII mutation status of <i>de nov
 -# Co-registered Multimodal MRI: T1, T1-Gd, T2, T2-FLAIR, DTI-AX, DTI-FA, DTI-RAD, DTI-TR, DSC-PH, DSC-PSR, DSC-rCBV.
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), as well as the Edema (Label=2)
 -# Segmentation labels in a common atlas space: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4), Edema (Label=2), as well as the Ventricle (Label=7)
+
+Standard Atlas reference:
+
+Value	| Region
+--------|-------------
+1 		| Right frontal lobe
+2		| Right temporal lobe
+3		| Left temporal lobe
+4		| Left thalamus
+5		| Right parietal lobe
+6		| Left insula
+7		| Right basal ganglia
+8		| Right occipital lobe
+9		| Left basal ganglia
+10		| corpus callosum
+11		| Left frontal lobe
+12		| Left parietal lobe
+13		| Left occipital lobe
+14		| brain stem
+15		| Right thalamus
+16		| Right fornix
+17		| Left cingulate region
+18		| Left fornix
+19		| Right insula
+20		| cerebellum
+21		| Right cingulate region
+
 -# Clinical data: A csv file having patient's demographics (Note that the CSV file should be in ASCII format). Should have age (in first column) and EGFRvIII status (in second column, binarized values like 0 and 1) for training a new model, and age only for mutation detection of new patients. 
 -# The data for each patient should be organized in the following directory structure. When running in the command-line, filenames must include words in <b>BOLD</b> to be identified as respective required files.
   - Subject_ID
@@ -681,6 +708,33 @@ This application facilitates the users to generate population atlases for patien
 <b>REQUIREMENTS:</b>
 -# Segmentation labels of the tumor sub-regions: Non-enhancing tumor core (Label=1), Enhancing tumor core (Label=4)
 -# Standard atlas: A standard atlas to map all the patients in a unified space. Atlas should have region numbers in the ascending order, such as 1,2,3,...,n.
+
+Standard Atlas reference:
+
+Value	| Region
+--------|-------------
+1 		| Right frontal lobe
+2		| Right temporal lobe
+3		| Left temporal lobe
+4		| Left thalamus
+5		| Right parietal lobe
+6		| Left insula
+7		| Right basal ganglia
+8		| Right occipital lobe
+9		| Left basal ganglia
+10		| corpus callosum
+11		| Left frontal lobe
+12		| Left parietal lobe
+13		| Left occipital lobe
+14		| brain stem
+15		| Right thalamus
+16		| Right fornix
+17		| Left cingulate region
+18		| Left fornix
+19		| Right insula
+20		| cerebellum
+21		| Right cingulate region
+
 -# Batch File: A csv file having patients' IDs, group (atlas) number, and path to the actual segmented image. Atlas numbers should be in the ascending order, such as 1,2,3,...,n. Segmentation images should be in the same space as the standard atlas (Note that the CSV file should be in ASCII format, and the CSV file should have the following column headers in any sequence: PATIENT_IDS,IMAGES, ATLAS_LABELS).
 
 <b>USAGE:</b>
