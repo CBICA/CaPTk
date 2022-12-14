@@ -272,8 +272,8 @@ int main(int argc, char** argv)
     if (modality != "T1CE") // T1CE registration has happened before
     {
       outputMatFiles[modality] = outputDir + "/" + outputNames[modality] + ".mat";
-      outputRegisteredImages[modality] = outputDir + "/" + modality + "_to_SRI.nii.gz";
-      outputRegisteredMaskedImages[modality] = outputDir + "/" + modality + "_to_SRI_brain.nii.gz";
+      outputRegisteredImages[modality] = outputDir + "/" + outputNames[modality] + "_to_SRI.nii.gz";
+      outputRegisteredMaskedImages[modality] = outputDir + "/" + outputNames[modality] + "_to_SRI_brain.nii.gz";
 
       if (!cbica::exists(outputMatFiles[modality]))
       {
