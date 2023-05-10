@@ -73,7 +73,7 @@ ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/inputMask.nii.gz -o C:/outputMa
 <li>Image information <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test.nii.gz -inf
 ${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -inf</pre></li>
 <li>Unique values in image <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -un</pre></li>
-<li>Change values in image: The following command will change all voxels of value 1 &amp; 2 to 2 &amp; 4, respectively: <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -cv 1x2,2x4</pre></li>
+<li>Change values in image: The following command will change all voxels of value 1 &amp; 2 to 2 &amp; 4, respectively: <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cv 1x2,2x4</pre></li>
 <li>Get smallest bounding box in mask (optional isotropic bounding box) <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -b C:/testMask.nii.gz -o C:/output.nii.gz</pre></li>
 <li>Test 2 images <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -tb C:/test.nii.gz</pre></li>
 <li>Create mask from threshold <pre class="fragment">${CaPTk_InstallDir}/bin/Utilities.exe -i C:/test/1.dcm -o C:/test.nii.gz -cm 50,1000</pre></li>

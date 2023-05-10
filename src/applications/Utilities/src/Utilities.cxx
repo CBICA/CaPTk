@@ -559,7 +559,7 @@ int algorithmsRunner()
   {
     auto outputImage = cbica::ChangeImageValues< TImageType >(cbica::ReadImage< TImageType >(inputImageFile), changeOldValues, changeNewValues);
 
-    if (!outputImage.IsNull())
+    if (!outputImage.IsNull() && !outputImageFile.empty())
     {
       cbica::WriteImage< TImageType >(outputImage, outputImageFile);
       std::cout << "Create Mask completed.\n";
